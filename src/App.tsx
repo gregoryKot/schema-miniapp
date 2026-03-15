@@ -22,6 +22,7 @@ export default function App() {
   const [saved, setSaved] = useState<Record<string, boolean>>({});
   const [history, setHistory] = useState<DayHistory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     window.Telegram?.WebApp?.ready();
@@ -29,6 +30,7 @@ export default function App() {
 
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => { setNeeds(n); setRatings(r); })
+      .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
   }, []);
 
@@ -51,6 +53,15 @@ export default function App() {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--tg-theme-hint-color, #999)' }}>
         Загрузка...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: 24, color: 'red', fontSize: 13, wordBreak: 'break-all' }}>
+        <b>Ошибка загрузки:</b><br />{error}<br /><br />
+        <small>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small>
       </div>
     );
   }
