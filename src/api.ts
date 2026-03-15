@@ -1,4 +1,5 @@
-const BASE = import.meta.env.VITE_API_URL as string;
+const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
+const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
 
 function authHeaders(): Record<string, string> {
   return {

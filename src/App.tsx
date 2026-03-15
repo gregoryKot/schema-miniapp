@@ -61,7 +61,8 @@ export default function App() {
     return (
       <div style={{ padding: 24, color: 'red', fontSize: 13, wordBreak: 'break-all' }}>
         <b>Ошибка загрузки:</b><br />{error}<br /><br />
-        <small>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small>
+        <small>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small><br/>
+        <small>initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}</small>
       </div>
     );
   }
