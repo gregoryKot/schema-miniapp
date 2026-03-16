@@ -55,12 +55,9 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         </div>
 
         <div style={{ padding: '8px 24px 48px', overflowY: 'auto' }}>
-          {/* Icon + title */}
+          {/* Icon */}
           <div style={{ textAlign: 'center', marginBottom: 20 }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🧠</div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
-              Прежде чем начать
-            </div>
+            <div style={{ fontSize: 36 }}>🧠</div>
           </div>
 
           {/* Disclaimer text */}
@@ -68,6 +65,9 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
             background: 'rgba(255,255,255,0.05)', borderRadius: 16,
             padding: '16px 18px', marginBottom: 16,
           }}>
+            <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Прежде чем начать
+            </div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
               Хорошо что ты здесь. Замечать свои потребности — это уже немало.
               <br /><br />
@@ -96,7 +96,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
               </a>
             </div>
             <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-              Вопросы или хочешь поработать лично —{' '}
+              Вопросы или если хочешь поработать лично —{' '}
               <a
                 href="https://t.me/kotlarewski"
                 style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}
