@@ -33,6 +33,16 @@ function petalPath(cx: number, cy: number, r: number, centerAngle: number, halfS
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
 }
 
+function arcPath(cx: number, cy: number, r: number, centerAngle: number, halfSpread: number): string {
+  const a1 = centerAngle - halfSpread;
+  const a2 = centerAngle + halfSpread;
+  const x1 = cx + r * Math.cos(a1);
+  const y1 = cy + r * Math.sin(a1);
+  const x2 = cx + r * Math.cos(a2);
+  const y2 = cy + r * Math.sin(a2);
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+}
+
 // ─── Wheel (no labels) ─────────────────────────────────────────────────────────
 
 function NeedsWheel({
@@ -113,6 +123,20 @@ function NeedsWheel({
             }}
           />
         );
+      })}
+
+      {/* Scale arcs — 3 concentric arcs per sector at 25/50/75% of R */}
+      {needs.map((need, i) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        return [0.25, 0.5, 0.75].map((frac) => (
+          <path
+            key={`arc-${need.id}-${frac}`}
+            d={arcPath(cx, cy, R * frac, angle, SPREAD)}
+            fill="none"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth={1}
+          />
+        ));
       })}
 
       {/* Center cutout */}
