@@ -2,8 +2,8 @@ import { COLORS } from '../types';
 
 function NeedIcon({ id, color }: { id: string; color: string }) {
   const props = {
-    width: 20,
-    height: 20,
+    width: 22,
+    height: 22,
     viewBox: '0 0 24 24',
     fill: 'none' as const,
     stroke: color,
@@ -58,23 +58,17 @@ interface Props {
   onChange: (value: number) => void;
 }
 
-export function NeedSlider({ id, label, value, saved, onChange }: Props) {
+export function NeedSlider({ id, label, value, onChange }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
 
   return (
-    <div style={{
-      padding: '16px 16px 18px',
-      marginBottom: 10,
-      borderRadius: 18,
-      background: 'rgba(255,255,255,0.035)',
-      border: '1px solid rgba(255,255,255,0.07)',
-    }}>
+    <div style={{ marginBottom: 26 }}>
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 14,
+        marginBottom: 12,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <NeedIcon id={id} color={color} />
@@ -84,11 +78,8 @@ export function NeedSlider({ id, label, value, saved, onChange }: Props) {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
-          <span style={{ fontSize: 19, fontWeight: 700, color, lineHeight: 1 }}>{value}</span>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>/10</span>
-          {saved && (
-            <span style={{ fontSize: 11, color, marginLeft: 5, opacity: 0.75 }}>✓</span>
-          )}
+          <span style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{value}</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>/10</span>
         </div>
       </div>
 
@@ -98,7 +89,7 @@ export function NeedSlider({ id, label, value, saved, onChange }: Props) {
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         style={{
-          background: `linear-gradient(to right, ${color} ${pct}%, #2B3442 ${pct}%)`,
+          background: `linear-gradient(to right, ${color} ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
           '--thumb-color': color,
         } as React.CSSProperties}
       />
