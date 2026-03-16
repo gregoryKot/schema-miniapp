@@ -42,7 +42,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
   const GAP = 12;
   const SPREAD = Math.PI / 5;
   const n = needs.length;
-  const LH = 15;
+  const LH = 17; // name 14px + 3px gap to score baseline
 
   return (
     <svg
@@ -143,23 +143,16 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
           <g key={need.id}>
             <text
               x={lx.toFixed(2)} y={nameY.toFixed(2)}
-              textAnchor={textAnchor} fontSize={13} fontWeight={500}
-              style={{ fill: 'rgba(255,255,255,0.7)', letterSpacing: '-0.2px' }}
+              textAnchor={textAnchor} fontSize={14} fontWeight={500}
+              style={{ fill: 'rgba(255,255,255,0.65)', letterSpacing: '-0.2px' }}
             >
               {need.chartLabel}
             </text>
             <text
               x={lx.toFixed(2)} y={scoreY.toFixed(2)}
-              textAnchor={textAnchor} fontSize={16} fontWeight={700}
-              style={{
-                fill: 'none',
-                background: `linear-gradient(90deg, ${color} 0%, #fff 50%, ${color} 100%)`,
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                animation: 'shimmer 2s linear infinite',
-                letterSpacing: '-0.2px',
-              } as React.CSSProperties}
+              textAnchor={textAnchor} fontSize={20} fontWeight={700}
+              fill={color}
+              style={{ letterSpacing: '-0.2px' }}
             >
               {value}
             </text>
@@ -428,7 +421,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       </div>
 
       {/* Insight card */}
-      <div style={{ padding: '28px 24px 0' }}>
+      <div style={{ padding: '16px 24px 0' }}>
         <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
 
