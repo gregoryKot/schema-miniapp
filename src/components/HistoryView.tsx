@@ -38,8 +38,8 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
   const SIZE = 360;
   const cx = SIZE / 2;
   const cy = SIZE / 2;
-  const R = 100; // 85% of original 118 — tighter ring, labels closer to chart
-  const GAP = 12;
+  const R = 80;  // reduced so sectors fill more of the ring
+  const GAP = 20; // min gap from ring edge to nearest text
   const SPREAD = Math.PI / 5;
   const n = needs.length;
   const LH = 17; // name 14px + 3px gap to score baseline
@@ -48,7 +48,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
     <svg
       width="100%"
       height="100%"
-      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      viewBox={`0 30 ${SIZE} 300`}
       style={{ display: 'block', overflow: 'visible' }}
     >
       <defs>
@@ -126,14 +126,17 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         const value = ratings[need.id] ?? 0;
 
         const textAnchor = 'middle';
-        const lx = cx + (R + GAP) * cos;
+        // Side labels pushed extra 16px horizontally beyond GAP
+        const sideExtra = Math.abs(cos) > 0.3 ? 16 : 0;
+        const lx = cx + (R + GAP + sideExtra) * cos;
         const ringEdgeY = cy + R * sin;
 
         let nameY: number;
         if (sin < -0.45) {
           nameY = ringEdgeY - GAP - LH;
         } else if (sin > 0.45) {
-          nameY = ringEdgeY + GAP;
+          // Bottom labels: extra 12px push
+          nameY = ringEdgeY + GAP + 12;
         } else {
           nameY = ringEdgeY - LH / 2;
         }
@@ -354,7 +357,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       </div>
 
       {/* View toggle */}
-      <div style={{ padding: '0 24px 8px' }}>
+      <div style={{ padding: '0 24px 4px' }}>
         <div style={{
           display: 'flex',
           background: 'rgba(255,255,255,0.06)',
@@ -386,11 +389,9 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       <div key={subView} style={{ animation: 'fade-in 200ms ease' }}>
         {subView === 'day' ? (
           /* ── День ── */
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <div style={{ width: '85vw', maxWidth: 'calc(100% - 48px)', flexShrink: 0 }}>
-              <div key={selected.date} style={{ width: '100%', aspectRatio: '1 / 1' }}>
-                <NeedsWheel needs={needs} ratings={selectedRatings} />
-              </div>
+          <div style={{ padding: '0 56px 0' }}>
+            <div key={selected.date} style={{ width: '100%', aspectRatio: '360 / 300' }}>
+              <NeedsWheel needs={needs} ratings={selectedRatings} />
             </div>
           </div>
         ) : (
@@ -421,7 +422,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       </div>
 
       {/* Insight card */}
-      <div style={{ padding: '12px 24px 0' }}>
+      <div style={{ padding: '8px 24px 0' }}>
         <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
 
