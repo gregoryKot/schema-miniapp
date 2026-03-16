@@ -46,7 +46,7 @@ function NeedsWheel({
   const R = cy - 20;      // 120 — fills height minus 20px padding each side
   const SPREAD = Math.PI / 5;
   const n = needs.length;
-  const CENTER_R = 36;
+  const CENTER_R = 41; // 36 * 1.15
 
   const avg = needs.length > 0
     ? needs.reduce((s, nd) => s + (ratings[nd.id] ?? 0), 0) / needs.length
@@ -81,14 +81,14 @@ function NeedsWheel({
         />
       ))}
 
-      {/* Ghost sectors — full radius, white 6% — shows max potential subtly */}
+      {/* Ghost sectors — same angle 72°, full radius, rgba white 8% */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const d = petalPath(cx, cy, R, angle, SPREAD);
         if (!d) return null;
         return (
           <path key={`ghost-${need.id}`} d={d}
-            fill="rgba(255,255,255,0.06)"
+            fill="rgba(255,255,255,0.08)"
           />
         );
       })}
@@ -97,7 +97,7 @@ function NeedsWheel({
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
-        const r = Math.max((value / 10) * R, value > 0 ? R * 0.15 : 0);
+        const r = (value / 10) * R; // pure proportional, 0 → no sector
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;
@@ -117,15 +117,15 @@ function NeedsWheel({
       <circle cx={cx} cy={cy} r={CENTER_R} fill="#1a1d27" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
 
       {/* Center text */}
-      <text x={cx} y={cy - 18} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.5)">
+      <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.5)">
         индекс
       </text>
-      <text x={cx} y={cy + 6} textAnchor="middle" fontSize={28} fontWeight={700} fill="#ffffff">
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="#ffffff">
         {avg.toFixed(1)}
       </text>
-      {diff !== null && (
-        <text x={cx} y={cy + 21} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.35)">
-          {diff >= 0 ? '↑' : '↓'} вчера {Math.abs(diff).toFixed(1)}
+      {prevAvg !== null && prevAvg > 0 && (
+        <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.4)">
+          {avg >= prevAvg ? '↑' : '↓'} вчера {prevAvg.toFixed(1)}
         </text>
       )}
     </svg>
@@ -388,14 +388,14 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           /* ── День ── */
           <>
             {/* Chart */}
-            <div style={{ width: '100%', marginTop: 12 }}>
+            <div style={{ width: '100%', marginTop: 12, marginBottom: 12 }}>
               <div key={selected.date}>
                 <NeedsWheel needs={needs} ratings={selectedRatings} prevRatings={prevRatings} />
               </div>
             </div>
 
             {/* Legend */}
-            <div style={{ padding: '0 20px', marginTop: 12, marginBottom: 16 }}>
+            <div style={{ padding: '0 20px', marginBottom: 16 }}>
               <LegendGrid needs={needs} ratings={selectedRatings} />
             </div>
 
