@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Need, YESTERDAY } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
@@ -55,10 +55,28 @@ function DonutRing({ percent }: { percent: number }) {
   );
 }
 
+const TOOLTIP_KEY = 'onboarding_tooltip_shown';
+
 export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
+  const [tooltipVisible, setTooltipVisible] = useState(
+    () => !localStorage.getItem(TOOLTIP_KEY)
+  );
+
+  const dismissTooltip = useCallback(() => {
+    if (tooltipVisible) {
+      localStorage.setItem(TOOLTIP_KEY, '1');
+      setTooltipVisible(false);
+    }
+  }, [tooltipVisible]);
+
+  useEffect(() => {
+    if (!tooltipVisible) return;
+    const t = setTimeout(dismissTooltip, 3000);
+    return () => clearTimeout(t);
+  }, [tooltipVisible, dismissTooltip]);
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
@@ -86,8 +104,8 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const diffColor = 'rgba(255,255,255,0.35)';
 
   return (
-    <div style={{ padding: '20px 20px 40px' }}>
-      {needs.map((n) => (
+    <div style={{ padding: '20px 20px 40px' }} onClick={dismissTooltip}>
+      {needs.map((n, i) => (
         <NeedSlider
           key={n.id}
           id={n.id}
@@ -96,7 +114,8 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
           value={ratings[n.id] ?? 0}
           saved={false}
           onChange={(v) => handleChange(n.id, v)}
-          onTap={() => setActiveNeed(n)}
+          onTap={() => { dismissTooltip(); setActiveNeed(n); }}
+          showTooltip={tooltipVisible && i === 0}
         />
       ))}
 

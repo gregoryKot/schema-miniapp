@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
 
@@ -11,6 +11,7 @@ interface Props {
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
 const TODAY_STR = new Date().toISOString().split('T')[0];
 const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+const HISTORY_HINT_KEY = 'history_hint_dismissed';
 
 function getDayAbbr(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -159,7 +160,7 @@ function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Rec
               width: 8, height: 8, borderRadius: '50%',
               background: color, flexShrink: 0,
             }} />
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 400, lineHeight: 1.2 }}>
                 {need.chartLabel}
               </div>
@@ -167,6 +168,7 @@ function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Rec
                 {value}
               </div>
             </div>
+            <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>›</span>
           </div>
         );
       })}
@@ -291,6 +293,17 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
+  const [showHint, setShowHint] = useState(
+    () => !localStorage.getItem(HISTORY_HINT_KEY)
+  );
+
+  const handleTapNeed = useCallback((n: Need) => {
+    if (showHint) {
+      localStorage.setItem(HISTORY_HINT_KEY, '1');
+      setShowHint(false);
+    }
+    setActiveNeed(n);
+  }, [showHint]);
 
   if (history.length === 0) {
     return (
@@ -393,15 +406,27 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           /* ── День ── */
           <>
             {/* Chart */}
-            <div style={{ width: '100%', marginTop: 12, marginBottom: 12 }}>
+            <div style={{ width: '100%', marginTop: 12, marginBottom: showHint ? 4 : 12 }}>
               <div key={selected.date}>
                 <NeedsWheel needs={needs} ratings={selectedRatings} prevRatings={prevRatings} />
               </div>
             </div>
 
+            {/* Hint text — only before first legend tap */}
+            {showHint && (
+              <div style={{
+                textAlign: 'center',
+                fontSize: 11,
+                color: 'rgba(255,255,255,0.25)',
+                marginBottom: 10,
+              }}>
+                Нажми на категорию чтобы узнать что делать
+              </div>
+            )}
+
             {/* Legend */}
             <div style={{ padding: '0 20px', marginBottom: 16 }}>
-              <LegendGrid needs={needs} ratings={selectedRatings} onTapNeed={(n) => setActiveNeed(n)} />
+              <LegendGrid needs={needs} ratings={selectedRatings} onTapNeed={handleTapNeed} />
             </div>
 
             {/* Insight card */}
@@ -429,7 +454,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                   history={history}
                   selectedIdx={selectedIdx}
                   selectedRatings={selectedRatings}
-                  onClick={() => setActiveNeed(need)}
+                  onClick={() => handleTapNeed(need)}
                 />
               ))}
             </div>
