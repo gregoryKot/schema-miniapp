@@ -58,9 +58,10 @@ interface Props {
   value: number;
   saved: boolean;
   onChange: (value: number) => void;
+  onTap?: () => void;
 }
 
-export function NeedSlider({ id, label, value, onChange }: Props) {
+export function NeedSlider({ id, label, value, onChange, onTap }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
   const delta = value - (YESTERDAY[id] ?? 0);
@@ -87,7 +88,7 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
   return (
     <div style={{ marginBottom: 20 }}>
       {/* Top row: icon block + label/hint + score/delta */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+      <div onClick={onTap} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, cursor: onTap ? 'pointer' : 'default' }}>
         {/* Colored icon box */}
         <div style={{
           width: 36, height: 36, borderRadius: 10, flexShrink: 0,

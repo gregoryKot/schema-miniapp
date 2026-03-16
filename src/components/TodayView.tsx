@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import { Need, YESTERDAY } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
+import { NeedTodaySheet } from './NeedTodaySheet';
 
 interface Props {
   needs: Need[];
@@ -57,6 +58,7 @@ function DonutRing({ percent }: { percent: number }) {
 export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [activeNeed, setActiveNeed] = useState<Need | null>(null);
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
@@ -94,6 +96,7 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
           value={ratings[n.id] ?? 0}
           saved={false}
           onChange={(v) => handleChange(n.id, v)}
+          onTap={() => setActiveNeed(n)}
         />
       ))}
 
@@ -133,6 +136,15 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
       <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', minHeight: 18 }}>
         {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
       </div>
+
+      {activeNeed && (
+        <NeedTodaySheet
+          need={activeNeed}
+          value={ratings[activeNeed.id] ?? 0}
+          onChange={(v) => handleChange(activeNeed.id, v)}
+          onClose={() => setActiveNeed(null)}
+        />
+      )}
     </div>
   );
 }

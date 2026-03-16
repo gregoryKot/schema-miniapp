@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
+import { NeedHistorySheet } from './NeedHistorySheet';
 
 interface Props {
   needs: Need[];
@@ -134,7 +135,7 @@ function NeedsWheel({
 
 // ─── Legend grid ───────────────────────────────────────────────────────────────
 
-function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Record<string, number>; onTapNeed?: (need: Need) => void }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
       {needs.map((need) => {
@@ -143,6 +144,7 @@ function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         return (
           <div
             key={need.id}
+            onClick={() => onTapNeed?.(need)}
             style={{
               background: 'rgba(255,255,255,0.04)',
               borderRadius: 12,
@@ -150,6 +152,7 @@ function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string,
               display: 'flex',
               alignItems: 'center',
               gap: 8,
+              cursor: onTapNeed ? 'pointer' : 'default',
             }}
           >
             <div style={{
@@ -174,12 +177,13 @@ function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string,
 // ─── Sparkline row ─────────────────────────────────────────────────────────────
 
 function SparklineRow({
-  need, history, selectedIdx, selectedRatings,
+  need, history, selectedIdx, selectedRatings, onClick,
 }: {
   need: Need;
   history: DayHistory[];
   selectedIdx: number;
   selectedRatings: Record<string, number>;
+  onClick?: () => void;
 }) {
   const color = COLORS[need.id] ?? '#888';
   const W = 120, H = 28;
@@ -207,7 +211,7 @@ function SparklineRow({
   const polyStr = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: onClick ? 'pointer' : 'default' }}>
       <div style={{
         width: 28, height: 28, borderRadius: 8, flexShrink: 0,
         background: color + '26',
@@ -286,6 +290,7 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
 export function HistoryView({ needs, history, currentRatings }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
+  const [activeNeed, setActiveNeed] = useState<Need | null>(null);
 
   if (history.length === 0) {
     return (
@@ -396,7 +401,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
 
             {/* Legend */}
             <div style={{ padding: '0 20px', marginBottom: 16 }}>
-              <LegendGrid needs={needs} ratings={selectedRatings} />
+              <LegendGrid needs={needs} ratings={selectedRatings} onTapNeed={(n) => setActiveNeed(n)} />
             </div>
 
             {/* Insight card */}
@@ -424,6 +429,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                   history={history}
                   selectedIdx={selectedIdx}
                   selectedRatings={selectedRatings}
+                  onClick={() => setActiveNeed(need)}
                 />
               ))}
             </div>
@@ -434,6 +440,14 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
         )}
       </div>
 
+      {activeNeed && (
+        <NeedHistorySheet
+          need={activeNeed}
+          value={selectedRatings[activeNeed.id] ?? 0}
+          history={history}
+          onClose={() => setActiveNeed(null)}
+        />
+      )}
     </div>
   );
 }
