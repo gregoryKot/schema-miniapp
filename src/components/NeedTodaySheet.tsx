@@ -28,6 +28,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
   const color = COLORS[need.id] ?? '#888';
 
   const rangeIdx = value <= 3 ? 0 : value <= 6 ? 1 : 2;
+  const RANGE_VALUES = [1, 4, 7];
 
   // Inline slider
   const trackRef = useRef<HTMLDivElement>(null);
@@ -96,10 +97,12 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
             return (
               <div
                 key={range.label}
+                onClick={() => onChange(RANGE_VALUES[i])}
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 10,
                   background: active ? color + '33' : 'rgba(255,255,255,0.04)',
                   borderRadius: 12, padding: '10px 12px',
+                  cursor: 'pointer',
                 }}
               >
                 <div style={{
