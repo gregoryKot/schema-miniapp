@@ -3,11 +3,12 @@ import { useEffect, useRef, useState } from 'react';
 interface Props {
   onClose: () => void;
   children: React.ReactNode;
+  zIndex?: number;
 }
 
 const HINT_KEY = 'sheet_close_hint_shown';
 
-export function BottomSheet({ onClose, children }: Props) {
+export function BottomSheet({ onClose, children, zIndex = 200 }: Props) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const [showHint, setShowHint] = useState(() => !localStorage.getItem(HINT_KEY));
@@ -41,7 +42,7 @@ export function BottomSheet({ onClose, children }: Props) {
       {/* Backdrop — no onClick to avoid triggering Telegram close gesture */}
       <div
         style={{
-          position: 'fixed', inset: 0, zIndex: 200,
+          position: 'fixed', inset: 0, zIndex,
           background: 'rgba(0,0,0,0.55)',
           animation: 'fade-in 200ms ease',
         }}
@@ -49,7 +50,7 @@ export function BottomSheet({ onClose, children }: Props) {
       <div
         ref={sheetRef}
         style={{
-          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 201,
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: zIndex + 1,
           background: '#161821',
           borderRadius: '24px 24px 0 0',
           maxHeight: '88vh',
