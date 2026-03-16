@@ -9,7 +9,6 @@ interface Props {
 
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
 const TODAY_STR = new Date().toISOString().split('T')[0];
-const ORIGIN = '180px 180px';
 const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
 
 function getDayAbbr(dateStr: string): string {
@@ -32,17 +31,31 @@ function petalPath(cx: number, cy: number, r: number, centerAngle: number, halfS
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
 }
 
-// ─── Wheel ────────────────────────────────────────────────────────────────────
+// ─── Wheel (no labels) ─────────────────────────────────────────────────────────
 
-function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+function NeedsWheel({
+  needs, ratings, prevRatings = {},
+}: {
+  needs: Need[];
+  ratings: Record<string, number>;
+  prevRatings?: Record<string, number>;
+}) {
   const SIZE = 360;
   const cx = SIZE / 2;
   const cy = SIZE / 2;
-  const R = 80;  // reduced so sectors fill more of the ring
-  const GAP = 20; // min gap from ring edge to nearest text
+  const R = 80;
   const SPREAD = Math.PI / 5;
   const n = needs.length;
-  const LH = 16; // name 14px + 2px gap to score baseline
+  const CENTER_R = 36;
+
+  const avg = needs.length > 0
+    ? needs.reduce((s, nd) => s + (ratings[nd.id] ?? 0), 0) / needs.length
+    : 0;
+  const hasPrev = Object.keys(prevRatings).length > 0;
+  const prevAvg = hasPrev
+    ? needs.reduce((s, nd) => s + (prevRatings[nd.id] ?? 0), 0) / needs.length
+    : null;
+  const diff = prevAvg !== null ? avg - prevAvg : null;
 
   return (
     <svg
@@ -52,56 +65,38 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
       style={{ display: 'block', overflow: 'visible' }}
     >
       <defs>
-        {needs.map((need) => {
-          const color = COLORS[need.id] ?? '#888';
-          return (
-            <radialGradient
-              key={need.id}
-              id={`rg-${need.id}`}
-              cx={cx} cy={cy} r={R} fx={cx} fy={cy}
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%"   stopColor={color} stopOpacity={0.62} />
-              <stop offset="100%" stopColor={color} stopOpacity={0.38} />
-            </radialGradient>
-          );
-        })}
-        <filter id="sector-glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="6" result="blur" />
-          <feComposite in="blur" in2="SourceGraphic" operator="over" />
-        </filter>
+        <linearGradient id="center-score-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#ff6b9d" />
+          <stop offset="100%" stopColor="#a78bfa" />
+        </linearGradient>
       </defs>
 
+      {/* Scale rings */}
       {[2, 5, 8, 10].map((ring) => (
         <circle
           key={ring}
           cx={cx} cy={cy}
           r={R * ring / 10}
           fill="none"
-          stroke={
-            ring === 10 ? 'rgba(255,255,255,0.18)' :
-            ring === 5  ? 'rgba(255,255,255,0.10)' :
-                          'rgba(255,255,255,0.05)'
-          }
-          strokeWidth={ring === 10 ? 2 : 1}
+          stroke="rgba(255,255,255,0.04)"
+          strokeWidth={ring === 10 ? 1.5 : 1}
         />
       ))}
 
+      {/* Ghost sectors — full radius, 15% opacity */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-        const value = ratings[need.id] ?? 0;
-        const r = Math.max((value / 10) * R, value > 0 ? R * 0.15 : 0);
         const color = COLORS[need.id] ?? '#888';
-        const d = petalPath(cx, cy, r, angle, SPREAD);
+        const d = petalPath(cx, cy, R, angle, SPREAD);
         if (!d) return null;
         return (
-          <path key={need.id} d={d} fill={color} fillOpacity={0.22}
-            filter="url(#sector-glow)"
-            style={{ transformOrigin: ORIGIN, animation: `sector-in 400ms ${SPRING} ${i * 80}ms both` }}
+          <path key={`ghost-${need.id}`} d={d}
+            fill={color} fillOpacity={0.12}
           />
         );
       })}
 
+      {/* Filled sectors — proportional radius, 90% opacity, animated */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
@@ -111,58 +106,73 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         if (!d) return null;
         return (
           <path key={need.id} d={d}
-            fill={`url(#rg-${need.id})`}
-            stroke={color} strokeWidth={2} strokeOpacity={0.9} strokeLinejoin="round"
-            style={{ transformOrigin: ORIGIN, animation: `sector-in 400ms ${SPRING} ${i * 80}ms both` }}
+            fill={color} fillOpacity={0.9}
+            stroke={color} strokeWidth={1} strokeOpacity={0.4} strokeLinejoin="round"
+            style={{
+              transformOrigin: `${cx}px ${cy}px`,
+              animation: `sector-in 400ms ${SPRING} ${i * 80}ms both`,
+            }}
           />
         );
       })}
 
+      {/* Center cutout */}
+      <circle cx={cx} cy={cy} r={CENTER_R} fill="#0f1117" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+
+      {/* Center text */}
+      <text x={cx} y={cy - 12} textAnchor="middle" fontSize={10} fill="rgba(255,255,255,0.3)">
+        индекс
+      </text>
+      <text x={cx} y={cy + 9} textAnchor="middle" fontSize={22} fontWeight={700} fill="url(#center-score-grad)">
+        {avg.toFixed(1)}
+      </text>
+      {diff !== null && (
+        <text x={cx} y={cy + 22} textAnchor="middle" fontSize={10} fill="rgba(255,255,255,0.25)">
+          {diff >= 0 ? '↑' : '↓'} вчера {Math.abs(diff).toFixed(1)}
+        </text>
+      )}
+    </svg>
+  );
+}
+
+// ─── Legend grid ───────────────────────────────────────────────────────────────
+
+function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
       {needs.map((need, i) => {
-        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-        const sin = Math.sin(angle);
-        const cos = Math.cos(angle);
         const color = COLORS[need.id] ?? '#888';
         const value = ratings[need.id] ?? 0;
-
-        const textAnchor = 'middle';
-        // Side labels pushed extra 16px horizontally beyond GAP
-        const sideExtra = Math.abs(cos) > 0.3 ? 16 : 0;
-        const lx = cx + (R + GAP + sideExtra) * cos;
-        const ringEdgeY = cy + R * sin;
-
-        let nameY: number;
-        if (sin < -0.45) {
-          nameY = ringEdgeY - GAP - LH;
-        } else if (sin > 0.45) {
-          // Bottom labels: extra 12px push
-          nameY = ringEdgeY + GAP + 12;
-        } else {
-          nameY = ringEdgeY - LH / 2;
-        }
-        const scoreY = nameY + LH;
-
+        const isLast = i === needs.length - 1 && needs.length % 2 === 1;
         return (
-          <g key={need.id}>
-            <text
-              x={lx.toFixed(2)} y={nameY.toFixed(2)}
-              textAnchor={textAnchor} fontSize={14} fontWeight={500}
-              style={{ fill: 'rgba(255,255,255,0.65)', letterSpacing: '-0.2px' }}
-            >
-              {need.chartLabel}
-            </text>
-            <text
-              x={lx.toFixed(2)} y={scoreY.toFixed(2)}
-              textAnchor={textAnchor} fontSize={20} fontWeight={700}
-              fill={color}
-              style={{ letterSpacing: '-0.2px' }}
-            >
-              {value}
-            </text>
-          </g>
+          <div
+            key={need.id}
+            style={{
+              gridColumn: isLast ? 'span 2' : undefined,
+              background: 'rgba(255,255,255,0.04)',
+              borderRadius: 12,
+              padding: '10px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            <div style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: color, flexShrink: 0,
+            }} />
+            <div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 400, lineHeight: 1.2 }}>
+                {need.chartLabel}
+              </div>
+              <div style={{ fontSize: 16, fontWeight: 700, color, lineHeight: 1.2 }}>
+                {value}
+              </div>
+            </div>
+          </div>
         );
       })}
-    </svg>
+    </div>
   );
 }
 
@@ -203,7 +213,6 @@ function SparklineRow({
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      {/* Icon */}
       <div style={{
         width: 28, height: 28, borderRadius: 8, flexShrink: 0,
         background: color + '26',
@@ -212,16 +221,12 @@ function SparklineRow({
       }}>
         {need.emoji}
       </div>
-
-      {/* Name */}
       <div style={{
         fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.7)',
         width: 100, flexShrink: 0, lineHeight: 1.2,
       }}>
         {need.chartLabel}
       </div>
-
-      {/* Sparkline */}
       <svg
         style={{ flex: 1, height: 28, display: 'block', overflow: 'visible' }}
         viewBox="0 0 120 28"
@@ -235,18 +240,11 @@ function SparklineRow({
         </defs>
         <path d={areaPath} fill={`url(#area-${need.id})`} />
         <polyline points={polyStr} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <circle
-          cx={dot.x} cy={dot.y} r={3} fill={color}
-          style={{ transition: 'cx 150ms ease, cy 150ms ease' }}
-        />
+        <circle cx={dot.x} cy={dot.y} r={3} fill={color}
+          style={{ transition: 'cx 150ms ease, cy 150ms ease' }} />
       </svg>
-
-      {/* Score + trend */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-        <span style={{
-          fontSize: 15, fontWeight: 700, color,
-          width: 20, textAlign: 'right', display: 'block',
-        }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color, width: 20, textAlign: 'right', display: 'block' }}>
           {score}
         </span>
         <span style={{ fontSize: 11, color: trendColor }}>{trend}</span>
@@ -268,19 +266,22 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
     <div style={{
       background: 'rgba(255,255,255,0.05)',
       borderRadius: 16,
-      padding: '16px 18px',
+      padding: '14px 16px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
     }}>
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
-        Стоит уделить внимание
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>
+      <div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 3 }}>
+          Стоит уделить внимание
+        </div>
+        <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>
           {lowest.chartLabel}
-        </span>
-        <span style={{ fontSize: 16, fontWeight: 700, color }}>
-          {ratings[lowest.id] ?? 0}/10
-        </span>
+        </div>
       </div>
+      <span style={{ fontSize: 20, fontWeight: 700, color }}>
+        {ratings[lowest.id] ?? 0}
+      </span>
     </div>
   );
 }
@@ -304,6 +305,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
 
   const selected = history[selectedIdx];
   const selectedRatings = selected.date === TODAY_STR ? currentRatings : selected.ratings;
+  const prevRatings = history[selectedIdx + 1]?.ratings ?? {};
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0 80px' }}>
@@ -389,11 +391,24 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       <div key={subView} style={{ animation: 'fade-in 200ms ease' }}>
         {subView === 'day' ? (
           /* ── День ── */
-          <div style={{ width: '85vw', margin: '0 auto' }}>
-            <div key={selected.date} style={{ width: '100%', aspectRatio: '360 / 300' }}>
-              <NeedsWheel needs={needs} ratings={selectedRatings} />
+          <>
+            {/* Chart */}
+            <div style={{ width: '85vw', margin: '0 auto', marginBottom: 20 }}>
+              <div key={selected.date} style={{ width: '100%', aspectRatio: '360 / 300' }}>
+                <NeedsWheel needs={needs} ratings={selectedRatings} prevRatings={prevRatings} />
+              </div>
             </div>
-          </div>
+
+            {/* Legend */}
+            <div style={{ padding: '0 20px', marginBottom: 16 }}>
+              <LegendGrid needs={needs} ratings={selectedRatings} />
+            </div>
+
+            {/* Insight card */}
+            <div style={{ padding: '0 20px' }}>
+              <InsightCard needs={needs} ratings={selectedRatings} />
+            </div>
+          </>
         ) : (
           /* ── Неделя ── */
           <div style={{ padding: '0 24px' }}>
@@ -417,13 +432,11 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                 />
               ))}
             </div>
+            <div style={{ marginTop: 28 }}>
+              <InsightCard needs={needs} ratings={selectedRatings} />
+            </div>
           </div>
         )}
-      </div>
-
-      {/* Insight card */}
-      <div style={{ padding: '8px 24px 0' }}>
-        <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
 
     </div>
