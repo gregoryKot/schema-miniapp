@@ -3,6 +3,14 @@ import { Need, DayHistory } from './types';
 import { api } from './api';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
+import { BottomSheet } from './components/BottomSheet';
+
+const ABOUT_TEXT = [
+  'Бывает, что день прошёл нормально — а внутри что-то не так. Или наоборот, всё объективно сложно, но ощущение живое и устойчивое.',
+  'Дело почти всегда в потребностях. Когда они удовлетворены — есть устойчивость. Когда нет — появляется тревога, раздражение, пустота.',
+  'Дневник помогает это увидеть. Раз в день, пять шкал — и через несколько дней паттерн становится различимым: что тебя питает, что истощает.',
+  'Это не про «быть лучше». Это про понять себя.',
+];
 
 type Tab = 'today' | 'history';
 
@@ -137,6 +145,7 @@ export default function App() {
     () => !!localStorage.getItem(DISCLAIMER_KEY)
   );
   const [tab, setTab] = useState<Tab>('today');
+  const [showAbout, setShowAbout] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -226,11 +235,16 @@ export default function App() {
         </div>
 
         {/* Title + subtitle */}
-        <h1 style={{
-          fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
-          color: '#fff', marginBottom: 3, lineHeight: 1.1,
-        }}>
-          Дневник
+        <h1
+          onClick={() => setShowAbout(true)}
+          style={{
+            fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
+            color: '#fff', marginBottom: 3, lineHeight: 1.1,
+            cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+          }}
+        >
+          Дневник потребностей
+          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)', fontWeight: 400 }}>ⓘ</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
           Как ты сегодня?
@@ -280,6 +294,21 @@ export default function App() {
       )}
       {tab === 'history' && (
         <HistoryView needs={needs} history={history} currentRatings={ratings} />
+      )}
+
+      {showAbout && (
+        <BottomSheet onClose={() => setShowAbout(false)}>
+          <div style={{ paddingTop: 8 }}>
+            <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+              Зачем это всё
+            </div>
+            {ABOUT_TEXT.map((p, i) => (
+              <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 16 }}>
+                {p}
+              </p>
+            ))}
+          </div>
+        </BottomSheet>
       )}
     </div>
   );
