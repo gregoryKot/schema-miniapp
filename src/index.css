@@ -51,3 +51,8 @@ button {
   from { transform: scale(0); }
   to   { transform: scale(1); }
 }
+
+@keyframes shimmer {
+  from { background-position: 200% center; }
+  to   { background-position: 0% center; }
+}

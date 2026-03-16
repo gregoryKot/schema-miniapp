@@ -154,7 +154,8 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
               y={nameY.toFixed(2)}
               textAnchor={textAnchor}
               fontSize={13}
-              fill="rgba(255,255,255,0.6)"
+              fontWeight={500}
+              style={{ fill: 'rgba(255,255,255,0.7)', letterSpacing: '-0.2px' }}
             >
               {need.chartLabel}
             </text>
@@ -162,9 +163,17 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
               x={lx.toFixed(2)}
               y={scoreY.toFixed(2)}
               textAnchor={textAnchor}
-              fontSize={15}
-              fontWeight={600}
-              fill={color}
+              fontSize={16}
+              fontWeight={700}
+              style={{
+                fill: 'none',
+                background: `linear-gradient(90deg, ${color} 0%, #fff 50%, ${color} 100%)`,
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                animation: 'shimmer 2s linear infinite',
+                letterSpacing: '-0.2px',
+              } as React.CSSProperties}
             >
               {value}
             </text>
@@ -257,23 +266,6 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
         >
           <NeedsWheel needs={needs} ratings={selectedRatings} />
         </div>
-      </div>
-
-      {/* Mini stats row */}
-      <div style={{
-        width: '100%', padding: '12px 20px 0',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        {needs.map((need) => {
-          const color = COLORS[need.id] ?? '#888';
-          const value = selectedRatings[need.id] ?? 0;
-          return (
-            <div key={need.id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
-              <span style={{ fontSize: 13, fontWeight: 600, color }}>{value}</span>
-            </div>
-          );
-        })}
       </div>
 
       {/* Insight card */}
