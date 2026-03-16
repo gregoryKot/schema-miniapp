@@ -42,7 +42,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
   const GAP = 20; // min gap from ring edge to nearest text
   const SPREAD = Math.PI / 5;
   const n = needs.length;
-  const LH = 17; // name 14px + 3px gap to score baseline
+  const LH = 16; // name 14px + 2px gap to score baseline
 
   return (
     <svg
@@ -72,7 +72,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         </filter>
       </defs>
 
-      {Array.from({ length: 10 }, (_, i) => i + 1).map((ring) => (
+      {[2, 5, 8, 10].map((ring) => (
         <circle
           key={ring}
           cx={cx} cy={cy}
@@ -80,7 +80,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
           fill="none"
           stroke={
             ring === 10 ? 'rgba(255,255,255,0.18)' :
-            ring === 5  ? 'rgba(255,255,255,0.12)' :
+            ring === 5  ? 'rgba(255,255,255,0.10)' :
                           'rgba(255,255,255,0.05)'
           }
           strokeWidth={ring === 10 ? 2 : 1}
@@ -90,7 +90,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
-        const r = Math.max((value / 10) * R, value > 0 ? 2 : 0);
+        const r = Math.max((value / 10) * R, value > 0 ? R * 0.15 : 0);
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;
@@ -105,7 +105,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
-        const r = Math.max((value / 10) * R, value > 0 ? 2 : 0);
+        const r = Math.max((value / 10) * R, value > 0 ? R * 0.15 : 0);
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;
@@ -389,7 +389,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       <div key={subView} style={{ animation: 'fade-in 200ms ease' }}>
         {subView === 'day' ? (
           /* ── День ── */
-          <div style={{ padding: '0 56px 0' }}>
+          <div style={{ width: '85vw', margin: '0 auto' }}>
             <div key={selected.date} style={{ width: '100%', aspectRatio: '360 / 300' }}>
               <NeedsWheel needs={needs} ratings={selectedRatings} />
             </div>
