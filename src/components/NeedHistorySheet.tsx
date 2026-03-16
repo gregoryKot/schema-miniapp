@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
@@ -35,9 +36,9 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
   const trendLabel = trendDiff > 0.5 ? 'Растёт' : trendDiff < -0.5 ? 'Падает' : 'Стабильно';
   const trendSign = trendDiff >= 0 ? '+' : '';
 
-  // Action
-  const actionKey = value <= 4 ? 'low' : value <= 7 ? 'medium' : 'high';
-  const action = data.actions[actionKey];
+  // Random tip — stable for this sheet instance
+  const [tipIdx] = useState(() => Math.floor(Math.random() * data.tips.length));
+  const tip = data.tips[tipIdx];
 
   // Sparkline
   const reversed = [...history].reverse();
@@ -113,20 +114,13 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
         </div>
       </div>
 
-      {/* Section 2: Action */}
+      {/* Section 2: Random tip */}
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>Попробуй сегодня</SectionLabel>
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
-          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 10 }}>
-            {action.text}
+          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+            {tip}
           </div>
-          <span style={{
-            fontSize: 11, color: 'rgba(255,255,255,0.35)',
-            background: 'rgba(255,255,255,0.07)',
-            borderRadius: 20, padding: '3px 10px',
-          }}>
-            {action.tag}
-          </span>
         </div>
       </div>
 
