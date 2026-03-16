@@ -69,9 +69,6 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
       <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Как это работает
       </div>
-      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 14 }}>
-        Раз в день, пять шкал — и через несколько дней паттерн становится различимым: что тебя питает, что истощает.
-      </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
@@ -89,6 +86,12 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
           <span style={{ fontSize: 16, flexShrink: 0 }}>📊</span>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
             Всё сохраняется автоматически, паттерн виден во вкладке <b style={{ color: '#fff' }}>История</b>
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>ⓘ</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            Нажми на <b style={{ color: '#fff' }}>«Дневник потребностей»</b> в заголовке — там про то, зачем это вообще
           </span>
         </div>
       </div>
