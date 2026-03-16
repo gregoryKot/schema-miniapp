@@ -150,7 +150,7 @@ export default function App() {
         />
       )}
       {tab === 'history' && (
-        <HistoryView needs={needs} history={history} />
+        <HistoryView needs={needs} history={history} currentRatings={ratings} />
       )}
     </div>
   );

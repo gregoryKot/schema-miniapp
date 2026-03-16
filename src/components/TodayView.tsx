@@ -56,7 +56,7 @@ function DonutRing({ percent }: { percent: number }) {
 
 export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const [justSaved, setJustSaved] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
@@ -64,13 +64,9 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
     timers.current[needId] = setTimeout(async () => {
       await api.saveRating(needId, value);
       onSaved(needId);
-    }, 600);
+      setLastSavedAt(new Date());
+    }, 500);
   }, [onChange, onSaved]);
-
-  const handleSaveButton = () => {
-    setJustSaved(true);
-    setTimeout(() => setJustSaved(false), 2000);
-  };
 
   // Summary calculations
   const avg = needs.length > 0
@@ -133,24 +129,10 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
         <DonutRing percent={(avg / 10) * 100} />
       </div>
 
-      {/* Save button */}
-      <button
-        onClick={handleSaveButton}
-        style={{
-          width: '100%',
-          padding: '15px 0',
-          borderRadius: 14,
-          border: 'none',
-          background: 'rgba(255,255,255,0.1)',
-          color: justSaved ? '#06d6a0' : '#fff',
-          fontSize: 15,
-          fontWeight: 500,
-          cursor: 'pointer',
-          transition: 'color 0.2s ease, background 0.2s ease',
-        }}
-      >
-        {justSaved ? 'Сохранено ✓' : 'Сохранить день'}
-      </button>
+      {/* Auto-save status */}
+      <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', minHeight: 18 }}>
+        {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
+      </div>
     </div>
   );
 }

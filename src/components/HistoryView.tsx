@@ -4,6 +4,7 @@ import { Need, DayHistory, COLORS } from '../types';
 interface Props {
   needs: Need[];
   history: DayHistory[];
+  currentRatings: Record<string, number>;
 }
 
 const SHORT_MONTHS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
@@ -24,6 +25,7 @@ function petalPath(cx: number, cy: number, r: number, centerAngle: number, halfS
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
 }
 
+const TODAY_STR = new Date().toISOString().split('T')[0];
 const ORIGIN = '180px 180px';
 const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
 
@@ -32,10 +34,10 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
   const cx = SIZE / 2;   // 180
   const cy = SIZE / 2;   // 180
   const R = 118;
-  const LABEL_R = R + 22; // 140 — labels sit 22px outside the ring
+  const GAP = 12; // gap from ring edge to nearest text edge
   const SPREAD = Math.PI / 5;
   const n = needs.length;
-  const LH = 17; // vertical gap between name and score lines
+  const LH = 15; // name font(13) + 2px margin-top
 
   return (
     <svg
@@ -114,30 +116,32 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         );
       })}
 
-      {/* Labels — radially positioned, hugging the ring */}
+      {/* Labels — radially positioned, 12px outside ring edge */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const sin = Math.sin(angle);
+        const cos = Math.cos(angle);
         const color = COLORS[need.id] ?? '#888';
         const value = ratings[need.id] ?? 0;
 
-        // X always on the radial axis at LABEL_R
-        const lx = cx + LABEL_R * Math.cos(angle);
+        // textAnchor based on which side of the chart
+        const textAnchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
 
-        // Y: anchor the label block just outside the ring,
-        // oriented away from center so it doesn't overlap the chart
-        const ringEdgeY = cy + R * sin; // y of ring edge at this angle
+        // X: radial anchor at R+GAP from center
+        const lx = cx + (R + GAP) * cos;
+
+        // Y: anchor block just outside ring edge (GAP px clear)
+        const ringEdgeY = cy + R * sin;
 
         let nameY: number;
         if (sin < -0.45) {
-          // Top sectors: block sits above the ring
-          // score (bottom line) clears ring by ~6px
-          nameY = ringEdgeY - 6 - LH;
+          // Top: score (bottom line) is closest to ring
+          nameY = ringEdgeY - GAP - LH;
         } else if (sin > 0.45) {
-          // Bottom sectors: block hangs below the ring
-          nameY = ringEdgeY + 8;
+          // Bottom: name (top line) is closest to ring
+          nameY = ringEdgeY + GAP;
         } else {
-          // Side sectors (autonomy, limits): center block on ring-edge y
+          // Side: vertically center the 2-line block on ring-edge y
           nameY = ringEdgeY - LH / 2;
         }
 
@@ -148,7 +152,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
             <text
               x={lx.toFixed(2)}
               y={nameY.toFixed(2)}
-              textAnchor="middle"
+              textAnchor={textAnchor}
               fontSize={13}
               fill="rgba(255,255,255,0.6)"
             >
@@ -157,7 +161,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
             <text
               x={lx.toFixed(2)}
               y={scoreY.toFixed(2)}
-              textAnchor="middle"
+              textAnchor={textAnchor}
               fontSize={15}
               fontWeight={600}
               fill={color}
@@ -200,7 +204,7 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
   );
 }
 
-export function HistoryView({ needs, history }: Props) {
+export function HistoryView({ needs, history, currentRatings }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
 
   if (history.length === 0) {
@@ -215,6 +219,8 @@ export function HistoryView({ needs, history }: Props) {
   }
 
   const selected = history[selectedIdx];
+  // Use live ratings for today's entry so chart reacts to slider changes
+  const selectedRatings = selected.date === TODAY_STR ? currentRatings : selected.ratings;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '8px 0 80px' }}>
@@ -244,17 +250,19 @@ export function HistoryView({ needs, history }: Props) {
         })}
       </div>
 
-      {/* Wheel — re-keyed so animation replays on date switch */}
-      <div
-        key={selected.date}
-        style={{ width: 'min(70vh, 88vw)', height: 'min(70vh, 88vw)', flexShrink: 0 }}
-      >
-        <NeedsWheel needs={needs} ratings={selected.ratings} />
+      {/* Wheel — 48px horizontal padding keeps side labels in viewport */}
+      <div style={{ width: '100%', padding: '0 48px', boxSizing: 'border-box', flexShrink: 0 }}>
+        <div
+          key={selected.date}
+          style={{ width: '100%', aspectRatio: '1 / 1' }}
+        >
+          <NeedsWheel needs={needs} ratings={selectedRatings} />
+        </div>
       </div>
 
       {/* Insight card */}
       <div style={{ width: '100%', padding: '0 20px' }}>
-        <InsightCard needs={needs} ratings={selected.ratings} />
+        <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
     </div>
   );
