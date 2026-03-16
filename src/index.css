@@ -46,3 +46,8 @@ input[type=range]::-moz-range-thumb {
 button {
   font-family: inherit;
 }
+
+@keyframes sector-in {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}

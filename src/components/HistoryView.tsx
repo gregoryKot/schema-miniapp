@@ -14,7 +14,7 @@ function formatDate(dateStr: string): string {
 }
 
 function petalPath(cx: number, cy: number, r: number, centerAngle: number, halfSpread: number): string {
-  if (r < 1) return `M ${cx} ${cy} Z`;
+  if (r < 1) return '';
   const a1 = centerAngle - halfSpread;
   const a2 = centerAngle + halfSpread;
   const x1 = cx + r * Math.cos(a1);
@@ -24,13 +24,15 @@ function petalPath(cx: number, cy: number, r: number, centerAngle: number, halfS
   return `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
 }
 
+// Memoised origin string so every sector pivots from wheel center
+const ORIGIN = '180px 180px';
+const SPRING = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
+
 function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
   const SIZE = 360;
   const cx = SIZE / 2;
   const cy = SIZE / 2;
   const R = 118;
-  const LABEL_R = R * 1.30;
-  const DOT_R = R * 1.14;   // colored accent dot between wheel and label
   const SPREAD = Math.PI / 5;
   const n = needs.length;
 
@@ -42,7 +44,6 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
       style={{ display: 'block', overflow: 'visible' }}
     >
       <defs>
-        {/* Radial gradient fills */}
         {needs.map((need) => {
           const color = COLORS[need.id] ?? '#888';
           return (
@@ -58,23 +59,16 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
           );
         })}
 
-        {/* Sector glow filter */}
         <filter id="sector-glow" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="6" result="blur" />
           <feComposite in="blur" in2="SourceGraphic" operator="over" />
         </filter>
-
-        {/* Dot glow filter */}
-        <filter id="dot-glow" x="-150%" y="-150%" width="400%" height="400%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="blur" in2="SourceGraphic" operator="over" />
-        </filter>
       </defs>
 
-      {/* Scale rings — every 5th brighter */}
+      {/* Scale rings — ring 5 and outer ring are brighter */}
       {Array.from({ length: 10 }, (_, i) => i + 1).map((ring) => {
-        const isMajor = ring % 5 === 0;
         const isOuter = ring === 10;
+        const isMajor = ring === 5;
         return (
           <circle
             key={ring}
@@ -82,24 +76,23 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
             r={R * ring / 10}
             fill="none"
             stroke={
-              isOuter
-                ? 'rgba(255,255,255,0.18)'
-                : isMajor
-                  ? 'rgba(255,255,255,0.12)'
-                  : 'rgba(255,255,255,0.05)'
+              isOuter  ? 'rgba(255,255,255,0.18)' :
+              isMajor  ? 'rgba(255,255,255,0.12)' :
+                         'rgba(255,255,255,0.05)'
             }
             strokeWidth={isOuter ? 2 : 1}
           />
         );
       })}
 
-      {/* Sector glow layer (drawn behind main petals) */}
+      {/* Glow layer — animates with same stagger */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
         const r = Math.max((value / 10) * R, value > 0 ? 2 : 0);
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
+        if (!d) return null;
         return (
           <path
             key={need.id}
@@ -107,17 +100,22 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
             fill={color}
             fillOpacity={0.22}
             filter="url(#sector-glow)"
+            style={{
+              transformOrigin: ORIGIN,
+              animation: `sector-in 400ms ${SPRING} ${i * 80}ms both`,
+            }}
           />
         );
       })}
 
-      {/* Petals — gradient fill + visible stroke */}
+      {/* Petals */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
         const r = Math.max((value / 10) * R, value > 0 ? 2 : 0);
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
+        if (!d) return null;
         return (
           <path
             key={need.id}
@@ -127,69 +125,75 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
             strokeWidth={2}
             strokeOpacity={0.9}
             strokeLinejoin="round"
+            style={{
+              transformOrigin: ORIGIN,
+              animation: `sector-in 400ms ${SPRING} ${i * 80}ms both`,
+            }}
           />
         );
       })}
-
-      {/* Endpoint dots at sector arc tip */}
-      {needs.map((need, i) => {
-        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-        const value = ratings[need.id] ?? 0;
-        if (value === 0) return null;
-        const r = (value / 10) * R;
-        const dotX = (cx + r * Math.cos(angle)).toFixed(2);
-        const dotY = (cy + r * Math.sin(angle)).toFixed(2);
-        const color = COLORS[need.id] ?? '#888';
-        return (
-          <g key={need.id}>
-            {/* Glow halo */}
-            <circle cx={dotX} cy={dotY} r={8} fill={color} fillOpacity={0.2} filter="url(#dot-glow)" />
-            {/* Main dot */}
-            <circle cx={dotX} cy={dotY} r={4} fill={color} />
-          </g>
-        );
-      })}
-
-      {/* Labels — white text + colored accent dot */}
-      {needs.map((need, i) => {
-        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
-        const lx = cx + LABEL_R * Math.cos(angle);
-        const ly = cy + LABEL_R * Math.sin(angle);
-        const dx = cx + DOT_R * Math.cos(angle);
-        const dy_dot = cy + DOT_R * Math.sin(angle);
-        const color = COLORS[need.id] ?? '#888';
-        const sin = Math.sin(angle);
-
-        const words = need.chartLabel.split(' ');
-        const lineH = 13;
-        const blockH = (words.length - 1) * lineH;
-        const baseShift = sin < -0.4 ? -blockH : sin > 0.4 ? 0 : -blockH / 2;
-
-        return (
-          <g key={need.id}>
-            {/* Accent dot between wheel edge and label */}
-            <circle cx={dx.toFixed(2)} cy={dy_dot.toFixed(2)} r={3} fill={color} opacity={0.9} />
-
-            {/* White label text */}
-            <text
-              x={lx.toFixed(2)}
-              y={ly.toFixed(2)}
-              textAnchor="middle"
-              fontSize="11"
-              fontWeight="500"
-              fill="#ffffff"
-              opacity={0.9}
-            >
-              {words.map((word, j) => (
-                <tspan key={j} x={lx.toFixed(2)} dy={j === 0 ? baseShift : lineH}>
-                  {word}
-                </tspan>
-              ))}
-            </text>
-          </g>
-        );
-      })}
     </svg>
+  );
+}
+
+function Legend({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 12,
+      marginTop: 28,
+      padding: '0 4px',
+    }}>
+      {needs.map((need) => {
+        const color = COLORS[need.id] ?? '#888';
+        const value = ratings[need.id] ?? 0;
+        return (
+          <div key={need.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: color, flexShrink: 0,
+            }} />
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', flex: 1, minWidth: 0 }}>
+              {need.chartLabel}
+            </span>
+            <span style={{ fontSize: 13, fontWeight: 600, color, flexShrink: 0 }}>
+              {value}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+  if (needs.length === 0) return null;
+  const lowest = needs.reduce((min, n) =>
+    (ratings[n.id] ?? 0) < (ratings[min.id] ?? 0) ? n : min
+  );
+  const color = COLORS[lowest.id] ?? '#888';
+  const value = ratings[lowest.id] ?? 0;
+
+  return (
+    <div style={{
+      background: 'rgba(255,255,255,0.05)',
+      borderRadius: 14,
+      padding: '14px 16px',
+      marginTop: 16,
+    }}>
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', marginBottom: 6 }}>
+        Стоит уделить внимание
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontSize: 15, fontWeight: 500, color: '#fff' }}>
+          {lowest.chartLabel}
+        </span>
+        <span style={{ fontSize: 15, fontWeight: 600, color }}>
+          {value}/10
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -217,7 +221,7 @@ export function HistoryView({ needs, history }: Props) {
       {/* Date strip */}
       <div style={{
         display: 'flex',
-        gap: 8,
+        gap: 6,
         overflowX: 'auto',
         width: '100%',
         padding: '0 16px 16px',
@@ -231,14 +235,14 @@ export function HistoryView({ needs, history }: Props) {
               onClick={() => setSelectedIdx(i)}
               style={{
                 flexShrink: 0,
-                padding: '7px 14px',
+                padding: '6px 14px',
                 borderRadius: 20,
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: 13,
                 fontWeight: active ? 600 : 400,
-                color: active ? '#fff' : 'rgba(255,255,255,0.38)',
-                background: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+                color: active ? '#000' : 'rgba(255,255,255,0.38)',
+                background: active ? '#ffffff' : 'transparent',
                 transition: 'all 0.15s ease',
               }}
             >
@@ -248,13 +252,18 @@ export function HistoryView({ needs, history }: Props) {
         })}
       </div>
 
-      {/* Wheel — 70% of viewport height, square, centered */}
-      <div style={{
-        width: 'min(70vh, 88vw)',
-        height: 'min(70vh, 88vw)',
-        flexShrink: 0,
-      }}>
+      {/* Wheel — re-keyed on date so animation replays */}
+      <div
+        key={selected.date}
+        style={{ width: 'min(70vh, 88vw)', height: 'min(70vh, 88vw)', flexShrink: 0 }}
+      >
         <NeedsWheel needs={needs} ratings={selected.ratings} />
+      </div>
+
+      {/* Legend + insight card */}
+      <div style={{ width: '100%', padding: '0 20px' }}>
+        <Legend needs={needs} ratings={selected.ratings} />
+        <InsightCard needs={needs} ratings={selected.ratings} />
       </div>
     </div>
   );
