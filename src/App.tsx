@@ -6,15 +6,6 @@ import { HistoryView } from './components/HistoryView';
 
 type Tab = 'today' | 'history';
 
-const TAB_STYLE = (active: boolean): React.CSSProperties => ({
-  flex: 1, padding: '12px 0', border: 'none', cursor: 'pointer',
-  fontSize: 15, fontWeight: active ? 700 : 400,
-  background: 'none',
-  color: active ? 'var(--tg-theme-button-color, #2481cc)' : 'var(--tg-theme-hint-color, #999)',
-  borderBottom: active ? '2px solid var(--tg-theme-button-color, #2481cc)' : '2px solid transparent',
-  transition: 'all 0.15s',
-});
-
 export default function App() {
   const [tab, setTab] = useState<Tab>('today');
   const [needs, setNeeds] = useState<Need[]>([]);
@@ -51,7 +42,14 @@ export default function App() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: 'var(--tg-theme-hint-color, #999)' }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        color: 'rgba(255,255,255,0.35)',
+        fontSize: 15,
+      }}>
         Загрузка...
       </div>
     );
@@ -59,27 +57,68 @@ export default function App() {
 
   if (error) {
     return (
-      <div style={{ padding: 24, color: 'red', fontSize: 13, wordBreak: 'break-all' }}>
+      <div style={{ padding: 24, color: 'rgba(255,80,80,0.9)', fontSize: 13, wordBreak: 'break-all' }}>
         <b>Ошибка загрузки:</b><br />{error}<br /><br />
-        <small>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small><br/>
-        <small>initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}</small>
+        <small style={{ color: 'rgba(255,255,255,0.4)' }}>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small><br />
+        <small style={{ color: 'rgba(255,255,255,0.4)' }}>initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}</small>
       </div>
     );
   }
 
   return (
-    <div style={{ background: 'var(--tg-theme-bg-color, #fff)', minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }}>
+      {/* Header */}
       <div style={{
-        position: 'sticky', top: 0, zIndex: 10,
-        background: 'var(--tg-theme-bg-color, #fff)',
-        borderBottom: '1px solid rgba(128,128,128,0.15)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: 'rgba(11,15,24,0.88)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        padding: '14px 20px 12px',
       }}>
-        <h1 style={{ fontSize: 17, fontWeight: 700, textAlign: 'center', padding: '14px 0 0', margin: 0, color: 'var(--tg-theme-text-color, #000)' }}>
+        <h1 style={{
+          fontSize: 24,
+          fontWeight: 600,
+          color: '#ffffff',
+          letterSpacing: -0.5,
+          marginBottom: 12,
+        }}>
           Дневник потребностей
         </h1>
-        <div style={{ display: 'flex' }}>
-          <button style={TAB_STYLE(tab === 'today')} onClick={() => setTab('today')}>Сегодня</button>
-          <button style={TAB_STYLE(tab === 'history')} onClick={() => setTab('history')}>История</button>
+
+        {/* Segmented control */}
+        <div style={{
+          display: 'flex',
+          background: '#1F2733',
+          borderRadius: 10,
+          padding: 3,
+          height: 36,
+        }}>
+          {(['today', 'history'] as Tab[]).map((t) => {
+            const active = tab === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  cursor: 'pointer',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  fontWeight: active ? 600 : 400,
+                  color: active ? '#ffffff' : 'rgba(255,255,255,0.45)',
+                  background: active ? '#2C3A4D' : 'transparent',
+                  transition: 'all 0.15s ease',
+                  letterSpacing: -0.1,
+                }}
+              >
+                {t === 'today' ? 'Сегодня' : 'История'}
+              </button>
+            );
+          })}
         </div>
       </div>
 

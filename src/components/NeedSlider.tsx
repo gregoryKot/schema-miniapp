@@ -1,5 +1,54 @@
 import { COLORS } from '../types';
 
+function NeedIcon({ id, color }: { id: string; color: string }) {
+  const props = {
+    width: 20,
+    height: 20,
+    viewBox: '0 0 24 24',
+    fill: 'none' as const,
+    stroke: color,
+    strokeWidth: 1.5,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+
+  switch (id) {
+    case 'attachment':
+      return (
+        <svg {...props}>
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      );
+    case 'autonomy':
+      return (
+        <svg {...props}>
+          <circle cx="12" cy="12" r="10" />
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+        </svg>
+      );
+    case 'expression':
+      return (
+        <svg {...props}>
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+      );
+    case 'play':
+      return (
+        <svg {...props}>
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+      );
+    case 'limits':
+      return (
+        <svg {...props}>
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+      );
+    default:
+      return null;
+  }
+}
+
 interface Props {
   id: string;
   emoji: string;
@@ -9,23 +58,38 @@ interface Props {
   onChange: (value: number) => void;
 }
 
-export function NeedSlider({ id, emoji, label, value, saved, onChange }: Props) {
+export function NeedSlider({ id, label, value, saved, onChange }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
 
   return (
-    <div style={{ marginBottom: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--tg-theme-text-color, #000)' }}>
-          {emoji} {label}
-        </span>
-        <span style={{
-          minWidth: 40, textAlign: 'center',
-          fontWeight: 700, fontSize: 18, color,
-        }}>
-          {value}<span style={{ fontSize: 12, color: 'var(--tg-theme-hint-color, #999)' }}>/10</span>
-          {saved && <span style={{ fontSize: 12, marginLeft: 4 }}>✓</span>}
-        </span>
+    <div style={{
+      padding: '16px 16px 18px',
+      marginBottom: 10,
+      borderRadius: 18,
+      background: 'rgba(255,255,255,0.035)',
+      border: '1px solid rgba(255,255,255,0.07)',
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 14,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <NeedIcon id={id} color={color} />
+          <span style={{ fontSize: 17, fontWeight: 500, color: '#eef0f4', letterSpacing: -0.2 }}>
+            {label}
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+          <span style={{ fontSize: 19, fontWeight: 700, color, lineHeight: 1 }}>{value}</span>
+          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500 }}>/10</span>
+          {saved && (
+            <span style={{ fontSize: 11, color, marginLeft: 5, opacity: 0.75 }}>✓</span>
+          )}
+        </div>
       </div>
 
       <input
@@ -34,35 +98,10 @@ export function NeedSlider({ id, emoji, label, value, saved, onChange }: Props) 
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         style={{
-          width: '100%',
-          height: 6,
-          borderRadius: 3,
-          outline: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          appearance: 'none' as const,
-          background: `linear-gradient(to right, ${color} ${pct}%, rgba(128,128,128,0.2) ${pct}%)`,
-        }}
+          background: `linear-gradient(to right, ${color} ${pct}%, #2B3442 ${pct}%)`,
+          '--thumb-color': color,
+        } as React.CSSProperties}
       />
-
-      <style>{`
-        input[type=range]::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 26px; height: 26px;
-          border-radius: 50%;
-          background: ${color};
-          cursor: pointer;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-        input[type=range]::-moz-range-thumb {
-          width: 26px; height: 26px;
-          border-radius: 50%;
-          border: none;
-          background: ${color};
-          cursor: pointer;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-        }
-      `}</style>
     </div>
   );
 }

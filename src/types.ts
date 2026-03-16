@@ -11,9 +11,9 @@ export interface DayHistory {
 }
 
 export const COLORS: Record<string, string> = {
-  attachment: '#FF6B9D',
-  autonomy:   '#4FACFE',
-  expression: '#FFD93D',
-  play:       '#6BCB77',
-  limits:     '#C77DFF',
+  attachment: '#FF5C93',
+  autonomy:   '#4DA3FF',
+  expression: '#FFC83D',
+  play:       '#58D68D',
+  limits:     '#9B6DFF',
 };

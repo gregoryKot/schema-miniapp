@@ -26,8 +26,13 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved }: Props) {
   const today = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
 
   return (
-    <div style={{ padding: '16px 16px 100px' }}>
-      <p style={{ color: 'var(--tg-theme-hint-color, #999)', fontSize: 14, marginBottom: 24 }}>
+    <div style={{ padding: '8px 16px 120px' }}>
+      <p style={{
+        fontSize: 14,
+        color: 'rgba(255,255,255,0.38)',
+        marginBottom: 20,
+        letterSpacing: 0.2,
+      }}>
         {today}
       </p>
 
