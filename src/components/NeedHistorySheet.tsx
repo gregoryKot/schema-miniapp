@@ -55,7 +55,7 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
       {/* Header — tap to close */}
       <div
         onClick={onClose}
-        style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24, cursor: 'pointer' }}
+        style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 24, cursor: 'pointer' }}
       >
         <div style={{
           width: 48, height: 48, borderRadius: 14, flexShrink: 0,
@@ -65,15 +65,22 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
         }}>
           {data.emoji}
         </div>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2, marginBottom: 8 }}>
             {need.chartLabel}
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-            {data.hint}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {data.tags.map((tag) => (
+              <span key={tag} style={{
+                fontSize: 11, padding: '3px 8px', borderRadius: 20,
+                background: color + '1f', color,
+              }}>
+                {tag}
+              </span>
+            ))}
           </div>
         </div>
-        <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1 }}>✕</div>
+        <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
       {/* Section 1: 7-day sparkline */}
