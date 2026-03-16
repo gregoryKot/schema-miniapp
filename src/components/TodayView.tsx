@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Need, YESTERDAY } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
@@ -55,28 +55,68 @@ function DonutRing({ percent }: { percent: number }) {
   );
 }
 
-const TOOLTIP_KEY = 'onboarding_tooltip_shown';
+const ONBOARDING_KEY = 'onboarding_v2_done';
+
+function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(79,163,247,0.08))',
+      border: '1px solid rgba(167,139,250,0.25)',
+      borderRadius: 16,
+      padding: '16px 18px',
+      marginBottom: 24,
+    }}>
+      <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        Как это работает
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            Потяни ползунок чтобы оценить каждую потребность от <b style={{ color: '#fff' }}>0 до 10</b>
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            Нажми на <b style={{ color: '#fff' }}>название потребности</b> — там объяснение и советы
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+          <span style={{ fontSize: 16, flexShrink: 0 }}>📊</span>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            Всё сохраняется автоматически, паттерн виден во вкладке <b style={{ color: '#fff' }}>История</b>
+          </span>
+        </div>
+      </div>
+      <button
+        onClick={onDismiss}
+        style={{
+          width: '100%', padding: '10px 0', border: 'none', borderRadius: 10,
+          background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
+          fontSize: 13, fontWeight: 600, cursor: 'pointer',
+        }}
+      >
+        Понятно, начнём
+      </button>
+    </div>
+  );
+}
 
 export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
-  const [tooltipVisible, setTooltipVisible] = useState(
-    () => !localStorage.getItem(TOOLTIP_KEY)
+  const [onboardingVisible, setOnboardingVisible] = useState(
+    () => !localStorage.getItem(ONBOARDING_KEY)
   );
 
   const dismissTooltip = useCallback(() => {
-    if (tooltipVisible) {
-      localStorage.setItem(TOOLTIP_KEY, '1');
-      setTooltipVisible(false);
+    if (onboardingVisible) {
+      localStorage.setItem(ONBOARDING_KEY, '1');
+      setOnboardingVisible(false);
     }
-  }, [tooltipVisible]);
-
-  useEffect(() => {
-    if (!tooltipVisible) return;
-    const t = setTimeout(dismissTooltip, 3000);
-    return () => clearTimeout(t);
-  }, [tooltipVisible, dismissTooltip]);
+  }, [onboardingVisible]);
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
@@ -104,8 +144,9 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const diffColor = 'rgba(255,255,255,0.35)';
 
   return (
-    <div style={{ padding: '20px 20px 40px' }} onClick={dismissTooltip}>
-      {needs.map((n, i) => (
+    <div style={{ padding: '20px 20px 40px' }}>
+      {onboardingVisible && <OnboardingCard onDismiss={dismissTooltip} />}
+      {needs.map((n) => (
         <NeedSlider
           key={n.id}
           id={n.id}
@@ -115,7 +156,7 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
           saved={false}
           onChange={(v) => handleChange(n.id, v)}
           onTap={() => { dismissTooltip(); setActiveNeed(n); }}
-          showTooltip={tooltipVisible && i === 0}
+          showTooltip={false}
         />
       ))}
 
