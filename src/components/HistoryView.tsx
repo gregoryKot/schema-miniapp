@@ -104,6 +104,8 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         return (
           <text
             key={need.id}
+            x={lx.toFixed(2)}
+            y={ly.toFixed(2)}
             textAnchor="middle"
             fontSize="11"
             fontWeight="500"
