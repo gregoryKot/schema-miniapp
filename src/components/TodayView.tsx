@@ -85,7 +85,7 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
     : diff < 0
       ? `${diff.toFixed(1)} к вчера`
       : 'как вчера';
-  const diffColor = diff > 0 ? '#06d6a0' : diff < 0 ? '#ff6b9d' : 'rgba(255,255,255,0.35)';
+  const diffColor = 'rgba(255,255,255,0.35)';
 
   return (
     <div style={{ padding: '20px 20px 40px' }}>
