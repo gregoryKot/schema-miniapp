@@ -1,5 +1,5 @@
-import { useCallback, useRef } from 'react';
-import { Need } from '../types';
+import { useCallback, useRef, useState } from 'react';
+import { Need, YESTERDAY } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
 
@@ -11,8 +11,52 @@ interface Props {
   onSaved: (needId: string) => void;
 }
 
-export function TodayView({ needs, ratings, saved, onChange, onSaved }: Props) {
+function DonutRing({ percent }: { percent: number }) {
+  const size = 52;
+  const r = 20;
+  const cx = size / 2;
+  const cy = size / 2;
+  const circumference = 2 * Math.PI * r;
+  const dashOffset = circumference * (1 - Math.min(percent, 100) / 100);
+
+  return (
+    <svg width={size} height={size} style={{ flexShrink: 0 }}>
+      <defs>
+        <linearGradient id="donut-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stopColor="#ff6b9d" />
+          <stop offset="50%"  stopColor="#ffd166" />
+          <stop offset="100%" stopColor="#06d6a0" />
+        </linearGradient>
+      </defs>
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={5} />
+      <circle
+        cx={cx} cy={cy} r={r}
+        fill="none"
+        stroke="url(#donut-grad)"
+        strokeWidth={5}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={dashOffset}
+        transform={`rotate(-90 ${cx} ${cy})`}
+        style={{ transition: 'stroke-dashoffset 0.35s ease' }}
+      />
+      <text
+        x={cx} y={cy}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={11}
+        fontWeight={600}
+        fill="white"
+      >
+        {Math.round(percent)}%
+      </text>
+    </svg>
+  );
+}
+
+export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const [justSaved, setJustSaved] = useState(false);
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
@@ -23,19 +67,28 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved }: Props) {
     }, 600);
   }, [onChange, onSaved]);
 
-  const today = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  const handleSaveButton = () => {
+    setJustSaved(true);
+    setTimeout(() => setJustSaved(false), 2000);
+  };
+
+  // Summary calculations
+  const avg = needs.length > 0
+    ? needs.reduce((s, n) => s + (ratings[n.id] ?? 0), 0) / needs.length
+    : 0;
+  const yesterdayAvg = needs.length > 0
+    ? needs.reduce((s, n) => s + (YESTERDAY[n.id] ?? 0), 0) / needs.length
+    : 0;
+  const diff = avg - yesterdayAvg;
+  const diffText = diff > 0
+    ? `+${diff.toFixed(1)} к вчера`
+    : diff < 0
+      ? `${diff.toFixed(1)} к вчера`
+      : 'как вчера';
+  const diffColor = diff > 0 ? '#06d6a0' : diff < 0 ? '#ff6b9d' : 'rgba(255,255,255,0.35)';
 
   return (
-    <div style={{ padding: '8px 16px 120px' }}>
-      <p style={{
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.38)',
-        marginBottom: 20,
-        letterSpacing: 0.2,
-      }}>
-        {today}
-      </p>
-
+    <div style={{ padding: '20px 20px 40px' }}>
       {needs.map((n) => (
         <NeedSlider
           key={n.id}
@@ -43,10 +96,61 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved }: Props) {
           emoji={n.emoji}
           label={n.chartLabel}
           value={ratings[n.id] ?? 0}
-          saved={!!saved[n.id]}
+          saved={false}
           onChange={(v) => handleChange(n.id, v)}
         />
       ))}
+
+      {/* Divider */}
+      <div style={{
+        height: 0.5,
+        background: 'rgba(255,255,255,0.06)',
+        margin: '24px 0',
+      }} />
+
+      {/* Summary card */}
+      <div style={{
+        background: 'rgba(255,255,255,0.05)',
+        borderRadius: 16,
+        padding: '16px 18px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+      }}>
+        <div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+            Индекс дня
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 600, lineHeight: 1, marginBottom: 5 }}>
+            {avg.toFixed(1)}<span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/10</span>
+          </div>
+          <div style={{ fontSize: 12, color: diffColor }}>
+            {diffText}
+          </div>
+        </div>
+
+        <DonutRing percent={(avg / 10) * 100} />
+      </div>
+
+      {/* Save button */}
+      <button
+        onClick={handleSaveButton}
+        style={{
+          width: '100%',
+          padding: '15px 0',
+          borderRadius: 14,
+          border: 'none',
+          background: 'rgba(255,255,255,0.1)',
+          color: justSaved ? '#06d6a0' : '#fff',
+          fontSize: 15,
+          fontWeight: 500,
+          cursor: 'pointer',
+          transition: 'color 0.2s ease, background 0.2s ease',
+        }}
+      >
+        {justSaved ? 'Сохранено ✓' : 'Сохранить день'}
+      </button>
     </div>
   );
 }

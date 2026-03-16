@@ -6,6 +6,13 @@ import { HistoryView } from './components/HistoryView';
 
 type Tab = 'today' | 'history';
 
+function formatHeaderDate(): string {
+  const now = new Date();
+  const dow = now.toLocaleDateString('ru-RU', { weekday: 'short' });
+  const date = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+  return `${dow}, ${date}`;
+}
+
 export default function App() {
   const [tab, setTab] = useState<Tab>('today');
   const [needs, setNeeds] = useState<Need[]>([]);
@@ -18,7 +25,6 @@ export default function App() {
   useEffect(() => {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
-
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => { setNeeds(n); setRatings(r); })
       .catch((e) => setError(String(e)))
@@ -43,12 +49,8 @@ export default function App() {
   if (loading) {
     return (
       <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        color: 'rgba(255,255,255,0.35)',
-        fontSize: 15,
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        height: '100vh', color: 'rgba(255,255,255,0.3)', fontSize: 15,
       }}>
         Загрузка...
       </div>
@@ -57,44 +59,60 @@ export default function App() {
 
   if (error) {
     return (
-      <div style={{ padding: 24, color: 'rgba(255,80,80,0.9)', fontSize: 13, wordBreak: 'break-all' }}>
-        <b>Ошибка загрузки:</b><br />{error}<br /><br />
-        <small style={{ color: 'rgba(255,255,255,0.4)' }}>API: {import.meta.env.VITE_API_URL ?? 'не задан'}</small><br />
-        <small style={{ color: 'rgba(255,255,255,0.4)' }}>initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}</small>
+      <div style={{ padding: 24, fontSize: 13, wordBreak: 'break-all' }}>
+        <div style={{ color: 'rgba(255,100,100,0.9)', marginBottom: 12 }}>
+          <b>Ошибка загрузки:</b><br />{error}
+        </div>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>
+          API: {import.meta.env.VITE_API_URL ?? 'не задан'}<br />
+          initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}
+        </div>
       </div>
     );
   }
 
   return (
     <div style={{ minHeight: '100vh' }}>
-      {/* Header */}
+      {/* Sticky header */}
       <div style={{
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'rgba(11,18,32,0.92)',
+        background: 'rgba(15,17,23,0.94)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        padding: '14px 20px 12px',
+        padding: '16px 20px 14px',
+        borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}>
-        <h1 style={{
-          fontSize: 24,
-          fontWeight: 600,
-          color: '#ffffff',
-          letterSpacing: -0.5,
-          marginBottom: 12,
-        }}>
-          Дневник потребностей
-        </h1>
+        {/* Date row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+            {formatHeaderDate()}
+          </span>
+          {/* Conic-gradient dot */}
+          <div style={{
+            width: 10, height: 10, borderRadius: '50%',
+            background: 'conic-gradient(#ff6b9d, #ffd166, #06d6a0, #a78bfa, #4fa3f7, #ff6b9d)',
+          }} />
+        </div>
 
-        {/* Segmented control */}
+        {/* Title + subtitle */}
+        <h1 style={{
+          fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
+          color: '#fff', marginBottom: 3, lineHeight: 1.1,
+        }}>
+          Дневник
+        </h1>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
+          Как ты сегодня?
+        </p>
+
+        {/* Pill tabs */}
         <div style={{
           display: 'flex',
-          background: '#1F2733',
-          borderRadius: 10,
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 12,
           padding: 3,
-          height: 36,
         }}>
           {(['today', 'history'] as Tab[]).map((t) => {
             const active = tab === t;
@@ -104,15 +122,15 @@ export default function App() {
                 onClick={() => setTab(t)}
                 style={{
                   flex: 1,
+                  padding: '8px 0',
                   border: 'none',
-                  cursor: 'pointer',
-                  borderRadius: 8,
+                  borderRadius: 10,
+                  background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
+                  color: active ? '#fff' : 'rgba(255,255,255,0.4)',
                   fontSize: 14,
-                  fontWeight: active ? 600 : 400,
-                  color: active ? '#ffffff' : 'rgba(255,255,255,0.45)',
-                  background: active ? '#2C3A4D' : 'transparent',
+                  fontWeight: active ? 500 : 400,
+                  cursor: 'pointer',
                   transition: 'all 0.15s ease',
-                  letterSpacing: -0.1,
                 }}
               >
                 {t === 'today' ? 'Сегодня' : 'История'}

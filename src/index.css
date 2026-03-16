@@ -10,14 +10,67 @@ html, body {
 }
 
 body {
-  background: #0B1220;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  background: #0f1117;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   color: #ffffff;
   min-height: 100vh;
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Range input — native but styled thumb */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 6px;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--thumb-color, #888);
+  border: 2px solid #0f1117;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--thumb-color, #888) 60%, transparent);
+  cursor: grab;
+  transition: transform 0.1s ease;
+}
+
+input[type=range]:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #0f1117;
+  background: var(--thumb-color, #888);
+  cursor: grab;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 6px;
+}
+
+input[type=range]::-moz-range-track {
+  height: 6px;
+  border-radius: 6px;
+  background: transparent;
+}
+
+button {
+  font-family: inherit;
 }
