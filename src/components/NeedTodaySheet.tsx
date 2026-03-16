@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { Need, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
@@ -29,6 +29,11 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
 
   const rangeIdx = value <= 3 ? 0 : value <= 6 ? 1 : 2;
   const RANGE_VALUES = [1, 4, 7];
+
+  const tipKey = value <= 3 ? 'low' : value <= 6 ? 'medium' : 'high';
+  const tipPool = data.tips[tipKey];
+  const [tipIdx] = useState(() => Math.floor(Math.random() * tipPool.length));
+  const tip = tipPool[tipIdx];
 
   // Inline slider
   const trackRef = useRef<HTMLDivElement>(null);
@@ -132,7 +137,17 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </div>
       </div>
 
-      {/* Section 3: Slider */}
+      {/* Section 3: Tip */}
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel>Попробуй сегодня</SectionLabel>
+        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+            {tip}
+          </div>
+        </div>
+      </div>
+
+      {/* Section 4: Slider */}
       <div>
         <SectionLabel>Оценка сегодня</SectionLabel>
         <div style={{ fontSize: 24, fontWeight: 700, color, marginBottom: 12 }}>
