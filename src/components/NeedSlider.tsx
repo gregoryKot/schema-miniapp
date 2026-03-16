@@ -1,3 +1,4 @@
+import { useRef, useCallback } from 'react';
 import { COLORS, YESTERDAY } from '../types';
 
 const HINTS: Record<string, string> = {
@@ -63,6 +64,25 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
   const delta = value - (YESTERDAY[id] ?? 0);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  const calcValue = useCallback((clientX: number) => {
+    if (!trackRef.current) return;
+    const rect = trackRef.current.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+    onChange(Math.round(pct * 10));
+  }, [onChange]);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    calcValue(e.clientX);
+  }, [calcValue]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.buttons === 0) return;
+    calcValue(e.clientX);
+  }, [calcValue]);
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -95,8 +115,19 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
         </div>
       </div>
 
-      {/* Custom slider */}
-      <div style={{ position: 'relative', padding: '9px 0' }}>
+      {/* Custom slider — pointer-based, works on iOS without tap-first */}
+      <div
+        ref={trackRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        style={{
+          position: 'relative',
+          padding: '12px 0',
+          cursor: 'pointer',
+          touchAction: 'none', // prevent scroll during drag
+          userSelect: 'none',
+        }}
+      >
         {/* Track */}
         <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
           <div style={{
@@ -107,41 +138,20 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
           }} />
         </div>
 
-        {/* Thumb — centered on track via top:50% / translate */}
+        {/* Thumb */}
         <div style={{
           position: 'absolute',
           left: `${pct}%`,
           top: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 18,
-          height: 18,
+          width: 20,
+          height: 20,
           borderRadius: '50%',
           background: color,
           border: '2px solid #0f1117',
           pointerEvents: 'none',
           zIndex: 1,
         }} />
-
-        {/* Invisible native input for drag interaction */}
-        <input
-          type="range"
-          min={0} max={10} step={1}
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            opacity: 0,
-            cursor: 'pointer',
-            margin: 0,
-            WebkitAppearance: 'none',
-            touchAction: 'none', // on the input directly, not wrapper
-          } as React.CSSProperties}
-        />
       </div>
     </div>
   );
