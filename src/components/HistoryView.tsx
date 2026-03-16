@@ -38,7 +38,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
   const SIZE = 360;
   const cx = SIZE / 2;
   const cy = SIZE / 2;
-  const R = 118;
+  const R = 100; // 85% of original 118 — tighter ring, labels closer to chart
   const GAP = 12;
   const SPREAD = Math.PI / 5;
   const n = needs.length;
@@ -125,7 +125,7 @@ function NeedsWheel({ needs, ratings }: { needs: Need[]; ratings: Record<string,
         const color = COLORS[need.id] ?? '#888';
         const value = ratings[need.id] ?? 0;
 
-        const textAnchor = cos > 0.3 ? 'start' : cos < -0.3 ? 'end' : 'middle';
+        const textAnchor = 'middle';
         const lx = cx + (R + GAP) * cos;
         const ringEdgeY = cy + R * sin;
 
@@ -354,7 +354,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       </div>
 
       {/* View toggle */}
-      <div style={{ padding: '0 24px 16px' }}>
+      <div style={{ padding: '0 24px 8px' }}>
         <div style={{
           display: 'flex',
           background: 'rgba(255,255,255,0.06)',
@@ -421,7 +421,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       </div>
 
       {/* Insight card */}
-      <div style={{ padding: '16px 24px 0' }}>
+      <div style={{ padding: '12px 24px 0' }}>
         <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
 
