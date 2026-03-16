@@ -40,10 +40,10 @@ function NeedsWheel({
   ratings: Record<string, number>;
   prevRatings?: Record<string, number>;
 }) {
-  const SIZE = 360;
-  const cx = SIZE / 2;
-  const cy = SIZE / 2;
-  const R = 80;
+  const W = 360, H = 280;
+  const cx = W / 2;       // 180
+  const cy = H / 2;       // 140
+  const R = cy - 20;      // 120 — fills height minus 20px padding each side
   const SPREAD = Math.PI / 5;
   const n = needs.length;
   const CENTER_R = 36;
@@ -59,10 +59,8 @@ function NeedsWheel({
 
   return (
     <svg
-      width="100%"
-      height="100%"
-      viewBox={`0 0 ${SIZE} ${SIZE}`}
-      style={{ display: 'block', overflow: 'visible' }}
+      viewBox={`0 0 ${W} ${H}`}
+      style={{ display: 'block', width: '100%', height: 280 }}
     >
       <defs>
         <linearGradient id="center-score-grad" x1="0" y1="0" x2="1" y2="1">
@@ -118,15 +116,15 @@ function NeedsWheel({
       {/* Center cutout */}
       <circle cx={cx} cy={cy} r={CENTER_R} fill="#1a1d27" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
 
-      {/* Center text — 3 lines centered in r=36 circle */}
-      <text x={cx} y={cy - 22} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.5)">
+      {/* Center text */}
+      <text x={cx} y={cy - 18} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.5)">
         индекс
       </text>
-      <text x={cx} y={cy + 7} textAnchor="middle" fontSize={32} fontWeight={700} fill="#ffffff">
+      <text x={cx} y={cy + 6} textAnchor="middle" fontSize={28} fontWeight={700} fill="#ffffff">
         {avg.toFixed(1)}
       </text>
       {diff !== null && (
-        <text x={cx} y={cy + 23} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.35)">
+        <text x={cx} y={cy + 21} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.35)">
           {diff >= 0 ? '↑' : '↓'} вчера {Math.abs(diff).toFixed(1)}
         </text>
       )}
@@ -139,21 +137,19 @@ function NeedsWheel({
 function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-      {needs.map((need, i) => {
+      {needs.map((need) => {
         const color = COLORS[need.id] ?? '#888';
         const value = ratings[need.id] ?? 0;
-        const isLast = i === needs.length - 1 && needs.length % 2 === 1;
         return (
           <div
             key={need.id}
             style={{
-              gridColumn: isLast ? 'span 2' : undefined,
               background: 'rgba(255,255,255,0.04)',
               borderRadius: 12,
-              padding: '10px 12px',
+              padding: '8px 10px',
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
+              gap: 8,
             }}
           >
             <div style={{
@@ -161,10 +157,10 @@ function LegendGrid({ needs, ratings }: { needs: Need[]; ratings: Record<string,
               background: color, flexShrink: 0,
             }} />
             <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontWeight: 400, lineHeight: 1.2 }}>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 400, lineHeight: 1.2 }}>
                 {need.chartLabel}
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color, lineHeight: 1.2 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color, lineHeight: 1.2 }}>
                 {value}
               </div>
             </div>
@@ -265,7 +261,7 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
     <div style={{
       background: 'rgba(255,255,255,0.05)',
       borderRadius: 16,
-      padding: '14px 16px',
+      padding: '12px 14px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -274,11 +270,11 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 3 }}>
           Стоит уделить внимание
         </div>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
           {lowest.chartLabel}
         </div>
       </div>
-      <span style={{ fontSize: 20, fontWeight: 700, color }}>
+      <span style={{ fontSize: 16, fontWeight: 700, color }}>
         {ratings[lowest.id] ?? 0}
       </span>
     </div>
@@ -392,8 +388,8 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           /* ── День ── */
           <>
             {/* Chart */}
-            <div style={{ width: '100%' }}>
-              <div key={selected.date} style={{ width: '100%', aspectRatio: '1 / 1' }}>
+            <div style={{ width: '100%', marginTop: 12 }}>
+              <div key={selected.date}>
                 <NeedsWheel needs={needs} ratings={selectedRatings} prevRatings={prevRatings} />
               </div>
             </div>
