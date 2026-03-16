@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback } from 'react';
 import { Need, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
@@ -30,10 +30,14 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
   const rangeIdx = value <= 3 ? 0 : value <= 6 ? 1 : 2;
   const RANGE_VALUES = [1, 4, 7];
 
+  // Stable random index per tipKey — recomputed only when level changes
+  const tipSeeds = useRef<Partial<Record<string, number>>>({});
   const tipKey = value <= 3 ? 'low' : value <= 6 ? 'medium' : 'high';
   const tipPool = data.tips[tipKey];
-  const [tipIdx] = useState(() => Math.floor(Math.random() * tipPool.length));
-  const tip = tipPool[tipIdx];
+  if (tipSeeds.current[tipKey] === undefined) {
+    tipSeeds.current[tipKey] = Math.floor(Math.random() * tipPool.length);
+  }
+  const tip = tipPool[tipSeeds.current[tipKey]!];
 
   // Inline slider
   const trackRef = useRef<HTMLDivElement>(null);
@@ -84,6 +88,22 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </div>
         <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
+
+      {/* High score affirmation */}
+      {rangeIdx === 2 && (
+        <div style={{
+          background: color + '18',
+          border: `1px solid ${color}33`,
+          borderRadius: 12,
+          padding: '10px 14px',
+          marginBottom: 20,
+          fontSize: 13,
+          color,
+          lineHeight: 1.5,
+        }}>
+          Ты хорошо закрываешь эту потребность сегодня — это заметно
+        </div>
+      )}
 
       {/* Section 1: Question */}
       <div style={{ marginBottom: 24 }}>
