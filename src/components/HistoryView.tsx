@@ -44,7 +44,7 @@ function NeedsWheel({
   const cx = W / 2;       // 180
   const cy = H / 2;       // 140
   const R = cy - 20;      // 120 — fills height minus 20px padding each side
-  const SPREAD = Math.PI / 5;
+  const SPREAD = (34 * Math.PI) / 180; // 68° per sector, 4° gap between sectors
   const n = needs.length;
   const CENTER_R = 41; // 36 * 1.15
 
