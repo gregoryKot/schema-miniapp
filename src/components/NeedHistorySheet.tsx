@@ -52,8 +52,11 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
 
   return (
     <BottomSheet onClose={onClose}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}>
+      {/* Header — tap to close */}
+      <div
+        onClick={onClose}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24, cursor: 'pointer' }}
+      >
         <div style={{
           width: 48, height: 48, borderRadius: 14, flexShrink: 0,
           background: color + '26',
@@ -62,7 +65,7 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
         }}>
           {data.emoji}
         </div>
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
             {need.chartLabel}
           </div>
@@ -70,6 +73,7 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
             {data.hint}
           </div>
         </div>
+        <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1 }}>✕</div>
       </div>
 
       {/* Section 1: 7-day sparkline */}

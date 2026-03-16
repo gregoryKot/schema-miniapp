@@ -25,6 +25,7 @@ export default function App() {
   useEffect(() => {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
+    window.Telegram?.WebApp?.disableVerticalSwipes?.();
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => { setNeeds(n); setRatings(r); })
       .catch((e) => setError(String(e)))

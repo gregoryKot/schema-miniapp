@@ -8,6 +8,7 @@ declare global {
         ready(): void;
         expand(): void;
         close(): void;
+        disableVerticalSwipes(): void;
         MainButton: {
           text: string;
           isVisible: boolean;

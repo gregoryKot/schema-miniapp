@@ -1,13 +1,23 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   onClose: () => void;
   children: React.ReactNode;
 }
 
+const HINT_KEY = 'sheet_close_hint_shown';
+
 export function BottomSheet({ onClose, children }: Props) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
+  const [showHint, setShowHint] = useState(() => !localStorage.getItem(HINT_KEY));
+
+  useEffect(() => {
+    if (!showHint) return;
+    localStorage.setItem(HINT_KEY, '1');
+    const t = setTimeout(() => setShowHint(false), 2800);
+    return () => clearTimeout(t);
+  }, [showHint]);
 
   const onHandleDown = (e: React.PointerEvent<HTMLDivElement>) => {
     startY.current = e.clientY;
@@ -28,8 +38,8 @@ export function BottomSheet({ onClose, children }: Props) {
 
   return (
     <>
+      {/* Backdrop — no onClick to avoid triggering Telegram close gesture */}
       <div
-        onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 200,
           background: 'rgba(0,0,0,0.55)',
@@ -62,6 +72,21 @@ export function BottomSheet({ onClose, children }: Props) {
         >
           <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.15)' }} />
         </div>
+
+        {/* One-time close hint */}
+        {showHint && (
+          <div style={{
+            textAlign: 'center',
+            fontSize: 12,
+            color: 'rgba(255,255,255,0.35)',
+            padding: '0 0 10px',
+            animation: 'fade-in 300ms ease',
+            flexShrink: 0,
+          }}>
+            Нажми на заголовок чтобы закрыть
+          </div>
+        )}
+
         {/* Scrollable content */}
         <div style={{ overflowY: 'auto', flex: 1, padding: '0 24px 48px' }}>
           {children}
