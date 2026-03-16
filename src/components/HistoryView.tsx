@@ -97,7 +97,7 @@ function NeedsWheel({
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
-        const r = (value / 10) * R; // pure proportional, 0 → no sector
+        const r = Math.sqrt(value / 10) * R; // sqrt → area-proportional, score 5 = visually half full
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;

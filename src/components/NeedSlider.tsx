@@ -95,8 +95,8 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
         </div>
       </div>
 
-      {/* Custom slider — touch-action none prevents iOS scroll hijack */}
-      <div style={{ position: 'relative', padding: '9px 0', touchAction: 'none' }}>
+      {/* Custom slider */}
+      <div style={{ position: 'relative', padding: '9px 0' }}>
         {/* Track */}
         <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
           <div style={{
@@ -139,6 +139,7 @@ export function NeedSlider({ id, label, value, onChange }: Props) {
             cursor: 'pointer',
             margin: 0,
             WebkitAppearance: 'none',
+            touchAction: 'none', // on the input directly, not wrapper
           } as React.CSSProperties}
         />
       </div>
