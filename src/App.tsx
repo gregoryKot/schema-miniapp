@@ -240,11 +240,10 @@ export default function App() {
           style={{
             fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
             color: '#fff', marginBottom: 3, lineHeight: 1.1,
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
           }}
         >
           Дневник потребностей
-          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)', fontWeight: 400 }}>ⓘ</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
           Как ты сегодня?
