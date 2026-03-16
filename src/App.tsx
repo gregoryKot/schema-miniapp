@@ -72,10 +72,10 @@ export default function App() {
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'rgba(11,15,24,0.88)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(11,18,32,0.92)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid rgba(255,255,255,0.05)',
         padding: '14px 20px 12px',
       }}>
         <h1 style={{

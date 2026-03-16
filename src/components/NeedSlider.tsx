@@ -7,7 +7,7 @@ function NeedIcon({ id, color }: { id: string; color: string }) {
     viewBox: '0 0 24 24',
     fill: 'none' as const,
     stroke: color,
-    strokeWidth: 1.5,
+    strokeWidth: 1.75,
     strokeLinecap: 'round' as const,
     strokeLinejoin: 'round' as const,
   };
@@ -60,39 +60,65 @@ interface Props {
 
 export function NeedSlider({ id, label, value, onChange }: Props) {
   const color = COLORS[id] ?? '#888';
-  const pct = value * 10;
 
   return (
-    <div style={{ marginBottom: 26 }}>
+    <div style={{ marginBottom: 32 }}>
+      {/* Label row */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <NeedIcon id={id} color={color} />
-          <span style={{ fontSize: 17, fontWeight: 500, color: '#eef0f4', letterSpacing: -0.2 }}>
+          <span style={{ fontSize: 17, fontWeight: 500, color: '#e8eaf0', letterSpacing: -0.2 }}>
             {label}
           </span>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
-          <span style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{value}</span>
-          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.28)', fontWeight: 400 }}>/10</span>
-        </div>
+        <span style={{ fontSize: 17, fontWeight: 600, color: '#ffffff' }}>
+          {value}<span style={{ fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.28)' }}>/10</span>
+        </span>
       </div>
 
-      <input
-        type="range"
-        min={0} max={10} step={1}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{
-          background: `linear-gradient(to right, ${color} ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
-          '--thumb-color': color,
-        } as React.CSSProperties}
-      />
+      {/* Progress bar with invisible native range on top */}
+      <div style={{ position: 'relative', height: 24, display: 'flex', alignItems: 'center' }}>
+        {/* Visual track */}
+        <div style={{
+          width: '100%',
+          height: 3,
+          borderRadius: 3,
+          background: 'rgba(255,255,255,0.12)',
+          overflow: 'hidden',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            width: `${value * 10}%`,
+            height: '100%',
+            background: color,
+            borderRadius: 3,
+            transition: 'width 0.12s ease',
+          }} />
+        </div>
+
+        {/* Invisible native range — handles all touch/drag interaction */}
+        <input
+          type="range"
+          min={0} max={10} step={1}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            cursor: 'pointer',
+            margin: 0,
+            WebkitAppearance: 'none',
+          } as React.CSSProperties}
+        />
+      </div>
     </div>
   );
 }
