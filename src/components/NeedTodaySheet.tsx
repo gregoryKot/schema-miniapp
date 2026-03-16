@@ -25,7 +25,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 const DISCLAIMER_CONTENT = [
   'Дневник помогает видеть паттерны и чуть лучше понимать себя.',
   'Советы внутри — это приглашение к размышлению, не инструкция.',
-  'Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Там можно безопасно и глубоко, с живым человеком рядом.',
+  'Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.',
 ];
 
 export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
@@ -195,6 +195,12 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
                 {p}
               </p>
             ))}
+            <a
+              href="https://t.me/kotlarewski"
+              style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}
+            >
+              → Написать автору
+            </a>
           </div>
         </BottomSheet>
       )}
