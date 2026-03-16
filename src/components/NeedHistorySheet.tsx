@@ -36,9 +36,11 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
   const trendLabel = trendDiff > 0.5 ? 'Растёт' : trendDiff < -0.5 ? 'Падает' : 'Стабильно';
   const trendSign = trendDiff >= 0 ? '+' : '';
 
-  // Random tip — stable for this sheet instance
-  const [tipIdx] = useState(() => Math.floor(Math.random() * data.tips.length));
-  const tip = data.tips[tipIdx];
+  // Random tip from level-appropriate pool — stable for this sheet instance
+  const tipKey = value <= 3 ? 'low' : value <= 6 ? 'medium' : 'high';
+  const tipPool = data.tips[tipKey];
+  const [tipIdx] = useState(() => Math.floor(Math.random() * tipPool.length));
+  const tip = tipPool[tipIdx];
 
   // Sparkline
   const reversed = [...history].reverse();
