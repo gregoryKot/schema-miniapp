@@ -187,7 +187,6 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
       background: 'rgba(255,255,255,0.05)',
       borderRadius: 14,
       padding: '14px 16px',
-      marginTop: 20,
     }}>
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', marginBottom: 6 }}>
         Стоит уделить внимание
@@ -250,8 +249,8 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
         })}
       </div>
 
-      {/* Wheel — 48px horizontal padding keeps side labels in viewport */}
-      <div style={{ width: '100%', padding: '0 48px', boxSizing: 'border-box', flexShrink: 0 }}>
+      {/* Wheel — 85% width, 48px min padding keeps side labels in viewport */}
+      <div style={{ width: '85vw', maxWidth: 'calc(100% - 48px)', flexShrink: 0, alignSelf: 'center' }}>
         <div
           key={selected.date}
           style={{ width: '100%', aspectRatio: '1 / 1' }}
@@ -260,8 +259,25 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
         </div>
       </div>
 
+      {/* Mini stats row */}
+      <div style={{
+        width: '100%', padding: '12px 20px 0',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+      }}>
+        {needs.map((need) => {
+          const color = COLORS[need.id] ?? '#888';
+          const value = selectedRatings[need.id] ?? 0;
+          return (
+            <div key={need.id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
+              <span style={{ fontSize: 13, fontWeight: 600, color }}>{value}</span>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Insight card */}
-      <div style={{ width: '100%', padding: '0 20px' }}>
+      <div style={{ width: '100%', padding: '16px 20px 0' }}>
         <InsightCard needs={needs} ratings={selectedRatings} />
       </div>
     </div>
