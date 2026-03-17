@@ -86,7 +86,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>📊</span>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Всё сохраняется автоматически, паттерн виден во вкладке <b style={{ color: '#fff' }}>История</b>
+            Всё сохраняется автоматически. <b style={{ color: '#fff' }}>Через 3–5 дней</b> паттерн начнёт проявляться во вкладке <b style={{ color: '#fff' }}>История</b>
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
