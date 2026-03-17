@@ -21,16 +21,38 @@ interface Props {
   onClose: () => void;
 }
 
+async function share(text: string) {
+  try {
+    if (navigator.share) { await navigator.share({ text }); }
+    else { await navigator.clipboard.writeText(text); }
+  } catch {}
+}
+
 export function AchievementsSheet({ achievements, onClose }: Props) {
-  const earned = achievements.filter(a => a.earned).length;
+  const earnedList = achievements.filter(a => a.earned);
+  const earned = earnedList.length;
 
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontSize: 20, fontWeight: 600, color: '#fff' }}>Достижения</div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
-            {earned} / {achievements.length}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{earned} / {achievements.length}</div>
+            {earned > 0 && (
+              <button
+                onClick={() => {
+                  const lines = earnedList.map(a => `${ACHIEVEMENT_META[a.id]?.emoji} ${ACHIEVEMENT_META[a.id]?.title}`).join('\n');
+                  share(`🏆 Мои достижения в дневнике потребностей:\n\n${lines}\n\nt.me/SchemaDiaryBot`);
+                }}
+                style={{
+                  background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 20,
+                  padding: '5px 12px', color: '#a78bfa', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                Поделиться
+              </button>
+            )}
           </div>
         </div>
 

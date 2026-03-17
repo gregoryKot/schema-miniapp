@@ -135,11 +135,32 @@ export function ProfileSheet({ onClose }: Props) {
                 </div>
               </div>
 
-              {!streak.todayDone && (
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '4px 0' }}>
-                  Заполни дневник сегодня, чтобы не потерять серию
-                </div>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 0' }}>
+                {!streak.todayDone ? (
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+                    Заполни дневник сегодня, чтобы не потерять серию
+                  </div>
+                ) : <div />}
+                {streak.currentStreak > 0 && (
+                  <button
+                    onClick={() => {
+                      const n = streak.currentStreak;
+                      const days = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
+                      const text = `🔥 ${n} ${days} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/SchemaDiaryBot`;
+                      try {
+                        if (navigator.share) { navigator.share({ text }); }
+                        else { navigator.clipboard.writeText(text); }
+                      } catch {}
+                    }}
+                    style={{
+                      background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 20,
+                      padding: '5px 12px', color: '#a78bfa', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    Поделиться
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
