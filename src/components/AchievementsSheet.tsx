@@ -43,7 +43,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
               <button
                 onClick={() => {
                   const lines = earnedList.map(a => `${ACHIEVEMENT_META[a.id]?.emoji} ${ACHIEVEMENT_META[a.id]?.title}`).join('\n');
-                  share(`🏆 Мои достижения в дневнике потребностей:\n\n${lines}\n\nt.me/SchemaDiaryBot`);
+                  share(`🏆 Мои достижения в дневнике потребностей:\n\n${lines}\n\nt.me/Emotional_Needs_bot`);
                 }}
                 style={{
                   background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 20,
@@ -72,9 +72,21 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
                 <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>
                   {meta.title}
                 </div>
-                <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4, marginBottom: a.earned ? 8 : 0 }}>
                   {meta.desc}
                 </div>
+                {a.earned && (
+                  <button
+                    onClick={() => share(`${meta.emoji} Получил достижение «${meta.title}» в дневнике потребностей!\n\nt.me/Emotional_Needs_bot`)}
+                    style={{
+                      width: '100%', padding: '5px 0', border: 'none', borderRadius: 8,
+                      background: 'rgba(167,139,250,0.15)', color: '#a78bfa',
+                      fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    }}
+                  >
+                    Поделиться
+                  </button>
+                )}
               </div>
             );
           })}

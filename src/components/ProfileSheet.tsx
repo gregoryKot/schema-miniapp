@@ -146,7 +146,7 @@ export function ProfileSheet({ onClose }: Props) {
                     onClick={() => {
                       const n = streak.currentStreak;
                       const days = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
-                      const text = `🔥 ${n} ${days} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/SchemaDiaryBot`;
+                      const text = `🔥 ${n} ${days} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
                       try {
                         if (navigator.share) { navigator.share({ text }); }
                         else { navigator.clipboard.writeText(text); }
@@ -353,7 +353,7 @@ export function ProfileSheet({ onClose }: Props) {
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <button
               onClick={async () => {
-                const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/SchemaDiaryBot';
+                const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
                 try {
                   if (navigator.share) { await navigator.share({ text }); }
                   else { await navigator.clipboard.writeText(text); }
