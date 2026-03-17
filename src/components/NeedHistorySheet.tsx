@@ -3,6 +3,12 @@ import { Need, DayHistory, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
 
+const DISCLAIMER_CONTENT = [
+  'Дневник помогает видеть паттерны и чуть лучше понимать себя.',
+  'Советы внутри — это приглашение к размышлению, не инструкция.',
+  'Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.',
+];
+
 interface Props {
   need: Need;
   value: number;
@@ -23,6 +29,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 }
 
 export function NeedHistorySheet({ need, value, history, onClose }: Props) {
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const data = NEED_DATA[need.id];
   if (!data) return null;
   const color = COLORS[need.id] ?? '#888';
@@ -122,9 +129,31 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
           <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
             {tip}
+            <span
+              onClick={(e) => { e.stopPropagation(); setShowDisclaimer(true); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 16, height: 16, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)',
+                fontSize: 10, fontWeight: 600, cursor: 'pointer',
+                marginLeft: 6, verticalAlign: 'middle',
+              }}
+            >?</span>
           </div>
         </div>
       </div>
+
+      {showDisclaimer && (
+        <BottomSheet onClose={() => setShowDisclaimer(false)} zIndex={300}>
+          <div style={{ paddingTop: 8 }}>
+            <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>О советах</div>
+            {DISCLAIMER_CONTENT.map((p, i) => (
+              <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>{p}</p>
+            ))}
+            <a href="https://t.me/kotlarewski" style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>→ Написать автору</a>
+          </div>
+        </BottomSheet>
+      )}
 
       {/* Section 3: Explanation */}
       <div>
