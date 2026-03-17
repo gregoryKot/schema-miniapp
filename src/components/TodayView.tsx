@@ -155,6 +155,15 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
   return (
     <div style={{ padding: '20px 20px 40px' }}>
       {onboardingVisible && <OnboardingCard onDismiss={dismissTooltip} />}
+      {!onboardingVisible && needs.length > 0 && needs.every(n => (ratings[n.id] ?? 0) === 0) && (
+        <div style={{
+          textAlign: 'center', fontSize: 12,
+          color: 'rgba(255,255,255,0.25)',
+          marginBottom: 16, lineHeight: 1.5,
+        }}>
+          Потяни ползунок → оценка сохранится автоматически
+        </div>
+      )}
       {needs.map((n) => (
         <NeedSlider
           key={n.id}

@@ -55,6 +55,8 @@ export const api = {
   getInsights:    () => get<{
     weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>;
     bestDayOfWeek: string | null;
+    worstDayOfWeek: string | null;
     totalDays: number;
   }>('/api/insights'),
+  getExport: () => get<{ text: string }>('/api/export'),
 };

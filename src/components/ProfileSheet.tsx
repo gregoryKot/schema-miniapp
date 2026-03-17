@@ -4,7 +4,7 @@ import { BottomSheet } from './BottomSheet';
 import { AchievementsSheet } from './AchievementsSheet';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
-type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; totalDays: number };
+type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
@@ -164,6 +164,11 @@ export function ProfileSheet({ onClose }: Props) {
                     >?</span>
                   </div>
                 )}
+                {insights.worstDayOfWeek && insights.totalDays >= 7 && (
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
+                    Тяжелее всего — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
+                  </div>
+                )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {insights.weeklyStats.filter(s => s.avg !== null).map(s => {
                     const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.3)';
@@ -232,7 +237,7 @@ export function ProfileSheet({ onClose }: Props) {
               }}
             >?</span>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
+          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
 
             {/* Toggle */}
             <div
@@ -321,6 +326,42 @@ export function ProfileSheet({ onClose }: Props) {
                 }} />
               </div>
             </div>
+          </div>
+
+          {/* Share & Export */}
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+            <button
+              onClick={async () => {
+                const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/SchemaDiaryBot';
+                try {
+                  if (navigator.share) { await navigator.share({ text }); }
+                  else { await navigator.clipboard.writeText(text); }
+                } catch {}
+              }}
+              style={{
+                flex: 1, padding: '12px 0', border: 'none', borderRadius: 12,
+                background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)',
+                fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              }}
+            >
+              Пригласить друга
+            </button>
+            <button
+              onClick={async () => {
+                const { text } = await api.getExport();
+                try {
+                  if (navigator.share) { await navigator.share({ text }); }
+                  else { await navigator.clipboard.writeText(text); }
+                } catch {}
+              }}
+              style={{
+                flex: 1, padding: '12px 0', border: 'none', borderRadius: 12,
+                background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)',
+                fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              }}
+            >
+              Экспорт
+            </button>
           </div>
         </div>
       )}

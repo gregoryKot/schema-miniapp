@@ -498,6 +498,41 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
               <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
 
+            {/* Therapist CTA — show if any need consistently low */}
+            <div style={{ padding: '0 20px', marginTop: 12 }}>
+              {(() => {
+                if (history.length < 3) return null;
+                const needs_low = needs.filter(n => {
+                  const last3 = history.slice(0, 3);
+                  return last3.every(d => (d.ratings[n.id] ?? 10) <= 4);
+                });
+                if (needs_low.length === 0) return null;
+                const label = needs_low[0].chartLabel;
+                return (
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
+                    border: '1px solid rgba(167,139,250,0.2)',
+                    borderRadius: 16, padding: '14px 16px', marginBottom: 16,
+                  }}>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 10 }}>
+                      {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
+                    </div>
+                    <a
+                      href="https://cal.com/kotlarewski"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'inline-block', fontSize: 13, color: '#a78bfa',
+                        textDecoration: 'none', fontWeight: 500,
+                      }}
+                    >
+                      Записаться на сессию →
+                    </a>
+                  </div>
+                );
+              })()}
+            </div>
+
             {/* Note */}
             <div style={{ padding: '12px 20px 0' }}>
               <div
@@ -544,6 +579,39 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
             <div style={{ marginTop: 28 }}>
               <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
+
+            {/* Therapist CTA — show if any need consistently low */}
+            {(() => {
+              if (history.length < 3) return null;
+              const needs_low = needs.filter(n => {
+                const last3 = history.slice(0, 3);
+                return last3.every(d => (d.ratings[n.id] ?? 10) <= 4);
+              });
+              if (needs_low.length === 0) return null;
+              const label = needs_low[0].chartLabel;
+              return (
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
+                  border: '1px solid rgba(167,139,250,0.2)',
+                  borderRadius: 16, padding: '14px 16px', marginTop: 16,
+                }}>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 10 }}>
+                    {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
+                  </div>
+                  <a
+                    href="https://cal.com/kotlarewski"
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      display: 'inline-block', fontSize: 13, color: '#a78bfa',
+                      textDecoration: 'none', fontWeight: 500,
+                    }}
+                  >
+                    Записаться на сессию →
+                  </a>
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const COLORS = ['#ff6b9d', '#ffd166', '#06d6a0', '#a78bfa', '#4fa3f7', '#ff9a3c'];
 
@@ -38,6 +38,7 @@ interface Props {
 export function Celebration({ streak, onDone }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -106,6 +107,32 @@ export function Celebration({ streak, onDone }: Props) {
         </div>
         <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, maxWidth: 220 }}>
           {getMilestoneText(streak)}
+        </div>
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
+            const text = `🔥 ${streak} ${streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней'} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/SchemaDiaryBot`;
+            try {
+              if (navigator.share) {
+                await navigator.share({ text });
+              } else {
+                await navigator.clipboard.writeText(text);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }
+            } catch {}
+          }}
+          style={{
+            marginTop: 16,
+            padding: '10px 24px', border: 'none', borderRadius: 20,
+            background: 'rgba(255,255,255,0.15)', color: '#fff',
+            fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          {copied ? 'Скопировано!' : 'Поделиться'}
+        </button>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>
+          нажми в другом месте, чтобы закрыть
         </div>
       </div>
     </div>
