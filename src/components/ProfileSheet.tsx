@@ -46,6 +46,7 @@ export function ProfileSheet({ onClose }: Props) {
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
 
   useEffect(() => {
@@ -146,9 +147,20 @@ export function ProfileSheet({ onClose }: Props) {
             <div style={{ marginBottom: 28 }}>
               <SectionLabel>Insights · неделя</SectionLabel>
               <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px' }}>
-                {insights.bestDayOfWeek && (
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
-                    Лучший день — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span> 🌟
+                {insights.bestDayOfWeek && insights.totalDays >= 7 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+                    <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
+                      Лучший день — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span> 🌟
+                    </span>
+                    <span
+                      onClick={() => setShowBestDayInfo(true)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                        width: 15, height: 15, borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)',
+                        fontSize: 9, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+                      }}
+                    >?</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -371,6 +383,24 @@ export function ProfileSheet({ onClose }: Props) {
         achievements={achievements}
         onClose={() => setShowAchievements(false)}
       />
+    )}
+    {showBestDayInfo && (
+      <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
+        <div style={{ paddingTop: 8 }}>
+          <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+            Лучший день
+          </div>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+            Это день недели, в который твои оценки в среднем выше всего — по всем потребностям сразу.
+          </p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+            Не значит, что он всегда хороший. Но чаще всего в этот день что-то складывается: отдых, общение, ритм. Полезно замечать — и беречь.
+          </p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+            Считается по всей истории наблюдений, поэтому становится точнее с каждой неделей.
+          </p>
+        </div>
+      </BottomSheet>
     )}
     </>
   );
