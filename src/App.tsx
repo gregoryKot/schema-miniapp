@@ -6,8 +6,10 @@ import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
+import { NoteSheet } from './components/NoteSheet';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
+const TODAY_DATE = new Date().toISOString().split('T')[0];
 
 const ABOUT_TEXT = [
   'Бывает, что день прошёл нормально — а внутри что-то не так. Или наоборот, всё объективно сложно, но ощущение живое и устойчивое.',
@@ -152,6 +154,7 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
+  const [showTodayNote, setShowTodayNote] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -311,7 +314,11 @@ export default function App() {
       )}
 
       {celebrationStreak !== null && (
-        <Celebration streak={celebrationStreak} onDone={() => setCelebrationStreak(null)} />
+        <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTodayNote(true); }} />
+      )}
+
+      {showTodayNote && (
+        <NoteSheet date={TODAY_DATE} onClose={() => setShowTodayNote(false)} />
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}

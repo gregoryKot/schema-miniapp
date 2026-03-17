@@ -27,6 +27,12 @@ export interface UserSettings {
   notifyEnabled: boolean;
   notifyUtcHour: number;
   notifyTzOffset: number;
+  notifyReminderEnabled: boolean;
+}
+
+export interface Achievement {
+  id: string;
+  earned: boolean;
 }
 
 export const api = {
@@ -36,6 +42,9 @@ export const api = {
   history:        (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),
   getSettings:    () => get<UserSettings>('/api/settings'),
   updateSettings: (body: Partial<UserSettings>) => post('/api/settings', body),
+  getAchievements: () => get<Achievement[]>('/api/achievements'),
+  getNote:         (date: string) => get<{ text: string | null }>(`/api/note?date=${date}`),
+  saveNote:        (date: string, text: string) => post('/api/note', { date, text }),
   getStreak:      () => get<{
     currentStreak: number;
     longestStreak: number;

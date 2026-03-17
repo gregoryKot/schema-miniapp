@@ -1,7 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
+import { NoteSheet } from './NoteSheet';
+import { api } from '../api';
 
 interface Props {
   needs: Need[];
@@ -343,9 +345,17 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
+  const [showNote, setShowNote] = useState(false);
+  const [noteText, setNoteText] = useState<string | null>(null);
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
+
+  useEffect(() => {
+    if (history.length === 0) return;
+    const date = history[selectedIdx]?.date;
+    if (date) api.getNote(date).then(r => setNoteText(r.text));
+  }, [selectedIdx, history]);
 
   const handleTapNeed = useCallback((n: Need) => {
     if (showHint) {
@@ -487,6 +497,25 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
             <div style={{ padding: '0 20px' }}>
               <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
+
+            {/* Note */}
+            <div style={{ padding: '12px 20px 0' }}>
+              <div
+                onClick={() => setShowNote(true)}
+                style={{
+                  padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
+                  background: noteText ? 'rgba(255,255,255,0.04)' : 'transparent',
+                  border: `1px dashed ${noteText ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.12)'}`,
+                  display: 'flex', alignItems: 'center', gap: 10,
+                }}
+              >
+                <span style={{ fontSize: 16 }}>📝</span>
+                <span style={{ fontSize: 13, color: noteText ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {noteText || 'Добавить заметку к этому дню'}
+                </span>
+                {noteText && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)' }}>›</span>}
+              </div>
+            </div>
           </>
         ) : (
           /* ── Неделя ── */
@@ -518,6 +547,16 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           </div>
         )}
       </div>
+
+      {showNote && history[selectedIdx] && (
+        <NoteSheet
+          date={history[selectedIdx].date}
+          onClose={() => {
+            api.getNote(history[selectedIdx].date).then(r => setNoteText(r.text));
+            setShowNote(false);
+          }}
+        />
+      )}
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 

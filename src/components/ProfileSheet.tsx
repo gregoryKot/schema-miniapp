@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { api, UserSettings } from '../api';
+import { api, UserSettings, Achievement } from '../api';
 import { BottomSheet } from './BottomSheet';
+import { AchievementsSheet } from './AchievementsSheet';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 
@@ -41,11 +42,14 @@ interface Props { onClose: () => void }
 export function ProfileSheet({ onClose }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
+  const [achievements, setAchievements] = useState<Achievement[] | null>(null);
+  const [showAchievements, setShowAchievements] = useState(false);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
 
   useEffect(() => {
     api.getSettings().then(setSettings);
     api.getStreak().then(setStreak);
+    api.getAchievements().then(setAchievements);
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -133,6 +137,35 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           )}
 
+          {/* Achievements block */}
+          {achievements && (
+            <div style={{ marginBottom: 28 }}>
+              <SectionLabel>Достижения</SectionLabel>
+              <div
+                onClick={() => setShowAchievements(true)}
+                style={{
+                  background: 'rgba(255,255,255,0.04)', borderRadius: 16,
+                  padding: '14px 16px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flex: 1 }}>
+                  {achievements.slice(0, 8).map(a => (
+                    <span key={a.id} style={{ fontSize: 20, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.25)' }}>
+                      {({ first_day:'🌱',streak_3:'🔥',streak_7:'⭐',streak_14:'💫',streak_30:'🏆',streak_100:'👑',total_10:'📅',total_50:'📆',high_day:'✨',all_above7:'🎯',comeback:'🔄',growth:'📈' } as Record<string,string>)[a.id]}
+                    </span>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+                  <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
+                    {achievements.filter(a => a.earned).length}/{achievements.length}
+                  </span>
+                  <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }}>›</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Notifications block */}
           <SectionLabel>Уведомления</SectionLabel>
           <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
@@ -184,6 +217,7 @@ export function ProfileSheet({ onClose }: Props) {
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
                 opacity: settings.notifyEnabled ? 1 : 0.35,
               }}
             >
@@ -191,6 +225,36 @@ export function ProfileSheet({ onClose }: Props) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'right', maxWidth: 160 }}>{tzLabel}</span>
                 <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>›</span>
+              </div>
+            </div>
+
+            {/* Reminder toggle */}
+            <div
+              onClick={() => settings.notifyEnabled && patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '14px 16px',
+                cursor: settings.notifyEnabled ? 'pointer' : 'default',
+                opacity: settings.notifyEnabled ? 1 : 0.35,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 15, color: '#fff' }}>Напоминание за час</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                  За час до дневника, если не заполнен
+                </div>
+              </div>
+              <div style={{
+                width: 44, height: 26, borderRadius: 13, flexShrink: 0,
+                background: settings.notifyReminderEnabled && settings.notifyEnabled ? '#a78bfa' : 'rgba(255,255,255,0.12)',
+                position: 'relative', transition: 'background 0.2s',
+              }}>
+                <div style={{
+                  position: 'absolute', top: 3,
+                  left: settings.notifyReminderEnabled ? 21 : 3,
+                  width: 20, height: 20, borderRadius: '50%',
+                  background: '#fff', transition: 'left 0.2s',
+                }} />
               </div>
             </div>
           </div>
@@ -262,5 +326,12 @@ export function ProfileSheet({ onClose }: Props) {
         </div>
       )}
     </BottomSheet>
+
+    {showAchievements && achievements && (
+      <AchievementsSheet
+        achievements={achievements}
+        onClose={() => setShowAchievements(false)}
+      />
+    )}
   );
 }

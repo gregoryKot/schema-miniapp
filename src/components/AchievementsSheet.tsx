@@ -1,0 +1,63 @@
+import { BottomSheet } from './BottomSheet';
+import { Achievement } from '../api';
+
+const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: string }> = {
+  first_day:  { emoji: '🌱', title: 'Первый шаг',     desc: 'Заполнил дневник первый раз' },
+  streak_3:   { emoji: '🔥', title: 'Начало серии',   desc: '3 дня подряд' },
+  streak_7:   { emoji: '⭐', title: 'Неделя',          desc: '7 дней подряд' },
+  streak_14:  { emoji: '💫', title: 'Две недели',      desc: '14 дней подряд' },
+  streak_30:  { emoji: '🏆', title: 'Месяц',           desc: '30 дней подряд' },
+  streak_100: { emoji: '👑', title: 'Сотня',           desc: '100 дней подряд' },
+  total_10:   { emoji: '📅', title: '10 дней',         desc: '10 дней всего' },
+  total_50:   { emoji: '📆', title: '50 дней',         desc: '50 дней всего' },
+  high_day:   { emoji: '✨', title: 'Хороший день',    desc: 'Средний индекс выше 8' },
+  all_above7: { emoji: '🎯', title: 'Баланс',          desc: 'Все потребности выше 7 в один день' },
+  comeback:   { emoji: '🔄', title: 'Возвращение',     desc: 'Вернулся после перерыва в 3+ дня' },
+  growth:     { emoji: '📈', title: 'Рост',            desc: 'Потребность выросла на 3+ за неделю' },
+};
+
+interface Props {
+  achievements: Achievement[];
+  onClose: () => void;
+}
+
+export function AchievementsSheet({ achievements, onClose }: Props) {
+  const earned = achievements.filter(a => a.earned).length;
+
+  return (
+    <BottomSheet onClose={onClose}>
+      <div style={{ paddingTop: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff' }}>Достижения</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
+            {earned} / {achievements.length}
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {achievements.map(a => {
+            const meta = ACHIEVEMENT_META[a.id];
+            if (!meta) return null;
+            return (
+              <div key={a.id} style={{
+                background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.06)'}`,
+                borderRadius: 16, padding: '14px 12px',
+              }}>
+                <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>
+                  {meta.emoji}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>
+                  {meta.title}
+                </div>
+                <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>
+                  {meta.desc}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </BottomSheet>
+  );
+}
