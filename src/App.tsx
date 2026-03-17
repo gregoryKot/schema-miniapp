@@ -307,6 +307,7 @@ export default function App() {
           saved={saved}
           onChange={handleChange}
           onSaved={handleSaved}
+          onNote={() => setShowTodayNote(true)}
         />
       )}
       {tab === 'history' && (

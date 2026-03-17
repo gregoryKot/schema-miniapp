@@ -11,6 +11,7 @@ interface Props {
   saved: Record<string, boolean>;
   onChange: (needId: string, value: number) => void;
   onSaved: (needId: string) => void;
+  onNote: () => void;
 }
 
 function DonutRing({ percent }: { percent: number }) {
@@ -110,7 +111,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
+export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
@@ -204,9 +205,22 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
         <DonutRing percent={(avg / 10) * 100} />
       </div>
 
-      {/* Auto-save status */}
-      <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', minHeight: 18 }}>
-        {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
+      {/* Note button + auto-save status */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 18 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
+          {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
+        </div>
+        <button
+          onClick={onNote}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            background: 'rgba(255,255,255,0.06)', border: 'none',
+            borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
+            color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
+          }}
+        >
+          ✏️ Заметка
+        </button>
       </div>
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}

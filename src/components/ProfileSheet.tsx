@@ -47,6 +47,7 @@ export function ProfileSheet({ onClose }: Props) {
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [showAchievements, setShowAchievements] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
 
   useEffect(() => {
@@ -218,7 +219,19 @@ export function ProfileSheet({ onClose }: Props) {
           )}
 
           {/* Notifications block */}
-          <SectionLabel>Уведомления</SectionLabel>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <SectionLabel>Уведомления</SectionLabel>
+            <span
+              onClick={() => setShowNotifyInfo(true)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 15, height: 15, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)',
+                fontSize: 9, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+                marginBottom: 10,
+              }}
+            >?</span>
+          </div>
           <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 24 }}>
 
             {/* Toggle */}
@@ -230,7 +243,7 @@ export function ProfileSheet({ onClose }: Props) {
                 borderBottom: '1px solid rgba(255,255,255,0.06)',
               }}
             >
-              <span style={{ fontSize: 15, color: '#fff' }}>Напоминания</span>
+              <span style={{ fontSize: 15, color: '#fff' }}>Итоги дня</span>
               <div style={{
                 width: 44, height: 26, borderRadius: 13,
                 background: settings.notifyEnabled ? '#a78bfa' : 'rgba(255,255,255,0.12)',
@@ -383,6 +396,24 @@ export function ProfileSheet({ onClose }: Props) {
         achievements={achievements}
         onClose={() => setShowAchievements(false)}
       />
+    )}
+    {showNotifyInfo && (
+      <BottomSheet onClose={() => setShowNotifyInfo(false)} zIndex={300}>
+        <div style={{ paddingTop: 8 }}>
+          <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+            Зачем уведомления
+          </div>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+            Регулярность — это всё. Один раз в день, в одно и то же время, формирует привычку наблюдать за собой. Без неё паттерн не складывается.
+          </p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+            <b style={{ color: '#fff' }}>Итоги дня</b> — приходят после того, как заполнишь дневник: твои оценки в виде сводки. Приятно видеть день в цифрах.
+          </p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+            <b style={{ color: '#fff' }}>Напоминание за час</b> — лёгкий толчок, если день был насыщенным и дневник ещё не заполнен.
+          </p>
+        </div>
+      </BottomSheet>
     )}
     {showBestDayInfo && (
       <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
