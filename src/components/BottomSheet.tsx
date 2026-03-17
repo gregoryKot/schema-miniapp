@@ -39,8 +39,8 @@ export function BottomSheet({ onClose, children, zIndex = 200 }: Props) {
 
   return (
     <>
-      {/* Backdrop — no onClick to avoid triggering Telegram close gesture */}
       <div
+        onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex,
           background: 'rgba(0,0,0,0.55)',
