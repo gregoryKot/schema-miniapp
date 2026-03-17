@@ -166,10 +166,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (tab === 'history' && history.length === 0) {
+    if (tab === 'history') {
       api.history(7).then(setHistory);
     }
-  }, [tab, history.length]);
+  }, [tab]);
 
   const handleChange = useCallback((needId: string, value: number) => {
     setRatings((prev) => ({ ...prev, [needId]: value }));
