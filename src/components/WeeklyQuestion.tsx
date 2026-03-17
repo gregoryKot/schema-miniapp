@@ -1,0 +1,100 @@
+import { useState } from 'react';
+import { api } from '../api';
+
+const QUESTIONS = [
+  'Что было самым трудным на этой неделе?',
+  'Что дало тебе энергию на этой неделе?',
+  'Был ли момент, когда ты чувствовал себя по-настоящему собой?',
+  'Что ты хотел бы сделать иначе?',
+  'Что хочется взять с собой в следующую неделю?',
+  'Как ты заботился о себе на этой неделе?',
+  'Что ты заметил нового о себе?',
+  'Какая потребность требовала больше всего внимания?',
+];
+
+function getWeekKey() {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const week = Math.ceil(((now.getTime() - startOfYear.getTime()) / 86400000 + startOfYear.getDay() + 1) / 7);
+  return `weekly_q_${now.getFullYear()}_${week}`;
+}
+
+function getQuestion(): string {
+  const now = new Date();
+  const week = Math.ceil((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 604800000);
+  return QUESTIONS[week % QUESTIONS.length];
+}
+
+function shouldShow(): boolean {
+  if (localStorage.getItem(getWeekKey())) return false;
+  const dow = new Date().getDay(); // 1 = Monday
+  return dow === 1;
+}
+
+interface Props {
+  date: string; // today's date YYYY-MM-DD
+  onDismiss: () => void;
+}
+
+export function WeeklyQuestion({ date, onDismiss }: Props) {
+  const [text, setText] = useState('');
+  const [saving, setSaving] = useState(false);
+  const question = getQuestion();
+
+  async function handleSave() {
+    setSaving(true);
+    await api.saveNote(date, `[Вопрос недели] ${question}\n\n${text.trim()}`);
+    localStorage.setItem(getWeekKey(), '1');
+    setSaving(false);
+    onDismiss();
+  }
+
+  function handleSkip() {
+    localStorage.setItem(getWeekKey(), '1');
+    onDismiss();
+  }
+
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(79,163,247,0.08))',
+      border: '1px solid rgba(167,139,250,0.25)',
+      borderRadius: 16, padding: '16px 18px', marginBottom: 20,
+    }}>
+      <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+        Вопрос недели
+      </div>
+      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, marginBottom: 14 }}>
+        {question}
+      </div>
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Напиши, что приходит в голову..."
+        maxLength={500}
+        rows={3}
+        style={{
+          width: '100%', background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10,
+          padding: '10px 12px', color: '#fff', fontSize: 13, lineHeight: 1.5,
+          resize: 'none', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
+          marginBottom: 10,
+        }}
+      />
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={handleSkip} style={{
+          flex: 1, padding: '9px 0', border: 'none', borderRadius: 10,
+          background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)',
+          fontSize: 12, cursor: 'pointer',
+        }}>Пропустить</button>
+        <button onClick={handleSave} disabled={!text.trim() || saving} style={{
+          flex: 2, padding: '9px 0', border: 'none', borderRadius: 10,
+          background: text.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.06)',
+          color: text.trim() ? '#a78bfa' : 'rgba(255,255,255,0.2)',
+          fontSize: 12, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
+        }}>Сохранить</button>
+      </div>
+    </div>
+  );
+}
+
+export { shouldShow as shouldShowWeeklyQuestion };

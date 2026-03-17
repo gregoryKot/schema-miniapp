@@ -8,6 +8,10 @@ import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
+import { TagPicker } from './components/TagPicker';
+import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
+import { PairCard } from './components/PairCard';
+import { PairSheet } from './components/PairSheet';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -156,6 +160,10 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
+  const [showTagPicker, setShowTagPicker] = useState(false);
+  const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
+  const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
+  const [showPairSheet, setShowPairSheet] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -172,6 +180,12 @@ export default function App() {
       .then(([n, r]) => { setNeeds(n); setRatings(r); })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
+    api.getPair().then(setPairData).catch(() => {});
+    const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+    if (startParam?.startsWith('pair_')) {
+      const code = startParam.replace('pair_', '');
+      api.joinPair(code).then(() => api.getPair().then(setPairData)).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -190,7 +204,10 @@ export default function App() {
     setSaved((prev) => ({ ...prev, [needId]: true }));
     if (!localStorage.getItem(TODAY_KEY)) {
       localStorage.setItem(TODAY_KEY, '1');
-      api.getStreak().then(s => { if (s.currentStreak > 0) setCelebrationStreak(s.currentStreak); });
+      api.getStreak().then(s => {
+        if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
+        else { setShowTagPicker(true); }
+      });
     }
   }, []);
 
@@ -296,6 +313,21 @@ export default function App() {
         </div>
       </div>
 
+      {tab === 'today' && showWeeklyQ && (
+        <div style={{ padding: '16px 20px 0' }}>
+          <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
+        </div>
+      )}
+      {tab === 'today' && pairData !== null && (
+        <div style={{ padding: '8px 20px 0' }}>
+          <PairCard
+            partnerIndex={pairData.partnerIndex}
+            partnerTodayDone={pairData.partnerTodayDone}
+            showInvite={!pairData.paired}
+            onInvite={() => setShowPairSheet(true)}
+          />
+        </div>
+      )}
       {tab === 'today' && (
         <TodayView
           needs={needs}
@@ -313,7 +345,21 @@ export default function App() {
       )}
 
       {celebrationStreak !== null && (
-        <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTodayNote(true); }} />
+        <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTagPicker(true); }} />
+      )}
+
+      {showTagPicker && (
+        <TagPicker
+          onDone={async (tags) => {
+            setShowTagPicker(false);
+            if (tags.length > 0) {
+              const note = await api.getNote(TODAY_DATE);
+              await api.saveNote(TODAY_DATE, note.text ?? '', tags);
+            }
+            setShowTodayNote(true);
+          }}
+          onSkip={() => { setShowTagPicker(false); setShowTodayNote(true); }}
+        />
       )}
 
       {showTodayNote && (
@@ -321,6 +367,8 @@ export default function App() {
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
+
+      {showPairSheet && <PairSheet onClose={() => { setShowPairSheet(false); api.getPair().then(setPairData); }} />}
 
       {showAbout && (
         <BottomSheet onClose={() => setShowAbout(false)}>

@@ -43,8 +43,8 @@ export const api = {
   getSettings:    () => get<UserSettings>('/api/settings'),
   updateSettings: (body: Partial<UserSettings>) => post('/api/settings', body),
   getAchievements: () => get<Achievement[]>('/api/achievements'),
-  getNote:         (date: string) => get<{ text: string | null }>(`/api/note?date=${date}`),
-  saveNote:        (date: string, text: string) => post('/api/note', { date, text }),
+  getNote:         (date: string) => get<{ text: string | null; tags: string[] }>(`/api/note?date=${date}`),
+  saveNote:        (date: string, text: string, tags?: string[]) => post('/api/note', { date, text, tags }),
   getStreak:      () => get<{
     currentStreak: number;
     longestStreak: number;
@@ -59,4 +59,17 @@ export const api = {
     totalDays: number;
   }>('/api/insights'),
   getExport: () => get<{ text: string }>('/api/export'),
+  getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null }>('/api/pair'),
+  createPairInvite: async () => {
+    const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
+    const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
+    const res = await fetch(`${BASE}/api/pair/invite`, { method: 'POST', headers: { 'x-telegram-init-data': window.Telegram?.WebApp?.initData ?? '', 'Content-Type': 'application/json' }, body: '{}' });
+    return res.json() as Promise<{ code: string; url: string }>;
+  },
+  joinPair: (code: string) => post('/api/pair/join', { code }),
+  leavePair: async () => {
+    const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
+    const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
+    await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: { 'x-telegram-init-data': window.Telegram?.WebApp?.initData ?? '', 'Content-Type': 'application/json' } });
+  },
 };

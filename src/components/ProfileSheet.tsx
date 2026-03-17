@@ -3,6 +3,7 @@ import { api, UserSettings, Achievement } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { AchievementsSheet } from './AchievementsSheet';
 import { Loader } from './Loader';
+import { PairSheet } from './PairSheet';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
@@ -70,6 +71,7 @@ export function ProfileSheet({ onClose }: Props) {
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showPair, setShowPair] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
@@ -275,6 +277,28 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           )}
 
+          {/* ── Вместе ── */}
+          <div style={{ marginBottom: 24 }}>
+            <SectionLabel>Вместе</SectionLabel>
+            <div
+              onClick={() => setShowPair(true)}
+              style={{
+                background: 'rgba(255,255,255,0.04)', borderRadius: 16,
+                padding: '14px 16px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}
+            >
+              <span style={{ fontSize: 24 }}>🤝</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>Отслеживать вместе</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                  Пригласи друга — видите индексы друг друга
+                </div>
+              </div>
+              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+            </div>
+          </div>
+
           {/* ── Уведомления ── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <SectionLabel>Уведомления</SectionLabel>
@@ -423,6 +447,7 @@ export function ProfileSheet({ onClose }: Props) {
         </div>
       </BottomSheet>
     )}
+    {showPair && <PairSheet onClose={() => setShowPair(false)} />}
     </>
   );
 }
