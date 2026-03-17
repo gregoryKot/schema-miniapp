@@ -300,7 +300,7 @@ function SparklineRow({
 
 // ─── Insight card ─────────────────────────────────────────────────────────────
 
-function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string, number> }) {
+function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record<string, number>; onTap?: (n: Need) => void }) {
   if (needs.length === 0) return null;
   const lowest = needs.reduce((min, n) =>
     (ratings[n.id] ?? 0) < (ratings[min.id] ?? 0) ? n : min
@@ -308,14 +308,18 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
   const color = COLORS[lowest.id] ?? '#888';
 
   return (
-    <div style={{
-      background: 'rgba(255,255,255,0.05)',
-      borderRadius: 16,
-      padding: '12px 14px',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    }}>
+    <div
+      onClick={() => onTap?.(lowest)}
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        borderRadius: 16,
+        padding: '12px 14px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: onTap ? 'pointer' : 'default',
+      }}
+    >
       <div>
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 3 }}>
           Стоит уделить внимание
@@ -324,9 +328,10 @@ function InsightCard({ needs, ratings }: { needs: Need[]; ratings: Record<string
           {lowest.chartLabel}
         </div>
       </div>
-      <span style={{ fontSize: 16, fontWeight: 700, color }}>
-        {ratings[lowest.id] ?? 0}
-      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 16, fontWeight: 700, color }}>{ratings[lowest.id] ?? 0}</span>
+        {onTap && <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }}>›</span>}
+      </div>
     </div>
   );
 }
@@ -480,7 +485,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
 
             {/* Insight card */}
             <div style={{ padding: '0 20px' }}>
-              <InsightCard needs={needs} ratings={selectedRatings} />
+              <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
           </>
         ) : (
@@ -508,7 +513,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
               ))}
             </div>
             <div style={{ marginTop: 28 }}>
-              <InsightCard needs={needs} ratings={selectedRatings} />
+              <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
           </div>
         )}

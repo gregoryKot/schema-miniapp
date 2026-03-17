@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { api, UserSettings } from '../api';
 import { BottomSheet } from './BottomSheet';
 
+type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
+
+const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+
 const TIMEZONES = [
   { label: 'UTC−8 (Лос-Анджелес)', offset: -8 },
   { label: 'UTC−5 (Нью-Йорк)',      offset: -5 },
@@ -36,9 +40,13 @@ interface Props { onClose: () => void }
 
 export function ProfileSheet({ onClose }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [streak, setStreak] = useState<StreakData | null>(null);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
 
-  useEffect(() => { api.getSettings().then(setSettings); }, []);
+  useEffect(() => {
+    api.getSettings().then(setSettings);
+    api.getStreak().then(setStreak);
+  }, []);
 
   async function patch(update: Partial<UserSettings>) {
     if (!settings) return;
@@ -68,6 +76,62 @@ export function ProfileSheet({ onClose }: Props) {
           <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 24 }}>
             Профиль
           </div>
+
+          {/* Streak block */}
+          {streak && (
+            <div style={{ marginBottom: 28 }}>
+              <SectionLabel>Серия</SectionLabel>
+
+              {/* Main streak number */}
+              <div style={{
+                background: 'rgba(255,255,255,0.04)', borderRadius: 16,
+                padding: '20px 20px 16px', marginBottom: 8,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+                  <div style={{ fontSize: 44, lineHeight: 1 }}>{streak.todayDone ? '🔥' : '🫥'}</div>
+                  <div>
+                    <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>
+                      {streak.currentStreak}
+                    </div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                      {streak.currentStreak === 1 ? 'день подряд' : streak.currentStreak >= 5 ? 'дней подряд' : 'дня подряд'}
+                    </div>
+                  </div>
+                  <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+                      Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{streak.longestStreak}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+                      Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{streak.totalDays}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Week dots */}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  {streak.weekDots.map((done, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{
+                        width: 28, height: 28, borderRadius: '50%',
+                        background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: done ? 14 : 0,
+                      }}>
+                        {done && '✓'}
+                      </div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{DOW[i]}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {!streak.todayDone && (
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center', padding: '4px 0' }}>
+                  Заполни дневник сегодня, чтобы не потерять серию
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Notifications block */}
           <SectionLabel>Уведомления</SectionLabel>

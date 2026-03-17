@@ -36,4 +36,11 @@ export const api = {
   history:        (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),
   getSettings:    () => get<UserSettings>('/api/settings'),
   updateSettings: (body: Partial<UserSettings>) => post('/api/settings', body),
+  getStreak:      () => get<{
+    currentStreak: number;
+    longestStreak: number;
+    totalDays: number;
+    todayDone: boolean;
+    weekDots: boolean[];
+  }>('/api/streak'),
 };

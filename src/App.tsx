@@ -5,6 +5,9 @@ import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { ProfileSheet } from './components/ProfileSheet';
+import { Celebration } from './components/Celebration';
+
+const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 
 const ABOUT_TEXT = [
   'Бывает, что день прошёл нормально — а внутри что-то не так. Или наоборот, всё объективно сложно, но ощущение живое и устойчивое.',
@@ -148,6 +151,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -178,6 +182,10 @@ export default function App() {
 
   const handleSaved = useCallback((needId: string) => {
     setSaved((prev) => ({ ...prev, [needId]: true }));
+    if (!localStorage.getItem(TODAY_KEY)) {
+      localStorage.setItem(TODAY_KEY, '1');
+      api.getStreak().then(s => { if (s.currentStreak > 0) setCelebrationStreak(s.currentStreak); });
+    }
   }, []);
 
   if (loading) {
@@ -300,6 +308,10 @@ export default function App() {
       )}
       {tab === 'history' && (
         <HistoryView needs={needs} history={history} currentRatings={ratings} />
+      )}
+
+      {celebrationStreak !== null && (
+        <Celebration streak={celebrationStreak} onDone={() => setCelebrationStreak(null)} />
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
