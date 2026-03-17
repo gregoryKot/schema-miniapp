@@ -3,6 +3,7 @@ import { Need, YESTERDAY } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
 import { NeedTodaySheet } from './NeedTodaySheet';
+import { IndexInfoSheet } from './IndexInfoSheet';
 
 interface Props {
   needs: Need[];
@@ -113,6 +114,7 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
+  const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
   );
@@ -174,15 +176,19 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
       }} />
 
       {/* Summary card */}
-      <div style={{
-        background: 'rgba(255,255,255,0.05)',
-        borderRadius: 16,
-        padding: '16px 18px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-      }}>
+      <div
+        onClick={() => setShowIndexInfo(true)}
+        style={{
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: 16,
+          padding: '16px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: 16,
+          cursor: 'pointer',
+        }}
+      >
         <div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
             Индекс дня
@@ -202,6 +208,8 @@ export function TodayView({ needs, ratings, onChange, onSaved }: Props) {
       <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', minHeight: 18 }}>
         {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
       </div>
+
+      {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 
       {activeNeed && (
         <NeedTodaySheet

@@ -1,0 +1,24 @@
+import { BottomSheet } from './BottomSheet';
+
+const PARAGRAPHS = [
+  'Индекс — это не цель. Нет задачи достичь 10 или не опускаться ниже 7.',
+  'Потребности не работают как светофор. Они меняются — в зависимости от того, что происходит, с кем ты, насколько выспался.',
+  'День на 5–6, прожитый осознанно, ценнее дня на 9, прожитого на автопилоте. Дневник нужен не чтобы улучшить показатели — а чтобы лучше видеть себя.',
+];
+
+export function IndexInfoSheet({ onClose }: { onClose: () => void }) {
+  return (
+    <BottomSheet onClose={onClose}>
+      <div style={{ paddingTop: 8 }}>
+        <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
+          Об индексе дня
+        </div>
+        {PARAGRAPHS.map((p, i) => (
+          <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+            {p}
+          </p>
+        ))}
+      </div>
+    </BottomSheet>
+  );
+}

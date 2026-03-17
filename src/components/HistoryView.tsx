@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
+import { IndexInfoSheet } from './IndexInfoSheet';
 
 interface Props {
   needs: Need[];
@@ -46,11 +47,13 @@ function arcPath(cx: number, cy: number, r: number, centerAngle: number, halfSpr
 // ─── Wheel (no labels) ─────────────────────────────────────────────────────────
 
 function NeedsWheel({
-  needs, ratings, prevRatings = {},
+  needs, ratings, prevRatings = {}, onClickNeed, onClickCenter,
 }: {
   needs: Need[];
   ratings: Record<string, number>;
   prevRatings?: Record<string, number>;
+  onClickNeed?: (need: Need) => void;
+  onClickCenter?: () => void;
 }) {
   const W = 360, H = 280;
   const cx = W / 2;       // 180
@@ -153,6 +156,23 @@ function NeedsWheel({
         <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.4)">
           {avg >= prevAvg ? '↑' : '↓'} вчера {prevAvg.toFixed(1)}
         </text>
+      )}
+
+      {/* Clickable sector hit areas */}
+      {onClickNeed && needs.map((need, i) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        const d = petalPath(cx, cy, R, angle, SPREAD);
+        if (!d) return null;
+        return (
+          <path key={`hit-${need.id}`} d={d} fill="transparent"
+            onClick={() => onClickNeed(need)} style={{ cursor: 'pointer' }} />
+        );
+      })}
+
+      {/* Clickable center */}
+      {onClickCenter && (
+        <circle cx={cx} cy={cy} r={CENTER_R} fill="transparent"
+          onClick={onClickCenter} style={{ cursor: 'pointer' }} />
       )}
     </svg>
   );
@@ -317,6 +337,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
+  const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
@@ -432,7 +453,11 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
             {/* Chart */}
             <div style={{ width: '100%', marginTop: 12, marginBottom: showHint ? 4 : 12 }}>
               <div key={selected.date}>
-                <NeedsWheel needs={needs} ratings={selectedRatings} prevRatings={prevRatings} />
+                <NeedsWheel
+                  needs={needs} ratings={selectedRatings} prevRatings={prevRatings}
+                  onClickNeed={handleTapNeed}
+                  onClickCenter={() => setShowIndexInfo(true)}
+                />
               </div>
             </div>
 
@@ -488,6 +513,8 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           </div>
         )}
       </div>
+
+      {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 
       {activeNeed && (
         <NeedHistorySheet
