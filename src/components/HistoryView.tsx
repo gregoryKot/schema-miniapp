@@ -347,6 +347,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [showNote, setShowNote] = useState(false);
   const [noteText, setNoteText] = useState<string | null>(null);
+  const [noteTags, setNoteTags] = useState<string[]>([]);
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
@@ -354,7 +355,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   useEffect(() => {
     if (history.length === 0) return;
     const date = history[selectedIdx]?.date;
-    if (date) api.getNote(date).then(r => setNoteText(r.text));
+    if (date) api.getNote(date).then(r => { setNoteText(r.text); setNoteTags(r.tags ?? []); });
   }, [selectedIdx, history]);
 
   const handleTapNeed = useCallback((n: Need) => {
@@ -515,7 +516,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                     borderRadius: 16, padding: '14px 16px', marginBottom: 16,
                   }}>
                     <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 10 }}>
-                      {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
+                      {label} несколько дней невысокая. Иногда за этим стоит что-то важное. Терапевт поможет разобраться — и сводка из приложения сэкономит вам обоим час разговора.
                     </div>
                     <a
                       href="https://cal.com/kotlarewski"
@@ -526,7 +527,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                         textDecoration: 'none', fontWeight: 500,
                       }}
                     >
-                      Записаться на сессию →
+                      Записаться и взять сводку →
                     </a>
                   </div>
                 );
@@ -550,6 +551,18 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                 </span>
                 {noteText && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)' }}>›</span>}
               </div>
+              {noteTags.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                  {noteTags.map(tag => (
+                    <span key={tag} style={{
+                      fontSize: 11, padding: '3px 10px', borderRadius: 20,
+                      background: 'rgba(167,139,250,0.15)',
+                      border: '1px solid rgba(167,139,250,0.3)',
+                      color: '#a78bfa',
+                    }}>{tag}</span>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -620,7 +633,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
         <NoteSheet
           date={history[selectedIdx].date}
           onClose={() => {
-            api.getNote(history[selectedIdx].date).then(r => setNoteText(r.text));
+            api.getNote(history[selectedIdx].date).then(r => { setNoteText(r.text); setNoteTags(r.tags ?? []); });
             setShowNote(false);
           }}
         />

@@ -8,6 +8,7 @@ import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
+import { SchemaInfoSheet } from './components/SchemaInfoSheet';
 import { TagPicker } from './components/TagPicker';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
 import { PairCard } from './components/PairCard';
@@ -157,6 +158,7 @@ export default function App() {
   );
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
+  const [showSchemaInfo, setShowSchemaInfo] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
@@ -381,9 +383,28 @@ export default function App() {
                 {p}
               </p>
             ))}
+            <div
+              onClick={() => { setShowAbout(false); setShowSchemaInfo(true); }}
+              style={{
+                background: 'rgba(167,139,250,0.1)',
+                border: '1px solid rgba(167,139,250,0.2)',
+                borderRadius: 14, padding: '14px 16px',
+                cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Схема-терапия</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Схемы, режимы, потребности</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.7)" strokeWidth="2" strokeLinecap="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </div>
           </div>
         </BottomSheet>
       )}
+
+      {showSchemaInfo && <SchemaInfoSheet onClose={() => setShowSchemaInfo(false)} />}
     </div>
   );
 }
