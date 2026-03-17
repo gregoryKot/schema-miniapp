@@ -52,4 +52,9 @@ export const api = {
     todayDone: boolean;
     weekDots: boolean[];
   }>('/api/streak'),
+  getInsights:    () => get<{
+    weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>;
+    bestDayOfWeek: string | null;
+    totalDays: number;
+  }>('/api/insights'),
 };

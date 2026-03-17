@@ -6,7 +6,7 @@ import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
-import { NoteSheet } from './components/NoteSheet';
+import { ReflectionSheet } from './components/ReflectionSheet';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -318,7 +318,7 @@ export default function App() {
       )}
 
       {showTodayNote && (
-        <NoteSheet date={TODAY_DATE} onClose={() => setShowTodayNote(false)} />
+        <ReflectionSheet date={TODAY_DATE} needs={needs} ratings={ratings} onClose={() => setShowTodayNote(false)} />
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}

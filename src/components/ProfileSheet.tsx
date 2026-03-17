@@ -4,6 +4,7 @@ import { BottomSheet } from './BottomSheet';
 import { AchievementsSheet } from './AchievementsSheet';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
+type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; totalDays: number };
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
@@ -43,6 +44,7 @@ export function ProfileSheet({ onClose }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
+  const [insights, setInsights] = useState<InsightsData | null>(null);
   const [showAchievements, setShowAchievements] = useState(false);
   const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
 
@@ -50,6 +52,7 @@ export function ProfileSheet({ onClose }: Props) {
     api.getSettings().then(setSettings);
     api.getStreak().then(setStreak);
     api.getAchievements().then(setAchievements);
+    api.getInsights().then(setInsights);
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -74,6 +77,7 @@ export function ProfileSheet({ onClose }: Props) {
     ?? `UTC+${settings.notifyTzOffset}`;
 
   return (
+    <>
     <BottomSheet onClose={() => { setView('main'); onClose(); }}>
       {view === 'main' && (
         <div style={{ paddingTop: 8 }}>
@@ -134,6 +138,41 @@ export function ProfileSheet({ onClose }: Props) {
                   Заполни дневник сегодня, чтобы не потерять серию
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Insights block */}
+          {insights && insights.weeklyStats.some(s => s.avg !== null) && (
+            <div style={{ marginBottom: 28 }}>
+              <SectionLabel>Insights · неделя</SectionLabel>
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px' }}>
+                {insights.bestDayOfWeek && (
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
+                    Лучший день — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span> 🌟
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {insights.weeklyStats.filter(s => s.avg !== null).map(s => {
+                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.3)';
+                    const barW = Math.round(((s.avg ?? 0) / 10) * 100);
+                    return (
+                      <div key={s.needId}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>
+                            {({ attachment: 'Привязанность', autonomy: 'Автономия', expression: 'Выражение чувств', play: 'Спонтанность', limits: 'Границы' } as Record<string,string>)[s.needId]}
+                          </span>
+                          <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>
+                            {(s.avg ?? 0).toFixed(1)} {s.trend}
+                          </span>
+                        </div>
+                        <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.08)' }}>
+                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.6)' }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
 
@@ -333,5 +372,6 @@ export function ProfileSheet({ onClose }: Props) {
         onClose={() => setShowAchievements(false)}
       />
     )}
+    </>
   );
 }
