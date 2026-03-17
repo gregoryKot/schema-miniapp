@@ -7,6 +7,7 @@ import { BottomSheet } from './components/BottomSheet';
 import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
+import { Loader } from './components/Loader';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -159,6 +160,7 @@ export default function App() {
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
   const [history, setHistory] = useState<DayHistory[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -174,7 +176,8 @@ export default function App() {
 
   useEffect(() => {
     if (tab === 'history') {
-      api.history(7).then(setHistory);
+      setHistoryLoading(true);
+      api.history(7).then(setHistory).finally(() => setHistoryLoading(false));
     }
   }, [tab]);
 
@@ -192,14 +195,7 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return (
-      <div style={{
-        display: 'flex', justifyContent: 'center', alignItems: 'center',
-        height: '100vh', color: 'rgba(255,255,255,0.3)', fontSize: 15,
-      }}>
-        Загрузка...
-      </div>
-    );
+    return <Loader minHeight="100vh" />;
   }
 
   if (error) {
@@ -311,7 +307,9 @@ export default function App() {
         />
       )}
       {tab === 'history' && (
-        <HistoryView needs={needs} history={history} currentRatings={ratings} />
+        historyLoading
+          ? <Loader minHeight="60vh" />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} />
       )}
 
       {celebrationStreak !== null && (

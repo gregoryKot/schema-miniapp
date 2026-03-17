@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api, UserSettings, Achievement } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { AchievementsSheet } from './AchievementsSheet';
+import { Loader } from './Loader';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
@@ -89,9 +90,7 @@ export function ProfileSheet({ onClose }: Props) {
   if (!settings) {
     return (
       <BottomSheet onClose={onClose}>
-        <div style={{ padding: '40px 0', textAlign: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>
-          Загрузка...
-        </div>
+        <Loader minHeight="40vh" />
       </BottomSheet>
     );
   }
