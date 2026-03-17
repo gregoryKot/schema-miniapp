@@ -23,9 +23,17 @@ async function post(path: string, body: unknown): Promise<void> {
   if (!res.ok) throw new Error(`API error: ${res.status}`);
 }
 
+export interface UserSettings {
+  notifyEnabled: boolean;
+  notifyUtcHour: number;
+  notifyTzOffset: number;
+}
+
 export const api = {
-  needs:      () => get<import('./types').Need[]>('/api/needs'),
-  ratings:    () => get<Record<string, number>>('/api/ratings'),
-  saveRating: (needId: string, value: number) => post('/api/rating', { needId, value }),
-  history:    (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),
+  needs:          () => get<import('./types').Need[]>('/api/needs'),
+  ratings:        () => get<Record<string, number>>('/api/ratings'),
+  saveRating:     (needId: string, value: number) => post('/api/rating', { needId, value }),
+  history:        (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),
+  getSettings:    () => get<UserSettings>('/api/settings'),
+  updateSettings: (body: Partial<UserSettings>) => post('/api/settings', body),
 };

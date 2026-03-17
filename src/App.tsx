@@ -4,6 +4,7 @@ import { api } from './api';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
+import { ProfileSheet } from './components/ProfileSheet';
 
 const ABOUT_TEXT = [
   'Бывает, что день прошёл нормально — а внутри что-то не так. Или наоборот, всё объективно сложно, но ощущение живое и устойчивое.',
@@ -146,6 +147,7 @@ export default function App() {
   );
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -227,11 +229,16 @@ export default function App() {
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
             {formatHeaderDate()}
           </span>
-          {/* Conic-gradient dot */}
-          <div style={{
-            width: 10, height: 10, borderRadius: '50%',
-            background: 'conic-gradient(#ff6b9d, #ffd166, #06d6a0, #a78bfa, #4fa3f7, #ff6b9d)',
-          }} />
+          {/* Profile icon */}
+          <div
+            onClick={() => setShowProfile(true)}
+            style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.35)', lineHeight: 1, padding: 2 }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
         </div>
 
         {/* Title + subtitle */}
@@ -294,6 +301,8 @@ export default function App() {
       {tab === 'history' && (
         <HistoryView needs={needs} history={history} currentRatings={ratings} />
       )}
+
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
 
       {showAbout && (
         <BottomSheet onClose={() => setShowAbout(false)}>
