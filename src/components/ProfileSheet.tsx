@@ -1,18 +1,32 @@
 import { useState, useEffect } from 'react';
 import { api, UserSettings, Achievement } from '../api';
 import { BottomSheet } from './BottomSheet';
-import { AchievementsSheet } from './AchievementsSheet';
 import { Loader } from './Loader';
-import { PairSheet } from './PairSheet';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
+type PairData = { paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null };
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
 const NEED_NAMES: Record<string, string> = {
   attachment: 'Привязанность', autonomy: 'Автономия',
   expression: 'Выражение чувств', play: 'Спонтанность', limits: 'Границы',
+};
+
+const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: string }> = {
+  first_day:  { emoji: '🌱', title: 'Первый шаг',   desc: 'Заполнил дневник первый раз' },
+  streak_3:   { emoji: '🔥', title: 'Начало серии', desc: '3 дня подряд' },
+  streak_7:   { emoji: '⭐', title: 'Неделя',        desc: '7 дней подряд' },
+  streak_14:  { emoji: '💫', title: 'Две недели',    desc: '14 дней подряд' },
+  streak_30:  { emoji: '🏆', title: 'Месяц',         desc: '30 дней подряд' },
+  streak_100: { emoji: '👑', title: 'Сотня',         desc: '100 дней подряд' },
+  total_10:   { emoji: '📅', title: '10 дней',       desc: '10 дней всего' },
+  total_50:   { emoji: '📆', title: '50 дней',       desc: '50 дней всего' },
+  high_day:   { emoji: '✨', title: 'Хороший день',  desc: 'Средний индекс выше 8' },
+  all_above7: { emoji: '🎯', title: 'Баланс',        desc: 'Все потребности выше 7 в один день' },
+  comeback:   { emoji: '🔄', title: 'Возвращение',   desc: 'Вернулся после перерыва в 3+ дня' },
+  growth:     { emoji: '📈', title: 'Рост',          desc: 'Потребность выросла на 3+ за неделю' },
 };
 
 const TIMEZONES = [
@@ -62,6 +76,17 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   );
 }
 
+function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+      <span onClick={onBack} style={{ fontSize: 22, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>‹</span>
+      <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>{title}</span>
+    </div>
+  );
+}
+
+type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair';
+
 interface Props { onClose: () => void }
 
 export function ProfileSheet({ onClose }: Props) {
@@ -69,52 +94,96 @@ export function ProfileSheet({ onClose }: Props) {
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights] = useState<InsightsData | null>(null);
+  const [pairData, setPairData] = useState<PairData | null>(null);
+  const [pairLoading, setPairLoading] = useState(false);
+  const [joinCode, setJoinCode] = useState('');
+  const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
-  const [showAchievements, setShowAchievements] = useState(false);
-  const [showPair, setShowPair] = useState(false);
+  const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
-  const [view, setView] = useState<'main' | 'time' | 'tz'>('main');
+  const [view, setView] = useState<View>('main');
 
   useEffect(() => {
-    api.getSettings().then(setSettings);
-    api.getStreak().then(setStreak);
-    api.getAchievements().then(setAchievements);
-    api.getInsights().then(setInsights);
+    api.getSettings().then(setSettings).catch(() => {});
+    api.getStreak().then(setStreak).catch(() => {});
+    api.getAchievements().then(setAchievements).catch(() => {});
+    api.getInsights().then(setInsights).catch(() => {});
   }, []);
+
+  function goTo(v: View) {
+    if (v === 'pair' && !pairData) {
+      setPairLoading(true);
+      api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
+    }
+    setView(v);
+  }
+
+  function goBack() {
+    setView('main');
+    setJoinView('main');
+  }
 
   async function patch(update: Partial<UserSettings>) {
     if (!settings) return;
     setSettings({ ...settings, ...update });
-    await api.updateSettings(update);
+    await api.updateSettings(update).catch(() => {});
+  }
+
+  async function handleCreateInvite() {
+    setPairLoading(true);
+    try {
+      const { url } = await api.createPairInvite();
+      await api.getPair().then(setPairData);
+      try {
+        if (navigator.share) { await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); }
+        else { await navigator.clipboard.writeText(url); }
+      } catch {}
+    } finally {
+      setPairLoading(false);
+    }
+  }
+
+  async function handleJoin() {
+    if (!joinCode.trim()) return;
+    setPairLoading(true);
+    try {
+      await api.joinPair(joinCode.trim().toUpperCase());
+      await api.getPair().then(setPairData);
+      setJoinView('main');
+    } catch {}
+    setPairLoading(false);
+  }
+
+  async function handleLeave() {
+    await api.leavePair().catch(() => {});
+    await api.getPair().then(setPairData).catch(() => {});
   }
 
   if (!settings) {
-    return (
-      <BottomSheet onClose={onClose}>
-        <Loader minHeight="40vh" />
-      </BottomSheet>
-    );
+    return <BottomSheet onClose={onClose}><Loader minHeight="40vh" /></BottomSheet>;
   }
 
   const localHour = toLocal(settings.notifyUtcHour, settings.notifyTzOffset);
   const tzLabel = TIMEZONES.find(t => t.offset === settings.notifyTzOffset)?.label ?? `UTC+${settings.notifyTzOffset}`;
-
-  // Insights summary: best/worst rising need
   const hasInsights = insights && insights.weeklyStats.some(s => s.avg !== null);
   const risingNeed = insights?.weeklyStats.find(s => s.trend === '↑');
   const insightSummary = insights?.bestDayOfWeek && insights.totalDays >= 7
     ? `Лучший день — ${insights.bestDayOfWeek}`
     : risingNeed ? `${NEED_NAMES[risingNeed.needId]} растёт` : 'Заполняй дневник каждый день';
 
+  const selMeta = selectedAchievement ? ACHIEVEMENT_META[selectedAchievement] : null;
+
   return (
     <>
-    <BottomSheet onClose={() => { setView('main'); onClose(); }}>
+    <BottomSheet onClose={() => { goBack(); onClose(); }}>
+
+      {/* ── MAIN VIEW ── */}
       {view === 'main' && (
         <div style={{ paddingTop: 8 }}>
           <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 24 }}>Профиль</div>
 
-          {/* ── Streak ── */}
+          {/* Streak */}
           {streak && (
             <div style={{ marginBottom: 24 }}>
               <SectionLabel>Серия</SectionLabel>
@@ -173,12 +242,12 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           )}
 
-          {/* ── Achievements ── */}
+          {/* Achievements row */}
           {achievements && (
             <div style={{ marginBottom: 24 }}>
               <SectionLabel>Достижения</SectionLabel>
               <div
-                onClick={() => setShowAchievements(true)}
+                onClick={() => goTo('achievements')}
                 style={{
                   background: 'rgba(255,255,255,0.04)', borderRadius: 16,
                   padding: '14px 16px', cursor: 'pointer',
@@ -188,7 +257,7 @@ export function ProfileSheet({ onClose }: Props) {
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flex: 1 }}>
                   {achievements.slice(0, 8).map(a => (
                     <span key={a.id} style={{ fontSize: 20, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.25)' }}>
-                      {({ first_day:'🌱',streak_3:'🔥',streak_7:'⭐',streak_14:'💫',streak_30:'🏆',streak_100:'👑',total_10:'📅',total_50:'📆',high_day:'✨',all_above7:'🎯',comeback:'🔄',growth:'📈' } as Record<string,string>)[a.id]}
+                      {(ACHIEVEMENT_META[a.id] ?? {}).emoji}
                     </span>
                   ))}
                 </div>
@@ -202,29 +271,21 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           )}
 
-          {/* ── Паттерны (collapsible insights) ── */}
+          {/* Паттерны */}
           {hasInsights && (
             <div style={{ marginBottom: 24 }}>
               <SectionLabel>Паттерны</SectionLabel>
               <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden' }}>
-                {/* Header row — always visible */}
                 <div
                   onClick={() => setInsightsOpen(o => !o)}
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '14px 16px', cursor: 'pointer',
-                  }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
                 >
                   <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
                   <span style={{
-                    fontSize: 16, color: 'rgba(255,255,255,0.25)',
-                    display: 'inline-block',
-                    transform: insightsOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.2s',
+                    fontSize: 16, color: 'rgba(255,255,255,0.25)', display: 'inline-block',
+                    transform: insightsOpen ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s',
                   }}>›</span>
                 </div>
-
-                {/* Expanded content */}
                 {insightsOpen && (
                   <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                     {(insights!.bestDayOfWeek || insights!.worstDayOfWeek) && insights!.totalDays >= 7 && (
@@ -260,9 +321,7 @@ export function ProfileSheet({ onClose }: Props) {
                           <div key={s.needId}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                               <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
-                              <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>
-                                {(s.avg ?? 0).toFixed(1)} {s.trend}
-                              </span>
+                              <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
                             </div>
                             <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
                               <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
@@ -277,11 +336,11 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           )}
 
-          {/* ── Вместе ── */}
+          {/* Вместе */}
           <div style={{ marginBottom: 24 }}>
             <SectionLabel>Вместе</SectionLabel>
             <div
-              onClick={() => setShowPair(true)}
+              onClick={() => goTo('pair')}
               style={{
                 background: 'rgba(255,255,255,0.04)', borderRadius: 16,
                 padding: '14px 16px', cursor: 'pointer',
@@ -299,7 +358,7 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           </div>
 
-          {/* ── Уведомления ── */}
+          {/* Уведомления */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <SectionLabel>Уведомления</SectionLabel>
             <span
@@ -313,37 +372,29 @@ export function ProfileSheet({ onClose }: Props) {
             >?</span>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
-            <div
-              onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-            >
+            <div onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <span style={{ fontSize: 15, color: '#fff' }}>Итоги дня</span>
               <Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />
             </div>
-            <div
-              onClick={() => settings.notifyEnabled && setView('time')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', borderBottom: '1px solid rgba(255,255,255,0.06)', opacity: settings.notifyEnabled ? 1 : 0.35 }}
-            >
+            <div onClick={() => settings.notifyEnabled && setView('time')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', borderBottom: '1px solid rgba(255,255,255,0.06)', opacity: settings.notifyEnabled ? 1 : 0.35 }}>
               <span style={{ fontSize: 15, color: '#fff' }}>Время</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.5)' }}>{pad(localHour)}:00</span>
                 <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>›</span>
               </div>
             </div>
-            <div
-              onClick={() => settings.notifyEnabled && setView('tz')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', borderBottom: '1px solid rgba(255,255,255,0.06)', opacity: settings.notifyEnabled ? 1 : 0.35 }}
-            >
+            <div onClick={() => settings.notifyEnabled && setView('tz')}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', borderBottom: '1px solid rgba(255,255,255,0.06)', opacity: settings.notifyEnabled ? 1 : 0.35 }}>
               <span style={{ fontSize: 15, color: '#fff' }}>Часовой пояс</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', textAlign: 'right', maxWidth: 160 }}>{tzLabel}</span>
                 <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>›</span>
               </div>
             </div>
-            <div
-              onClick={() => settings.notifyEnabled && patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', opacity: settings.notifyEnabled ? 1 : 0.35 }}
-            >
+            <div onClick={() => settings.notifyEnabled && patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', opacity: settings.notifyEnabled ? 1 : 0.35 }}>
               <div>
                 <div style={{ fontSize: 15, color: '#fff' }}>Напоминание за час</div>
                 <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>За час до дневника, если не заполнен</div>
@@ -352,29 +403,21 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           </div>
 
-          {/* ── Invite + Export ── */}
+          {/* Invite + Export */}
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <button
               onClick={() => {
                 const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
                 try { navigator.share ? navigator.share({ text }) : navigator.clipboard.writeText(text); } catch {}
               }}
-              style={{
-                flex: 1, padding: '12px 0', border: 'none', borderRadius: 12,
-                background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)',
-                fontSize: 13, fontWeight: 500, cursor: 'pointer',
-              }}
+              style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
             >Пригласить друга</button>
             <button
               onClick={async () => {
                 const { text } = await api.getExport();
                 try { navigator.share ? navigator.share({ text }) : navigator.clipboard.writeText(text); } catch {}
               }}
-              style={{
-                flex: 1, padding: '12px 0', border: 'none', borderRadius: 12,
-                background: 'rgba(255,255,255,0.06)', cursor: 'pointer',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-              }}
+              style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
             >
               <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)' }}>Для терапевта</span>
               <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>сводка за 30 дней</span>
@@ -383,17 +426,15 @@ export function ProfileSheet({ onClose }: Props) {
         </div>
       )}
 
+      {/* ── TIME VIEW ── */}
       {view === 'time' && (
         <div style={{ paddingTop: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <span onClick={() => setView('main')} style={{ fontSize: 22, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>‹</span>
-            <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>Время уведомления</span>
-          </div>
+          <BackHeader title="Время уведомления" onBack={goBack} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
             {HOURS.map(h => {
               const active = h === localHour;
               return (
-                <div key={h} onClick={async () => { await patch({ notifyUtcHour: toUtc(h, settings.notifyTzOffset) }); setView('main'); }}
+                <div key={h} onClick={async () => { await patch({ notifyUtcHour: toUtc(h, settings.notifyTzOffset) }); goBack(); }}
                   style={{ padding: '12px 0', borderRadius: 12, textAlign: 'center', background: active ? '#a78bfa' : 'rgba(255,255,255,0.06)', color: active ? '#fff' : 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: active ? 600 : 400, cursor: 'pointer' }}
                 >{pad(h)}:00</div>
               );
@@ -402,37 +443,146 @@ export function ProfileSheet({ onClose }: Props) {
         </div>
       )}
 
+      {/* ── TZ VIEW ── */}
       {view === 'tz' && (
         <div style={{ paddingTop: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <span onClick={() => setView('main')} style={{ fontSize: 22, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>‹</span>
-            <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>Часовой пояс</span>
-          </div>
+          <BackHeader title="Часовой пояс" onBack={goBack} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {TIMEZONES.map(tz => {
               const active = tz.offset === settings.notifyTzOffset;
               return (
-                <div key={tz.offset} onClick={async () => { await patch({ notifyTzOffset: tz.offset, notifyUtcHour: toUtc(localHour, tz.offset) }); setView('main'); }}
+                <div key={tz.offset} onClick={async () => { await patch({ notifyTzOffset: tz.offset, notifyUtcHour: toUtc(localHour, tz.offset) }); goBack(); }}
                   style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.04)', color: active ? '#a78bfa' : 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
+                >{tz.label}{active && <span>✓</span>}</div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ── ACHIEVEMENTS VIEW ── */}
+      {view === 'achievements' && achievements && (
+        <div style={{ paddingTop: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <span onClick={goBack} style={{ fontSize: 22, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>‹</span>
+            <span style={{ fontSize: 18, fontWeight: 600, color: '#fff', flex: 1 }}>Достижения</span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
+              {achievements.filter(a => a.earned).length}/{achievements.length}
+            </span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {achievements.map(a => {
+              const m = ACHIEVEMENT_META[a.id];
+              if (!m) return null;
+              return (
+                <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
+                  style={{
+                    background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.06)'}`,
+                    borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default',
+                  }}
                 >
-                  {tz.label}{active && <span>✓</span>}
+                  <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>{m.title}</div>
+                  <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>{m.desc}</div>
                 </div>
               );
             })}
           </div>
         </div>
       )}
+
+      {/* ── PAIR VIEW ── */}
+      {view === 'pair' && (
+        <div style={{ paddingTop: 8 }}>
+          <BackHeader title="Вместе" onBack={goBack} />
+          {pairLoading && !pairData ? (
+            <Loader minHeight="30vh" />
+          ) : !pairData ? null : pairData.paired ? (
+            <div>
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Партнёр сегодня</div>
+                {pairData.partnerTodayDone && pairData.partnerIndex !== null ? (
+                  <div style={{ fontSize: 32, fontWeight: 800, color: '#fff' }}>
+                    {pairData.partnerIndex.toFixed(1)}
+                    <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил дневник</div>
+                )}
+              </div>
+              <button onClick={handleLeave}
+                style={{ width: '100%', padding: 12, border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}
+              >Выйти из пары</button>
+            </div>
+          ) : (
+            <div>
+              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 20 }}>
+                Приглашай друга или партнёра — видите индексы дня друг друга. Не детали, только число. Это создаёт негромкий контакт.
+              </p>
+              {joinView === 'main' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <button onClick={handleCreateInvite} disabled={pairLoading}
+                    style={{ padding: 14, border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                    {pairData.code ? 'Поделиться ссылкой снова' : 'Создать приглашение'}
+                  </button>
+                  <button onClick={() => setJoinView('join')}
+                    style={{ padding: 14, border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}>
+                    Есть код приглашения
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                    <span onClick={() => setJoinView('main')} style={{ fontSize: 22, color: 'rgba(255,255,255,0.4)', cursor: 'pointer' }}>‹</span>
+                    <span style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>Ввести код</span>
+                  </div>
+                  <input value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
+                    placeholder="Код из приглашения"
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16, fontFamily: 'monospace', outline: 'none', letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12 }}
+                  />
+                  <button onClick={handleJoin} disabled={!joinCode.trim() || pairLoading}
+                    style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                    Присоединиться
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
     </BottomSheet>
 
-    {showAchievements && achievements && (
-      <AchievementsSheet achievements={achievements} onClose={() => setShowAchievements(false)} />
+    {/* Achievement overlay — fixed on top, no nested sheet */}
+    {selectedAchievement && selMeta && (
+      <div onClick={() => setSelectedAchievement(null)}
+        style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, animation: 'fade-in 0.18s ease' }}
+      >
+        <div onClick={e => e.stopPropagation()}
+          style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.2), rgba(79,163,247,0.1))', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}
+        >
+          <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{selMeta.emoji}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{selMeta.title}</div>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 28 }}>{selMeta.desc}</div>
+          <button
+            onClick={async () => {
+              const text = `${selMeta.emoji} Получил достижение «${selMeta.title}» в дневнике потребностей!\n\nt.me/Emotional_Needs_bot`;
+              try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch {}
+            }}
+            style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+          >Поделиться</button>
+        </div>
+      </div>
     )}
+
+    {/* Info overlays — zIndex 300 nested sheets are fine, they're intentionally above */}
     {showNotifyInfo && (
       <BottomSheet onClose={() => setShowNotifyInfo(false)} zIndex={300}>
         <div style={{ paddingTop: 8 }}>
           <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>Зачем уведомления</div>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Регулярность — это всё. Один раз в день, в одно и то же время, формирует привычку наблюдать за собой. Без неё паттерн не складывается.</p>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}><b style={{ color: '#fff' }}>Итоги дня</b> — приходят после того, как заполнишь дневник: твои оценки в виде сводки. Приятно видеть день в цифрах.</p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}><b style={{ color: '#fff' }}>Итоги дня</b> — приходят после того, как заполнишь дневник: твои оценки в виде сводки.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}><b style={{ color: '#fff' }}>Напоминание за час</b> — лёгкий толчок, если день был насыщенным и дневник ещё не заполнен.</p>
         </div>
       </BottomSheet>
@@ -442,12 +592,11 @@ export function ProfileSheet({ onClose }: Props) {
         <div style={{ paddingTop: 8 }}>
           <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>Лучший день</div>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Это день недели, в который твои оценки в среднем выше всего — по всем потребностям сразу.</p>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Не значит, что он всегда хороший. Но чаще всего в этот день что-то складывается: отдых, общение, ритм. Полезно замечать — и беречь.</p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Не значит, что он всегда хороший. Но чаще всего в этот день что-то складывается: отдых, общение, ритм.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>Считается по всей истории наблюдений, поэтому становится точнее с каждой неделей.</p>
         </div>
       </BottomSheet>
     )}
-    {showPair && <PairSheet onClose={() => setShowPair(false)} />}
     </>
   );
 }
