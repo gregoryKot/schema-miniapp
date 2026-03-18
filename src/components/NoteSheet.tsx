@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 interface Props {
   date: string;
@@ -11,25 +12,32 @@ export function NoteSheet({ date, onClose }: Props) {
   const [text, setText] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    api.getNote(date).then(r => { setText(r.text ?? ''); setLoaded(true); });
+    api.getNote(date)
+      .then(r => { setText(r.text ?? ''); setLoaded(true); })
+      .catch(() => setLoaded(true));
   }, [date]);
 
   async function handleSave() {
     if (!text.trim()) return;
     setSaving(true);
-    await api.saveNote(date, text.trim());
-    setSaving(false);
-    onClose();
+    setError(false);
+    try {
+      await api.saveNote(date, text.trim());
+      onClose();
+    } catch {
+      setError(true);
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-          Заметка к дню
-        </div>
+        <SectionLabel purple mb={16}>Заметка к дню</SectionLabel>
         <textarea
           value={text}
           onChange={e => setText(e.target.value)}
@@ -49,6 +57,11 @@ export function NoteSheet({ date, onClose }: Props) {
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
+        {error && (
+          <div style={{ fontSize: 12, color: 'rgba(255,100,100,0.8)', marginBottom: 10 }}>
+            Не удалось сохранить. Попробуй ещё раз.
+          </div>
+        )}
         <button
           onClick={handleSave}
           disabled={!text.trim() || saving}

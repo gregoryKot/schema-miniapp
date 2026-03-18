@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 const DISCLAIMER_CONTENT = [
   'Дневник помогает видеть паттерны и чуть лучше понимать себя.',
@@ -14,18 +15,6 @@ interface Props {
   value: number;
   history: DayHistory[];
   onClose: () => void;
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{
-      fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.3)',
-      textTransform: 'uppercase', letterSpacing: '0.06em',
-      marginBottom: 10,
-    }}>
-      {children}
-    </div>
-  );
 }
 
 export function NeedHistorySheet({ need, value, history, onClose }: Props) {

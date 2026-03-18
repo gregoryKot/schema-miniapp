@@ -4,6 +4,7 @@ import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
 import { NeedTodaySheet } from './NeedTodaySheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
+import { SectionLabel } from './SectionLabel';
 
 interface Props {
   needs: Need[];
@@ -68,9 +69,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
       padding: '16px 18px',
       marginBottom: 24,
     }}>
-      <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 600, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-        Как это работает
-      </div>
+      <SectionLabel purple>Как это работает</SectionLabel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
@@ -131,9 +130,13 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
     onChange(needId, value);
     clearTimeout(timers.current[needId]);
     timers.current[needId] = setTimeout(async () => {
-      await api.saveRating(needId, value);
-      onSaved(needId);
-      setLastSavedAt(new Date());
+      try {
+        await api.saveRating(needId, value);
+        onSaved(needId);
+        setLastSavedAt(new Date());
+      } catch {
+        // Silent fail — user can retry by moving slider again
+      }
     }, 500);
   }, [onChange, onSaved]);
 

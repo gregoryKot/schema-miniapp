@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api, UserSettings, Achievement } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
+import { SectionLabel } from './SectionLabel';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
@@ -47,17 +48,6 @@ const HOURS = [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 function toLocal(utcHour: number, tz: number) { return ((utcHour + tz) % 24 + 24) % 24; }
 function toUtc(localHour: number, tz: number)  { return ((localHour - tz) % 24 + 24) % 24; }
 function pad(n: number) { return String(n).padStart(2, '0'); }
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{
-      fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.3)',
-      textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10,
-    }}>
-      {children}
-    </div>
-  );
-}
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (

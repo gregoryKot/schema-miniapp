@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { api } from '../api';
+import { SectionLabel } from './SectionLabel';
 
 const QUESTIONS = [
   'Что было самым трудным на этой неделе?',
@@ -43,10 +44,13 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
 
   async function handleSave() {
     setSaving(true);
-    await api.saveNote(date, `[Вопрос недели] ${question}\n\n${text.trim()}`);
-    localStorage.setItem(getWeekKey(), '1');
-    setSaving(false);
-    onDismiss();
+    try {
+      await api.saveNote(date, `[Вопрос недели] ${question}\n\n${text.trim()}`);
+      localStorage.setItem(getWeekKey(), '1');
+      onDismiss();
+    } catch {
+      setSaving(false);
+    }
   }
 
   function handleSkip() {
@@ -60,9 +64,7 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
       border: '1px solid rgba(167,139,250,0.25)',
       borderRadius: 16, padding: '16px 18px', marginBottom: 20,
     }}>
-      <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-        Вопрос недели
-      </div>
+      <SectionLabel purple>Вопрос недели</SectionLabel>
       <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, marginBottom: 14 }}>
         {question}
       </div>

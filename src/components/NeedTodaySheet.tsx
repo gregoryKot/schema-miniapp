@@ -2,24 +2,13 @@ import { useRef, useCallback, useState } from 'react';
 import { Need, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 interface Props {
   need: Need;
   value: number;
   onChange: (v: number) => void;
   onClose: () => void;
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{
-      fontSize: 11, fontWeight: 500, color: 'rgba(255,255,255,0.3)',
-      textTransform: 'uppercase', letterSpacing: '0.06em',
-      marginBottom: 10,
-    }}>
-      {children}
-    </div>
-  );
 }
 
 const DISCLAIMER_CONTENT = [
