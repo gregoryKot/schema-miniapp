@@ -396,14 +396,6 @@ export function ProfileSheet({ onClose }: Props) {
                 <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>›</span>
               </div>
             </div>
-            <div onClick={() => settings.notifyEnabled && patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: settings.notifyEnabled ? 'pointer' : 'default', opacity: settings.notifyEnabled ? 1 : 0.35 }}>
-              <div>
-                <div style={{ fontSize: 15, color: '#fff' }}>Напоминание за час</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>За час до дневника, если не заполнен</div>
-              </div>
-              <Toggle on={settings.notifyReminderEnabled && settings.notifyEnabled} onClick={() => settings.notifyEnabled && patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />
-            </div>
           </div>
 
           {/* Invite + Export */}
@@ -585,8 +577,7 @@ export function ProfileSheet({ onClose }: Props) {
         <div style={{ paddingTop: 8 }}>
           <SectionLabel purple mb={16}>Зачем уведомления</SectionLabel>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Регулярность — это всё. Один раз в день, в одно и то же время, формирует привычку наблюдать за собой. Без неё паттерн не складывается.</p>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}><b style={{ color: '#fff' }}>Итоги дня</b> — приходят после того, как заполнишь дневник: твои оценки в виде сводки.</p>
-          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}><b style={{ color: '#fff' }}>Напоминание за час</b> — лёгкий толчок, если день был насыщенным и дневник ещё не заполнен.</p>
+          <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}><b style={{ color: '#fff' }}>Итоги дня</b> — приходят в это же время, если дневник заполнен: твои оценки в виде сводки.</p>
         </div>
       </BottomSheet>
     )}
