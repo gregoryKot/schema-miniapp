@@ -513,7 +513,7 @@ export function ProfileSheet({ onClose }: Props) {
           ) : (
             <div>
               <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 20 }}>
-                Приглашай друга или партнёра — видите индексы дня друг друга. Не детали, только число. Это создаёт негромкий контакт.
+                Приглашай друга или партнёра — видите индексы дня друг друга. Не детали, только число. Просто знать, как день у другого.
               </p>
               {joinView === 'main' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
