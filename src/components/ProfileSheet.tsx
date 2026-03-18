@@ -290,7 +290,7 @@ export function ProfileSheet({ onClose }: Props) {
                   }}>›</span>
                 </div>
                 {insightsOpen && (
-                  <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ padding: '12px 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                     {(insights!.bestDayOfWeek || insights!.worstDayOfWeek) && insights!.totalDays >= 7 && (
                       <div style={{ display: 'flex', gap: 8, marginTop: 12, marginBottom: 14, flexWrap: 'wrap' }}>
                         {insights!.bestDayOfWeek && (
