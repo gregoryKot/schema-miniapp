@@ -176,9 +176,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
       {showDisclaimer && (
         <BottomSheet onClose={() => setShowDisclaimer(false)} zIndex={300}>
           <div style={{ paddingTop: 8 }}>
-            <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-              О советах
-            </div>
+            <SectionLabel purple mb={16}>О советах</SectionLabel>
             {DISCLAIMER_CONTENT.map((p, i) => (
               <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
                 {p}

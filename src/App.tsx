@@ -11,6 +11,7 @@ import { Loader } from './components/Loader';
 import { SchemaInfoSheet } from './components/SchemaInfoSheet';
 import { TagPicker } from './components/TagPicker';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
+import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
 
@@ -299,9 +300,7 @@ export default function App() {
       {showAbout && (
         <BottomSheet onClose={() => setShowAbout(false)}>
           <div style={{ paddingTop: 8 }}>
-            <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-              Зачем это всё
-            </div>
+            <SectionLabel purple mb={16}>Зачем это всё</SectionLabel>
             {ABOUT_TEXT.map((p, i) => (
               <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 16 }}>
                 {p}

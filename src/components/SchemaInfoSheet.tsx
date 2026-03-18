@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 type Tab = 'needs' | 'schemas' | 'modes';
 
@@ -352,7 +353,7 @@ function ModesTab() {
             style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.18), rgba(79,163,247,0.08))', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 24, padding: '32px 24px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             <div style={{ fontSize: 56, marginBottom: 12 }}>{checkinMode.emoji}</div>
-            <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Режим</div>
+            <SectionLabel purple mb={8}>Режим</SectionLabel>
             <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 16 }}>{checkinMode.mode}</div>
             <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '14px 16px', marginBottom: 24, textAlign: 'left' }}>
               <div style={{ fontSize: 12, color: '#a78bfa', marginBottom: 6 }}>Что помогает</div>
@@ -385,7 +386,7 @@ export function SchemaInfoSheet({ onClose }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Схема-терапия</div>
+          <SectionLabel purple mb={6}>Схема-терапия</SectionLabel>
           <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Как это работает</div>
         </div>
         <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3, marginBottom: 20 }}>

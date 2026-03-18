@@ -4,6 +4,7 @@ import { NEED_DATA } from '../needData';
 import { COLORS } from '../types';
 import { api } from '../api';
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 interface Props {
   date: string;
@@ -40,9 +41,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-          Рефлексия
-        </div>
+        <SectionLabel purple mb={16}>Рефлексия</SectionLabel>
 
         {question && (
           <div style={{

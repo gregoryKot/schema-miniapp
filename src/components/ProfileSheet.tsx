@@ -570,7 +570,7 @@ export function ProfileSheet({ onClose }: Props) {
     {showNotifyInfo && (
       <BottomSheet onClose={() => setShowNotifyInfo(false)} zIndex={300}>
         <div style={{ paddingTop: 8 }}>
-          <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>Зачем уведомления</div>
+          <SectionLabel purple mb={16}>Зачем уведомления</SectionLabel>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Регулярность — это всё. Один раз в день, в одно и то же время, формирует привычку наблюдать за собой. Без неё паттерн не складывается.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}><b style={{ color: '#fff' }}>Итоги дня</b> — приходят после того, как заполнишь дневник: твои оценки в виде сводки.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}><b style={{ color: '#fff' }}>Напоминание за час</b> — лёгкий толчок, если день был насыщенным и дневник ещё не заполнен.</p>
@@ -580,7 +580,7 @@ export function ProfileSheet({ onClose }: Props) {
     {showBestDayInfo && (
       <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
         <div style={{ paddingTop: 8 }}>
-          <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>Лучший день</div>
+          <SectionLabel purple mb={16}>Лучший день</SectionLabel>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Это день недели, в который твои оценки в среднем выше всего — по всем потребностям сразу.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>Не значит, что он всегда хороший. Но чаще всего в этот день что-то складывается: отдых, общение, ритм.</p>
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>Считается по всей истории наблюдений, поэтому становится точнее с каждой неделей.</p>

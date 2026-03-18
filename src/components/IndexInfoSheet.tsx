@@ -1,4 +1,5 @@
 import { BottomSheet } from './BottomSheet';
+import { SectionLabel } from './SectionLabel';
 
 const PARAGRAPHS = [
   'Индекс — это не цель. Нет задачи достичь 10 или не опускаться ниже 7.',
@@ -11,9 +12,7 @@ export function IndexInfoSheet({ onClose }: { onClose: () => void }) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ fontSize: 11, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 16 }}>
-          Об индексе дня
-        </div>
+        <SectionLabel purple mb={16}>Об индексе дня</SectionLabel>
         {PARAGRAPHS.map((p, i) => (
           <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
             {p}
