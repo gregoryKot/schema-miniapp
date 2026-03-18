@@ -179,12 +179,25 @@ export function ProfileSheet({ onClose }: Props) {
               <SectionLabel>Серия</SectionLabel>
               <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '20px 20px 16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                  <div style={{ fontSize: 44, lineHeight: 1 }}>{streak.todayDone ? '🔥' : '🫥'}</div>
+                  <div style={{ fontSize: 44, lineHeight: 1 }}>{streak.todayDone ? '🔥' : streak.currentStreak > 0 ? '🫥' : '🌱'}</div>
                   <div>
-                    <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{streak.currentStreak}</div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
-                      {streak.currentStreak === 1 ? 'день подряд' : streak.currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
-                    </div>
+                    {streak.currentStreak > 0 ? (
+                      <>
+                        <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{streak.currentStreak}</div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                          {streak.currentStreak === 1 ? 'день подряд' : streak.currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: 22, fontWeight: 700, color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
+                          {streak.totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
+                        </div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+                          {streak.totalDays === 0 ? 'Первая запись — самая важная' : 'Заполни дневник — и серия начнётся'}
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', gap: 6, alignItems: 'flex-end' }}>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
@@ -210,7 +223,7 @@ export function ProfileSheet({ onClose }: Props) {
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0' }}>
-                {!streak.todayDone
+                {!streak.todayDone && streak.currentStreak > 0
                   ? <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Заполни дневник сегодня, чтобы не потерять серию</div>
                   : <div />
                 }
