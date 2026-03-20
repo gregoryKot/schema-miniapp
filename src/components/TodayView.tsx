@@ -135,6 +135,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
     onChange(needId, value);
     clearTimeout(timers.current[needId]);
     timers.current[needId] = setTimeout(async () => {
+      if (value === 0) return; // 0 = not rated, don't save
       try {
         await api.saveRating(needId, value);
         onSaved(needId);
