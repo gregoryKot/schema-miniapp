@@ -14,10 +14,11 @@ interface Props {
   need: Need;
   value: number;
   history: DayHistory[];
+  childhoodValue?: number;
   onClose: () => void;
 }
 
-export function NeedHistorySheet({ need, value, history, onClose }: Props) {
+export function NeedHistorySheet({ need, value, history, childhoodValue, onClose }: Props) {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const data = NEED_DATA[need.id];
   if (!data) return null;
@@ -102,6 +103,18 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
             <polyline points={polyStr} fill="none" stroke={color} strokeWidth={2}
               strokeLinecap="round" strokeLinejoin="round" />
             <circle cx={lastPt.x} cy={lastPt.y} r={3} fill={color} />
+            {childhoodValue !== undefined && (() => {
+              const cy = yFor(childhoodValue);
+              return (
+                <>
+                  <line x1={0} y1={cy} x2={W} y2={cy}
+                    stroke={color} strokeWidth={1} strokeDasharray="4 3" strokeOpacity={0.45} />
+                  <text x={W - 2} y={cy - 3} textAnchor="end" fontSize={8} fill={color} fillOpacity={0.6}>
+                    детство {childhoodValue}
+                  </text>
+                </>
+              );
+            })()}
           </svg>
           <div style={{ flexShrink: 0, textAlign: 'right' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color }}>{trendLabel}</div>
@@ -111,6 +124,35 @@ export function NeedHistorySheet({ need, value, history, onClose }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Childhood context — shown if data exists */}
+      {childhoodValue !== undefined && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{
+            background: childhoodValue <= 4 ? 'rgba(248,113,113,0.08)' : 'rgba(52,211,153,0.08)',
+            border: `1px solid ${childhoodValue <= 4 ? 'rgba(248,113,113,0.2)' : 'rgba(52,211,153,0.2)'}`,
+            borderRadius: 14, padding: '12px 14px',
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{ fontSize: 28, flexShrink: 0 }}>🌱</div>
+            <div>
+              <div style={{ fontSize: 12, color: childhoodValue <= 4 ? '#f87171' : '#34d399', fontWeight: 500, marginBottom: 3 }}>
+                Детство: {childhoodValue}/10
+                {recentAvg > 0 && childhoodValue > 0 && (
+                  <span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400, marginLeft: 8 }}>
+                    → сейчас {recentAvg.toFixed(1)} {recentAvg > childhoodValue ? '↑' : recentAvg < childhoodValue ? '↓' : ''}
+                  </span>
+                )}
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+                {childhoodValue <= 4
+                  ? 'Эта потребность давно чувствительна — вероятно, это не просто плохой период, а паттерн. Схема-терапия работает именно с этим.'
+                  : 'В детстве эта зона была достаточно удовлетворена. Если сейчас низко — скорее всего ситуативное истощение.'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Section 2: Random tip */}
       <div style={{ marginBottom: 24 }}>

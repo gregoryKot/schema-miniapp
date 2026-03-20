@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api, UserSettings, Achievement, PracticePlan, UserPractice } from '../api';
+import { ChildhoodWheelSheet, CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
 import { NEED_DATA } from '../needData';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
@@ -79,11 +80,11 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
   );
 }
 
-type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices';
+type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices' | 'childhoodWheel';
 
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; onOpenSchemas?: () => void }
 
-export function ProfileSheet({ onClose }: Props) {
+export function ProfileSheet({ onClose, onOpenSchemas }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -95,6 +96,8 @@ export function ProfileSheet({ onClose }: Props) {
   const [myPractices, setMyPractices] = useState<UserPractice[] | null>(null);
   const [myPracticesInput, setMyPracticesInput] = useState('');
   const [myPracticesSaving, setMyPracticesSaving] = useState(false);
+  const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
+  const [childhoodDone] = useState(() => !!localStorage.getItem(CHILDHOOD_DONE_KEY));
   const [joinCode, setJoinCode] = useState('');
   const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -410,6 +413,7 @@ export function ProfileSheet({ onClose }: Props) {
                 style={{
                   padding: '14px 16px', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', gap: 12,
+                  borderTop: '1px solid rgba(255,255,255,0.05)',
                 }}
               >
                 <span style={{ fontSize: 22 }}>📋</span>
@@ -420,6 +424,23 @@ export function ProfileSheet({ onClose }: Props) {
                   </div>
                 </div>
                 <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+              </div>
+              <div
+                onClick={() => setShowChildhoodWheel(true)}
+                style={{
+                  padding: '14px 16px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  borderTop: '1px solid rgba(255,255,255,0.05)',
+                }}
+              >
+                <span style={{ fontSize: 22 }}>🌱</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>Колесо детства</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                    {childhoodDone ? 'Оценки потребностей в детстве' : 'Не заполнено — займёт 2 минуты'}
+                  </div>
+                </div>
+                <span style={{ fontSize: 16, color: childhoodDone ? 'rgba(255,255,255,0.2)' : '#a78bfa' }}>›</span>
               </div>
             </div>
           </div>
@@ -804,6 +825,12 @@ export function ProfileSheet({ onClose }: Props) {
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>Считается по всей истории наблюдений, поэтому становится точнее с каждой неделей.</p>
         </div>
       </BottomSheet>
+    )}
+    {showChildhoodWheel && (
+      <ChildhoodWheelSheet
+        onClose={() => setShowChildhoodWheel(false)}
+        onOpenSchemas={() => { setShowChildhoodWheel(false); onClose(); onOpenSchemas?.(); }}
+      />
     )}
     </>
   );

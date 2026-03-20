@@ -16,6 +16,7 @@ import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding, shouldShowPracticesOnboarding } from './components/PracticesOnboarding';
+import { ChildhoodWheelSheet, shouldShowChildhoodWheel } from './components/ChildhoodWheelSheet';
 import { PracticePlan } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
@@ -97,6 +98,8 @@ export default function App() {
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
   const [practicesOnboardingPending, setPracticesOnboardingPending] = useState(false);
+  const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
+  const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -143,6 +146,9 @@ export default function App() {
         api.getStreak().then(s => {
           if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
           else { setShowTagPicker(true); }
+          if (s.totalDays >= 5 && shouldShowChildhoodWheel()) {
+            setChildhoodWheelPending(true);
+          }
         });
         if (shouldShowPracticesOnboarding()) {
           setPracticesOnboardingPending(true);
@@ -325,14 +331,27 @@ export default function App() {
           if (practicesOnboardingPending) {
             setPracticesOnboardingPending(false);
             setShowPracticesOnboarding(true);
+          } else if (childhoodWheelPending) {
+            setChildhoodWheelPending(false);
+            setShowChildhoodWheel(true);
           }
         }} />
       )}
 
-      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} />}
 
       {showPracticesOnboarding && needs.length > 0 && (
-        <PracticesOnboarding needs={needs} onDone={() => setShowPracticesOnboarding(false)} />
+        <PracticesOnboarding needs={needs} onDone={() => {
+          setShowPracticesOnboarding(false);
+          if (childhoodWheelPending) { setChildhoodWheelPending(false); setShowChildhoodWheel(true); }
+        }} />
+      )}
+
+      {showChildhoodWheel && (
+        <ChildhoodWheelSheet
+          onClose={() => setShowChildhoodWheel(false)}
+          onOpenSchemas={() => { setShowChildhoodWheel(false); setShowSchemaInfo(true); }}
+        />
       )}
 
       {showPairSheet && <PairSheet onClose={() => { setShowPairSheet(false); api.getPair().then(setPairData); }} />}

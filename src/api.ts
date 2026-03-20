@@ -95,4 +95,6 @@ export const api = {
     const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
     await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: { 'x-telegram-init-data': window.Telegram?.WebApp?.initData ?? '', 'Content-Type': 'application/json' } });
   },
+  getChildhoodRatings: () => get<Partial<Record<string, number>>>('/api/childhood-ratings'),
+  saveChildhoodRatings: (ratings: Record<string, number>) => post('/api/childhood-ratings', ratings),
 };

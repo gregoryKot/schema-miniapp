@@ -5,6 +5,7 @@ import { IndexInfoSheet } from './IndexInfoSheet';
 import { NoteSheet } from './NoteSheet';
 import { WeeklyCardSheet } from './WeeklyCardSheet';
 import { api } from '../api';
+import { CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
 
 interface Props {
   needs: Need[];
@@ -50,11 +51,12 @@ function arcPath(cx: number, cy: number, r: number, centerAngle: number, halfSpr
 // ─── Wheel (no labels) ─────────────────────────────────────────────────────────
 
 function NeedsWheel({
-  needs, ratings, prevRatings = {}, onClickNeed, onClickCenter,
+  needs, ratings, prevRatings = {}, childhoodRatings = {}, onClickNeed, onClickCenter,
 }: {
   needs: Need[];
   ratings: Record<string, number>;
   prevRatings?: Record<string, number>;
+  childhoodRatings?: Partial<Record<string, number>>;
   onClickNeed?: (need: Need) => void;
   onClickCenter?: () => void;
 }) {
@@ -143,6 +145,26 @@ function NeedsWheel({
             strokeWidth={1}
           />
         ));
+      })}
+
+      {/* Childhood ghost sectors — shown if childhood data exists */}
+      {Object.keys(childhoodRatings).length > 0 && needs.map((need, i) => {
+        const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        const cValue = childhoodRatings[need.id] ?? 0;
+        const r = Math.sqrt(cValue / 10) * R;
+        const d = petalPath(cx, cy, r, angle, SPREAD);
+        if (!d) return null;
+        const color = COLORS[need.id] ?? '#888';
+        return (
+          <path key={`childhood-${need.id}`} d={d}
+            fill="none"
+            stroke={color}
+            strokeWidth={1.5}
+            strokeOpacity={0.4}
+            strokeDasharray="3 3"
+            strokeLinejoin="round"
+          />
+        );
       })}
 
       {/* Center cutout */}
@@ -350,9 +372,16 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [noteText, setNoteText] = useState<string | null>(null);
   const [noteTags, setNoteTags] = useState<string[]>([]);
   const [showWeekCard, setShowWeekCard] = useState(false);
+  const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
+
+  useEffect(() => {
+    if (localStorage.getItem(CHILDHOOD_DONE_KEY)) {
+      api.getChildhoodRatings().then(setChildhoodRatings).catch(() => {});
+    }
+  }, []);
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -476,6 +505,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
               <div key={selected.date}>
                 <NeedsWheel
                   needs={needs} ratings={selectedRatings} prevRatings={prevRatings}
+                  childhoodRatings={childhoodRatings}
                   onClickNeed={handleTapNeed}
                   onClickCenter={() => setShowIndexInfo(true)}
                 />
@@ -674,6 +704,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
           need={activeNeed}
           value={selectedRatings[activeNeed.id] ?? 0}
           history={history}
+          childhoodValue={childhoodRatings[activeNeed.id]}
           onClose={() => setActiveNeed(null)}
         />
       )}
