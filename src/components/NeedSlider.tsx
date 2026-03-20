@@ -80,9 +80,8 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-    if (locked) { onUnlock?.(); }
     calcValue(e.clientX);
-  }, [calcValue, locked, onUnlock]);
+  }, [calcValue]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.buttons === 0) return;
@@ -147,29 +146,45 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           )}
         </div>
 
-        {/* Score + saved indicator or delta */}
+        {/* Score + edit button or delta */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
-            <span style={{ fontSize: 17, fontWeight: 600, color }}>{value}</span>
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>/10</span>
-          </div>
-          {locked
-            ? <span style={{ fontSize: 11, fontWeight: 600, color, opacity: 0.7 }}>✓</span>
-            : <DeltaBadge delta={delta} />
-          }
+          {locked ? (
+            <div
+              onClick={(e) => { e.stopPropagation(); onUnlock?.(); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                background: color + '18',
+                border: `1px solid ${color}33`,
+                borderRadius: 8, padding: '3px 8px',
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontSize: 15, fontWeight: 600, color }}>{value}</span>
+              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>/10</span>
+              <span style={{ fontSize: 11, color: color + 'aa', marginLeft: 2 }}>✎</span>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+                <span style={{ fontSize: 17, fontWeight: 600, color }}>{value}</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+              </div>
+              <DeltaBadge delta={delta} />
+            </>
+          )}
         </div>
       </div>
 
-      {/* Slider track — always interactive, drag unlocks if locked */}
+      {/* Slider track — disabled when locked, active when unlocked */}
       <div
         ref={trackRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
+        onPointerDown={locked ? undefined : handlePointerDown}
+        onPointerMove={locked ? undefined : handlePointerMove}
         style={{
           position: 'relative',
           padding: '12px 0',
-          cursor: 'pointer',
-          touchAction: 'none',
+          cursor: locked ? 'default' : 'pointer',
+          touchAction: locked ? 'auto' : 'pan-y',
           userSelect: 'none',
         }}
       >
@@ -180,27 +195,27 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
             height: '100%',
             borderRadius: 6,
             background: locked
-              ? `linear-gradient(to right, ${color}44, ${color}88)`
+              ? `linear-gradient(to right, ${color}33, ${color}55)`
               : `linear-gradient(to right, ${color}55, ${color})`,
-            transition: 'opacity 0.2s',
           }} />
         </div>
 
-        {/* Thumb — subtle ring when locked, full circle when active */}
-        <div style={{
-          position: 'absolute',
-          left: `${pct}%`,
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: locked ? 14 : 20,
-          height: locked ? 14 : 20,
-          borderRadius: '50%',
-          background: locked ? 'transparent' : color,
-          border: locked ? `2px solid ${color}66` : '2px solid #0f1117',
-          pointerEvents: 'none',
-          zIndex: 1,
-          transition: 'all 0.15s ease',
-        }} />
+        {/* Thumb — hidden when locked */}
+        {!locked && (
+          <div style={{
+            position: 'absolute',
+            left: `${pct}%`,
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 20,
+            height: 20,
+            borderRadius: '50%',
+            background: color,
+            border: '2px solid #0f1117',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }} />
+        )}
       </div>
     </div>
   );
