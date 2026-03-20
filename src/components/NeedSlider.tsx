@@ -203,8 +203,8 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           }} />
         </div>
 
-        {/* Thumb — hidden when locked or no value yet */}
-        {!locked && hasValue && (
+        {/* Thumb — visible whenever there's a value; dimmed when locked */}
+        {hasValue && (
           <div style={{
             position: 'absolute',
             left: `${pct}%`,
@@ -217,6 +217,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
             border: '2px solid #0f1117',
             pointerEvents: 'none',
             zIndex: 1,
+            opacity: locked ? 0.45 : 1,
           }} />
         )}
       </div>
