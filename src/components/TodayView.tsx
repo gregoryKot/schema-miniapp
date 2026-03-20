@@ -172,29 +172,19 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
       {needs.map((n) => {
         const locked = ratings[n.id] !== undefined && !unlocked.has(n.id);
         return (
-          <div key={n.id}>
-            <NeedSlider
-              id={n.id}
-              emoji={n.emoji}
-              label={n.chartLabel}
-              value={ratings[n.id] ?? 0}
-              saved={false}
-              locked={locked}
-              onChange={(v) => handleChange(n.id, v)}
-              onTap={() => { dismissTooltip(); setActiveNeed(n); }}
-              showTooltip={false}
-            />
-            {locked && (
-              <div style={{ textAlign: 'right', marginTop: -12, marginBottom: 12 }}>
-                <span
-                  onClick={() => setUnlocked(prev => new Set([...prev, n.id]))}
-                  style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: '4px 0' }}
-                >
-                  Изменить
-                </span>
-              </div>
-            )}
-          </div>
+          <NeedSlider
+            key={n.id}
+            id={n.id}
+            emoji={n.emoji}
+            label={n.chartLabel}
+            value={ratings[n.id] ?? 0}
+            saved={false}
+            locked={locked}
+            onUnlock={() => setUnlocked(prev => new Set([...prev, n.id]))}
+            onChange={(v) => handleChange(n.id, v)}
+            onTap={() => { dismissTooltip(); setActiveNeed(n); }}
+            showTooltip={false}
+          />
         );
       })}
 

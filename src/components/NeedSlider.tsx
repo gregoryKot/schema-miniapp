@@ -58,12 +58,13 @@ interface Props {
   value: number;
   saved: boolean;
   locked?: boolean;
+  onUnlock?: () => void;
   onChange: (value: number) => void;
   onTap?: () => void;
   showTooltip?: boolean;
 }
 
-export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, locked }: Props) {
+export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, locked, onUnlock }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
   const delta = value - (YESTERDAY[id] ?? 0);
@@ -79,8 +80,9 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    if (locked) { onUnlock?.(); }
     calcValue(e.clientX);
-  }, [calcValue]);
+  }, [calcValue, locked, onUnlock]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (e.buttons === 0) return;
@@ -145,26 +147,29 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           )}
         </div>
 
-        {/* Score + delta */}
+        {/* Score + saved indicator or delta */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
             <span style={{ fontSize: 17, fontWeight: 600, color }}>{value}</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>/10</span>
           </div>
-          <DeltaBadge delta={delta} />
+          {locked
+            ? <span style={{ fontSize: 11, fontWeight: 600, color, opacity: 0.7 }}>✓</span>
+            : <DeltaBadge delta={delta} />
+          }
         </div>
       </div>
 
-      {/* Custom slider — pointer-based, works on iOS without tap-first */}
+      {/* Slider track — always interactive, drag unlocks if locked */}
       <div
         ref={trackRef}
-        onPointerDown={locked ? undefined : handlePointerDown}
-        onPointerMove={locked ? undefined : handlePointerMove}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         style={{
           position: 'relative',
           padding: '12px 0',
-          cursor: locked ? 'default' : 'pointer',
-          touchAction: locked ? 'auto' : 'none',
+          cursor: 'pointer',
+          touchAction: 'none',
           userSelect: 'none',
         }}
       >
@@ -175,27 +180,27 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
             height: '100%',
             borderRadius: 6,
             background: locked
-              ? `linear-gradient(to right, ${color}33, ${color}66)`
+              ? `linear-gradient(to right, ${color}44, ${color}88)`
               : `linear-gradient(to right, ${color}55, ${color})`,
+            transition: 'opacity 0.2s',
           }} />
         </div>
 
-        {/* Thumb — hidden when locked */}
-        {!locked && (
-          <div style={{
-            position: 'absolute',
-            left: `${pct}%`,
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 20,
-            height: 20,
-            borderRadius: '50%',
-            background: color,
-            border: '2px solid #0f1117',
-            pointerEvents: 'none',
-            zIndex: 1,
-          }} />
-        )}
+        {/* Thumb — subtle ring when locked, full circle when active */}
+        <div style={{
+          position: 'absolute',
+          left: `${pct}%`,
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: locked ? 14 : 20,
+          height: locked ? 14 : 20,
+          borderRadius: '50%',
+          background: locked ? 'transparent' : color,
+          border: locked ? `2px solid ${color}66` : '2px solid #0f1117',
+          pointerEvents: 'none',
+          zIndex: 1,
+          transition: 'all 0.15s ease',
+        }} />
       </div>
     </div>
   );
