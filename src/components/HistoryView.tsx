@@ -3,6 +3,7 @@ import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
 import { NoteSheet } from './NoteSheet';
+import { WeeklyCardSheet } from './WeeklyCardSheet';
 import { api } from '../api';
 
 interface Props {
@@ -348,6 +349,7 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [showNote, setShowNote] = useState(false);
   const [noteText, setNoteText] = useState<string | null>(null);
   const [noteTags, setNoteTags] = useState<string[]>([]);
+  const [showWeekCard, setShowWeekCard] = useState(false);
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
@@ -625,6 +627,21 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                 </div>
               );
             })()}
+
+            {/* Weekly card share */}
+            <button
+              onClick={() => setShowWeekCard(true)}
+              style={{
+                width: '100%', marginTop: 20, padding: '13px 0',
+                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14,
+                background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)',
+                fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 16 }}>🪄</span>
+              Карточка недели
+            </button>
           </div>
         )}
       </div>
@@ -640,6 +657,14 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
       )}
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
+
+      {showWeekCard && (
+        <WeeklyCardSheet
+          needs={needs}
+          history={history}
+          onClose={() => setShowWeekCard(false)}
+        />
+      )}
 
       {activeNeed && (
         <NeedHistorySheet

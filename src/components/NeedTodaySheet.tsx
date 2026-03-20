@@ -153,7 +153,39 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </div>
       </div>
 
-      {/* Section 3: Tip */}
+      {/* Section 3: Actions (low score only) */}
+      {value <= 3 && (
+        <div style={{ marginBottom: 24 }}>
+          <SectionLabel>Сделай прямо сейчас</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {data.actions.map((action, i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 12,
+                  background: color + '12',
+                  border: `1px solid ${color}28`,
+                  borderRadius: 12, padding: '12px 14px',
+                }}
+              >
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                  background: color + '22',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 11, fontWeight: 700, color, marginTop: 1,
+                }}>
+                  {i + 1}
+                </div>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55 }}>
+                  {action}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Section 4: Tip (reflective) */}
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>Попробуй сегодня</SectionLabel>
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
@@ -192,7 +224,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </BottomSheet>
       )}
 
-      {/* Section 4: Slider */}
+      {/* Section 5: Slider */}
       <div>
         <SectionLabel>Оценка сегодня</SectionLabel>
         <div style={{ fontSize: 24, fontWeight: 700, color, marginBottom: 12 }}>
