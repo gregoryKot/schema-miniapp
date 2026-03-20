@@ -175,7 +175,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
       )}
       {needs.map((n) => {
         const locked = ratings[n.id] !== undefined && !unlocked.has(n.id);
-        const isLow = locked && (ratings[n.id] ?? 0) <= 3;
+        const isLow = locked && ratings[n.id]! <= 3;
         const showPlanCard = isLow && !plannedNeeds.has(n.id);
         const color = COLORS[n.id] ?? '#888';
         const emoji = NEED_DATA[n.id]?.emoji ?? '';
@@ -185,7 +185,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
               id={n.id}
               emoji={n.emoji}
               label={n.chartLabel}
-              value={ratings[n.id] ?? 0}
+              value={ratings[n.id]}
               saved={false}
               locked={locked}
               onUnlock={() => setUnlocked(prev => new Set([...prev, n.id]))}

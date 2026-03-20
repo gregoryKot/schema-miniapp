@@ -87,6 +87,37 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
+      {/* Section 5: Slider — at top for immediate access */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 10 }}>
+          <span style={{ fontSize: 28, fontWeight: 700, color }}>{value}</span>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>/10</span>
+        </div>
+        <div
+          ref={trackRef}
+          onPointerDown={onPtrDown}
+          onPointerMove={onPtrMove}
+          style={{
+            position: 'relative', padding: '12px 0',
+            cursor: 'pointer', touchAction: 'none', userSelect: 'none',
+          }}
+        >
+          <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+            <div style={{
+              width: `${value * 10}%`, height: '100%', borderRadius: 6,
+              background: `linear-gradient(to right, ${color}55, ${color})`,
+            }} />
+          </div>
+          <div style={{
+            position: 'absolute', left: `${value * 10}%`, top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 20, height: 20, borderRadius: '50%',
+            background: color, border: '2px solid #161821',
+            pointerEvents: 'none',
+          }} />
+        </div>
+      </div>
+
       {/* High score affirmation */}
       {rangeIdx === 2 && (
         <div style={{
@@ -271,36 +302,6 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </BottomSheet>
       )}
 
-      {/* Section 5: Slider */}
-      <div>
-        <SectionLabel>Оценка сегодня</SectionLabel>
-        <div style={{ fontSize: 24, fontWeight: 700, color, marginBottom: 12 }}>
-          {value}<span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>/10</span>
-        </div>
-        <div
-          ref={trackRef}
-          onPointerDown={onPtrDown}
-          onPointerMove={onPtrMove}
-          style={{
-            position: 'relative', padding: '12px 0',
-            cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-          }}
-        >
-          <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-            <div style={{
-              width: `${value * 10}%`, height: '100%', borderRadius: 6,
-              background: `linear-gradient(to right, ${color}55, ${color})`,
-            }} />
-          </div>
-          <div style={{
-            position: 'absolute', left: `${value * 10}%`, top: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 20, height: 20, borderRadius: '50%',
-            background: color, border: '2px solid #161821',
-            pointerEvents: 'none',
-          }} />
-        </div>
-      </div>
     </BottomSheet>
   );
 }

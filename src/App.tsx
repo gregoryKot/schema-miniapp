@@ -96,6 +96,7 @@ export default function App() {
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
+  const [practicesOnboardingPending, setPracticesOnboardingPending] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -144,7 +145,7 @@ export default function App() {
           else { setShowTagPicker(true); }
         });
         if (shouldShowPracticesOnboarding()) {
-          setShowPracticesOnboarding(true);
+          setPracticesOnboardingPending(true);
         }
       }
     }
@@ -211,12 +212,14 @@ export default function App() {
             fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
             color: '#fff', marginBottom: 3, lineHeight: 1.1,
             cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+            display: 'flex', alignItems: 'center', gap: 8,
           }}
         >
           Дневник потребностей
+          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
-          Как ты сегодня?
+          {tab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
         </p>
 
         {/* Pill tabs */}
@@ -317,7 +320,13 @@ export default function App() {
       )}
 
       {showTodayNote && (
-        <NoteSheet date={TODAY_DATE} onClose={() => setShowTodayNote(false)} />
+        <NoteSheet date={TODAY_DATE} onClose={() => {
+          setShowTodayNote(false);
+          if (practicesOnboardingPending) {
+            setPracticesOnboardingPending(false);
+            setShowPracticesOnboarding(true);
+          }
+        }} />
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}

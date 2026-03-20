@@ -370,11 +370,14 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
 
   if (history.length === 0) {
     return (
-      <div style={{
-        padding: '60px 32px', textAlign: 'center',
-        color: 'rgba(255,255,255,0.3)', fontSize: 15, lineHeight: 1.7,
-      }}>
-        Пока нет данных.<br />Заполни дневник сегодня.
+      <div style={{ padding: '48px 32px', textAlign: 'center' }}>
+        <div style={{ fontSize: 40, marginBottom: 16 }}>🌱</div>
+        <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>
+          История пока пуста
+        </div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>
+          Заполни дневник сегодня — и через 3–5 дней здесь начнёт проявляться твой паттерн: что тебя питает, что истощает
+        </div>
       </div>
     );
   }

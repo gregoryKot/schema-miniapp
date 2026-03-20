@@ -46,16 +46,16 @@ const BADGE_POSITIVE: React.CSSProperties = {
 };
 
 function DeltaBadge({ delta }: { delta: number }) {
+  if (delta === 0) return null;
   if (delta > 0) return <span style={BADGE_POSITIVE}>+{delta}</span>;
-  if (delta < 0) return <span style={BADGE_NEUTRAL}>{delta}</span>;
-  return <span style={BADGE_NEUTRAL}>—</span>;
+  return <span style={BADGE_NEUTRAL}>{delta}</span>;
 }
 
 interface Props {
   id: string;
   emoji: string;
   label: string;
-  value: number;
+  value: number | undefined;
   saved: boolean;
   locked?: boolean;
   onUnlock?: () => void;
@@ -66,8 +66,9 @@ interface Props {
 
 export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, locked, onUnlock }: Props) {
   const color = COLORS[id] ?? '#888';
-  const pct = value * 10;
-  const delta = value - (YESTERDAY[id] ?? 0);
+  const hasValue = value !== undefined;
+  const pct = hasValue ? value * 10 : 0;
+  const delta = hasValue ? value - (YESTERDAY[id] ?? 0) : null;
   const trackRef = useRef<HTMLDivElement>(null);
 
   const calcValue = useCallback((clientX: number) => {
@@ -163,14 +164,16 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
               <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>/10</span>
               <span style={{ fontSize: 11, color: color + 'aa', marginLeft: 2 }}>✎</span>
             </div>
-          ) : (
+          ) : hasValue ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <span style={{ fontSize: 17, fontWeight: 600, color }}>{value}</span>
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>/10</span>
               </div>
-              <DeltaBadge delta={delta} />
+              {delta !== null && <DeltaBadge delta={delta} />}
             </>
+          ) : (
+            <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.2)' }}>—</span>
           )}
         </div>
       </div>
@@ -200,8 +203,8 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           }} />
         </div>
 
-        {/* Thumb — hidden when locked */}
-        {!locked && (
+        {/* Thumb — hidden when locked or no value yet */}
+        {!locked && hasValue && (
           <div style={{
             position: 'absolute',
             left: `${pct}%`,

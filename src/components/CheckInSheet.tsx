@@ -23,7 +23,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
   }
 
   return (
-    <BottomSheet onClose={() => checkin(false)} zIndex={250}>
+    <BottomSheet onClose={onDone} zIndex={250}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 36, marginBottom: 8 }}>🎯</div>
         <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>
