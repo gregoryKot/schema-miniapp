@@ -36,8 +36,6 @@ function drawCard(
   const DPR = 2;
   canvas.width = W * DPR;
   canvas.height = H * DPR;
-  canvas.style.width = `${W}px`;
-  canvas.style.height = `${H}px`;
 
   const ctx = canvas.getContext('2d')!;
   ctx.scale(DPR, DPR);
