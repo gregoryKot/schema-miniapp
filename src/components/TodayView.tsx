@@ -115,6 +115,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
+  const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
   );
@@ -134,6 +135,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
         await api.saveRating(needId, value);
         onSaved(needId);
         setLastSavedAt(new Date());
+        setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
       } catch {
         // Silent fail — user can retry by moving slider again
       }
@@ -167,19 +169,34 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
           Потяни ползунок → оценка сохранится автоматически
         </div>
       )}
-      {needs.map((n) => (
-        <NeedSlider
-          key={n.id}
-          id={n.id}
-          emoji={n.emoji}
-          label={n.chartLabel}
-          value={ratings[n.id] ?? 0}
-          saved={false}
-          onChange={(v) => handleChange(n.id, v)}
-          onTap={() => { dismissTooltip(); setActiveNeed(n); }}
-          showTooltip={false}
-        />
-      ))}
+      {needs.map((n) => {
+        const locked = ratings[n.id] !== undefined && !unlocked.has(n.id);
+        return (
+          <div key={n.id}>
+            <NeedSlider
+              id={n.id}
+              emoji={n.emoji}
+              label={n.chartLabel}
+              value={ratings[n.id] ?? 0}
+              saved={false}
+              locked={locked}
+              onChange={(v) => handleChange(n.id, v)}
+              onTap={() => { dismissTooltip(); setActiveNeed(n); }}
+              showTooltip={false}
+            />
+            {locked && (
+              <div style={{ textAlign: 'right', marginTop: -12, marginBottom: 12 }}>
+                <span
+                  onClick={() => setUnlocked(prev => new Set([...prev, n.id]))}
+                  style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: '4px 0' }}
+                >
+                  Изменить
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       {/* Divider */}
       <div style={{

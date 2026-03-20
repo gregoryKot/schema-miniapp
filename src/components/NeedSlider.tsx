@@ -57,12 +57,13 @@ interface Props {
   label: string;
   value: number;
   saved: boolean;
+  locked?: boolean;
   onChange: (value: number) => void;
   onTap?: () => void;
   showTooltip?: boolean;
 }
 
-export function NeedSlider({ id, label, value, onChange, onTap, showTooltip }: Props) {
+export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, locked }: Props) {
   const color = COLORS[id] ?? '#888';
   const pct = value * 10;
   const delta = value - (YESTERDAY[id] ?? 0);
@@ -157,13 +158,13 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip }: P
       {/* Custom slider — pointer-based, works on iOS without tap-first */}
       <div
         ref={trackRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
+        onPointerDown={locked ? undefined : handlePointerDown}
+        onPointerMove={locked ? undefined : handlePointerMove}
         style={{
           position: 'relative',
           padding: '12px 0',
-          cursor: 'pointer',
-          touchAction: 'none', // prevent scroll during drag
+          cursor: locked ? 'default' : 'pointer',
+          touchAction: locked ? 'auto' : 'none',
           userSelect: 'none',
         }}
       >
@@ -173,24 +174,28 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip }: P
             width: `${pct}%`,
             height: '100%',
             borderRadius: 6,
-            background: `linear-gradient(to right, ${color}55, ${color})`,
+            background: locked
+              ? `linear-gradient(to right, ${color}33, ${color}66)`
+              : `linear-gradient(to right, ${color}55, ${color})`,
           }} />
         </div>
 
-        {/* Thumb */}
-        <div style={{
-          position: 'absolute',
-          left: `${pct}%`,
-          top: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 20,
-          height: 20,
-          borderRadius: '50%',
-          background: color,
-          border: '2px solid #0f1117',
-          pointerEvents: 'none',
-          zIndex: 1,
-        }} />
+        {/* Thumb — hidden when locked */}
+        {!locked && (
+          <div style={{
+            position: 'absolute',
+            left: `${pct}%`,
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 20,
+            height: 20,
+            borderRadius: '50%',
+            background: color,
+            border: '2px solid #0f1117',
+            pointerEvents: 'none',
+            zIndex: 1,
+          }} />
+        )}
       </div>
     </div>
   );
