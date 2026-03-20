@@ -130,13 +130,16 @@ export default function App() {
   const handleSaved = useCallback((needId: string) => {
     setSaved((prev) => ({ ...prev, [needId]: true }));
     if (!localStorage.getItem(TODAY_KEY)) {
-      localStorage.setItem(TODAY_KEY, '1');
-      api.getStreak().then(s => {
-        if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
-        else { setShowTagPicker(true); }
-      });
+      const allDone = needs.every(n => ratings[n.id] !== undefined);
+      if (allDone) {
+        localStorage.setItem(TODAY_KEY, '1');
+        api.getStreak().then(s => {
+          if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
+          else { setShowTagPicker(true); }
+        });
+      }
     }
-  }, []);
+  }, [needs, ratings]);
 
   if (loading) {
     return <Loader minHeight="100vh" />;
