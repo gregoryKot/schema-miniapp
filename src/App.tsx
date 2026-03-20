@@ -15,6 +15,7 @@ import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
+import { PracticesOnboarding, shouldShowPracticesOnboarding } from './components/PracticesOnboarding';
 import { PracticePlan } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
@@ -94,6 +95,7 @@ export default function App() {
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
+  const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -141,6 +143,9 @@ export default function App() {
           if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
           else { setShowTagPicker(true); }
         });
+        if (shouldShowPracticesOnboarding()) {
+          setShowPracticesOnboarding(true);
+        }
       }
     }
   }, [needs, ratings]);
@@ -316,6 +321,10 @@ export default function App() {
       )}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} />}
+
+      {showPracticesOnboarding && needs.length > 0 && (
+        <PracticesOnboarding needs={needs} onDone={() => setShowPracticesOnboarding(false)} />
+      )}
 
       {showPairSheet && <PairSheet onClose={() => { setShowPairSheet(false); api.getPair().then(setPairData); }} />}
 

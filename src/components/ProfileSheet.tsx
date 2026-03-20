@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { api, UserSettings, Achievement, PracticePlan } from '../api';
+import { api, UserSettings, Achievement, PracticePlan, UserPractice } from '../api';
+import { NEED_DATA } from '../needData';
+import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { SectionLabel } from './SectionLabel';
@@ -9,6 +11,8 @@ type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; t
 type PairData = { paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null };
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+
+const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
 
 const NEED_NAMES: Record<string, string> = {
   attachment: 'Привязанность', autonomy: 'Автономия',
@@ -75,7 +79,7 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
   );
 }
 
-type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans';
+type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices';
 
 interface Props { onClose: () => void }
 
@@ -87,6 +91,10 @@ export function ProfileSheet({ onClose }: Props) {
   const [pairData, setPairData] = useState<PairData | null>(null);
   const [pairLoading, setPairLoading] = useState(false);
   const [planHistory, setPlanHistory] = useState<PracticePlan[] | null>(null);
+  const [myPracticesNeedIdx, setMyPracticesNeedIdx] = useState(0);
+  const [myPractices, setMyPractices] = useState<UserPractice[] | null>(null);
+  const [myPracticesInput, setMyPracticesInput] = useState('');
+  const [myPracticesSaving, setMyPracticesSaving] = useState(false);
   const [joinCode, setJoinCode] = useState('');
   const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -102,6 +110,12 @@ export function ProfileSheet({ onClose }: Props) {
     api.getInsights().then(setInsights).catch(() => {});
   }, []);
 
+  function loadMyPractices(idx: number) {
+    const needId = NEED_IDS[idx];
+    if (!needId) return;
+    api.getPractices(needId).then(setMyPractices).catch(() => setMyPractices([]));
+  }
+
   function goTo(v: View) {
     if (v === 'pair' && !pairData) {
       setPairLoading(true);
@@ -109,6 +123,11 @@ export function ProfileSheet({ onClose }: Props) {
     }
     if (v === 'plans' && !planHistory) {
       api.getPlanHistory(30).then(setPlanHistory).catch(() => setPlanHistory([]));
+    }
+    if (v === 'myPractices') {
+      setMyPractices(null);
+      setMyPracticesNeedIdx(0);
+      loadMyPractices(0);
     }
     setView(v);
   }
@@ -368,22 +387,40 @@ export function ProfileSheet({ onClose }: Props) {
           {/* Практики */}
           <div style={{ marginBottom: 24 }}>
             <SectionLabel>Практики</SectionLabel>
-            <div
-              onClick={() => goTo('plans')}
-              style={{
-                background: 'rgba(255,255,255,0.04)', borderRadius: 16,
-                padding: '14px 16px', cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 12,
-              }}
-            >
-              <span style={{ fontSize: 24 }}>🎯</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>История планов</div>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                  Что планировал, что сделал
+            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden' }}>
+              <div
+                onClick={() => goTo('myPractices')}
+                style={{
+                  padding: '14px 16px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  borderBottom: '1px solid rgba(255,255,255,0.06)',
+                }}
+              >
+                <span style={{ fontSize: 22 }}>🗂</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>Мои практики</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                    Что помогает — на случай трудного дня
+                  </div>
                 </div>
+                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
               </div>
-              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+              <div
+                onClick={() => goTo('plans')}
+                style={{
+                  padding: '14px 16px', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                }}
+              >
+                <span style={{ fontSize: 22 }}>📋</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>История планов</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                    Что планировал, что сделал
+                  </div>
+                </div>
+                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+              </div>
             </div>
           </div>
 
@@ -544,6 +581,123 @@ export function ProfileSheet({ onClose }: Props) {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── MY PRACTICES VIEW ── */}
+      {view === 'myPractices' && (
+        <div style={{ paddingTop: 8 }}>
+          <BackHeader title="Мои практики" onBack={goBack} />
+          {/* Need tabs */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 20, overflowX: 'auto', paddingBottom: 2 }}>
+            {NEED_IDS.map((id, i) => {
+              const color = COLORS[id] ?? '#888';
+              const emoji = NEED_DATA[id]?.emoji ?? '';
+              const active = i === myPracticesNeedIdx;
+              return (
+                <div
+                  key={id}
+                  onClick={() => {
+                    setMyPracticesNeedIdx(i);
+                    setMyPractices(null);
+                    setMyPracticesInput('');
+                    loadMyPractices(i);
+                  }}
+                  style={{
+                    flexShrink: 0, padding: '7px 12px', borderRadius: 20,
+                    background: active ? color + '28' : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${active ? color + '55' : 'transparent'}`,
+                    color: active ? color : 'rgba(255,255,255,0.45)',
+                    fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  {emoji} {NEED_NAMES[id]}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Practices list */}
+          {!myPractices ? (
+            <Loader minHeight="20vh" />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
+              {myPractices.length === 0 && (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '12px 0' }}>
+                  Пока пусто — добавь что-нибудь ниже
+                </div>
+              )}
+              {myPractices.map(p => (
+                <div key={p.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '11px 14px',
+                }}>
+                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.45 }}>
+                    {p.text}
+                  </div>
+                  <div
+                    onClick={() => {
+                      api.deletePractice(p.id);
+                      setMyPractices(prev => prev?.filter(x => x.id !== p.id) ?? null);
+                    }}
+                    style={{
+                      width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                      background: 'rgba(255,100,100,0.1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', fontSize: 15, color: 'rgba(255,100,100,0.5)',
+                    }}
+                  >×</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add input */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              value={myPracticesInput}
+              onChange={e => setMyPracticesInput(e.target.value)}
+              onKeyDown={async e => {
+                if (e.key !== 'Enter') return;
+                const text = myPracticesInput.trim();
+                if (!text || myPracticesSaving) return;
+                setMyPracticesSaving(true);
+                try {
+                  await api.addPractice(NEED_IDS[myPracticesNeedIdx], text);
+                  setMyPracticesInput('');
+                  loadMyPractices(myPracticesNeedIdx);
+                } catch { /* silent */ }
+                setMyPracticesSaving(false);
+              }}
+              placeholder="Добавить практику..."
+              maxLength={200}
+              style={{
+                flex: 1, background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12, padding: '11px 14px',
+                color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit',
+              }}
+            />
+            <button
+              onClick={async () => {
+                const text = myPracticesInput.trim();
+                if (!text || myPracticesSaving) return;
+                setMyPracticesSaving(true);
+                try {
+                  await api.addPractice(NEED_IDS[myPracticesNeedIdx], text);
+                  setMyPracticesInput('');
+                  loadMyPractices(myPracticesNeedIdx);
+                } catch { /* silent */ }
+                setMyPracticesSaving(false);
+              }}
+              disabled={!myPracticesInput.trim() || myPracticesSaving}
+              style={{
+                padding: '11px 16px', borderRadius: 12, border: 'none',
+                background: myPracticesInput.trim() ? COLORS[NEED_IDS[myPracticesNeedIdx]] ?? '#a78bfa' : 'rgba(255,255,255,0.07)',
+                color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+              }}
+            >+</button>
+          </div>
         </div>
       )}
 

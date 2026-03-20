@@ -208,8 +208,8 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
                 <span style={{ fontSize: 16, flexShrink: 0 }}>🎯</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color }}>Запланировать практику на завтра</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
-                    Выбери что сделаешь — и получи напоминание
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, lineHeight: 1.4 }}>
+                    Один шаг, пока помнишь — когда тяжелее, решения даются сложнее
                   </div>
                 </div>
                 <span style={{ fontSize: 16, color: color + '88', flexShrink: 0 }}>›</span>
