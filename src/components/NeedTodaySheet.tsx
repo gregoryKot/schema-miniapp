@@ -3,6 +3,7 @@ import { Need, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
+import { PlanSheet } from './PlanSheet';
 
 interface Props {
   need: Need;
@@ -19,6 +20,7 @@ const DISCLAIMER_CONTENT = [
 
 export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [showPlan, setShowPlan] = useState(false);
   const data = NEED_DATA[need.id];
   if (!data) return null;
   const color = COLORS[need.id] ?? '#888';
@@ -196,6 +198,29 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
         </div>
       )}
 
+      {/* Plan button (low score only) */}
+      {value <= 3 && (
+        <div style={{ marginBottom: 24 }}>
+          <div
+            onClick={() => setShowPlan(true)}
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: color + '12',
+              border: `1px solid ${color}28`,
+              borderRadius: 12, padding: '12px 16px', cursor: 'pointer',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500, color }}>Запланировать на завтра</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                Выбери практику и получи напоминание
+              </div>
+            </div>
+            <div style={{ fontSize: 18, color: color + 'aa', flexShrink: 0 }}>›</div>
+          </div>
+        </div>
+      )}
+
       {/* Section 4: Tip (reflective) */}
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>Попробуй сегодня</SectionLabel>
@@ -215,6 +240,17 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
           </div>
         </div>
       </div>
+
+      {showPlan && (
+        <PlanSheet
+          needId={need.id}
+          needEmoji={data.emoji}
+          needLabel={need.chartLabel}
+          color={color}
+          onClose={() => setShowPlan(false)}
+          onSaved={() => { setShowPlan(false); onClose(); }}
+        />
+      )}
 
       {showDisclaimer && (
         <BottomSheet onClose={() => setShowDisclaimer(false)} zIndex={300}>

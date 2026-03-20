@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Need, DayHistory } from './types';
+import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
@@ -14,6 +14,8 @@ import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQue
 import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
+import { CheckInSheet } from './components/CheckInSheet';
+import { PracticePlan } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -91,6 +93,7 @@ export default function App() {
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
   const [showPairSheet, setShowPairSheet] = useState(false);
+  const [pendingPlan, setPendingPlan] = useState<PracticePlan | null | undefined>(undefined);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -108,6 +111,7 @@ export default function App() {
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
     api.getPair().then(setPairData).catch(() => {});
+    api.getPendingPlan().then(setPendingPlan).catch(() => setPendingPlan(null));
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -273,6 +277,20 @@ export default function App() {
           ? <Loader minHeight="60vh" />
           : <HistoryView needs={needs} history={history} currentRatings={ratings} />
       )}
+
+      {pendingPlan && needs.length > 0 && (() => {
+        const need = needs.find(n => n.id === pendingPlan.needId);
+        if (!need) return null;
+        return (
+          <CheckInSheet
+            plan={pendingPlan}
+            needEmoji={need.emoji ?? ''}
+            needLabel={need.chartLabel}
+            color={COLORS[need.id] ?? '#888'}
+            onDone={() => setPendingPlan(null)}
+          />
+        );
+      })()}
 
       {celebrationStreak !== null && (
         <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTagPicker(true); }} />

@@ -35,6 +35,21 @@ export interface Achievement {
   earned: boolean;
 }
 
+export interface UserPractice {
+  id: number;
+  needId: string;
+  text: string;
+}
+
+export interface PracticePlan {
+  id: number;
+  needId: string;
+  practiceText: string;
+  scheduledDate: string;
+  reminderUtcHour: number | null;
+  done: boolean | null;
+}
+
 export const api = {
   needs:          () => get<import('./types').Need[]>('/api/needs'),
   ratings:        () => get<Record<string, number>>('/api/ratings'),
@@ -59,6 +74,13 @@ export const api = {
     totalDays: number;
   }>('/api/insights'),
   getExport: () => get<{ text: string }>('/api/export'),
+  getPractices:  (needId: string) => get<UserPractice[]>(`/api/practices?needId=${needId}`),
+  addPractice:   (needId: string, text: string) => post('/api/practices', { needId, text }),
+  deletePractice:(id: number) => fetch(`${BASE}/api/practices/${id}`, { method: 'DELETE', headers: authHeaders() }).then(() => {}),
+  getPendingPlan:() => get<PracticePlan | null>('/api/plan/pending'),
+  createPlan:    (needId: string, practiceText: string, reminderUtcHour?: number) =>
+    post('/api/plan', { needId, practiceText, reminderUtcHour }),
+  checkinPlan:   (id: number, done: boolean) => post(`/api/plan/${id}/checkin`, { done }),
   getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null }>('/api/pair'),
   createPairInvite: async () => {
     const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
