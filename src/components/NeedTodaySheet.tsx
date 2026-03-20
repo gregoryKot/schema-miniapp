@@ -156,7 +156,18 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
       {/* Section 3: Actions (low score only) */}
       {value <= 3 && (
         <div style={{ marginBottom: 24 }}>
-          <SectionLabel>Сделай прямо сейчас</SectionLabel>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <SectionLabel mb={0}>Сделай прямо сейчас</SectionLabel>
+            <span
+              onClick={(e) => { e.stopPropagation(); setShowDisclaimer(true); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 14, height: 14, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)',
+                fontSize: 9, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+              }}
+            >?</span>
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {data.actions.map((action, i) => (
               <div
