@@ -113,7 +113,14 @@ export default function App() {
     window.Telegram?.WebApp?.expand();
     window.Telegram?.WebApp?.disableVerticalSwipes?.();
     Promise.all([api.needs(), api.ratings()])
-      .then(([n, r]) => { setNeeds(n); setRatings(r); })
+      .then(([n, r]) => {
+        setNeeds(n);
+        setRatings(r);
+        // Mark server-loaded ratings as already saved → lock sliders on open
+        const initialSaved: Record<string, boolean> = {};
+        for (const key of Object.keys(r)) initialSaved[key] = true;
+        setSaved(initialSaved);
+      })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
     api.getPair().then(setPairData).catch(() => {});

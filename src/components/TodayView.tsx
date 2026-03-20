@@ -174,7 +174,7 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
         </div>
       )}
       {needs.map((n) => {
-        const locked = ratings[n.id] !== undefined && !unlocked.has(n.id);
+        const locked = !!saved[n.id] && !unlocked.has(n.id);
         const isLow = locked && ratings[n.id]! <= 3;
         const showPlanCard = isLow && !plannedNeeds.has(n.id);
         const color = COLORS[n.id] ?? '#888';
