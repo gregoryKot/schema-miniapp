@@ -97,7 +97,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
           color,
           lineHeight: 1.5,
         }}>
-          Ты хорошо закрываешь эту потребность сегодня — заметь это
+          Сегодня ты позаботился об этой потребности — заметь это
         </div>
       )}
 
