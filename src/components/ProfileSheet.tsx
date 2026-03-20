@@ -104,10 +104,10 @@ export function ProfileSheet({ onClose }: Props) {
   const [view, setView] = useState<View>('main');
 
   useEffect(() => {
-    api.getSettings().then(setSettings).catch(() => {});
-    api.getStreak().then(setStreak).catch(() => {});
-    api.getAchievements().then(setAchievements).catch(() => {});
-    api.getInsights().then(setInsights).catch(() => {});
+    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false }));
+    api.getStreak().then(setStreak).catch(() => setStreak({ currentStreak: 0, longestStreak: 0, totalDays: 0, todayDone: false, weekDots: [] }));
+    api.getAchievements().then(setAchievements).catch(() => setAchievements([]));
+    api.getInsights().then(setInsights).catch(() => setInsights(null));
   }, []);
 
   function loadMyPractices(idx: number) {

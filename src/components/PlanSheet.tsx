@@ -59,6 +59,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
   const [reminderIdx, setReminderIdx] = useState(2); // Вечером default
   const [tzOffset, setTzOffset] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [phase, setPhase] = useState<'pick' | 'confirm'>('pick');
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
       onSaved();
     } catch {
       setSaving(false);
+      setSaveError(true);
     }
   }
 
@@ -303,6 +305,11 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             </div>
           </div>
 
+          {saveError && (
+            <div style={{ fontSize: 13, color: '#ff6b6b', textAlign: 'center', marginBottom: 12 }}>
+              Не удалось сохранить. Попробуй ещё раз.
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={() => setPhase('pick')}
@@ -314,7 +321,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               ← Назад
             </button>
             <button
-              onClick={handleSave}
+              onClick={() => { setSaveError(false); handleSave(); }}
               disabled={saving}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
