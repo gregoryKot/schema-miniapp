@@ -130,7 +130,7 @@ export default function App() {
   const handleSaved = useCallback((needId: string) => {
     setSaved((prev) => ({ ...prev, [needId]: true }));
     if (!localStorage.getItem(TODAY_KEY)) {
-      const allDone = needs.every(n => ratings[n.id] !== undefined);
+      const allDone = needs.every(n => n.id === needId || ratings[n.id] !== undefined);
       if (allDone) {
         localStorage.setItem(TODAY_KEY, '1');
         api.getStreak().then(s => {
