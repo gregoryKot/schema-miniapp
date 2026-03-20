@@ -1,10 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
-import { Need, YESTERDAY } from '../types';
+import { Need, YESTERDAY, COLORS } from '../types';
 import { api } from '../api';
 import { NeedSlider } from './NeedSlider';
 import { NeedTodaySheet } from './NeedTodaySheet';
+import { PlanSheet } from './PlanSheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
 import { SectionLabel } from './SectionLabel';
+import { NEED_DATA } from '../needData';
 
 interface Props {
   needs: Need[];
@@ -116,6 +118,8 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
+  const [plannedNeeds, setPlannedNeeds] = useState<Set<string>>(new Set());
+  const [activePlanNeed, setActivePlanNeed] = useState<Need | null>(null);
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
   );
@@ -171,20 +175,47 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
       )}
       {needs.map((n) => {
         const locked = ratings[n.id] !== undefined && !unlocked.has(n.id);
+        const isLow = locked && (ratings[n.id] ?? 0) <= 3;
+        const showPlanCard = isLow && !plannedNeeds.has(n.id);
+        const color = COLORS[n.id] ?? '#888';
+        const emoji = NEED_DATA[n.id]?.emoji ?? '';
         return (
-          <NeedSlider
-            key={n.id}
-            id={n.id}
-            emoji={n.emoji}
-            label={n.chartLabel}
-            value={ratings[n.id] ?? 0}
-            saved={false}
-            locked={locked}
-            onUnlock={() => setUnlocked(prev => new Set([...prev, n.id]))}
-            onChange={(v) => handleChange(n.id, v)}
-            onTap={() => { dismissTooltip(); setActiveNeed(n); }}
-            showTooltip={false}
-          />
+          <div key={n.id}>
+            <NeedSlider
+              id={n.id}
+              emoji={n.emoji}
+              label={n.chartLabel}
+              value={ratings[n.id] ?? 0}
+              saved={false}
+              locked={locked}
+              onUnlock={() => setUnlocked(prev => new Set([...prev, n.id]))}
+              onChange={(v) => handleChange(n.id, v)}
+              onTap={() => { dismissTooltip(); setActiveNeed(n); }}
+              showTooltip={false}
+            />
+            {showPlanCard && (
+              <div
+                onClick={() => { dismissTooltip(); setActivePlanNeed(n); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: color + '12',
+                  border: `1px solid ${color}28`,
+                  borderRadius: 12, padding: '10px 14px',
+                  marginTop: -8, marginBottom: 20,
+                  cursor: 'pointer',
+                }}
+              >
+                <span style={{ fontSize: 16, flexShrink: 0 }}>🎯</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color }}>Запланировать практику на завтра</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+                    Выбери что сделаешь — и получи напоминание
+                  </div>
+                </div>
+                <span style={{ fontSize: 16, color: color + '88', flexShrink: 0 }}>›</span>
+              </div>
+            )}
+          </div>
         );
       })}
 
@@ -250,6 +281,20 @@ export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) 
           value={ratings[activeNeed.id] ?? 0}
           onChange={(v) => handleChange(activeNeed.id, v)}
           onClose={() => setActiveNeed(null)}
+        />
+      )}
+
+      {activePlanNeed && (
+        <PlanSheet
+          needId={activePlanNeed.id}
+          needEmoji={NEED_DATA[activePlanNeed.id]?.emoji ?? ''}
+          needLabel={activePlanNeed.chartLabel}
+          color={COLORS[activePlanNeed.id] ?? '#888'}
+          onClose={() => setActivePlanNeed(null)}
+          onSaved={() => {
+            setPlannedNeeds(prev => new Set([...prev, activePlanNeed.id]));
+            setActivePlanNeed(null);
+          }}
         />
       )}
     </div>
