@@ -77,7 +77,8 @@ export const api = {
   getPractices:  (needId: string) => get<UserPractice[]>(`/api/practices?needId=${needId}`),
   addPractice:   (needId: string, text: string) => post('/api/practices', { needId, text }),
   deletePractice:(id: number) => fetch(`${BASE}/api/practices/${id}`, { method: 'DELETE', headers: authHeaders() }).then(() => {}),
-  getPendingPlan:() => get<PracticePlan | null>('/api/plan/pending'),
+  getPendingPlans:() => get<PracticePlan[]>('/api/plan/pending'),
+  getPlanHistory: (days = 30) => get<PracticePlan[]>(`/api/plans/history?days=${days}`),
   createPlan:    (needId: string, practiceText: string, reminderUtcHour?: number) =>
     post('/api/plan', { needId, practiceText, reminderUtcHour }),
   checkinPlan:   (id: number, done: boolean) => post(`/api/plan/${id}/checkin`, { done }),

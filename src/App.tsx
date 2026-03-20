@@ -93,7 +93,7 @@ export default function App() {
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
   const [showPairSheet, setShowPairSheet] = useState(false);
-  const [pendingPlan, setPendingPlan] = useState<PracticePlan | null | undefined>(undefined);
+  const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -111,7 +111,7 @@ export default function App() {
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
     api.getPair().then(setPairData).catch(() => {});
-    api.getPendingPlan().then(setPendingPlan).catch(() => setPendingPlan(null));
+    api.getPendingPlans().then(setPendingPlans).catch(() => {});
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -278,16 +278,17 @@ export default function App() {
           : <HistoryView needs={needs} history={history} currentRatings={ratings} />
       )}
 
-      {pendingPlan && needs.length > 0 && (() => {
-        const need = needs.find(n => n.id === pendingPlan.needId);
+      {pendingPlans.length > 0 && needs.length > 0 && (() => {
+        const plan = pendingPlans[0];
+        const need = needs.find(n => n.id === plan.needId);
         if (!need) return null;
         return (
           <CheckInSheet
-            plan={pendingPlan}
+            plan={plan}
             needEmoji={need.emoji ?? ''}
             needLabel={need.chartLabel}
             color={COLORS[need.id] ?? '#888'}
-            onDone={() => setPendingPlan(null)}
+            onDone={() => setPendingPlans(prev => prev.slice(1))}
           />
         );
       })()}

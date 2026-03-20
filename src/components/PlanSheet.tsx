@@ -68,10 +68,10 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
 
   const curated = CURATED[needId] ?? [];
   const allOptions = [
-    ...userPractices.map(p => ({ text: p.text, isUser: true })),
+    ...userPractices.map(p => ({ text: p.text, isUser: true, id: p.id })),
     ...curated
       .filter(t => !userPractices.some(p => p.text === t))
-      .map(t => ({ text: t, isUser: false })),
+      .map(t => ({ text: t, isUser: false, id: undefined as number | undefined })),
   ];
 
   function selectText(text: string) {
@@ -134,26 +134,41 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             <div style={{ marginBottom: 20 }}>
               <SectionLabel>Твои практики</SectionLabel>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {allOptions.map(({ text, isUser }) => (
-                  <div
-                    key={text}
-                    onClick={() => selectText(text)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 10,
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 12, padding: '11px 14px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <div style={{
-                      width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                      background: isUser ? color : 'rgba(255,255,255,0.2)',
-                    }} />
-                    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', flex: 1, lineHeight: 1.45 }}>
-                      {text}
+                {allOptions.map(({ text, isUser, id }) => (
+                  <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div
+                      onClick={() => selectText(text)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 10, flex: 1,
+                        background: 'rgba(255,255,255,0.05)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: 12, padding: '11px 14px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <div style={{
+                        width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                        background: isUser ? color : 'rgba(255,255,255,0.2)',
+                      }} />
+                      <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', flex: 1, lineHeight: 1.45 }}>
+                        {text}
+                      </div>
+                      <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.15)', flexShrink: 0 }}>›</div>
                     </div>
-                    <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.15)', flexShrink: 0 }}>›</div>
+                    {isUser && id !== undefined && (
+                      <div
+                        onClick={() => {
+                          api.deletePractice(id);
+                          setUserPractices(prev => prev.filter(p => p.id !== id));
+                        }}
+                        style={{
+                          width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+                          background: 'rgba(255,100,100,0.1)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          cursor: 'pointer', fontSize: 16, color: 'rgba(255,100,100,0.5)',
+                        }}
+                      >×</div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -242,6 +257,49 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                   </span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* ICS download */}
+          <div style={{ marginBottom: 16 }}>
+            <div
+              onClick={() => {
+                const date = new Date();
+                date.setDate(date.getDate() + 1);
+                const y = date.getUTCFullYear();
+                const mo = String(date.getUTCMonth() + 1).padStart(2, '0');
+                const d = String(date.getUTCDate()).padStart(2, '0');
+                const opt = REMINDER_OPTIONS[reminderIdx];
+                const h = opt.localHour !== null ? String(((opt.localHour - tzOffset + 24) % 24)).padStart(2, '0') : '09';
+                const ics = [
+                  'BEGIN:VCALENDAR',
+                  'VERSION:2.0',
+                  'PRODID:-//Schema//Schema//RU',
+                  'BEGIN:VEVENT',
+                  `DTSTART:${y}${mo}${d}T${h}0000Z`,
+                  `DTEND:${y}${mo}${d}T${h}3000Z`,
+                  `SUMMARY:🎯 ${selectedText}`,
+                  `DESCRIPTION:Практика для потребности: ${needLabel}`,
+                  'END:VEVENT',
+                  'END:VCALENDAR',
+                ].join('\r\n');
+                const blob = new Blob([ics], { type: 'text/calendar' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'practice.ics';
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: 12, padding: '10px 14px', cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontSize: 16 }}>📅</span>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Добавить в календарь (.ics)</span>
             </div>
           </div>
 

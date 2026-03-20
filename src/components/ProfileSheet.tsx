@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, UserSettings, Achievement } from '../api';
+import { api, UserSettings, Achievement, PracticePlan } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { SectionLabel } from './SectionLabel';
@@ -75,7 +75,7 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
   );
 }
 
-type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair';
+type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans';
 
 interface Props { onClose: () => void }
 
@@ -86,6 +86,7 @@ export function ProfileSheet({ onClose }: Props) {
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [pairData, setPairData] = useState<PairData | null>(null);
   const [pairLoading, setPairLoading] = useState(false);
+  const [planHistory, setPlanHistory] = useState<PracticePlan[] | null>(null);
   const [joinCode, setJoinCode] = useState('');
   const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -105,6 +106,9 @@ export function ProfileSheet({ onClose }: Props) {
     if (v === 'pair' && !pairData) {
       setPairLoading(true);
       api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
+    }
+    if (v === 'plans' && !planHistory) {
+      api.getPlanHistory(30).then(setPlanHistory).catch(() => setPlanHistory([]));
     }
     setView(v);
   }
@@ -361,6 +365,28 @@ export function ProfileSheet({ onClose }: Props) {
             </div>
           </div>
 
+          {/* Практики */}
+          <div style={{ marginBottom: 24 }}>
+            <SectionLabel>Практики</SectionLabel>
+            <div
+              onClick={() => goTo('plans')}
+              style={{
+                background: 'rgba(255,255,255,0.04)', borderRadius: 16,
+                padding: '14px 16px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 12,
+              }}
+            >
+              <span style={{ fontSize: 24 }}>🎯</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, color: '#fff', fontWeight: 500 }}>История планов</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                  Что планировал, что сделал
+                </div>
+              </div>
+              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+            </div>
+          </div>
+
           {/* Уведомления */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <SectionLabel>Уведомления</SectionLabel>
@@ -484,6 +510,40 @@ export function ProfileSheet({ onClose }: Props) {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* ── PLANS VIEW ── */}
+      {view === 'plans' && (
+        <div style={{ paddingTop: 8 }}>
+          <BackHeader title="История планов" onBack={goBack} />
+          {!planHistory ? (
+            <Loader minHeight="30vh" />
+          ) : planHistory.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>
+              Планов пока нет.<br />Создай первый из дневника.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {planHistory.map(plan => (
+                <div key={plan.id} style={{
+                  background: plan.done === true ? 'rgba(6,214,160,0.07)' : plan.done === false ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${plan.done === true ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.07)'}`,
+                  borderRadius: 14, padding: '12px 14px',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{plan.scheduledDate}</div>
+                    <div style={{ fontSize: 13 }}>
+                      {plan.done === true ? '✅' : plan.done === false ? '❌' : '⏳'}
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.45 }}>
+                    {plan.practiceText}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
