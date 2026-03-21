@@ -340,8 +340,10 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
   const [answers, setAnswers] = useState<number[]>(Array(QUESTIONS.length).fill(0));
   const [page, setPage] = useState(0);
   const [hasProgress, setHasProgress] = useState(false);
-  const [progressAnswered, setProgressAnswered] = useState(0);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
+
+  // Always computed from current answers — never stale
+  const progressAnswered = answers.filter(a => a > 0).length;
 
   // Check for in-progress test on mount
   useEffect(() => {
@@ -351,7 +353,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
         const parsed = JSON.parse(saved) as { answers: number[]; page: number };
         if (Array.isArray(parsed.answers) && parsed.answers.length === QUESTIONS.length) {
           setHasProgress(true);
-          setProgressAnswered(parsed.answers.filter((a: number) => a > 0).length);
           setAnswers(parsed.answers);
           if (autoResume) {
             setPage(parsed.page ?? 0);
