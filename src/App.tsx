@@ -35,11 +35,34 @@ type Tab = 'today' | 'history';
 const DISCLAIMER_KEY = 'disclaimer_accepted';
 
 function Disclaimer({ onAccept }: { onAccept: () => void }) {
+  const [c1, setC1] = useState(false);
+  const [c2, setC2] = useState(false);
+  const ready = c1 && c2;
+
+  const Checkbox = ({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) => (
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 12 }}>
+      <div
+        onClick={onToggle}
+        style={{
+          width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
+          border: `2px solid ${checked ? '#a78bfa' : 'rgba(255,255,255,0.2)'}`,
+          background: checked ? '#a78bfa' : 'transparent',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transition: 'all 0.15s',
+        }}
+      >
+        {checked && <span style={{ fontSize: 11, color: '#fff', fontWeight: 700 }}>✓</span>}
+      </div>
+      <span onClick={onToggle} style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{label}</span>
+    </label>
+  );
+
   return (
     <BottomSheet onClose={onAccept} zIndex={300}>
       <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
         <div style={{ fontSize: 36 }}>🧠</div>
       </div>
+
       <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Прежде чем начать
@@ -47,40 +70,63 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
           <br /><br />
-          Дневник помогает видеть паттерны и чуть лучше понимать себя. Всё что здесь есть — инструмент самоисследования, не клиническая диагностика и не инструкция.
-          <br /><br />
-          Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.
+          Дневник помогает видеть паттерны и чуть лучше понимать себя. Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
         </div>
       </div>
+
       <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Данные и конфиденциальность
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
-          Записи дневника хранятся на защищённом сервере, привязаны к твоему Telegram-аккаунту и не передаются третьим лицам.
-          <br /><br />
-          Результаты тестов (YSQ и другие) хранятся только на этом устройстве.
-          <br /><br />
-          Для удаления всех данных напиши{' '}
-          <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 14 }}>
+          Записи дневника хранятся на защищённом сервере, привязаны к Telegram-аккаунту и не передаются третьим лицам. Результаты тестов хранятся только на этом устройстве. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
         </div>
+        <Checkbox
+          checked={c2}
+          onToggle={() => setC2(p => !p)}
+          label="Я согласен(на) на хранение данных дневника согласно описанным условиям"
+        />
       </div>
-      <div style={{ background: 'rgba(167,139,250,0.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 24, border: '1px solid rgba(167,139,250,0.15)' }}>
+
+      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Это не терапия
+        </div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 14 }}>
+          Приложение — инструмент самоисследования. Оценки, тесты и советы внутри не являются клинической диагностикой, медицинскими рекомендациями или заменой работы с психологом.
+        </div>
+        <Checkbox
+          checked={c1}
+          onToggle={() => setC1(p => !p)}
+          label="Я понимаю, что это инструмент самоисследования, а не клиническая диагностика"
+        />
+      </div>
+
+      <div style={{ background: 'rgba(167,139,250,0.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 20, border: '1px solid rgba(167,139,250,0.15)' }}>
         <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Автор дневника
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 12 }}>
-          Канал о схема-терапии, потребностях и том, как работает психика —{' '}
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 8 }}>
+          Канал о схема-терапии —{' '}
           <a href="https://t.me/SchemeHappens" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
         </div>
         <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-          Вопросы или если хочешь поработать лично —{' '}
+          Работать лично —{' '}
           <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
         </div>
       </div>
+
       <button
         onClick={onAccept}
-        style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer' }}
+        disabled={!ready}
+        style={{
+          width: '100%', padding: '15px 0', borderRadius: 14, border: 'none',
+          background: ready ? 'linear-gradient(135deg, #a78bfa, #4fa3f7)' : 'rgba(255,255,255,0.08)',
+          color: ready ? '#fff' : 'rgba(255,255,255,0.25)',
+          fontSize: 16, fontWeight: 600,
+          cursor: ready ? 'pointer' : 'default',
+          transition: 'all 0.2s',
+        }}
       >
         Понятно, начать
       </button>

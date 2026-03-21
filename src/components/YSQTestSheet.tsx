@@ -341,7 +341,7 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
   const [hasProgress, setHasProgress] = useState(false);
   const [progressPage, setProgressPage] = useState(0);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
-  const [consented, setConsented] = useState(false);
+
 
   // Check for in-progress test on mount
   useEffect(() => {
@@ -477,45 +477,21 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
             </div>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 10 }}>
-              Ответы сохраняются только на этом устройстве и не передаются на сервер.
-            </div>
-            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
-              <div
-                onClick={() => setConsented(c => !c)}
-                style={{
-                  width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-                  border: `2px solid ${consented ? '#a78bfa' : 'rgba(255,255,255,0.2)'}`,
-                  background: consented ? '#a78bfa' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {consented && <span style={{ fontSize: 11, color: '#fff', fontWeight: 700 }}>✓</span>}
-              </div>
-              <span
-                onClick={() => setConsented(c => !c)}
-                style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}
-              >
-                Я понимаю, что это инструмент самоисследования, а не клиническая диагностика
-              </span>
-            </label>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', lineHeight: 1.5, marginBottom: 20, textAlign: 'center' }}>
+            Ответы сохраняются только на этом устройстве и не передаются на сервер.
           </div>
 
           {hasProgress ? (
             <>
               <button
                 onClick={handleContinue}
-                disabled={!consented}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: consented ? '#a78bfa' : 'rgba(255,255,255,0.07)', color: consented ? '#fff' : 'rgba(255,255,255,0.3)', fontSize: 16, fontWeight: 600, cursor: consented ? 'pointer' : 'default', marginBottom: 10 }}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
               >
                 Продолжить (вопрос {progressQuestionNumber} из 116)
               </button>
               <button
                 onClick={handleStartFresh}
-                disabled={!consented}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: consented ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.07)', color: consented ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.3)', fontSize: 15, fontWeight: 500, cursor: consented ? 'pointer' : 'default', marginBottom: 10 }}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer', marginBottom: 10 }}
               >
                 Начать заново
               </button>
@@ -523,8 +499,7 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
           ) : (
             <button
               onClick={() => { setPhase('test'); setPage(0); }}
-              disabled={!consented}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: consented ? '#a78bfa' : 'rgba(255,255,255,0.07)', color: consented ? '#fff' : 'rgba(255,255,255,0.3)', fontSize: 16, fontWeight: 600, cursor: consented ? 'pointer' : 'default', marginBottom: 10 }}
+              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
             >
               Начать
             </button>
