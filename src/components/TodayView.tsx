@@ -145,7 +145,10 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
         const res = await api.saveRating(needId, value);
         onSaved(needId, res.allDone ? res.streak : undefined);
         setLastSavedAt(new Date());
-        setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
+        // Lock slider 2.5s after save so user can still adjust
+        setTimeout(() => {
+          setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
+        }, 2500);
       } catch {
         setSaveError(true);
         setTimeout(() => setSaveError(false), 3000);
