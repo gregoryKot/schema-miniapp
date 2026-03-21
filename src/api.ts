@@ -60,7 +60,7 @@ export interface PracticePlan {
 }
 
 export const api = {
-  init:           () => post('/api/init', {}),
+  init:           (tzOffset?: number) => post('/api/init', { tzOffset }),
   getDisclaimer:  () => get<{ accepted: boolean }>('/api/disclaimer'),
   acceptDisclaimer: () => post('/api/disclaimer', {}),
   getYsqProgress: () => get<{ answers: number[]; page: number } | null>('/api/ysq-progress'),

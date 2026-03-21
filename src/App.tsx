@@ -191,7 +191,10 @@ export default function App() {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
     window.Telegram?.WebApp?.disableVerticalSwipes?.();
-    api.init().catch(() => {});
+    if (!sessionStorage.getItem('init_done')) {
+      const tzOffset = Math.round(-new Date().getTimezoneOffset() / 60);
+      api.init(tzOffset).then(() => sessionStorage.setItem('init_done', '1')).catch(() => {});
+    }
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => {
         setNeeds(n);
