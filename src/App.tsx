@@ -170,7 +170,7 @@ export default function App() {
   const [yesterdayBannerDismissed] = useState(() => !!localStorage.getItem('yesterday_banner_' + YESTERDAY_DATE));
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
-  const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
+  const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const [showYsqBanner, setShowYsqBanner] = useState(
     () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY)
   );

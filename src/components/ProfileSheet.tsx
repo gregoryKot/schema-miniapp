@@ -111,7 +111,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [view, setView] = useState<View>('main');
 
   useEffect(() => {
-    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false }));
+    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false, pairCardDismissed: false }));
     api.getStreak().then(setStreak).catch(() => setStreak({ currentStreak: 0, longestStreak: 0, totalDays: 0, todayDone: false, weekDots: [] }));
     api.getAchievements().then(setAchievements).catch(() => setAchievements([]));
     api.getInsights().then(setInsights).catch(() => setInsights(null));

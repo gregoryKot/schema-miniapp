@@ -109,7 +109,7 @@ export const api = {
     const res = await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: authHeaders() });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
-  getChildhoodRatings: () => get<Partial<Record<string, number>>>('/api/childhood-ratings'),
+  getChildhoodRatings: () => get<Record<string, number>>('/api/childhood-ratings'),
   saveChildhoodRatings: (ratings: Record<string, number>) => post('/api/childhood-ratings', ratings),
   getYsqResult: () => get<{ answers: number[]; completedAt: string } | null>('/api/ysq-result'),
   saveYsqResult: (answers: number[]) => post('/api/ysq-result', { answers }),
