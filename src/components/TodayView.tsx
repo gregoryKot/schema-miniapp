@@ -112,7 +112,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, onChange, onSaved, onNote }: Props) {
+export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
