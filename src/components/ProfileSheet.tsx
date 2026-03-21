@@ -100,6 +100,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodDone] = useState(() => !!localStorage.getItem(CHILDHOOD_DONE_KEY));
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [joinCode, setJoinCode] = useState('');
   const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -885,7 +887,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
             </div>
           </div>
 
-          <div style={{ marginTop: 4, marginBottom: 16 }}>
+          <div style={{ marginTop: 4, marginBottom: 12 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 10 }}>Удалить данные теста YSQ-R</div>
             <button
               onClick={() => {
@@ -900,6 +902,61 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
             >
               Удалить результаты теста с устройства
             </button>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Удалить все мои данные</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, marginBottom: 10 }}>
+              Дневник, оценки, практики, колесо детства — всё будет удалено с сервера. Действие необратимо.
+            </div>
+            {!deleteConfirm ? (
+              <button
+                onClick={() => setDeleteConfirm(true)}
+                style={{
+                  width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.4)',
+                  background: 'rgba(239,68,68,0.1)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                }}
+              >
+                Удалить все данные
+              </button>
+            ) : (
+              <div>
+                <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 12, fontWeight: 500 }}>
+                  Уверен(а)? Это нельзя отменить.
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => setDeleteConfirm(false)}
+                    style={{
+                      flex: 1, padding: '13px 0', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)',
+                      background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer',
+                    }}
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    disabled={deleting}
+                    onClick={async () => {
+                      setDeleting(true);
+                      try {
+                        await api.deleteAllUserData();
+                        localStorage.clear();
+                        window.location.reload();
+                      } catch {
+                        setDeleting(false);
+                        setDeleteConfirm(false);
+                      }
+                    }}
+                    style={{
+                      flex: 2, padding: '13px 0', borderRadius: 12, border: 'none',
+                      background: '#ef4444', color: '#fff', fontSize: 14, fontWeight: 600, cursor: deleting ? 'default' : 'pointer',
+                    }}
+                  >
+                    {deleting ? 'Удаляем...' : 'Да, удалить всё'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>

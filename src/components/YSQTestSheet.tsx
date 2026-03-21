@@ -512,13 +512,14 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
             Отмена
           </button>
 
-          <div style={{ marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
-            Основан на опроснике YSQ-R (Young Schema Questionnaire).{' '}
-            Методика разработана{' '}
+          <div style={{ marginTop: 20, fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.7, textAlign: 'center' }}>
+            Основан на опроснике YSQ-R (Young Schema Questionnaire, пересмотренная версия).{' '}
+            © Jeffrey Young, Schema Therapy Institute.{' '}
+            Все права на методику принадлежат{' '}
             <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.5)', textDecoration: 'none' }}>
               Jeffrey Young
             </a>
-            {' '}(Schema Therapy Institute).
+            . Используется в образовательных целях.
           </div>
         </div>
       )}
@@ -764,6 +765,15 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
             >
               Пройти заново
             </button>
+
+            <div style={{ marginTop: 16, fontSize: 11, color: 'rgba(255,255,255,0.15)', lineHeight: 1.7, textAlign: 'center' }}>
+              © Jeffrey Young, Schema Therapy Institute.{' '}
+              Все права на методику YSQ-R принадлежат{' '}
+              <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.3)', textDecoration: 'none' }}>
+                Jeffrey Young
+              </a>
+              . Используется в образовательных целях.
+            </div>
           </div>
         );
       })()}
