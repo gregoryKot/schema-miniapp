@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
+import { YSQTestSheet, YSQ_RESULT_KEY } from './YSQTestSheet';
 
 type Tab = 'needs' | 'schemas' | 'modes';
 
@@ -405,11 +406,37 @@ export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
 }
 
 export function SchemaInfoSheet({ onClose }: Props) {
+  const [showTest, setShowTest] = useState(false);
+  const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
+
   return (
-    <BottomSheet onClose={onClose}>
-      <div style={{ paddingTop: 4 }}>
-        <SchemaInfoContent />
-      </div>
-    </BottomSheet>
+    <>
+      <BottomSheet onClose={onClose}>
+        <div style={{ paddingTop: 4 }}>
+          <SchemaInfoContent />
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              onClick={() => setShowTest(true)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)',
+                borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>
+                  {hasResult ? 'Мои результаты YSQ-R' : 'Пройти тест на схемы'}
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>
+                  {hasResult ? 'Посмотреть или пройти заново' : '116 вопросов · ~10 минут · YSQ-R'}
+                </div>
+              </div>
+              <span style={{ fontSize: 20, color: 'rgba(167,139,250,0.5)' }}>›</span>
+            </div>
+          </div>
+        </div>
+      </BottomSheet>
+      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} />}
+    </>
   );
 }
