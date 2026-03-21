@@ -29,7 +29,7 @@ const ABOUT_TEXT = [
   'Это не про «быть лучше». Это про понять себя.',
 ];
 
-type Tab = 'today' | 'history' | 'schemas';
+type Tab = 'today' | 'history';
 
 const DISCLAIMER_KEY = 'disclaimer_accepted';
 
@@ -210,15 +210,23 @@ export default function App() {
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
             {formatHeaderDate()}
           </span>
-          {/* Profile icon */}
-          <div
-            onClick={() => setShowProfile(true)}
-            style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.35)', lineHeight: 1, padding: 2 }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
+          {/* Header icons */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div
+              onClick={() => setShowSchemaInfo(true)}
+              style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.25)', lineHeight: 1, padding: 2, fontSize: 18 }}
+            >
+              🧠
+            </div>
+            <div
+              onClick={() => setShowProfile(true)}
+              style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.35)', lineHeight: 1, padding: 2 }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -236,7 +244,7 @@ export default function App() {
           <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
-          {tab === 'today' ? 'Как ты сегодня?' : tab === 'history' ? 'Твоя история потребностей' : 'Теория и практика'}
+          {tab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
         </p>
 
         {/* Pill tabs */}
@@ -246,9 +254,8 @@ export default function App() {
           borderRadius: 12,
           padding: 3,
         }}>
-          {(['today', 'history', 'schemas'] as Tab[]).map((t) => {
+          {(['today', 'history'] as Tab[]).map((t) => {
             const active = tab === t;
-            const label = t === 'today' ? 'Сегодня' : t === 'history' ? 'История' : '🧠 Схемы';
             return (
               <button
                 key={t}
@@ -260,13 +267,13 @@ export default function App() {
                   borderRadius: 10,
                   background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
                   color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: active ? 500 : 400,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                {label}
+                {t === 'today' ? 'Сегодня' : 'История'}
               </button>
             );
           })}
@@ -301,12 +308,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setTab('schemas')} />
-      )}
-      {tab === 'schemas' && (
-        <div style={{ padding: '20px 20px 80px' }}>
-          <SchemaInfoContent />
-        </div>
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
