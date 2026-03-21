@@ -36,6 +36,14 @@ const ABOUT_TEXT = [
   'Это не про «быть лучше». Это про понять себя.',
 ];
 
+const NEEDS_EXPLAINER = [
+  { emoji: '🤝', name: 'Привязанность', text: 'Ощущение связи с другими людьми. Не просто присутствие рядом — а настоящий контакт: когда тебя слышат, принимают, когда есть кому позвонить в трудный момент. Без этого — одиночество даже в толпе.' },
+  { emoji: '🚀', name: 'Автономия', text: 'Ощущение, что ты сам управляешь своей жизнью. Есть выбор, есть право на своё мнение, есть пространство быть собой — не тем, кем должен быть. Без этого — ощущение ловушки.' },
+  { emoji: '💬', name: 'Выражение чувств', text: 'Возможность говорить о том, что внутри — честно, без страха осуждения. Это и злость, и нежность, и уязвимость. Когда чувства некуда выразить, они уходят в тело или выплёскиваются не туда.' },
+  { emoji: '🎉', name: 'Спонтанность', text: 'Лёгкость, игра, удовольствие от момента. Не всё должно быть полезным и продуктивным. Когда этой потребности долго нет — жизнь становится серой и механической, даже если всё «в порядке».' },
+  { emoji: '⚖️', name: 'Границы', text: 'Ощущение, что тебя уважают: твоё время, пространство, «нет». И что ты сам можешь уважать чужие границы, не растворяясь в других. Без этого — хроническое раздражение или стирание себя.' },
+];
+
 type Tab = 'today' | 'history';
 
 const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
@@ -585,6 +593,20 @@ export default function App() {
                 {p}
               </p>
             ))}
+
+            <SectionLabel mb={12}>Пять потребностей</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
+              {NEEDS_EXPLAINER.map(n => (
+                <div key={n.name} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '12px 14px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontSize: 18 }}>{n.emoji}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{n.name}</span>
+                  </div>
+                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>{n.text}</p>
+                </div>
+              ))}
+            </div>
+
             <div
               onClick={() => { setShowAbout(false); setShowSchemaInfo(true); }}
               style={{
