@@ -895,6 +895,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
             </div>
           </div>
 
+          {(!!localStorage.getItem(YSQ_PROGRESS_KEY) || !!localStorage.getItem(YSQ_RESULT_KEY)) && (
           <div style={{ marginTop: 4, marginBottom: 12 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 10 }}>Удалить данные теста YSQ-R</div>
             <button
@@ -912,6 +913,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
               Удалить результаты теста
             </button>
           </div>
+          )}
 
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Удалить все мои данные</div>
@@ -950,6 +952,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
                       try {
                         await api.deleteAllUserData();
                         localStorage.clear();
+                        sessionStorage.clear();
                         window.location.reload();
                       } catch {
                         setDeleting(false);
