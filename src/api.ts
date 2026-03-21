@@ -76,7 +76,7 @@ export const api = {
   getExport: () => get<{ text: string }>('/api/export'),
   getPractices:  (needId: string) => get<UserPractice[]>(`/api/practices?needId=${needId}`),
   addPractice:   (needId: string, text: string) => post('/api/practices', { needId, text }),
-  deletePractice:(id: number) => fetch(`${BASE}/api/practices/${id}`, { method: 'DELETE', headers: authHeaders() }).then(() => {}),
+  deletePractice:(id: number) => fetch(`${BASE}/api/practices/${id}`, { method: 'DELETE', headers: authHeaders() }).then(r => { if (!r.ok) throw new Error(`API error: ${r.status}`); }),
   deleteAllUserData: () => fetch(`${BASE}/api/user`, { method: 'DELETE', headers: authHeaders() }).then(r => { if (!r.ok) throw new Error('Failed'); }),
   getPendingPlans:() => get<PracticePlan[]>('/api/plan/pending'),
   getPlanHistory: (days = 30) => get<PracticePlan[]>(`/api/plans/history?days=${days}`),
@@ -85,16 +85,14 @@ export const api = {
   checkinPlan:   (id: number, done: boolean) => post(`/api/plan/${id}/checkin`, { done }),
   getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null }>('/api/pair'),
   createPairInvite: async () => {
-    const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
-    const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
-    const res = await fetch(`${BASE}/api/pair/invite`, { method: 'POST', headers: { 'x-telegram-init-data': window.Telegram?.WebApp?.initData ?? '', 'Content-Type': 'application/json' }, body: '{}' });
+    const res = await fetch(`${BASE}/api/pair/invite`, { method: 'POST', headers: authHeaders(), body: '{}' });
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json() as Promise<{ code: string; url: string }>;
   },
   joinPair: (code: string) => post('/api/pair/join', { code }),
   leavePair: async () => {
-    const rawBase = (import.meta.env.VITE_API_URL as string) ?? '';
-    const BASE = rawBase && !rawBase.startsWith('http') ? `https://${rawBase}` : rawBase;
-    await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: { 'x-telegram-init-data': window.Telegram?.WebApp?.initData ?? '', 'Content-Type': 'application/json' } });
+    const res = await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: authHeaders() });
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
   getChildhoodRatings: () => get<Partial<Record<string, number>>>('/api/childhood-ratings'),
   saveChildhoodRatings: (ratings: Record<string, number>) => post('/api/childhood-ratings', ratings),

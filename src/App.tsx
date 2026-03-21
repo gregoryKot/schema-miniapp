@@ -376,6 +376,7 @@ export default function App() {
             partnerIndex={pairData.partnerIndex}
             partnerTodayDone={pairData.partnerTodayDone}
             showInvite={!pairData.paired}
+            pendingCode={!pairData.paired && !!pairData.code}
             onInvite={() => setShowPairSheet(true)}
             onDismiss={!pairData.paired ? () => {
               localStorage.setItem('pair_card_dismissed', '1');
