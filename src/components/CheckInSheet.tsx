@@ -18,7 +18,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
     setSaving(true);
     try {
       await api.checkinPlan(plan.id, done);
-    } catch { /* ignore */ }
+    } catch (e) { console.error('checkinPlan failed', e); }
     onDone();
   }
 
