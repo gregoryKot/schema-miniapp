@@ -12,14 +12,20 @@ interface Props {
 
 export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Props) {
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   async function checkin(done: boolean) {
     if (saving) return;
     setSaving(true);
+    setError(false);
     try {
       await api.checkinPlan(plan.id, done);
-    } catch (e) { console.error('checkinPlan failed', e); }
-    onDone();
+      onDone();
+    } catch (e) {
+      console.error('checkinPlan failed', e);
+      setSaving(false);
+      setError(true);
+    }
   }
 
   return (
@@ -74,6 +80,11 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
           Да, сделал ✓
         </button>
       </div>
+      {error && (
+        <div style={{ marginTop: 12, fontSize: 13, color: '#f87171', textAlign: 'center' }}>
+          Не удалось сохранить — попробуй ещё раз
+        </div>
+      )}
     </BottomSheet>
   );
 }

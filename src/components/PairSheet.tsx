@@ -21,8 +21,12 @@ export function PairSheet({ onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [joinError, setJoinError] = useState('');
 
-  useEffect(() => { api.getPair().then(setData).catch(e => console.error('getPair failed', e)); }, []);
+  useEffect(() => {
+    api.getPair().then(setData).catch(e => { console.error('getPair failed', e); setLoadError(true); });
+  }, []);
 
   async function handleCreateInvite() {
     setLoading(true);
@@ -44,6 +48,7 @@ export function PairSheet({ onClose }: Props) {
   async function handleJoin() {
     if (!joinCode.trim()) return;
     setLoading(true);
+    setJoinError('');
     try {
       await api.joinPair(joinCode.trim().toUpperCase());
       const updated = await api.getPair();
@@ -51,6 +56,7 @@ export function PairSheet({ onClose }: Props) {
       setView('main');
     } catch (e) {
       console.error('joinPair failed', e);
+      setJoinError('Код не найден или уже использован');
     } finally {
       setLoading(false);
     }
@@ -74,7 +80,9 @@ export function PairSheet({ onClose }: Props) {
         <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 20 }}>Вместе</div>
 
         {!data ? (
-          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: '40px 0' }}>Загрузка...</div>
+          <div style={{ textAlign: 'center', color: loadError ? '#f87171' : 'rgba(255,255,255,0.3)', padding: '40px 0' }}>
+            {loadError ? 'Ошибка загрузки — попробуй закрыть и открыть снова' : 'Загрузка...'}
+          </div>
         ) : data.paired ? (
           <div>
             <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
@@ -150,6 +158,9 @@ export function PairSheet({ onClose }: Props) {
                     letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12,
                   }}
                 />
+                {joinError && (
+                  <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 10 }}>{joinError}</div>
+                )}
                 <button
                   onClick={handleJoin}
                   disabled={!joinCode.trim() || loading}

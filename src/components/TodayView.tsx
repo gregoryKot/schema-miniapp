@@ -115,6 +115,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
 export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [saveError, setSaveError] = useState(false);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
@@ -142,7 +143,8 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
         setLastSavedAt(new Date());
         setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
       } catch {
-        // Silent fail — user can retry by moving slider again
+        setSaveError(true);
+        setTimeout(() => setSaveError(false), 3000);
       }
     }, 500);
   }, [onChange, onSaved]);
@@ -258,8 +260,8 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
 
       {/* Note button + auto-save status */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 18 }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>
-          {lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
+        <div style={{ fontSize: 12, color: saveError ? '#f87171' : 'rgba(255,255,255,0.3)' }}>
+          {saveError ? 'Ошибка сохранения — потяни слайдер ещё раз' : lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
         </div>
         <button
           onClick={onNote}

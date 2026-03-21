@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
 import { api } from '../api';
@@ -341,6 +341,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   const [phase, setPhase] = useState<Phase>('intro');
   const [answers, setAnswers] = useState<number[]>(Array(QUESTIONS.length).fill(0));
   const [page, setPage] = useState(0);
+  const userStartedRef = useRef(false);
   const [hasProgress, setHasProgress] = useState(false);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
 
@@ -378,6 +379,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     // Fetch from server — takes priority (syncs across devices)
     if (!autoResume) {
       Promise.all([api.getYsqResult(), api.getYsqProgress()]).then(([serverResult, serverProgress]) => {
+        if (userStartedRef.current) return; // user already started test, don't overwrite
         if (serverResult?.answers && Array.isArray(serverResult.answers) && serverResult.answers.length === QUESTIONS.length) {
           localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: serverResult.completedAt, answers: serverResult.answers }));
           setAnswers(serverResult.answers);
@@ -397,6 +399,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   };
 
   const handleContinue = () => {
+    userStartedRef.current = true;
     try {
       const saved = localStorage.getItem(YSQ_PROGRESS_KEY);
       if (saved) {
@@ -411,6 +414,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   };
 
   const handleStartFresh = () => {
+    userStartedRef.current = true;
     localStorage.removeItem(YSQ_PROGRESS_KEY);
     setAnswers(Array(QUESTIONS.length).fill(0));
     setPage(0);
@@ -535,7 +539,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             </>
           ) : (
             <button
-              onClick={() => { setPhase('test'); setPage(0); }}
+              onClick={() => { userStartedRef.current = true; setPhase('test'); setPage(0); }}
               style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
             >
               Начать

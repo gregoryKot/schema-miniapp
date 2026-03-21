@@ -174,6 +174,18 @@ export default function App() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+
+  useEffect(() => {
+    const handleOffline = () => setIsOffline(true);
+    const handleOnline = () => setIsOffline(false);
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, []);
 
   useEffect(() => {
     window.Telegram?.WebApp?.ready();
@@ -199,7 +211,12 @@ export default function App() {
     }).catch(() => {});
     api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
-    api.getChildhoodRatings().then(r => { if (Object.keys(r).length > 0) setChildhoodRatings(r); }).catch(e => console.error('getChildhoodRatings failed', e));
+    api.getChildhoodRatings().then(r => {
+      if (Object.keys(r).length > 0) {
+        setChildhoodRatings(r);
+        localStorage.setItem(CHILDHOOD_DONE_KEY, '1');
+      }
+    }).catch(e => console.error('getChildhoodRatings failed', e));
     Promise.all([api.getYsqProgress(), api.getYsqResult()]).then(([prog, result]) => {
       if (prog?.answers && !result?.answers) {
         localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: prog.answers, page: prog.page }));
@@ -289,16 +306,27 @@ export default function App() {
         <div style={{ color: 'rgba(255,100,100,0.9)', marginBottom: 12 }}>
           <b>Ошибка загрузки:</b><br />{error}
         </div>
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginBottom: 16 }}>
           API: {import.meta.env.VITE_API_URL ?? 'не задан'}<br />
           initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}
         </div>
+        <button
+          onClick={() => window.location.reload()}
+          style={{ padding: '12px 20px', border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+        >
+          Повторить
+        </button>
       </div>
     );
   }
 
   return (
     <div style={{ minHeight: '100vh' }}>
+      {isOffline && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#fff' }}>
+          Нет подключения — данные не сохраняются
+        </div>
+      )}
       {!disclaimerDone && (
         <Disclaimer onAccept={() => {
           localStorage.setItem(DISCLAIMER_KEY, '1');
