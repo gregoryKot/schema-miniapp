@@ -8,7 +8,7 @@ import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
-import { SchemaInfoSheet } from './components/SchemaInfoSheet';
+import { SchemaInfoSheet, SchemaInfoContent } from './components/SchemaInfoSheet';
 import { TagPicker } from './components/TagPicker';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
 import { SectionLabel } from './components/SectionLabel';
@@ -29,7 +29,7 @@ const ABOUT_TEXT = [
   'Это не про «быть лучше». Это про понять себя.',
 ];
 
-type Tab = 'today' | 'history';
+type Tab = 'today' | 'history' | 'schemas';
 
 const DISCLAIMER_KEY = 'disclaimer_accepted';
 
@@ -236,7 +236,7 @@ export default function App() {
           <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
-          {tab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
+          {tab === 'today' ? 'Как ты сегодня?' : tab === 'history' ? 'Твоя история потребностей' : 'Теория и практика'}
         </p>
 
         {/* Pill tabs */}
@@ -246,8 +246,9 @@ export default function App() {
           borderRadius: 12,
           padding: 3,
         }}>
-          {(['today', 'history'] as Tab[]).map((t) => {
+          {(['today', 'history', 'schemas'] as Tab[]).map((t) => {
             const active = tab === t;
+            const label = t === 'today' ? 'Сегодня' : t === 'history' ? 'История' : '🧠 Схемы';
             return (
               <button
                 key={t}
@@ -259,13 +260,13 @@ export default function App() {
                   borderRadius: 10,
                   background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
                   color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: active ? 500 : 400,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
               >
-                {t === 'today' ? 'Сегодня' : 'История'}
+                {label}
               </button>
             );
           })}
@@ -300,7 +301,12 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setTab('schemas')} />
+      )}
+      {tab === 'schemas' && (
+        <div style={{ padding: '20px 20px 80px' }}>
+          <SchemaInfoContent />
+        </div>
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {

@@ -11,6 +11,7 @@ interface Props {
   history: DayHistory[];
   currentRatings: Record<string, number>;
   childhoodRatings?: Partial<Record<string, number>>;
+  onOpenSchemas?: () => void;
 }
 
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
@@ -363,7 +364,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export function HistoryView({ needs, history, currentRatings, childhoodRatings = {} }: Props) {
+export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
@@ -510,6 +511,20 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 }}>
                 <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(255,255,255,0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>детство</span>
+              </div>
+            )}
+
+            {/* Schema nudge */}
+            {onOpenSchemas && (
+              <div
+                onClick={onOpenSchemas}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  marginBottom: 10, cursor: 'pointer',
+                }}
+              >
+                <span style={{ fontSize: 12, color: 'rgba(167,139,250,0.6)' }}>Понять что за этим стоит</span>
+                <span style={{ fontSize: 12, color: 'rgba(167,139,250,0.4)' }}>→</span>
               </div>
             )}
 

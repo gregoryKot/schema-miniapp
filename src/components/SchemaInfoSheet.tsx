@@ -373,35 +373,42 @@ function ModesTab() {
 /* ─── Main Component ─── */
 interface Props { onClose: () => void }
 
+const SCHEMA_TABS: { key: Tab; label: string }[] = [
+  { key: 'needs', label: 'Потребности' },
+  { key: 'schemas', label: 'Схемы' },
+  { key: 'modes', label: 'Режимы' },
+];
+
+export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'needs');
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <SectionLabel purple mb={6}>Схема-терапия</SectionLabel>
+        <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Как это работает</div>
+      </div>
+      <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3, marginBottom: 20 }}>
+        {SCHEMA_TABS.map((t) => {
+          const active = tab === t.key;
+          return (
+            <button key={t.key} onClick={() => setTab(t.key)}
+              style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
+            >{t.label}</button>
+          );
+        })}
+      </div>
+      {tab === 'needs' && <NeedsTab />}
+      {tab === 'schemas' && <SchemasTab />}
+      {tab === 'modes' && <ModesTab />}
+    </div>
+  );
+}
+
 export function SchemaInfoSheet({ onClose }: Props) {
-  const [tab, setTab] = useState<Tab>('needs');
-
-  const TABS: { key: Tab; label: string }[] = [
-    { key: 'needs', label: 'Потребности' },
-    { key: 'schemas', label: 'Схемы' },
-    { key: 'modes', label: 'Режимы' },
-  ];
-
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        <div style={{ marginBottom: 16 }}>
-          <SectionLabel purple mb={6}>Схема-терапия</SectionLabel>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Как это работает</div>
-        </div>
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3, marginBottom: 20 }}>
-          {TABS.map((t) => {
-            const active = tab === t.key;
-            return (
-              <button key={t.key} onClick={() => setTab(t.key)}
-                style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
-              >{t.label}</button>
-            );
-          })}
-        </div>
-        {tab === 'needs' && <NeedsTab />}
-        {tab === 'schemas' && <SchemasTab />}
-        {tab === 'modes' && <ModesTab />}
+        <SchemaInfoContent />
       </div>
     </BottomSheet>
   );
