@@ -156,7 +156,7 @@ export default function App() {
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null } | null>(null);
-  const [pairCardDismissed, setPairCardDismissed] = useState(() => !!localStorage.getItem('pair_card_dismissed'));
+  const [pairCardDismissed, setPairCardDismissed] = useState<boolean | null>(null);
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
@@ -214,7 +214,9 @@ export default function App() {
       setPairCardDismissed(s.pairCardDismissed);
       if (s.pairCardDismissed) localStorage.setItem('pair_card_dismissed', '1');
       else localStorage.removeItem('pair_card_dismissed');
-    }).catch(() => {});
+    }).catch(() => {
+      setPairCardDismissed(!!localStorage.getItem('pair_card_dismissed'));
+    });
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
     api.getChildhoodRatings().then(r => {
       if (Object.keys(r).length > 0) {
@@ -449,7 +451,7 @@ export default function App() {
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
         </div>
       )}
-      {tab === 'today' && pairData !== null && !pairCardDismissed && (
+      {tab === 'today' && pairData !== null && pairCardDismissed === false && (
         <div style={{ padding: '8px 20px 0' }}>
           <PairCard
             partnerIndex={pairData.partnerIndex}
