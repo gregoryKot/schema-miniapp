@@ -76,7 +76,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Потяни ползунок чтобы оценить каждую потребность от <b style={{ color: '#fff' }}>0 до 10</b>
+            Потяни ползунок чтобы оценить каждую потребность от <b style={{ color: '#fff' }}>1 до 10</b>. Если не трогать — считается «не оценено»
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>

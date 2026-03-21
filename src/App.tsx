@@ -10,7 +10,7 @@ import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
 import { SchemaInfoSheet, SchemaInfoContent } from './components/SchemaInfoSheet';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './components/YSQTestSheet';
-import { TagPicker } from './components/TagPicker';
+import { YesterdaySheet } from './components/YesterdaySheet';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
 import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
@@ -22,6 +22,11 @@ import { PracticePlan, StreakData } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
+const YESTERDAY_DATE = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.toISOString().split('T')[0];
+})();
 
 const ABOUT_TEXT = [
   'Бывает, что день прошёл нормально — а внутри что-то не так. Или наоборот, всё объективно сложно, но ощущение живое и устойчивое.',
@@ -153,7 +158,8 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
-  const [showTagPicker, setShowTagPicker] = useState(false);
+  const [showYesterdaySheet, setShowYesterdaySheet] = useState(false);
+  const [showYesterdayBanner, setShowYesterdayBanner] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null } | null>(null);
   const [pairCardDismissed, setPairCardDismissed] = useState<boolean | null>(null);
@@ -161,6 +167,7 @@ export default function App() {
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
   const [practicesOnboardingPending, setPracticesOnboardingPending] = useState(false);
+  const [yesterdayBannerDismissed] = useState(() => !!localStorage.getItem('yesterday_banner_' + YESTERDAY_DATE));
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
@@ -221,6 +228,11 @@ export default function App() {
       setPairCardDismissed(!!localStorage.getItem('pair_card_dismissed'));
     });
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
+    if (!yesterdayBannerDismissed) {
+      api.ratings(YESTERDAY_DATE).then(r => {
+        if (Object.keys(r).length === 0) setShowYesterdayBanner(true);
+      }).catch(() => {});
+    }
     api.getChildhoodRatings().then(r => {
       if (Object.keys(r).length > 0) {
         setChildhoodRatings(r);
@@ -293,7 +305,7 @@ export default function App() {
     if (streak && !localStorage.getItem(TODAY_KEY)) {
       localStorage.setItem(TODAY_KEY, '1');
       if (streak.currentStreak > 0) { setCelebrationStreak(streak.currentStreak); }
-      else { setShowTagPicker(true); }
+      else { setShowTodayNote(true); }
       if (streak.totalDays >= 5 && shouldShowChildhoodWheel()) {
         setChildhoodWheelPending(true);
       }
@@ -428,6 +440,30 @@ export default function App() {
         </div>
       </div>
 
+      {tab === 'today' && showYesterdayBanner && (
+        <div style={{ padding: '12px 20px 0' }}>
+          <div
+            onClick={() => { setShowYesterdaySheet(true); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 12,
+              background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+              borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
+            }}
+          >
+            <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить вчера</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
+            </div>
+            <button
+              onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
+              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
       {tab === 'today' && showYsqBanner && (
         <div style={{ padding: '12px 20px 0' }}>
           <div style={{
@@ -502,21 +538,7 @@ export default function App() {
       })()}
 
       {celebrationStreak !== null && (
-        <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTagPicker(true); }} />
-      )}
-
-      {showTagPicker && (
-        <TagPicker
-          onDone={async (tags) => {
-            setShowTagPicker(false);
-            if (tags.length > 0) {
-              const note = await api.getNote(TODAY_DATE);
-              await api.saveNote(TODAY_DATE, note.text ?? '', tags);
-            }
-            setShowTodayNote(true);
-          }}
-          onSkip={() => { setShowTagPicker(false); setShowTodayNote(true); }}
-        />
+        <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTodayNote(true); }} />
       )}
 
       {showTodayNote && (
@@ -582,6 +604,10 @@ export default function App() {
       )}
 
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
+
+      {showYesterdaySheet && (
+        <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => setShowYesterdaySheet(false)} />
+      )}
     </div>
   );
 }

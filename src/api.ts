@@ -70,9 +70,9 @@ export const api = {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
   needs:          () => get<import('./types').Need[]>('/api/needs'),
-  ratings:        () => get<Record<string, number>>('/api/ratings'),
-  saveRating:     (needId: string, value: number) => {
-    const res = fetch(`${BASE}/api/rating`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ needId, value }) });
+  ratings:        (date?: string) => get<Record<string, number>>(`/api/ratings${date ? `?date=${encodeURIComponent(date)}` : ''}`),
+  saveRating:     (needId: string, value: number, date?: string) => {
+    const res = fetch(`${BASE}/api/rating`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ needId, value, date }) });
     return res.then(r => { if (!r.ok) throw new Error(`API error: ${r.status}`); return r.json() as Promise<{ ok: boolean; allDone: boolean; streak?: StreakData }>; });
   },
   history:        (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),

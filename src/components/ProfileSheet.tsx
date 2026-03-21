@@ -462,7 +462,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
               }}
             >?</span>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: 16 }}>
+          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, overflow: 'hidden', marginBottom: settings.notifyEnabled ? 8 : 16 }}>
             <div onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <span style={{ fontSize: 15, color: '#fff' }}>Итоги дня</span>
@@ -485,6 +485,14 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
               </div>
             </div>
           </div>
+
+          {settings.notifyEnabled && (
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5, marginBottom: 16, padding: '0 4px' }}>
+              Уведомления приходят через бот — убедись, что{' '}
+              <a href="https://t.me/Emotional_Needs_bot" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.7)', textDecoration: 'none' }}>@Emotional_Needs_bot</a>
+              {' '}запущен в Telegram
+            </div>
+          )}
 
           {/* Invite + Export */}
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>

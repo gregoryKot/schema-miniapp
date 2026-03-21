@@ -3,6 +3,19 @@ import { api } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 
+const TAGS = [
+  { id: 'work',       label: 'Работа',      emoji: '💼' },
+  { id: 'relations',  label: 'Отношения',   emoji: '🤝' },
+  { id: 'health',     label: 'Здоровье',    emoji: '🏃' },
+  { id: 'loneliness', label: 'Одиночество', emoji: '🌙' },
+  { id: 'rest',       label: 'Отдых',       emoji: '🛋️' },
+  { id: 'family',     label: 'Семья',       emoji: '🏠' },
+  { id: 'creativity', label: 'Творчество',  emoji: '🎨' },
+  { id: 'anxiety',    label: 'Тревога',     emoji: '😰' },
+  { id: 'joy',        label: 'Радость',     emoji: '✨' },
+  { id: 'body',       label: 'Тело',        emoji: '💆' },
+];
+
 interface Props {
   date: string;
   onClose: () => void;
@@ -10,22 +23,37 @@ interface Props {
 
 export function NoteSheet({ date, onClose }: Props) {
   const [text, setText] = useState('');
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     api.getNote(date)
-      .then(r => { setText(r.text ?? ''); setLoaded(true); })
+      .then(r => {
+        setText(r.text ?? '');
+        setSelectedTags(new Set(r.tags ?? []));
+        setLoaded(true);
+      })
       .catch(() => setLoaded(true));
   }, [date]);
 
+  function toggleTag(id: string) {
+    setSelectedTags(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  const hasContent = text.trim().length > 0 || selectedTags.size > 0;
+
   async function handleSave() {
-    if (!text.trim()) return;
+    if (!hasContent) return;
     setSaving(true);
     setError(false);
     try {
-      await api.saveNote(date, text.trim());
+      await api.saveNote(date, text.trim(), [...selectedTags]);
       onClose();
     } catch {
       setError(true);
@@ -38,6 +66,32 @@ export function NoteSheet({ date, onClose }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
         <SectionLabel purple mb={16}>Заметка к дню</SectionLabel>
+
+        {/* Tags */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
+          {TAGS.map(t => {
+            const on = selectedTags.has(t.id);
+            return (
+              <div
+                key={t.id}
+                onClick={() => toggleTag(t.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '6px 12px', borderRadius: 20, cursor: 'pointer',
+                  background: on ? 'rgba(167,139,250,0.2)' : 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${on ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.07)'}`,
+                  color: on ? '#a78bfa' : 'rgba(255,255,255,0.5)',
+                  fontSize: 12, fontWeight: on ? 600 : 400,
+                  transition: 'all 0.15s',
+                }}
+              >
+                <span>{t.emoji}</span>
+                <span>{t.label}</span>
+              </div>
+            );
+          })}
+        </div>
+
         <textarea
           value={text}
           onChange={e => setText(e.target.value)}
@@ -45,7 +99,7 @@ export function NoteSheet({ date, onClose }: Props) {
           maxLength={500}
           autoFocus={loaded}
           style={{
-            width: '100%', minHeight: 120,
+            width: '100%', minHeight: 100,
             background: 'rgba(255,255,255,0.05)',
             border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: 12, padding: '12px 14px',
@@ -57,6 +111,7 @@ export function NoteSheet({ date, onClose }: Props) {
         <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
+
         {error && (
           <div style={{ fontSize: 12, color: 'rgba(255,100,100,0.8)', marginBottom: 10 }}>
             Не удалось сохранить. Попробуй ещё раз.
@@ -64,12 +119,12 @@ export function NoteSheet({ date, onClose }: Props) {
         )}
         <button
           onClick={handleSave}
-          disabled={!text.trim() || saving}
+          disabled={!hasContent || saving}
           style={{
             width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: text.trim() ? '#a78bfa' : 'rgba(255,255,255,0.08)',
-            color: text.trim() ? '#fff' : 'rgba(255,255,255,0.3)',
-            fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
+            background: hasContent ? '#a78bfa' : 'rgba(255,255,255,0.08)',
+            color: hasContent ? '#fff' : 'rgba(255,255,255,0.3)',
+            fontSize: 15, fontWeight: 600, cursor: hasContent ? 'pointer' : 'default',
           }}
         >
           {saving ? 'Сохранение...' : 'Сохранить'}

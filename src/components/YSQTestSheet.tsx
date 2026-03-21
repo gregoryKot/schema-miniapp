@@ -344,6 +344,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   const userStartedRef = useRef(false);
   const [hasProgress, setHasProgress] = useState(false);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
+  const [retakeConfirm, setRetakeConfirm] = useState(false);
 
   // Always computed from current answers — never stale
   const progressAnswered = answers.filter(a => a > 0).length;
@@ -809,12 +810,22 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             >
               Сохранить и закрыть
             </button>
-            <button
-              onClick={handleRetake}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
-            >
-              Пройти заново
-            </button>
+            {retakeConfirm ? (
+              <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 12 }}>Результаты будут удалены. Точно начать заново?</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => setRetakeConfirm(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
+                  <button onClick={handleRetake} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Начать заново</button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setRetakeConfirm(true)}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
+              >
+                Пройти заново
+              </button>
+            )}
 
             <div style={{ marginTop: 16, fontSize: 11, color: 'rgba(255,255,255,0.15)', lineHeight: 1.7, textAlign: 'center' }}>
               © Jeffrey Young, Schema Therapy Institute.{' '}
