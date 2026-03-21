@@ -409,14 +409,22 @@ export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
 
 export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
   const [showTest, setShowTest] = useState(autoStartTest ?? false);
+  const [contentKey, setContentKey] = useState(0);
+  const [contentInitialTab, setContentInitialTab] = useState<Tab>('needs');
   const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
   const hasProgress = !!localStorage.getItem(YSQ_PROGRESS_KEY);
+
+  const handleViewSchemas = () => {
+    setContentInitialTab('schemas');
+    setContentKey(k => k + 1);
+    setShowTest(false);
+  };
 
   return (
     <>
       <BottomSheet onClose={onClose}>
         <div style={{ paddingTop: 4 }}>
-          <SchemaInfoContent />
+          <SchemaInfoContent key={contentKey} initialTab={contentInitialTab} />
           <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             {hasProgress && !hasResult && (
               <div
@@ -455,7 +463,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
           </div>
         </div>
       </BottomSheet>
-      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} autoResume={autoStartTest} />}
+      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} autoResume={autoStartTest} onViewSchemas={handleViewSchemas} />}
     </>
   );
 }

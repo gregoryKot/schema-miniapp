@@ -9,6 +9,7 @@ interface Props {
   onClose: () => void;
   ratings?: Record<string, number>;
   autoResume?: boolean;
+  onViewSchemas?: () => void;
 }
 
 const QUESTIONS: string[] = [
@@ -335,7 +336,7 @@ function computeScores(answers: number[]): Record<string, SchemaScore> {
   return result;
 }
 
-export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
+export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Props) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [answers, setAnswers] = useState<number[]>(Array(QUESTIONS.length).fill(0));
   const [page, setPage] = useState(0);
@@ -345,9 +346,22 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
   // Always computed from current answers — never stale
   const progressAnswered = answers.filter(a => a > 0).length;
 
-  // Check for in-progress test on mount
+  // Check for saved result or in-progress test on mount
   useEffect(() => {
     try {
+      // If there's a completed result, show it directly (unless autoResume forces back to test)
+      if (!autoResume) {
+        const result = localStorage.getItem(YSQ_RESULT_KEY);
+        if (result) {
+          const parsed = JSON.parse(result);
+          if (parsed.answers && Array.isArray(parsed.answers) && parsed.answers.length === QUESTIONS.length) {
+            setAnswers(parsed.answers);
+            setPhase('result');
+            return;
+          }
+        }
+      }
+      // Check for in-progress test
       const saved = localStorage.getItem(YSQ_PROGRESS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as { answers: number[]; page: number };
@@ -411,6 +425,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
       localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({
         date: new Date().toISOString(),
         scores,
+        answers,
       }));
       localStorage.removeItem(YSQ_PROGRESS_KEY);
       setPhase('result');
@@ -666,9 +681,13 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
                     {schema.desc}
                   </div>
 
-                  {/* Tip */}
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, marginBottom: showDiaryHint ? 8 : 0 }}>
-                    <span style={{ marginRight: 4 }}>💡</span>{schema.tip}
+                  {/* Link to schema card */}
+                  <div
+                    onClick={() => onViewSchemas ? onViewSchemas() : onClose()}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: showDiaryHint ? 8 : 0, padding: '4px 0' }}
+                  >
+                    <span style={{ fontSize: 13, color: 'rgba(167,139,250,0.85)' }}>Читать карточку схемы</span>
+                    <span style={{ fontSize: 16, color: 'rgba(167,139,250,0.5)' }}>›</span>
                   </div>
 
                   {/* Diary connection */}
