@@ -14,6 +14,8 @@ interface Props {
   onOpenSchemas?: () => void;
   days?: number;
   onChangeDays?: (days: number) => void;
+  onGoToToday?: () => void;
+  onBackfill?: (date: string) => void;
 }
 
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
@@ -368,7 +370,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
 
 const DAYS_OPTIONS = [7, 14, 30];
 
-export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, days = 7, onChangeDays }: Props) {
+export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, days = 7, onChangeDays, onGoToToday, onBackfill }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
@@ -402,9 +404,21 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>
           История пока пуста
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginBottom: 24 }}>
           Заполни дневник сегодня — и через 3–5 дней здесь начнёт проявляться твой паттерн: что тебя питает, что истощает
         </div>
+        {onGoToToday && (
+          <button
+            onClick={onGoToToday}
+            style={{
+              padding: '12px 28px', border: 'none', borderRadius: 12,
+              background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
+              color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            Заполнить сегодня
+          </button>
+        )}
       </div>
     );
   }
@@ -538,6 +552,23 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 marginBottom: 10,
               }}>
                 Нажми на категорию чтобы узнать что делать
+              </div>
+            )}
+
+            {/* Backfill CTA for past days with no ratings */}
+            {onBackfill && selected.date !== TODAY_STR && Object.keys(selected.ratings).length === 0 && (
+              <div style={{ padding: '0 20px', marginBottom: 16 }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
+                  borderRadius: 14, padding: '12px 16px', cursor: 'pointer',
+                }} onClick={() => onBackfill(selected.date)}>
+                  <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить этот день</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
+                  </div>
+                </div>
               </div>
             )}
 

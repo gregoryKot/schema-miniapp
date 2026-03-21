@@ -159,6 +159,7 @@ export default function App() {
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
   const [showYesterdaySheet, setShowYesterdaySheet] = useState(false);
+  const [backfillDate, setBackfillDate] = useState<string | null>(null);
   const [showYesterdayBanner, setShowYesterdayBanner] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null } | null>(null);
@@ -519,7 +520,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} days={historyDays} onChangeDays={setHistoryDays} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} days={historyDays} onChangeDays={setHistoryDays} onGoToToday={() => setTab('today')} onBackfill={(date) => setBackfillDate(date)} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
@@ -606,7 +607,20 @@ export default function App() {
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
 
       {showYesterdaySheet && (
-        <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => setShowYesterdaySheet(false)} />
+        <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
+          setShowYesterdaySheet(false);
+          if (tab === 'history') {
+            setHistoryLoading(true);
+            api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
+          }
+        }} />
+      )}
+      {backfillDate && (
+        <YesterdaySheet needs={needs} date={backfillDate} onClose={() => {
+          setBackfillDate(null);
+          setHistoryLoading(true);
+          api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
+        }} />
       )}
     </div>
   );
