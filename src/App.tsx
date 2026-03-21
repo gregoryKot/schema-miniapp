@@ -47,9 +47,22 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
           <br /><br />
-          Дневник помогает видеть паттерны и чуть лучше понимать себя. Советы внутри — это приглашение к размышлению, не инструкция.
+          Дневник помогает видеть паттерны и чуть лучше понимать себя. Всё что здесь есть — инструмент самоисследования, не клиническая диагностика и не инструкция.
           <br /><br />
           Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.
+        </div>
+      </div>
+      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 10, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          Данные и конфиденциальность
+        </div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+          Записи дневника хранятся на защищённом сервере, привязаны к твоему Telegram-аккаунту и не передаются третьим лицам.
+          <br /><br />
+          Результаты тестов (YSQ и другие) хранятся только на этом устройстве.
+          <br /><br />
+          Для удаления всех данных напиши{' '}
+          <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
         </div>
       </div>
       <div style={{ background: 'rgba(167,139,250,0.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 24, border: '1px solid rgba(167,139,250,0.15)' }}>

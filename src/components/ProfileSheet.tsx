@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api, UserSettings, Achievement, PracticePlan, UserPractice } from '../api';
 import { ChildhoodWheelSheet, CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
+import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { NEED_DATA } from '../needData';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
@@ -98,6 +99,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
   const [myPracticesSaving, setMyPracticesSaving] = useState(false);
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodDone] = useState(() => !!localStorage.getItem(CHILDHOOD_DONE_KEY));
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [joinCode, setJoinCode] = useState('');
   const [joinView, setJoinView] = useState<'main' | 'join'>('main');
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -502,6 +504,22 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
               <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>сводка за 30 дней</span>
             </button>
           </div>
+
+          {/* Privacy section */}
+          <div style={{ marginTop: 8, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>Конфиденциальность</div>
+            <div
+              onClick={() => setShowPrivacy(true)}
+              style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '13px 16px', borderRadius: 12, background: 'rgba(255,255,255,0.04)',
+                cursor: 'pointer', marginBottom: 8,
+              }}
+            >
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)' }}>О данных и конфиденциальности</span>
+              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -832,6 +850,63 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
         onOpenSchemas={() => { setShowChildhoodWheel(false); onClose(); onOpenSchemas?.(); }}
         onSaved={onChildhoodSaved}
       />
+    )}
+    {showPrivacy && (
+      <BottomSheet onClose={() => setShowPrivacy(false)} zIndex={300}>
+        <div style={{ paddingTop: 4 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 16 }}>Данные и конфиденциальность</div>
+
+          <div style={{ marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Что хранится на сервере</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+              Записи дневника, оценки потребностей, практики, колесо детства. Данные привязаны к твоему Telegram ID и хранятся на защищённом сервере.
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Что хранится только на устройстве</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+              Ответы и результаты теста YSQ-R. Они не покидают этот браузер/приложение и не отправляются на сервер.
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Передача третьим лицам</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+              Данные не продаются и не передаются рекламным сетям или третьим лицам. Никогда.
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px 16px' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Право на удаление</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
+              Ты можешь в любой момент удалить все данные. Для удаления серверных данных напиши{' '}
+              <a href="https://t.me/kotlarewski" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
+            </div>
+          </div>
+
+          <div style={{ marginTop: 4, marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 10 }}>Удалить данные теста YSQ-R</div>
+            <button
+              onClick={() => {
+                localStorage.removeItem(YSQ_PROGRESS_KEY);
+                localStorage.removeItem(YSQ_RESULT_KEY);
+                setShowPrivacy(false);
+              }}
+              style={{
+                width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)',
+                background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              }}
+            >
+              Удалить результаты теста с устройства
+            </button>
+          </div>
+
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
+            Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
+          </div>
+        </div>
+      </BottomSheet>
     )}
     </>
   );
