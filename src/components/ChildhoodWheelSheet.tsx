@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
@@ -115,11 +115,20 @@ interface Props {
 }
 
 export function ChildhoodWheelSheet({ onClose, onOpenSchemas }: Props) {
-  const [phase, setPhase] = useState<Phase>('intro');
+  const alreadyDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
+  const [phase, setPhase] = useState<Phase>(alreadyDone ? 'result' : 'intro');
   const [ratings, setRatings] = useState<Record<NeedId, number>>({
     attachment: 5, autonomy: 5, expression: 5, play: 5, limits: 5,
   });
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (alreadyDone) {
+      api.getChildhoodRatings().then(saved => {
+        setRatings(prev => ({ ...prev, ...(saved as Record<NeedId, number>) }));
+      }).catch(() => {});
+    }
+  }, []);
 
   const lowNeeds = NEED_IDS.filter(id => ratings[id] <= 4);
 
