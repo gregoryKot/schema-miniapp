@@ -3,7 +3,7 @@ import { api, UserPractice } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 
-const CURATED: Record<string, string[]> = {
+export const CURATED: Record<string, string[]> = {
   attachment: [
     'Написать кому-то близкому без повода',
     'Провести вечер вместе — без телефонов',

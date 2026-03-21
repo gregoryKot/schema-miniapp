@@ -4,6 +4,7 @@ import { api } from '../api';
 import { NEED_DATA } from '../needData';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
+import { CURATED } from './PlanSheet';
 
 const ONBOARDING_KEY = 'practices_onboarding_done';
 
@@ -20,23 +21,34 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
   const [step, setStep] = useState<'intro' | number>('intro');
   const [input, setInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
 
   function finish() {
     localStorage.setItem(ONBOARDING_KEY, '1');
     onDone();
   }
 
-  async function handleAdd() {
-    const text = input.trim();
+  async function handleSaveAndNext() {
     const idx = step as number;
-    if (!text || saving) return;
+    const needId = needs[idx].id;
     setSaving(true);
+    const toSave = [...selected];
+    if (input.trim()) toSave.push(input.trim());
     try {
-      await api.addPractice(needs[idx].id, text);
+      await Promise.all(toSave.map(text => api.addPractice(needId, text)));
     } catch { /* silent */ }
     setSaving(false);
     setInput('');
+    setSelected(new Set());
     next();
+  }
+
+  function toggleSuggestion(text: string) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(text)) next.delete(text); else next.add(text);
+      return next;
+    });
   }
 
   function next() {
@@ -44,6 +56,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
     if (idx >= needs.length) { finish(); return; }
     setStep(idx);
     setInput('');
+    setSelected(new Set());
   }
 
   const currentNeed = step !== 'intro' ? needs[step as number] : null;
@@ -128,18 +141,48 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             </div>
           </div>
 
-          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 20 }}>
-            Что обычно помогает, когда эта потребность не удовлетворена?
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 14 }}>
+            Выбери готовые или добавь своё:
           </div>
 
+          {/* Suggestions */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: 16 }}>
+            {(CURATED[currentNeed.id] ?? []).map(text => {
+              const on = selected.has(text);
+              return (
+                <div
+                  key={text}
+                  onClick={() => toggleSuggestion(text)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    background: on ? color + '20' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${on ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+                    borderRadius: 12, padding: '11px 14px', cursor: 'pointer',
+                    transition: 'background 0.15s, border-color 0.15s',
+                  }}
+                >
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 5, flexShrink: 0,
+                    border: `2px solid ${on ? color : 'rgba(255,255,255,0.2)'}`,
+                    background: on ? color : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s',
+                  }}>
+                    {on && <span style={{ fontSize: 11, color: '#000', fontWeight: 700 }}>✓</span>}
+                  </div>
+                  <span style={{ fontSize: 14, color: on ? '#fff' : 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>{text}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Custom input */}
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAdd(); } }}
-            placeholder="Например: позвонить другу, выйти погулять..."
+            placeholder="Или своё..."
             maxLength={200}
             rows={2}
-            autoFocus
             style={{
               width: '100%', boxSizing: 'border-box',
               background: 'rgba(255,255,255,0.05)',
@@ -165,17 +208,17 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               {(step as number) === total - 1 ? 'Готово' : 'Пропустить →'}
             </button>
             <button
-              onClick={handleAdd}
-              disabled={!input.trim() || saving}
+              onClick={handleSaveAndNext}
+              disabled={saving || (selected.size === 0 && !input.trim())}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-                background: input.trim() ? color : 'rgba(255,255,255,0.07)',
+                background: (selected.size > 0 || input.trim()) ? color : 'rgba(255,255,255,0.07)',
                 color: '#fff', fontSize: 15, fontWeight: 600,
-                cursor: input.trim() ? 'pointer' : 'default',
+                cursor: (selected.size > 0 || input.trim()) ? 'pointer' : 'default',
                 transition: 'background 0.15s',
               }}
             >
-              {saving ? '...' : 'Сохранить →'}
+              {saving ? '...' : `Сохранить${selected.size + (input.trim() ? 1 : 0) > 0 ? ` (${selected.size + (input.trim() ? 1 : 0)})` : ''} →`}
             </button>
           </div>
         </div>

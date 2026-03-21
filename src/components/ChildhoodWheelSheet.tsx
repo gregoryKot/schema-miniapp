@@ -319,9 +319,20 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
             </div>
           )}
 
-          <button onClick={finish} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
-            Понятно
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button
+              onClick={() => setPhase('fill')}
+              style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer' }}
+            >
+              ✎ Изменить
+            </button>
+            <button
+              onClick={finish}
+              style={{ flex: 2, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Готово
+            </button>
+          </div>
         </div>
       )}
 
