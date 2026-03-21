@@ -678,8 +678,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
                   </div>
                   <div
                     onClick={() => {
-                      api.deletePractice(p.id);
                       setMyPractices(prev => prev?.filter(x => x.id !== p.id) ?? null);
+                      api.deletePractice(p.id).catch(e => console.error('deletePractice failed', e));
                     }}
                     style={{
                       width: 28, height: 28, borderRadius: 8, flexShrink: 0,

@@ -20,18 +20,23 @@ export function PairSheet({ onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
 
-  useEffect(() => { api.getPair().then(setData); }, []);
+  useEffect(() => { api.getPair().then(setData).catch(e => console.error('getPair failed', e)); }, []);
 
   async function handleCreateInvite() {
     setLoading(true);
-    const { url } = await api.createPairInvite();
-    setInviteUrl(url);
     try {
-      if (navigator.share) { await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); }
-      else { await navigator.clipboard.writeText(url); }
-    } catch {}
-    setLoading(false);
-    api.getPair().then(setData);
+      const { url } = await api.createPairInvite();
+      setInviteUrl(url);
+      try {
+        if (navigator.share) { await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); }
+        else { await navigator.clipboard.writeText(url); }
+      } catch {}
+      api.getPair().then(setData).catch(() => {});
+    } catch (e) {
+      console.error('createPairInvite failed', e);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleJoin() {
@@ -39,10 +44,14 @@ export function PairSheet({ onClose }: Props) {
     setLoading(true);
     try {
       await api.joinPair(joinCode.trim().toUpperCase());
-      api.getPair().then(setData);
+      const updated = await api.getPair();
+      setData(updated);
       setView('main');
-    } catch { }
-    setLoading(false);
+    } catch (e) {
+      console.error('joinPair failed', e);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleLeave() {
