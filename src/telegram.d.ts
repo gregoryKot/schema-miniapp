@@ -13,6 +13,7 @@ declare global {
         expand(): void;
         close(): void;
         disableVerticalSwipes(): void;
+        openLink(url: string, options?: { try_instant_view?: boolean }): void;
         BackButton: {
           isVisible: boolean;
           show(): void;

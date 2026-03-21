@@ -285,13 +285,18 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                   'END:VEVENT',
                   'END:VCALENDAR',
                 ].join('\r\n');
-                const blob = new Blob([ics], { type: 'text/calendar' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'practice.ics';
-                a.click();
-                URL.revokeObjectURL(url);
+                const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+                // Telegram WebApp: use openLink to let the OS handle .ics
+                if (window.Telegram?.WebApp?.openLink) {
+                  window.Telegram.WebApp.openLink(dataUrl);
+                } else {
+                  const a = document.createElement('a');
+                  a.href = dataUrl;
+                  a.download = 'practice.ics';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                }
               }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
