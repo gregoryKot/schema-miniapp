@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
-import { YSQTestSheet, YSQ_RESULT_KEY } from './YSQTestSheet';
+import { YSQTestSheet, YSQ_RESULT_KEY, YSQ_PROGRESS_KEY } from './YSQTestSheet';
 
 type Tab = 'needs' | 'schemas' | 'modes';
 
@@ -372,7 +372,7 @@ function ModesTab() {
 }
 
 /* ─── Main Component ─── */
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; ratings?: Record<string, number> }
 
 const SCHEMA_TABS: { key: Tab; label: string }[] = [
   { key: 'needs', label: 'Потребности' },
@@ -405,9 +405,10 @@ export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
   );
 }
 
-export function SchemaInfoSheet({ onClose }: Props) {
+export function SchemaInfoSheet({ onClose, ratings }: Props) {
   const [showTest, setShowTest] = useState(false);
   const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
+  const hasProgress = !!localStorage.getItem(YSQ_PROGRESS_KEY);
 
   return (
     <>
@@ -415,6 +416,19 @@ export function SchemaInfoSheet({ onClose }: Props) {
         <div style={{ paddingTop: 4 }}>
           <SchemaInfoContent />
           <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            {hasProgress && !hasResult && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)',
+                borderRadius: 14, padding: '12px 16px', marginBottom: 12,
+              }}>
+                <span style={{ fontSize: 18 }}>⏸</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Можно продолжить с места, где остановился</div>
+                </div>
+              </div>
+            )}
             <div
               onClick={() => setShowTest(true)}
               style={{
@@ -425,7 +439,7 @@ export function SchemaInfoSheet({ onClose }: Props) {
             >
               <div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>
-                  {hasResult ? 'Мои результаты YSQ-R' : 'Пройти тест на схемы'}
+                  {hasResult ? 'Мои результаты YSQ-R' : hasProgress ? 'Продолжить тест' : 'Пройти тест на схемы'}
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>
                   {hasResult ? 'Посмотреть или пройти заново' : '116 вопросов · ~10 минут · YSQ-R'}
@@ -436,7 +450,7 @@ export function SchemaInfoSheet({ onClose }: Props) {
           </div>
         </div>
       </BottomSheet>
-      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} />}
+      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} />}
     </>
   );
 }

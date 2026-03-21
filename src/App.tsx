@@ -406,7 +406,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSchemaInfo && <SchemaInfoSheet onClose={() => setShowSchemaInfo(false)} />}
+      {showSchemaInfo && <SchemaInfoSheet onClose={() => setShowSchemaInfo(false)} ratings={ratings} />}
     </div>
   );
 }
