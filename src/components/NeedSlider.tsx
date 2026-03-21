@@ -203,6 +203,22 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           }} />
         </div>
 
+        {/* Yesterday reference marker */}
+        {!locked && (YESTERDAY[id] ?? 0) > 0 && (
+          <div style={{
+            position: 'absolute',
+            left: `${(YESTERDAY[id] ?? 0) * 10}%`,
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 2,
+            height: 16,
+            borderRadius: 1,
+            background: hasValue ? `${color}40` : `${color}70`,
+            pointerEvents: 'none',
+            zIndex: 2,
+          }} />
+        )}
+
         {/* Thumb — always visible; dimmed when locked */}
         {!locked && (
           <div style={{
