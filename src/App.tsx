@@ -22,6 +22,7 @@ import { PracticePlan, StreakData } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
+const HAS_HISTORY = Object.keys(localStorage).some(k => k.startsWith('celebrated_'));
 const YESTERDAY_DATE = (() => {
   const d = new Date();
   d.setDate(d.getDate() - 1);
@@ -230,7 +231,7 @@ export default function App() {
       setPairCardDismissed(!!localStorage.getItem('pair_card_dismissed'));
     });
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
-    if (!yesterdayBannerDismissed) {
+    if (!yesterdayBannerDismissed && HAS_HISTORY) {
       api.ratings(YESTERDAY_DATE).then(r => {
         if (Object.keys(r).length === 0) setShowYesterdayBanner(true);
       }).catch(() => {});
@@ -492,7 +493,7 @@ export default function App() {
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
         </div>
       )}
-      {tab === 'today' && pairData !== null && pairCardDismissed === false && (
+      {tab === 'today' && pairData !== null && pairCardDismissed === false && HAS_HISTORY && (
         <div style={{ padding: '8px 20px 0' }}>
           <PairCard
             partnerIndex={pairData.partnerIndex}
