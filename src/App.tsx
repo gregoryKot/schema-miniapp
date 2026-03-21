@@ -111,7 +111,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           <a href="https://t.me/SchemeHappens" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
         </div>
         <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-          Работать лично —{' '}
+          Записаться на сессию —{' '}
           <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
         </div>
       </div>
