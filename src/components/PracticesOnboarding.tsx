@@ -21,6 +21,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
   const [step, setStep] = useState<'intro' | number>('intro');
   const [input, setInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   function finish() {
@@ -36,7 +37,12 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
     if (input.trim()) toSave.push(input.trim());
     try {
       await Promise.all(toSave.map(text => api.addPractice(needId, text)));
-    } catch { /* silent */ }
+      setSaveError(false);
+    } catch {
+      setSaveError(true);
+      setSaving(false);
+      return;
+    }
     setSaving(false);
     setInput('');
     setSelected(new Set());
@@ -195,6 +201,11 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             }}
           />
 
+          {saveError && (
+            <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+              Не удалось сохранить — попробуй ещё раз
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={next}

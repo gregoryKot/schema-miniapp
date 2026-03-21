@@ -143,7 +143,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
       localStorage.setItem(CHILDHOOD_DONE_KEY, '1');
       onSaved?.(ratings as Record<string, number>);
       setPhase('result');
-    } catch {
+    } finally {
       setSaving(false);
     }
   }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
 import { TodayView } from './components/TodayView';
@@ -284,11 +284,10 @@ export default function App() {
     }
   }, [tab, historyDays]);
 
-  // Telegram back button — close topmost open sheet
+  // Telegram back button — single stable handler, reads current state via ref
+  const backHandlerRef = useRef<() => void>(() => {});
   useEffect(() => {
-    const bb = window.Telegram?.WebApp?.BackButton;
-    if (!bb) return;
-    const closer =
+    backHandlerRef.current =
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
       showProfile ? () => setShowProfile(false) :
       showAbout ? () => setShowAbout(false) :
@@ -296,15 +295,20 @@ export default function App() {
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
-      null;
-    if (closer) {
-      bb.show();
-      bb.onClick(closer);
-      return () => bb.offClick(closer);
-    } else {
-      bb.hide();
-    }
+      () => {};
+    const bb = window.Telegram?.WebApp?.BackButton;
+    if (!bb) return;
+    const anyOpen = showSchemaInfo || showProfile || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    if (anyOpen) bb.show(); else bb.hide();
   }, [showSchemaInfo, showProfile, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+
+  useEffect(() => {
+    const bb = window.Telegram?.WebApp?.BackButton;
+    if (!bb) return;
+    const handler = () => backHandlerRef.current();
+    bb.onClick(handler);
+    return () => bb.offClick(handler);
+  }, []);
 
   const handleChange = useCallback((needId: string, value: number) => {
     setRatings((prev) => ({ ...prev, [needId]: value }));

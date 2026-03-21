@@ -49,6 +49,8 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
       localStorage.setItem(getWeekKey(), '1');
       onDismiss();
     } catch {
+      // silent — button re-enables via finally
+    } finally {
       setSaving(false);
     }
   }
