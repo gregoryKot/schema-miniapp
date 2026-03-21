@@ -12,6 +12,8 @@ interface Props {
   currentRatings: Record<string, number>;
   childhoodRatings?: Partial<Record<string, number>>;
   onOpenSchemas?: () => void;
+  days?: number;
+  onChangeDays?: (days: number) => void;
 }
 
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
@@ -364,7 +366,9 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas }: Props) {
+const DAYS_OPTIONS = [7, 14, 30];
+
+export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, days = 7, onChangeDays }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
@@ -460,33 +464,30 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         })}
       </div>
 
-      {/* View toggle */}
-      <div style={{ padding: '0 24px 4px' }}>
-        <div style={{
-          display: 'flex',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: 10,
-          padding: 3,
-        }}>
+      {/* View toggle + days selector */}
+      <div style={{ padding: '0 24px 4px', display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3, flex: 1 }}>
           {(['day', 'week'] as const).map((v) => {
             const active = subView === v;
             return (
-              <button
-                key={v}
-                onClick={() => setSubView(v)}
-                style={{
-                  flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8,
-                  background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                  color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                  fontSize: 12, fontWeight: active ? 500 : 400,
-                  cursor: 'pointer', transition: 'all 0.15s ease',
-                }}
-              >
+              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
                 {v === 'day' ? 'День' : 'Неделя'}
               </button>
             );
           })}
         </div>
+        {onChangeDays && (
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3 }}>
+            {DAYS_OPTIONS.map(d => {
+              const active = days === d;
+              return (
+                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
+                  {d}д
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Content — fade on view switch */}

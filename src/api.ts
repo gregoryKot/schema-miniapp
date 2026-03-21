@@ -51,6 +51,15 @@ export interface PracticePlan {
 }
 
 export const api = {
+  init:           () => post('/api/init', {}),
+  getDisclaimer:  () => get<{ accepted: boolean }>('/api/disclaimer'),
+  acceptDisclaimer: () => post('/api/disclaimer', {}),
+  getYsqProgress: () => get<{ answers: number[]; page: number } | null>('/api/ysq-progress'),
+  saveYsqProgress: (answers: number[], page: number) => post('/api/ysq-progress', { answers, page }),
+  deleteYsqProgress: async () => {
+    const res = await fetch(`${BASE}/api/ysq-progress`, { method: 'DELETE', headers: authHeaders() });
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+  },
   needs:          () => get<import('./types').Need[]>('/api/needs'),
   ratings:        () => get<Record<string, number>>('/api/ratings'),
   saveRating:     (needId: string, value: number) => post('/api/rating', { needId, value }),
@@ -83,7 +92,7 @@ export const api = {
   createPlan:    (needId: string, practiceText: string, reminderUtcHour?: number) =>
     post('/api/plan', { needId, practiceText, reminderUtcHour }),
   checkinPlan:   (id: number, done: boolean) => post(`/api/plan/${id}/checkin`, { done }),
-  getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null }>('/api/pair'),
+  getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null }>('/api/pair'),
   createPairInvite: async () => {
     const res = await fetch(`${BASE}/api/pair/invite`, { method: 'POST', headers: authHeaders(), body: '{}' });
     if (!res.ok) throw new Error(`API error: ${res.status}`);

@@ -143,8 +143,9 @@ function formatHeaderDate(): string {
 
 export default function App() {
   const [disclaimerDone, setDisclaimerDone] = useState(
-    () => !!localStorage.getItem(DISCLAIMER_KEY)
+    () => !!localStorage.getItem(DISCLAIMER_KEY) // quick local check while server responds
   );
+  const [historyDays, setHistoryDays] = useState(7);
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
@@ -154,7 +155,7 @@ export default function App() {
   const [showTodayNote, setShowTodayNote] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
-  const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
+  const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null } | null>(null);
   const [pairCardDismissed, setPairCardDismissed] = useState(() => !!localStorage.getItem('pair_card_dismissed'));
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
@@ -178,22 +179,27 @@ export default function App() {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
     window.Telegram?.WebApp?.disableVerticalSwipes?.();
+    api.init().catch(() => {});
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => {
         setNeeds(n);
         setRatings(r);
-        // Mark server-loaded ratings as already saved → lock sliders on open
         const initialSaved: Record<string, boolean> = {};
         for (const key of Object.keys(r)) initialSaved[key] = true;
         setSaved(initialSaved);
+        // If all needs already rated today, mark done to prevent duplicate celebration
+        if (n.length > 0 && n.every(need => r[need.id] !== undefined)) {
+          localStorage.setItem(TODAY_KEY, '1');
+        }
       })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
+    api.getDisclaimer().then(({ accepted }) => {
+      if (accepted) { localStorage.setItem(DISCLAIMER_KEY, '1'); setDisclaimerDone(true); }
+    }).catch(() => {});
     api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
-    if (localStorage.getItem(CHILDHOOD_DONE_KEY)) {
-      api.getChildhoodRatings().then(setChildhoodRatings).catch(e => console.error('getChildhoodRatings failed', e));
-    }
+    api.getChildhoodRatings().then(r => { if (Object.keys(r).length > 0) setChildhoodRatings(r); }).catch(e => console.error('getChildhoodRatings failed', e));
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -216,9 +222,9 @@ export default function App() {
   useEffect(() => {
     if (tab === 'history') {
       setHistoryLoading(true);
-      api.history(7).then(setHistory).finally(() => setHistoryLoading(false));
+      api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
     }
-  }, [tab]);
+  }, [tab, historyDays]);
 
   // Telegram back button — close topmost open sheet
   useEffect(() => {
@@ -290,6 +296,7 @@ export default function App() {
       {!disclaimerDone && (
         <Disclaimer onAccept={() => {
           localStorage.setItem(DISCLAIMER_KEY, '1');
+          api.acceptDisclaimer().catch(() => {});
           setDisclaimerDone(true);
         }} />
       )}
@@ -433,7 +440,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} days={historyDays} onChangeDays={setHistoryDays} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {

@@ -225,8 +225,12 @@ function NeedsTab() {
   );
 }
 
-function SchemasTab() {
-  const [open, setOpen] = useState<string | null>(null);
+function SchemasTab({ highlight }: { highlight?: string }) {
+  const initialDomain = highlight
+    ? SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.name === highlight))?.domain ?? null
+    : null;
+  const [open, setOpen] = useState<string | null>(initialDomain);
+
   return (
     <div>
       <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
@@ -257,18 +261,28 @@ function SchemasTab() {
           </div>
           {open === d.domain && (
             <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '0 0 14px 14px', overflow: 'hidden' }}>
-              {d.schemas.map((s, i) => (
-                <div key={s.name} style={{ padding: '11px 16px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: d.color, marginBottom: 3 }}>{s.name}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>{s.desc}</div>
-                </div>
-              ))}
+              {d.schemas.map((s, i) => {
+                const isHighlighted = s.name === highlight;
+                return (
+                  <div key={s.name} style={{ padding: '11px 16px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none', background: isHighlighted ? `rgba(${hexToRgbStr(d.color)},0.12)` : 'transparent' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: d.color, marginBottom: 3 }}>{s.name}{isHighlighted && ' ◀'}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>{s.desc}</div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
       ))}
     </div>
   );
+}
+
+function hexToRgbStr(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r},${g},${b}`;
 }
 
 function ModesTab() {
@@ -382,7 +396,7 @@ const SCHEMA_TABS: { key: Tab; label: string }[] = [
   { key: 'modes', label: 'Режимы' },
 ];
 
-export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
+export function SchemaInfoContent({ initialTab, highlight }: { initialTab?: Tab; highlight?: string }) {
   const [tab, setTab] = useState<Tab>(initialTab ?? 'needs');
   return (
     <div>
@@ -401,7 +415,7 @@ export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
         })}
       </div>
       {tab === 'needs' && <NeedsTab />}
-      {tab === 'schemas' && <SchemasTab />}
+      {tab === 'schemas' && <SchemasTab highlight={highlight} />}
       {tab === 'modes' && <ModesTab />}
     </div>
   );
@@ -414,8 +428,11 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
   const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
   const hasProgress = !!localStorage.getItem(YSQ_PROGRESS_KEY);
 
-  const handleViewSchemas = () => {
+  const [highlightSchema, setHighlightSchema] = useState<string | undefined>();
+
+  const handleViewSchemas = (schemaName?: string) => {
     setContentInitialTab('schemas');
+    setHighlightSchema(schemaName);
     setContentKey(k => k + 1);
     setShowTest(false);
   };
@@ -424,7 +441,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
     <>
       <BottomSheet onClose={onClose}>
         <div style={{ paddingTop: 4 }}>
-          <SchemaInfoContent key={contentKey} initialTab={contentInitialTab} />
+          <SchemaInfoContent key={contentKey} initialTab={contentInitialTab} highlight={highlightSchema} />
           <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             {hasProgress && !hasResult && (
               <div
@@ -463,7 +480,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
           </div>
         </div>
       </BottomSheet>
-      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} autoResume={autoStartTest} onViewSchemas={handleViewSchemas} />}
+      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} autoResume={autoStartTest} onViewSchemas={(name) => handleViewSchemas(name)} />}
     </>
   );
 }

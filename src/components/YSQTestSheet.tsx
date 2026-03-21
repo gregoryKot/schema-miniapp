@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void;
   ratings?: Record<string, number>;
   autoResume?: boolean;
-  onViewSchemas?: () => void;
+  onViewSchemas?: (schemaName: string) => void;
 }
 
 const QUESTIONS: string[] = [
@@ -375,13 +375,18 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
       }
     } catch { /* ignore */ }
 
-    // Also fetch from server — takes priority (syncs across devices)
+    // Fetch from server — takes priority (syncs across devices)
     if (!autoResume) {
-      api.getYsqResult().then(serverResult => {
+      Promise.all([api.getYsqResult(), api.getYsqProgress()]).then(([serverResult, serverProgress]) => {
         if (serverResult?.answers && Array.isArray(serverResult.answers) && serverResult.answers.length === QUESTIONS.length) {
           localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: serverResult.completedAt, answers: serverResult.answers }));
           setAnswers(serverResult.answers);
           setPhase('result');
+        } else if (serverProgress?.answers && Array.isArray(serverProgress.answers) && serverProgress.answers.length === QUESTIONS.length) {
+          localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: serverProgress.answers, page: serverProgress.page }));
+          setAnswers(serverProgress.answers);
+          setPage(serverProgress.page);
+          setHasProgress(true);
         }
       }).catch(() => {});
     }
@@ -389,6 +394,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
   const saveProgress = (newAnswers: number[], newPage: number) => {
     localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: newAnswers, page: newPage }));
+    api.saveYsqProgress(newAnswers, newPage).catch(() => {});
   };
 
   const handleContinue = () => {
@@ -438,6 +444,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
         answers,
       }));
       api.saveYsqResult(answers).catch(() => {});
+      api.deleteYsqProgress().catch(() => {});
       localStorage.removeItem(YSQ_PROGRESS_KEY);
       setPhase('result');
     }
@@ -694,7 +701,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
                   {/* Link to schema card */}
                   <div
-                    onClick={() => onViewSchemas ? onViewSchemas() : onClose()}
+                    onClick={() => onViewSchemas ? onViewSchemas(schema.name) : onClose()}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: showDiaryHint ? 8 : 0, padding: '4px 0' }}
                   >
                     <span style={{ fontSize: 13, color: 'rgba(167,139,250,0.85)' }}>Читать карточку схемы</span>

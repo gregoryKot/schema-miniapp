@@ -7,6 +7,7 @@ interface PairData {
   partnerIndex: number | null;
   partnerTodayDone: boolean;
   code: string | null;
+  partnerName: string | null;
 }
 
 interface Props {
@@ -19,6 +20,7 @@ export function PairSheet({ onClose }: Props) {
   const [view, setView] = useState<'main' | 'join'>('main');
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
+  const [confirmLeave, setConfirmLeave] = useState(false);
 
   useEffect(() => { api.getPair().then(setData).catch(e => console.error('getPair failed', e)); }, []);
 
@@ -76,7 +78,9 @@ export function PairSheet({ onClose }: Props) {
         ) : data.paired ? (
           <div>
             <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Партнёр сегодня</div>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+                {data.partnerName ? data.partnerName : 'Партнёр'} сегодня
+              </div>
               {data.partnerTodayDone && data.partnerIndex !== null ? (
                 <div style={{ fontSize: 32, fontWeight: 800, color: '#fff' }}>
                   {data.partnerIndex.toFixed(1)}
@@ -86,14 +90,20 @@ export function PairSheet({ onClose }: Props) {
                 <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил дневник</div>
               )}
             </div>
-            <button
-              onClick={handleLeave}
-              style={{
-                width: '100%', padding: '12px', border: 'none', borderRadius: 12,
-                background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)',
-                fontSize: 14, cursor: 'pointer',
-              }}
-            >Выйти из пары</button>
+            {confirmLeave ? (
+              <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
+                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 12 }}>Выйти из пары с {data.partnerName ?? 'партнёром'}?</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => setConfirmLeave(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
+                  <button onClick={handleLeave} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Выйти</button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setConfirmLeave(true)}
+                style={{ width: '100%', padding: '12px', border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}
+              >Выйти из пары</button>
+            )}
           </div>
         ) : (
           <div>
