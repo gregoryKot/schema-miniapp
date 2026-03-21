@@ -55,8 +55,12 @@ export function PairSheet({ onClose }: Props) {
   }
 
   async function handleLeave() {
-    await api.leavePair();
-    setData(await api.getPair());
+    try {
+      await api.leavePair();
+      setData(await api.getPair());
+    } catch (e) {
+      console.error('leavePair failed', e);
+    }
   }
 
   // suppress unused variable warning

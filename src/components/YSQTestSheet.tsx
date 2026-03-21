@@ -453,8 +453,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
 
   const schemaColor = (s: SchemaInfo) => getColor(s.name) || s.color;
 
-  const progressQuestionNumber = progressPage * PAGE_SIZE + 1;
-
   return (
     <BottomSheet onClose={onClose} zIndex={300}>
       {phase === 'intro' && (
