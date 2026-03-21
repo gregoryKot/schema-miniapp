@@ -32,7 +32,7 @@ const ABOUT_TEXT = [
 
 type Tab = 'today' | 'history';
 
-const DISCLAIMER_KEY = 'disclaimer_accepted';
+const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
 
 function Disclaimer({ onAccept }: { onAccept: () => void }) {
   const [c1, setC1] = useState(false);
