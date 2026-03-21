@@ -374,7 +374,7 @@ function ModesTab() {
 }
 
 /* ─── Main Component ─── */
-interface Props { onClose: () => void; ratings?: Record<string, number> }
+interface Props { onClose: () => void; ratings?: Record<string, number>; autoStartTest?: boolean }
 
 const SCHEMA_TABS: { key: Tab; label: string }[] = [
   { key: 'needs', label: 'Потребности' },
@@ -407,8 +407,8 @@ export function SchemaInfoContent({ initialTab }: { initialTab?: Tab }) {
   );
 }
 
-export function SchemaInfoSheet({ onClose, ratings }: Props) {
-  const [showTest, setShowTest] = useState(false);
+export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
+  const [showTest, setShowTest] = useState(autoStartTest ?? false);
   const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
   const hasProgress = !!localStorage.getItem(YSQ_PROGRESS_KEY);
 

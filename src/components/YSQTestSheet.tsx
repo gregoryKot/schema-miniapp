@@ -593,6 +593,11 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
               {page < TOTAL_PAGES - 1 ? 'Далее →' : 'Завершить →'}
             </button>
           </div>
+          {page < TOTAL_PAGES - 1 && (
+            <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
+              Можно остановиться — прогресс сохранится на этом устройстве
+            </div>
+          )}
         </div>
       )}
 

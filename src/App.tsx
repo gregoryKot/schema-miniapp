@@ -148,6 +148,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
+  const [schemaAutoStartTest, setSchemaAutoStartTest] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
@@ -352,7 +353,7 @@ export default function App() {
             borderRadius: 14, padding: '12px 14px',
           }}>
             <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
-            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { setShowYsqBanner(false); setShowSchemaInfo(true); }}>
+            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
             </div>
@@ -496,7 +497,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSchemaInfo && <SchemaInfoSheet onClose={() => setShowSchemaInfo(false)} ratings={ratings} />}
+      {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
     </div>
   );
 }
