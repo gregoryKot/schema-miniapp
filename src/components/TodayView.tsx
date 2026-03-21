@@ -154,6 +154,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
   }, [onChange, onSaved]);
 
   // Summary calculations
+  // index = sum of all needs (unrated = 0) / total needs — same formula as server getPair
   const avg = needs.length > 0
     ? needs.reduce((s, n) => s + (ratings[n.id] ?? 0), 0) / needs.length
     : 0;
