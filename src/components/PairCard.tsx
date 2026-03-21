@@ -3,26 +3,32 @@ interface Props {
   partnerTodayDone: boolean;
   onInvite: () => void;
   showInvite: boolean;
+  onDismiss?: () => void;
 }
 
-export function PairCard({ partnerIndex, partnerTodayDone, onInvite, showInvite }: Props) {
+export function PairCard({ partnerIndex, partnerTodayDone, onInvite, showInvite, onDismiss }: Props) {
   if (showInvite) {
     return (
-      <div
-        onClick={onInvite}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          background: 'rgba(255,255,255,0.04)', borderRadius: 14,
-          padding: '12px 16px', marginBottom: 16, cursor: 'pointer',
-          border: '1px solid rgba(255,255,255,0.07)',
-        }}
-      >
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10,
+        background: 'rgba(255,255,255,0.04)', borderRadius: 14,
+        padding: '12px 16px', marginBottom: 16,
+        border: '1px solid rgba(255,255,255,0.07)',
+      }}>
         <span style={{ fontSize: 22 }}>🤝</span>
-        <div>
+        <div style={{ flex: 1, cursor: 'pointer' }} onClick={onInvite}>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Отслеживать вместе</div>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Пригласи друга или партнёра</div>
         </div>
-        <span style={{ marginLeft: 'auto', fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+        <span onClick={onInvite} style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}>›</span>
+        {onDismiss && (
+          <button
+            onClick={e => { e.stopPropagation(); onDismiss(); }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 18, cursor: 'pointer', padding: '0 0 0 4px', lineHeight: 1 }}
+          >
+            ×
+          </button>
+        )}
       </div>
     );
   }

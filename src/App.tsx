@@ -154,6 +154,7 @@ export default function App() {
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
   const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null } | null>(null);
+  const [pairCardDismissed, setPairCardDismissed] = useState(() => !!localStorage.getItem('pair_card_dismissed'));
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
@@ -369,13 +370,17 @@ export default function App() {
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
         </div>
       )}
-      {tab === 'today' && pairData !== null && (
+      {tab === 'today' && pairData !== null && !pairCardDismissed && (
         <div style={{ padding: '8px 20px 0' }}>
           <PairCard
             partnerIndex={pairData.partnerIndex}
             partnerTodayDone={pairData.partnerTodayDone}
             showInvite={!pairData.paired}
             onInvite={() => setShowPairSheet(true)}
+            onDismiss={!pairData.paired ? () => {
+              localStorage.setItem('pair_card_dismissed', '1');
+              setPairCardDismissed(true);
+            } : undefined}
           />
         </div>
       )}
