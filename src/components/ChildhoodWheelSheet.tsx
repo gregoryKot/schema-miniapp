@@ -3,6 +3,7 @@ import { api } from '../api';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
+import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
 
 export const CHILDHOOD_DONE_KEY = 'childhood_wheel_done';
 
@@ -118,6 +119,7 @@ interface Props {
 export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) {
   const alreadyDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
   const [phase, setPhase] = useState<Phase>(alreadyDone ? 'result' : 'intro');
+  const [activeSchema, setActiveSchema] = useState<{ name: string; desc: string; color: string } | null>(null);
   const [ratings, setRatings] = useState<Record<NeedId, number>>({
     attachment: 5, autonomy: 5, expression: 5, play: 5, limits: 5,
   });
@@ -152,6 +154,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
   }
 
   return (
+    <>
     <BottomSheet onClose={finish} zIndex={200}>
 
       {/* ── INTRO ── */}
@@ -287,11 +290,24 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                     </div>
                     <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Домен: {hint.domain}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {hint.schemas.map(s => (
-                        <span key={s} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: hint.color + '18', color: hint.color }}>
-                          {s}
-                        </span>
-                      ))}
+                      {hint.schemas.map(s => {
+                        const schemaData = SCHEMA_DOMAINS.flatMap(d => d.schemas.map(sc => ({ ...sc, color: d.color }))).find(sc => sc.name === s);
+                        return (
+                          <span
+                            key={s}
+                            onClick={() => schemaData && setActiveSchema(schemaData)}
+                            style={{
+                              fontSize: 11, padding: '3px 10px', borderRadius: 20,
+                              background: hint.color + '18', color: hint.color,
+                              cursor: schemaData ? 'pointer' : 'default',
+                              textDecoration: schemaData ? 'underline dotted' : 'none',
+                              textUnderlineOffset: 3,
+                            }}
+                          >
+                            {s}
+                          </span>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -337,5 +353,18 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
       )}
 
     </BottomSheet>
+
+    {activeSchema && (
+      <BottomSheet onClose={() => setActiveSchema(null)} zIndex={300}>
+        <div style={{ paddingTop: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: activeSchema.color, flexShrink: 0 }} />
+            <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{activeSchema.name}</div>
+          </div>
+          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>{activeSchema.desc}</div>
+        </div>
+      </BottomSheet>
+    )}
+    </>
   );
 }

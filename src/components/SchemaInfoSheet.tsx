@@ -39,7 +39,7 @@ const NEEDS_DATA = [
 ];
 
 /* ─── 18 EMS Schemas (терминология МИСТ — schema-therapy.ru) ─── */
-const SCHEMA_DOMAINS = [
+export const SCHEMA_DOMAINS = [
   {
     domain: 'Отчуждение и отвержение',
     color: '#f87171',
