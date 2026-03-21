@@ -13,6 +13,13 @@ declare global {
         expand(): void;
         close(): void;
         disableVerticalSwipes(): void;
+        BackButton: {
+          isVisible: boolean;
+          show(): void;
+          hide(): void;
+          onClick(fn: () => void): void;
+          offClick(fn: () => void): void;
+        };
         MainButton: {
           text: string;
           isVisible: boolean;

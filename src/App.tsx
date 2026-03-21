@@ -220,6 +220,28 @@ export default function App() {
     }
   }, [tab]);
 
+  // Telegram back button — close topmost open sheet
+  useEffect(() => {
+    const bb = window.Telegram?.WebApp?.BackButton;
+    if (!bb) return;
+    const closer =
+      showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
+      showProfile ? () => setShowProfile(false) :
+      showAbout ? () => setShowAbout(false) :
+      showPairSheet ? () => { setShowPairSheet(false); api.getPair().then(setPairData); } :
+      showChildhoodWheel ? () => setShowChildhoodWheel(false) :
+      showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
+      showTodayNote ? () => setShowTodayNote(false) :
+      null;
+    if (closer) {
+      bb.show();
+      bb.onClick(closer);
+      return () => bb.offClick(closer);
+    } else {
+      bb.hide();
+    }
+  }, [showSchemaInfo, showProfile, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+
   const handleChange = useCallback((needId: string, value: number) => {
     setRatings((prev) => ({ ...prev, [needId]: value }));
     setSaved((prev) => ({ ...prev, [needId]: false }));
