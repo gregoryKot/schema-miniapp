@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
+import { api } from '../api';
 
 export const YSQ_RESULT_KEY = 'ysq_result';
 export const YSQ_PROGRESS_KEY = 'ysq_progress';
@@ -348,8 +349,8 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
   // Check for saved result or in-progress test on mount
   useEffect(() => {
+    // Load from localStorage immediately (offline/fast path)
     try {
-      // If there's a completed result, show it directly (unless autoResume forces back to test)
       if (!autoResume) {
         const result = localStorage.getItem(YSQ_RESULT_KEY);
         if (result) {
@@ -357,11 +358,9 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           if (parsed.answers && Array.isArray(parsed.answers) && parsed.answers.length === QUESTIONS.length) {
             setAnswers(parsed.answers);
             setPhase('result');
-            return;
           }
         }
       }
-      // Check for in-progress test
       const saved = localStorage.getItem(YSQ_PROGRESS_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as { answers: number[]; page: number };
@@ -375,6 +374,17 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
         }
       }
     } catch { /* ignore */ }
+
+    // Also fetch from server — takes priority (syncs across devices)
+    if (!autoResume) {
+      api.getYsqResult().then(serverResult => {
+        if (serverResult?.answers && Array.isArray(serverResult.answers) && serverResult.answers.length === QUESTIONS.length) {
+          localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: serverResult.completedAt, answers: serverResult.answers }));
+          setAnswers(serverResult.answers);
+          setPhase('result');
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   const saveProgress = (newAnswers: number[], newPage: number) => {
@@ -427,6 +437,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
         scores,
         answers,
       }));
+      api.saveYsqResult(answers).catch(() => {});
       localStorage.removeItem(YSQ_PROGRESS_KEY);
       setPhase('result');
     }
