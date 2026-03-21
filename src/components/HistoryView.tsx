@@ -5,12 +5,12 @@ import { IndexInfoSheet } from './IndexInfoSheet';
 import { NoteSheet } from './NoteSheet';
 import { WeeklyCardSheet } from './WeeklyCardSheet';
 import { api } from '../api';
-import { CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
 
 interface Props {
   needs: Need[];
   history: DayHistory[];
   currentRatings: Record<string, number>;
+  childhoodRatings?: Partial<Record<string, number>>;
 }
 
 const DOW_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
@@ -363,7 +363,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export function HistoryView({ needs, history, currentRatings }: Props) {
+export function HistoryView({ needs, history, currentRatings, childhoodRatings = {} }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
@@ -372,16 +372,9 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
   const [noteText, setNoteText] = useState<string | null>(null);
   const [noteTags, setNoteTags] = useState<string[]>([]);
   const [showWeekCard, setShowWeekCard] = useState(false);
-  const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
-
-  useEffect(() => {
-    if (localStorage.getItem(CHILDHOOD_DONE_KEY)) {
-      api.getChildhoodRatings().then(setChildhoodRatings).catch(() => {});
-    }
-  }, []);
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -511,6 +504,14 @@ export function HistoryView({ needs, history, currentRatings }: Props) {
                 />
               </div>
             </div>
+
+            {/* Childhood legend */}
+            {Object.keys(childhoodRatings).length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 }}>
+                <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(255,255,255,0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>детство</span>
+              </div>
+            )}
 
             {/* Hint text — only before first legend tap */}
             {showHint && (

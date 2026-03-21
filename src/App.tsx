@@ -16,7 +16,7 @@ import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding, shouldShowPracticesOnboarding } from './components/PracticesOnboarding';
-import { ChildhoodWheelSheet, shouldShowChildhoodWheel } from './components/ChildhoodWheelSheet';
+import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
 import { PracticePlan } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
@@ -100,6 +100,7 @@ export default function App() {
   const [practicesOnboardingPending, setPracticesOnboardingPending] = useState(false);
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
+  const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -125,6 +126,9 @@ export default function App() {
       .finally(() => setLoading(false));
     api.getPair().then(setPairData).catch(() => {});
     api.getPendingPlans().then(setPendingPlans).catch(() => {});
+    if (localStorage.getItem(CHILDHOOD_DONE_KEY)) {
+      api.getChildhoodRatings().then(setChildhoodRatings).catch(() => {});
+    }
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -296,7 +300,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
@@ -345,7 +349,7 @@ export default function App() {
         }} />
       )}
 
-      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} />}
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} />}
 
       {showPracticesOnboarding && needs.length > 0 && (
         <PracticesOnboarding needs={needs} onDone={() => {
@@ -358,6 +362,7 @@ export default function App() {
         <ChildhoodWheelSheet
           onClose={() => setShowChildhoodWheel(false)}
           onOpenSchemas={() => { setShowChildhoodWheel(false); setShowSchemaInfo(true); }}
+          onSaved={(r) => setChildhoodRatings(r)}
         />
       )}
 

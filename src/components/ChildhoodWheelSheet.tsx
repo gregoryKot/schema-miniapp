@@ -112,9 +112,10 @@ type Phase = 'intro' | 'fill' | 'result';
 interface Props {
   onClose: () => void;
   onOpenSchemas: () => void;
+  onSaved?: (ratings: Record<string, number>) => void;
 }
 
-export function ChildhoodWheelSheet({ onClose, onOpenSchemas }: Props) {
+export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) {
   const alreadyDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
   const [phase, setPhase] = useState<Phase>(alreadyDone ? 'result' : 'intro');
   const [ratings, setRatings] = useState<Record<NeedId, number>>({
@@ -138,6 +139,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas }: Props) {
     try {
       await api.saveChildhoodRatings(ratings as Record<string, number>);
       localStorage.setItem(CHILDHOOD_DONE_KEY, '1');
+      onSaved?.(ratings as Record<string, number>);
       setPhase('result');
     } catch {
       setSaving(false);
@@ -316,10 +318,6 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas }: Props) {
               </div>
             </div>
           )}
-
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center', lineHeight: 1.6, marginBottom: 20 }}>
-            Оценки можно изменить в любой момент через профиль → Колесо детства
-          </div>
 
           <button onClick={finish} style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
             Понятно

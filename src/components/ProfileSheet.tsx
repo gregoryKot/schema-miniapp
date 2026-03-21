@@ -82,9 +82,9 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
 
 type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices' | 'childhoodWheel';
 
-interface Props { onClose: () => void; onOpenSchemas?: () => void }
+interface Props { onClose: () => void; onOpenSchemas?: () => void; onChildhoodSaved?: (r: Record<string, number>) => void }
 
-export function ProfileSheet({ onClose, onOpenSchemas }: Props) {
+export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -830,6 +830,7 @@ export function ProfileSheet({ onClose, onOpenSchemas }: Props) {
       <ChildhoodWheelSheet
         onClose={() => setShowChildhoodWheel(false)}
         onOpenSchemas={() => { setShowChildhoodWheel(false); onClose(); onOpenSchemas?.(); }}
+        onSaved={onChildhoodSaved}
       />
     )}
     </>
