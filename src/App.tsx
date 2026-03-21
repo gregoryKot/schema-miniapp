@@ -9,6 +9,7 @@ import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
 import { SchemaInfoSheet, SchemaInfoContent } from './components/SchemaInfoSheet';
+import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './components/YSQTestSheet';
 import { TagPicker } from './components/TagPicker';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
 import { SectionLabel } from './components/SectionLabel';
@@ -101,6 +102,9 @@ export default function App() {
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Partial<Record<string, number>>>({});
+  const [showYsqBanner, setShowYsqBanner] = useState(
+    () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY)
+  );
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -280,6 +284,27 @@ export default function App() {
         </div>
       </div>
 
+      {tab === 'today' && showYsqBanner && (
+        <div style={{ padding: '12px 20px 0' }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)',
+            borderRadius: 14, padding: '12px 14px',
+          }}>
+            <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
+            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { setShowYsqBanner(false); setShowSchemaInfo(true); }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
+            </div>
+            <button
+              onClick={() => setShowYsqBanner(false)}
+              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
       {tab === 'today' && showWeeklyQ && (
         <div style={{ padding: '16px 20px 0' }}>
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />

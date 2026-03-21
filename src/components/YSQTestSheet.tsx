@@ -456,8 +456,11 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
           <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
             Опросник схем YSQ-R
           </div>
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: 20 }}>
+          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: 12 }}>
             116 утверждений. Оцени каждое от 1 до 6 — насколько это про тебя. Занимает ~10 минут.
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 20 }}>
+            Можно остановиться в любой момент и вернуться позже — прогресс сохраняется автоматически.
           </div>
           <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Шкала оценок:</div>
@@ -708,6 +711,36 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
                     })}
                   </div>
                 )}
+              </div>
+            )}
+
+            {activeSchemas.length > 0 && (
+              <div style={{
+                marginTop: 8, marginBottom: 16,
+                background: 'rgba(167,139,250,0.07)',
+                border: '1px solid rgba(167,139,250,0.2)',
+                borderRadius: 16, padding: '16px 18px',
+              }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa', marginBottom: 8 }}>
+                  Хочешь разобраться глубже?
+                </div>
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.65, marginBottom: 12 }}>
+                  Схемы — это паттерны, сформировавшиеся давно. Их можно менять, но это требует времени и поддержки. Схема-терапия — один из самых эффективных методов для этой работы.
+                </div>
+                <a
+                  href="https://t.me/kotlarewski"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'block', textAlign: 'center',
+                    padding: '11px 0', borderRadius: 12,
+                    background: 'rgba(167,139,250,0.15)',
+                    color: '#a78bfa', fontSize: 14, fontWeight: 500,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Поговорить с психологом →
+                </a>
               </div>
             )}
 
