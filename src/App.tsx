@@ -189,10 +189,10 @@ export default function App() {
       })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
-    api.getPair().then(setPairData).catch(() => {});
-    api.getPendingPlans().then(setPendingPlans).catch(() => {});
+    api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
+    api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
     if (localStorage.getItem(CHILDHOOD_DONE_KEY)) {
-      api.getChildhoodRatings().then(setChildhoodRatings).catch(() => {});
+      api.getChildhoodRatings().then(setChildhoodRatings).catch(e => console.error('getChildhoodRatings failed', e));
     }
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
