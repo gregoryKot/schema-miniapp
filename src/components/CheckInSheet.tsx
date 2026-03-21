@@ -29,7 +29,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
   }
 
   return (
-    <BottomSheet onClose={onDone} zIndex={250}>
+    <BottomSheet onClose={() => {}} zIndex={250}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 36, marginBottom: 8 }}>🎯</div>
         <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>
@@ -85,6 +85,15 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
           Не удалось сохранить — попробуй ещё раз
         </div>
       )}
+      <div style={{ textAlign: 'center', marginTop: 14 }}>
+        <button
+          onClick={onDone}
+          disabled={saving}
+          style={{ background: 'none', border: 'none', fontSize: 13, color: 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: '4px 12px' }}
+        >
+          Пропустить
+        </button>
+      </div>
     </BottomSheet>
   );
 }

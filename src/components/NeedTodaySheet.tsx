@@ -10,6 +10,7 @@ interface Props {
   value: number;
   onChange: (v: number) => void;
   onClose: () => void;
+  onPlanSaved?: (needId: string) => void;
 }
 
 const DISCLAIMER_CONTENT = [
@@ -18,7 +19,7 @@ const DISCLAIMER_CONTENT = [
   'Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.',
 ];
 
-export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
+export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: Props) {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showPlan, setShowPlan] = useState(false);
   const data = NEED_DATA[need.id];
@@ -155,6 +156,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 10,
                   background: active ? color + '33' : 'rgba(255,255,255,0.04)',
+                  border: `1px solid ${active ? color + '55' : 'rgba(255,255,255,0.08)'}`,
                   borderRadius: 12, padding: '10px 12px',
                   cursor: 'pointer',
                 }}
@@ -279,7 +281,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose }: Props) {
           needLabel={need.chartLabel}
           color={color}
           onClose={() => setShowPlan(false)}
-          onSaved={() => { setShowPlan(false); onClose(); }}
+          onSaved={() => { setShowPlan(false); onPlanSaved?.(need.id); onClose(); }}
         />
       )}
 

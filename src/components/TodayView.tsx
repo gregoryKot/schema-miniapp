@@ -289,6 +289,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
           value={ratings[activeNeed.id] ?? 0}
           onChange={(v) => handleChange(activeNeed.id, v)}
           onClose={() => setActiveNeed(null)}
+          onPlanSaved={(needId) => setPlannedNeeds(prev => new Set([...prev, needId]))}
         />
       )}
 

@@ -172,8 +172,9 @@ export default function App() {
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
+  const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
   const [showYsqBanner, setShowYsqBanner] = useState(
-    () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY)
+    () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY) && !localStorage.getItem('ysq_banner_dismissed')
   );
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
@@ -243,7 +244,7 @@ export default function App() {
     Promise.all([api.getYsqProgress(), api.getYsqResult()]).then(([prog, result]) => {
       if (prog?.answers && !result?.answers) {
         localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: prog.answers, page: prog.page }));
-        setShowYsqBanner(true);
+        if (!localStorage.getItem(YSQ_BANNER_DISMISSED_KEY)) setShowYsqBanner(true);
       }
     }).catch(() => {});
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
@@ -473,12 +474,12 @@ export default function App() {
             borderRadius: 14, padding: '12px 14px',
           }}>
             <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
-            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
+            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
             </div>
             <button
-              onClick={() => setShowYsqBanner(false)}
+              onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }}
               style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
             >
               ×

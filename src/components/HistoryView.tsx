@@ -397,6 +397,33 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
     setActiveNeed(n);
   }, [showHint]);
 
+  if (history.length > 0 && history.length < 3) {
+    const daysLeft = 3 - history.length;
+    return (
+      <div style={{ padding: '48px 32px', textAlign: 'center' }}>
+        <div style={{ fontSize: 40, marginBottom: 16 }}>📈</div>
+        <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>
+          Хорошее начало
+        </div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginBottom: 24 }}>
+          Заполни ещё {daysLeft} {daysLeft === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться: что тебя питает, что истощает
+        </div>
+        {onGoToToday && (
+          <button
+            onClick={onGoToToday}
+            style={{
+              padding: '12px 28px', border: 'none', borderRadius: 12,
+              background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
+              color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            Заполнить сегодня
+          </button>
+        )}
+      </div>
+    );
+  }
+
   if (history.length === 0) {
     return (
       <div style={{ padding: '48px 32px', textAlign: 'center' }}>
