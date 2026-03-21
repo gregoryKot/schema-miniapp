@@ -507,7 +507,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           </div>
 
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', lineHeight: 1.5, marginBottom: 20, textAlign: 'center' }}>
-            Ответы сохраняются только на этом устройстве и не передаются на сервер.
+            Ответы привязаны к аккаунту Telegram и не передаются третьим лицам.
           </div>
 
           {hasProgress ? (
@@ -624,7 +624,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           </div>
           {page < TOTAL_PAGES - 1 && (
             <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 8 }}>
-              Можно остановиться — прогресс сохранится на этом устройстве
+              Можно остановиться — прогресс сохранится
             </div>
           )}
         </div>

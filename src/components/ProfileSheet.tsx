@@ -866,9 +866,9 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
           </div>
 
           <div style={{ marginBottom: 16, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px 16px' }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Что хранится только на устройстве</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: 6 }}>Что хранится на сервере</div>
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
-              Ответы и результаты теста YSQ-R. Они не покидают этот браузер/приложение и не отправляются на сервер.
+              Дневник, оценки, заметки, практики, результаты тестов — всё привязано к Telegram-аккаунту и доступно с любого устройства.
             </div>
           </div>
 
@@ -893,6 +893,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
               onClick={() => {
                 localStorage.removeItem(YSQ_PROGRESS_KEY);
                 localStorage.removeItem(YSQ_RESULT_KEY);
+                api.deleteYsqResult().catch(() => {});
                 setShowPrivacy(false);
               }}
               style={{
@@ -900,7 +901,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
                 background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer',
               }}
             >
-              Удалить результаты теста с устройства
+              Удалить результаты теста
             </button>
           </div>
 

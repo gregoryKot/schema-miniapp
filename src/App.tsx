@@ -79,7 +79,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           Данные и конфиденциальность
         </div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 14 }}>
-          Записи дневника хранятся на защищённом сервере, привязаны к Telegram-аккаунту и не передаются третьим лицам. Результаты тестов хранятся только на этом устройстве. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
+          Все данные хранятся на защищённом сервере, привязаны к Telegram-аккаунту и не передаются третьим лицам. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
         </div>
         <Checkbox
           checked={c2}

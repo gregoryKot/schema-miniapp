@@ -98,4 +98,8 @@ export const api = {
   saveChildhoodRatings: (ratings: Record<string, number>) => post('/api/childhood-ratings', ratings),
   getYsqResult: () => get<{ answers: number[]; completedAt: string } | null>('/api/ysq-result'),
   saveYsqResult: (answers: number[]) => post('/api/ysq-result', { answers }),
+  deleteYsqResult: async () => {
+    const res = await fetch(`${BASE}/api/ysq-result`, { method: 'DELETE', headers: authHeaders() });
+    if (!res.ok) throw new Error(`API error: ${res.status}`);
+  },
 };
