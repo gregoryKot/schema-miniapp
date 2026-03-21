@@ -430,13 +430,6 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   return (
     <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0 80px' }}>
 
-      {/* Early-days nudge */}
-      {history.length < 3 && (
-        <div style={{ margin: '4px 20px 0', padding: '10px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textAlign: 'center' }}>
-          Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
-        </div>
-      )}
-
       {/* Date picker */}
       <div style={{
         display: 'flex', gap: 8, overflowX: 'auto',
@@ -510,6 +503,13 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           </div>
         )}
       </div>
+
+      {/* Early-days nudge */}
+      {history.length < 3 && (
+        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+          Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
+        </div>
+      )}
 
       {/* Content — fade on view switch */}
       <div key={subView} style={{ animation: 'fade-in 200ms ease' }}>

@@ -22,7 +22,7 @@ import { PracticePlan, StreakData } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
-const HAS_HISTORY = Object.keys(localStorage).some(k => k.startsWith('celebrated_'));
+const HAS_HISTORY = Object.keys(localStorage).some(k => k.startsWith('celebrated_') && k !== TODAY_KEY);
 const YESTERDAY_DATE = (() => {
   const d = new Date();
   d.setDate(d.getDate() - 1);
