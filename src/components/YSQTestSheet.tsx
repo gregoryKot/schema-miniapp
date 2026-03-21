@@ -394,7 +394,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
   const saveProgress = (newAnswers: number[], newPage: number) => {
     localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: newAnswers, page: newPage }));
-    api.saveYsqProgress(newAnswers, newPage).catch(() => {});
   };
 
   const handleContinue = () => {
@@ -436,6 +435,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
       const next = page + 1;
       setPage(next);
       saveProgress(answers, next);
+      api.saveYsqProgress(answers, next).catch(() => {});
     } else {
       const scores = computeScores(answers);
       localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({
@@ -455,6 +455,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
       const prev = page - 1;
       setPage(prev);
       saveProgress(answers, prev);
+      api.saveYsqProgress(answers, prev).catch(() => {});
     } else {
       setPhase('intro');
     }

@@ -200,6 +200,12 @@ export default function App() {
     api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
     api.getChildhoodRatings().then(r => { if (Object.keys(r).length > 0) setChildhoodRatings(r); }).catch(e => console.error('getChildhoodRatings failed', e));
+    Promise.all([api.getYsqProgress(), api.getYsqResult()]).then(([prog, result]) => {
+      if (prog?.answers && !result?.answers) {
+        localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: prog.answers, page: prog.page }));
+        setShowYsqBanner(true);
+      }
+    }).catch(() => {});
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -348,6 +354,7 @@ export default function App() {
         >
           Дневник потребностей
           <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
+          <span style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 6, padding: '2px 6px', fontWeight: 600, letterSpacing: '0.05em', verticalAlign: 'middle' }}>beta</span>
         </h1>
         <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
           {tab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
@@ -489,7 +496,7 @@ export default function App() {
         }} />
       )}
 
-      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} />}
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
 
       {showPracticesOnboarding && needs.length > 0 && (
         <PracticesOnboarding needs={needs} onDone={() => {

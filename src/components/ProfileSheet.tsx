@@ -83,9 +83,9 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
 
 type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices' | 'childhoodWheel';
 
-interface Props { onClose: () => void; onOpenSchemas?: () => void; onChildhoodSaved?: (r: Record<string, number>) => void }
+interface Props { onClose: () => void; onOpenSchemas?: () => void; onChildhoodSaved?: (r: Record<string, number>) => void; childhoodRatings?: Record<string, number> }
 
-export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props) {
+export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childhoodRatings: childhoodRatingsProp }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -98,7 +98,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved }: Props
   const [myPracticesInput, setMyPracticesInput] = useState('');
   const [myPracticesSaving, setMyPracticesSaving] = useState(false);
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
-  const [childhoodDone] = useState(() => !!localStorage.getItem(CHILDHOOD_DONE_KEY));
+  const childhoodDone = (childhoodRatingsProp && Object.keys(childhoodRatingsProp).length > 0) || !!localStorage.getItem(CHILDHOOD_DONE_KEY);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
