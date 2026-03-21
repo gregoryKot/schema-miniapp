@@ -197,9 +197,21 @@ export default function App() {
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
-      api.joinPair(code).then(() => api.getPair().then(setPairData)).catch(() => {});
+      api.joinPair(code).then(() => api.getPair().then(data => {
+        setPairData(data);
+        localStorage.removeItem('pair_card_dismissed');
+        setPairCardDismissed(false);
+      })).catch(e => console.error('joinPair failed', e));
     }
   }, []);
+
+  // When partner joins — clear dismissed flag so paired card shows
+  useEffect(() => {
+    if (pairData?.paired) {
+      localStorage.removeItem('pair_card_dismissed');
+      setPairCardDismissed(false);
+    }
+  }, [pairData?.paired]);
 
   useEffect(() => {
     if (tab === 'history') {
