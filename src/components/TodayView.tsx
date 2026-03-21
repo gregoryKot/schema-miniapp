@@ -1,6 +1,6 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Need, YESTERDAY, COLORS } from '../types';
-import { api } from '../api';
+import { api, StreakData } from '../api';
 import { NeedSlider } from './NeedSlider';
 import { NeedTodaySheet } from './NeedTodaySheet';
 import { PlanSheet } from './PlanSheet';
@@ -13,7 +13,7 @@ interface Props {
   ratings: Record<string, number>;
   saved: Record<string, boolean>;
   onChange: (needId: string, value: number) => void;
-  onSaved: (needId: string) => void;
+  onSaved: (needId: string, streak?: StreakData) => void;
   onNote: () => void;
 }
 
@@ -116,6 +116,10 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
+
+  useEffect(() => {
+    return () => { Object.values(timers.current).forEach(clearTimeout); };
+  }, []);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
@@ -138,8 +142,8 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
     timers.current[needId] = setTimeout(async () => {
       if (value === 0) return; // 0 = not rated, don't save
       try {
-        await api.saveRating(needId, value);
-        onSaved(needId);
+        const res = await api.saveRating(needId, value);
+        onSaved(needId, res.allDone ? res.streak : undefined);
         setLastSavedAt(new Date());
         setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
       } catch {

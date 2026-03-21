@@ -28,6 +28,15 @@ export interface UserSettings {
   notifyUtcHour: number;
   notifyTzOffset: number;
   notifyReminderEnabled: boolean;
+  pairCardDismissed: boolean;
+}
+
+export interface StreakData {
+  currentStreak: number;
+  longestStreak: number;
+  totalDays: number;
+  todayDone: boolean;
+  weekDots: boolean[];
 }
 
 export interface Achievement {
@@ -62,20 +71,17 @@ export const api = {
   },
   needs:          () => get<import('./types').Need[]>('/api/needs'),
   ratings:        () => get<Record<string, number>>('/api/ratings'),
-  saveRating:     (needId: string, value: number) => post('/api/rating', { needId, value }),
+  saveRating:     (needId: string, value: number) => {
+    const res = fetch(`${BASE}/api/rating`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ needId, value }) });
+    return res.then(r => { if (!r.ok) throw new Error(`API error: ${r.status}`); return r.json() as Promise<{ ok: boolean; allDone: boolean; streak?: StreakData }>; });
+  },
   history:        (days = 7) => get<import('./types').DayHistory[]>(`/api/history?days=${days}`),
   getSettings:    () => get<UserSettings>('/api/settings'),
   updateSettings: (body: Partial<UserSettings>) => post('/api/settings', body),
   getAchievements: () => get<Achievement[]>('/api/achievements'),
   getNote:         (date: string) => get<{ text: string | null; tags: string[] }>(`/api/note?date=${date}`),
   saveNote:        (date: string, text: string, tags?: string[]) => post('/api/note', { date, text, tags }),
-  getStreak:      () => get<{
-    currentStreak: number;
-    longestStreak: number;
-    totalDays: number;
-    todayDone: boolean;
-    weekDots: boolean[];
-  }>('/api/streak'),
+  getStreak:      () => get<StreakData>('/api/streak'),
   getInsights:    () => get<{
     weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>;
     bestDayOfWeek: string | null;

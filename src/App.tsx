@@ -18,7 +18,7 @@ import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding, shouldShowPracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
-import { PracticePlan } from './api';
+import { PracticePlan, StreakData } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -210,6 +210,11 @@ export default function App() {
       if (accepted) { localStorage.setItem(DISCLAIMER_KEY, '1'); setDisclaimerDone(true); }
     }).catch(() => {});
     api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
+    api.getSettings().then(s => {
+      setPairCardDismissed(s.pairCardDismissed);
+      if (s.pairCardDismissed) localStorage.setItem('pair_card_dismissed', '1');
+      else localStorage.removeItem('pair_card_dismissed');
+    }).catch(() => {});
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
     api.getChildhoodRatings().then(r => {
       if (Object.keys(r).length > 0) {
@@ -230,6 +235,7 @@ export default function App() {
         setPairData(data);
         localStorage.removeItem('pair_card_dismissed');
         setPairCardDismissed(false);
+        api.updateSettings({ pairCardDismissed: false }).catch(() => {});
       })).catch(e => console.error('joinPair failed', e));
     }
   }, []);
@@ -239,6 +245,7 @@ export default function App() {
     if (pairData?.paired) {
       localStorage.removeItem('pair_card_dismissed');
       setPairCardDismissed(false);
+      api.updateSettings({ pairCardDismissed: false }).catch(() => {});
     }
   }, [pairData?.paired]);
 
@@ -276,25 +283,20 @@ export default function App() {
     setSaved((prev) => ({ ...prev, [needId]: false }));
   }, []);
 
-  const handleSaved = useCallback((needId: string) => {
+  const handleSaved = useCallback((needId: string, streak?: StreakData) => {
     setSaved((prev) => ({ ...prev, [needId]: true }));
-    if (!localStorage.getItem(TODAY_KEY)) {
-      const allDone = needs.every(n => n.id === needId || ratings[n.id] !== undefined);
-      if (allDone) {
-        localStorage.setItem(TODAY_KEY, '1');
-        api.getStreak().then(s => {
-          if (s.currentStreak > 0) { setCelebrationStreak(s.currentStreak); }
-          else { setShowTagPicker(true); }
-          if (s.totalDays >= 5 && shouldShowChildhoodWheel()) {
-            setChildhoodWheelPending(true);
-          }
-        });
-        if (shouldShowPracticesOnboarding()) {
-          setPracticesOnboardingPending(true);
-        }
+    if (streak && !localStorage.getItem(TODAY_KEY)) {
+      localStorage.setItem(TODAY_KEY, '1');
+      if (streak.currentStreak > 0) { setCelebrationStreak(streak.currentStreak); }
+      else { setShowTagPicker(true); }
+      if (streak.totalDays >= 5 && shouldShowChildhoodWheel()) {
+        setChildhoodWheelPending(true);
+      }
+      if (shouldShowPracticesOnboarding()) {
+        setPracticesOnboardingPending(true);
       }
     }
-  }, [needs, ratings]);
+  }, []);
 
   if (loading) {
     return <Loader minHeight="100vh" />;
@@ -458,6 +460,7 @@ export default function App() {
             onDismiss={!pairData.paired ? () => {
               localStorage.setItem('pair_card_dismissed', '1');
               setPairCardDismissed(true);
+              api.updateSettings({ pairCardDismissed: true }).catch(() => {});
             } : undefined}
           />
         </div>
