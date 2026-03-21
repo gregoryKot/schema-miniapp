@@ -419,16 +419,19 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
           <SchemaInfoContent />
           <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             {hasProgress && !hasResult && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10,
-                background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)',
-                borderRadius: 14, padding: '12px 16px', marginBottom: 12,
-              }}>
+              <div
+                onClick={() => setShowTest(true)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)',
+                  borderRadius: 14, padding: '12px 16px', marginBottom: 12, cursor: 'pointer',
+                }}>
                 <span style={{ fontSize: 18 }}>⏸</span>
-                <div>
+                <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Можно продолжить с места, где остановился</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
+                <span style={{ fontSize: 16, color: 'rgba(251,191,36,0.3)' }}>›</span>
               </div>
             )}
             <div
@@ -452,7 +455,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
           </div>
         </div>
       </BottomSheet>
-      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} />}
+      {showTest && <YSQTestSheet onClose={() => setShowTest(false)} ratings={ratings} autoResume={autoStartTest} />}
     </>
   );
 }

@@ -8,6 +8,7 @@ export const YSQ_PROGRESS_KEY = 'ysq_progress';
 interface Props {
   onClose: () => void;
   ratings?: Record<string, number>;
+  autoResume?: boolean;
 }
 
 const QUESTIONS: string[] = [
@@ -334,14 +335,13 @@ function computeScores(answers: number[]): Record<string, SchemaScore> {
   return result;
 }
 
-export function YSQTestSheet({ onClose, ratings }: Props) {
+export function YSQTestSheet({ onClose, ratings, autoResume }: Props) {
   const [phase, setPhase] = useState<Phase>('intro');
   const [answers, setAnswers] = useState<number[]>(Array(QUESTIONS.length).fill(0));
   const [page, setPage] = useState(0);
   const [hasProgress, setHasProgress] = useState(false);
-  const [progressPage, setProgressPage] = useState(0);
+  const [progressAnswered, setProgressAnswered] = useState(0);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
-
 
   // Check for in-progress test on mount
   useEffect(() => {
@@ -351,8 +351,12 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
         const parsed = JSON.parse(saved) as { answers: number[]; page: number };
         if (Array.isArray(parsed.answers) && parsed.answers.length === QUESTIONS.length) {
           setHasProgress(true);
-          setProgressPage(parsed.page ?? 0);
+          setProgressAnswered(parsed.answers.filter((a: number) => a > 0).length);
           setAnswers(parsed.answers);
+          if (autoResume) {
+            setPage(parsed.page ?? 0);
+            setPhase('test');
+          }
         }
       }
     } catch { /* ignore */ }
@@ -487,7 +491,7 @@ export function YSQTestSheet({ onClose, ratings }: Props) {
                 onClick={handleContinue}
                 style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
               >
-                Продолжить (вопрос {progressQuestionNumber} из 116)
+                Продолжить ({progressAnswered} из 116 ответов)
               </button>
               <button
                 onClick={handleStartFresh}
