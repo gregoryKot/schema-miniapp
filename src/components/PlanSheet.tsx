@@ -122,7 +122,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
         </div>
         <div>
           <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
-            Запланировать на завтра
+            Что сделаешь завтра?
           </div>
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
             {needLabel}
@@ -182,7 +182,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             <textarea
               value={customText}
               onChange={e => setCustomText(e.target.value)}
-              placeholder="Опиши практику..."
+              placeholder="Что-то конкретное, маленькое..."
               maxLength={200}
               rows={2}
               style={{

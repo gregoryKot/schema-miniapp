@@ -85,19 +85,42 @@ export function PairSheet({ onClose }: Props) {
           </div>
         ) : data.paired ? (
           <div>
-            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
-                {data.partnerName ? data.partnerName : 'Партнёр'} сегодня
-              </div>
-              {data.partnerTodayDone && data.partnerIndex !== null ? (
-                <div style={{ fontSize: 32, fontWeight: 800, color: '#fff' }}>
-                  {data.partnerIndex.toFixed(1)}
-                  <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
-                </div>
-              ) : (
-                <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил дневник</div>
-              )}
-            </div>
+            {(() => {
+              const name = data.partnerName ?? 'Партнёр';
+              const done = data.partnerTodayDone && data.partnerIndex !== null;
+              const idx = data.partnerIndex ?? 0;
+              const color = done ? (idx >= 7 ? '#06d6a0' : idx >= 4 ? '#ffd166' : '#f87171') : 'rgba(255,255,255,0.3)';
+              const contextMsg = !done
+                ? `${name} ещё не заполнил дневник — когда заполнит, увидишь как день`
+                : idx < 4
+                  ? `Сегодня у ${name} непростой день. Иногда просто написать пару слов — уже помогает`
+                  : idx < 7
+                    ? `${name} в норме сегодня. Отслеживаете вместе — это уже кое-что`
+                    : `У ${name} хороший день. Приятно, когда у обоих всё неплохо`;
+              return (
+                <>
+                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px', marginBottom: 12 }}>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>{name} сегодня</div>
+                    {done ? (
+                      <div style={{ fontSize: 36, fontWeight: 800, color, lineHeight: 1 }}>
+                        {idx.toFixed(1)}
+                        <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+                      </div>
+                    ) : (
+                      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил</div>
+                    )}
+                  </div>
+                  <div style={{
+                    fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6,
+                    background: 'rgba(255,255,255,0.03)', borderRadius: 12,
+                    padding: '12px 14px', marginBottom: 16,
+                  }}>
+                    {contextMsg}
+                  </div>
+                </>
+              );
+            })()}
+
             {confirmLeave ? (
               <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
                 <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 12 }}>Выйти из пары с {data.partnerName ?? 'партнёром'}?</div>

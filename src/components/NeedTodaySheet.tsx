@@ -244,9 +244,9 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
             }}
           >
             <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color }}>Запланировать на завтра</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                Выбери практику и получи напоминание
+                Один шаг — и напомним
               </div>
             </div>
             <div style={{ fontSize: 18, color: color + 'aa', flexShrink: 0 }}>›</div>
