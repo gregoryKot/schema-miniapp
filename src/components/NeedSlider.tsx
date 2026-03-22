@@ -187,7 +187,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           position: 'relative',
           padding: '12px 0',
           cursor: locked ? 'default' : 'pointer',
-          touchAction: locked ? 'auto' : 'pan-y',
+          touchAction: locked ? 'auto' : 'none',
           userSelect: 'none',
         }}
       >

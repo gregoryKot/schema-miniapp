@@ -197,7 +197,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
       )}
       {needs.map((n) => {
         const locked = !!saved[n.id] && !unlocked.has(n.id);
-        const isLow = locked && ratings[n.id]! <= 3;
+        const isLow = locked && ratings[n.id]! <= 4;
         const showPlanCard = isLow && !plannedNeeds.has(n.id);
         const color = COLORS[n.id] ?? '#888';
         const emoji = NEED_DATA[n.id]?.emoji ?? '';

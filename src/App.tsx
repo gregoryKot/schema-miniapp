@@ -159,7 +159,7 @@ export default function App() {
   const [disclaimerDone, setDisclaimerDone] = useState(
     () => !!localStorage.getItem(DISCLAIMER_KEY) // quick local check while server responds
   );
-  const [historyDays, setHistoryDays] = useState(7);
+  const [historyDays] = useState(30);
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
@@ -533,7 +533,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} days={historyDays} onChangeDays={setHistoryDays} onGoToToday={() => setTab('today')} onBackfill={(date) => setBackfillDate(date)} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onGoToToday={() => setTab('today')} onBackfill={(date) => setBackfillDate(date)} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
