@@ -20,7 +20,8 @@ export function PairSheet({ onClose }: Props) {
   const [joinError, setJoinError] = useState('');
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [copiedPending, setCopiedPending] = useState(false);
+  const [copiedInvite, setCopiedInvite] = useState(false);
   const [confirmLeaveCode, setConfirmLeaveCode] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,11 +39,19 @@ export function PairSheet({ onClose }: Props) {
     setLoading(false);
   }
 
-  async function handleCopy(text: string) {
+  async function handleCopyPending(text: string) {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedPending(true);
+      setTimeout(() => setCopiedPending(false), 2000);
+    } catch {}
+  }
+
+  async function handleCopyInvite(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedInvite(true);
+      setTimeout(() => setCopiedInvite(false), 2000);
     } catch {}
   }
 
@@ -152,10 +161,10 @@ export function PairSheet({ onClose }: Props) {
                   {pendingUrl}
                 </div>
                 <button
-                  onClick={() => handleCopy(pendingUrl)}
-                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => handleCopyPending(pendingUrl)}
+                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedPending ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedPending ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
-                  {copied ? '✓ Скопировано' : 'Скопировать ссылку'}
+                  {copiedPending ? '✓ Скопировано' : 'Скопировать ссылку'}
                 </button>
               </div>
             )}
@@ -187,8 +196,8 @@ export function PairSheet({ onClose }: Props) {
                   <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px', marginBottom: 10 }}>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{inviteUrl}</div>
-                    <button onClick={() => handleCopy(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                      {copied ? '✓ Скопировано' : 'Скопировать ссылку'}
+                    <button onClick={() => handleCopyInvite(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedInvite ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedInvite ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      {copiedInvite ? '✓ Скопировано' : 'Скопировать ссылку'}
                     </button>
                   </div>
                 )}

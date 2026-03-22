@@ -11,7 +11,6 @@ import { SectionLabel } from './SectionLabel';
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
 import { PairsData } from '../api';
-type _PairData = PairsData; // alias for internal use
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 

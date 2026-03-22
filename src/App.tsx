@@ -159,7 +159,7 @@ export default function App() {
   const [disclaimerDone, setDisclaimerDone] = useState(
     () => !!localStorage.getItem(DISCLAIMER_KEY) // quick local check while server responds
   );
-  const [historyDays] = useState(30);
+  const historyDays = 30;
   const [tab, setTab] = useState<Tab>('today');
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
