@@ -75,7 +75,9 @@ export function PairSheet({ onClose }: Props) {
       await api.leavePair(code);
       setData(await api.getPair());
       setConfirmLeaveCode(null);
-    } catch {}
+    } catch {
+      setConfirmLeaveCode(null);
+    }
   }
 
   const pendingUrl = data?.pendingCode

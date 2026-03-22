@@ -434,7 +434,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
     );
   }
 
-  const selected = history[selectedIdx];
+  const selected = history[selectedIdx] ?? history[0];
   const selectedRatings = selected.date === TODAY_STR ? currentRatings : selected.ratings;
   const prevRatings = history[selectedIdx + 1]?.ratings ?? {};
 

@@ -33,9 +33,12 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
 
   async function handleSave() {
     setSaving(true);
-    await api.saveNote(date, text.trim());
-    setSaving(false);
-    onClose();
+    try {
+      await api.saveNote(date, text.trim());
+      onClose();
+    } catch {
+      setSaving(false);
+    }
   }
 
   return (
