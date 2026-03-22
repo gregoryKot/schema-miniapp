@@ -110,6 +110,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
+  const [exportText, setExportText] = useState<string | null>(null);
+  const [exportCopied, setExportCopied] = useState(false);
   const [view, setView] = useState<View>('main');
 
   useEffect(() => {
@@ -514,7 +516,9 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
             <button
               onClick={async () => {
                 const { text } = await api.getExport();
-                try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch { try { await navigator.clipboard.writeText(text); } catch {} }
+                let shared = false;
+                try { if (navigator.share) { await navigator.share({ text }); shared = true; } } catch {}
+                if (!shared) { try { await navigator.clipboard.writeText(text); } catch {} setExportText(text); }
               }}
               style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
             >
@@ -855,6 +859,35 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
     )}
 
     {/* Info overlays — zIndex 300 nested sheets are fine, they're intentionally above */}
+    {exportText && (
+      <BottomSheet onClose={() => { setExportText(null); setExportCopied(false); }} zIndex={300}>
+        <div style={{ paddingTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 12 }}>Сводка для терапевта</div>
+          <pre style={{
+            fontSize: 11, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6,
+            background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px',
+            overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+            marginBottom: 14, userSelect: 'all', fontFamily: 'monospace',
+          }}>
+            {exportText}
+          </pre>
+          <button
+            onClick={async () => {
+              try { await navigator.clipboard.writeText(exportText); setExportCopied(true); setTimeout(() => setExportCopied(false), 2000); } catch {}
+            }}
+            style={{
+              width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
+              background: exportCopied ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.08)',
+              color: exportCopied ? '#06d6a0' : 'rgba(255,255,255,0.7)',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            {exportCopied ? '✓ Скопировано' : 'Скопировать'}
+          </button>
+        </div>
+      </BottomSheet>
+    )}
+
     {showNotifyInfo && (
       <BottomSheet onClose={() => setShowNotifyInfo(false)} zIndex={300}>
         <div style={{ paddingTop: 8 }}>
