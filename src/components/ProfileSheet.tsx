@@ -136,7 +136,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
       setPairLoading(true);
       api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
     }
-    if (v === 'plans' && !planHistory) {
+    if (v === 'plans') {
       api.getPlanHistory(30).then(setPlanHistory).catch(() => setPlanHistory([]));
     }
     if (v === 'myPractices') {
