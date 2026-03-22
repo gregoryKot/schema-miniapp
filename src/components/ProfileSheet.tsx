@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api, UserSettings, Achievement, PracticePlan, UserPractice } from '../api';
 import { ChildhoodWheelSheet, CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
@@ -113,6 +113,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [exportText, setExportText] = useState<string | null>(null);
   const [exportCopied, setExportCopied] = useState(false);
   const [view, setView] = useState<View>('main');
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const savedScrollTop = useRef(0);
 
   useEffect(() => {
     api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false, pairCardDismissed: false }));
@@ -128,6 +130,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   }
 
   function goTo(v: View) {
+    savedScrollTop.current = scrollRef.current?.scrollTop ?? 0;
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
     if (v === 'pair' && !pairData) {
       setPairLoading(true);
       api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
@@ -146,6 +150,9 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   function goBack() {
     setView('main');
     setJoinView('main');
+    requestAnimationFrame(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = savedScrollTop.current;
+    });
   }
 
   async function patch(update: Partial<UserSettings>) {
@@ -206,7 +213,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
 
   return (
     <>
-    <BottomSheet onClose={() => { goBack(); onClose(); }}>
+    <BottomSheet onClose={() => { goBack(); onClose(); }} scrollRef={scrollRef}>
 
       {/* ── MAIN VIEW ── */}
       {view === 'main' && (

@@ -7,7 +7,7 @@ import { PlanSheet } from './PlanSheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
 import { SectionLabel } from './SectionLabel';
 import { NEED_DATA } from '../needData';
-import { shouldShowPracticesOnboarding } from './PracticesOnboarding';
+import { shouldShowPracticesOnboarding, PRACTICES_ONBOARDING_KEY } from './PracticesOnboarding';
 
 interface Props {
   needs: Need[];
@@ -311,7 +311,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
           </div>
           <button
-            onClick={e => { e.stopPropagation(); setPracticesCardVisible(false); }}
+            onClick={e => { e.stopPropagation(); localStorage.setItem(PRACTICES_ONBOARDING_KEY, '1'); setPracticesCardVisible(false); }}
             style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
           >
             ×

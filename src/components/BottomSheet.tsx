@@ -4,11 +4,12 @@ interface Props {
   onClose: () => void;
   children: React.ReactNode;
   zIndex?: number;
+  scrollRef?: React.RefObject<HTMLDivElement>;
 }
 
 const HINT_KEY = 'sheet_close_hint_shown';
 
-export function BottomSheet({ onClose, children, zIndex = 200 }: Props) {
+export function BottomSheet({ onClose, children, zIndex = 200, scrollRef }: Props) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
   const [showHint, setShowHint] = useState(() => !localStorage.getItem(HINT_KEY));
@@ -89,7 +90,7 @@ export function BottomSheet({ onClose, children, zIndex = 200 }: Props) {
         )}
 
         {/* Scrollable content */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: '0 24px 48px' }}>
+        <div ref={scrollRef} style={{ overflowY: 'auto', flex: 1, padding: '0 24px 48px' }}>
           {children}
         </div>
       </div>

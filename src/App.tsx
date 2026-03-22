@@ -161,6 +161,7 @@ export default function App() {
   );
   const historyDays = 30;
   const [tab, setTab] = useState<Tab>('today');
+  const tabScrollPositions = useRef<Record<Tab, number>>({ today: 0, history: 0 });
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
   const [schemaAutoStartTest, setSchemaAutoStartTest] = useState(false);
@@ -430,7 +431,11 @@ export default function App() {
             return (
               <button
                 key={t}
-                onClick={() => setTab(t)}
+                onClick={() => {
+                  tabScrollPositions.current[tab] = window.scrollY;
+                  setTab(t);
+                  requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current[t]));
+                }}
                 style={{
                   flex: 1,
                   padding: '8px 0',
@@ -530,7 +535,11 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onGoToToday={() => setTab('today')} onBackfill={(date) => setBackfillDate(date)} />
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onGoToToday={() => {
+              tabScrollPositions.current['history'] = window.scrollY;
+              setTab('today');
+              requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
+            }} onBackfill={(date) => setBackfillDate(date)} />
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {

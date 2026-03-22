@@ -6,10 +6,10 @@ import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { CURATED } from './PlanSheet';
 
-const ONBOARDING_KEY = 'practices_onboarding_done';
+export const PRACTICES_ONBOARDING_KEY = 'practices_onboarding_done';
 
 export function shouldShowPracticesOnboarding(): boolean {
-  return !localStorage.getItem(ONBOARDING_KEY);
+  return !localStorage.getItem(PRACTICES_ONBOARDING_KEY);
 }
 
 interface Props {
@@ -25,7 +25,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
   function finish() {
-    localStorage.setItem(ONBOARDING_KEY, '1');
+    localStorage.setItem(PRACTICES_ONBOARDING_KEY, '1');
     onDone();
   }
 
