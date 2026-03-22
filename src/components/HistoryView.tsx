@@ -758,7 +758,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
       {showWeekCard && (
         <WeeklyCardSheet
           needs={needs}
-          history={history}
+          history={history.slice(0, 7)}
           onClose={() => setShowWeekCard(false)}
         />
       )}

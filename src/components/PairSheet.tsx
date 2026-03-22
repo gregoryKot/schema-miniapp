@@ -123,7 +123,7 @@ export function PairSheet({ onClose }: Props) {
                     </div>
                     {partner.partnerTelegramId && (
                       <button
-                        onClick={() => window.open(`tg://user?id=${partner.partnerTelegramId}`, '_blank')}
+                        onClick={() => { window.location.href = `tg://user?id=${partner.partnerTelegramId}`; }}
                         style={{
                           padding: '8px 14px', border: 'none', borderRadius: 10,
                           background: 'rgba(79,163,247,0.15)', color: '#4fa3f7',

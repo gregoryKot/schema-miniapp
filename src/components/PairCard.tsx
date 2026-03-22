@@ -73,7 +73,7 @@ export function PairCard({ partners, pendingCode, showInvite, onOpen, onDismissI
         </div>
       )}
 
-      {partners.length > 0 && (
+      {partners.length > 0 && !pendingCode && (
         <div
           onClick={onOpen}
           style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center', padding: '2px 0 8px', cursor: 'pointer' }}
