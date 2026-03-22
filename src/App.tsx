@@ -48,6 +48,25 @@ type Tab = 'today' | 'history';
 
 const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
 
+function fillHistoryGaps(h: DayHistory[]): DayHistory[] {
+  if (h.length === 0) return h;
+  const byDate = new Map(h.map(d => [d.date, d]));
+  const todayEntry = h.find(d => d.date === TODAY_DATE);
+  const nonToday = h.filter(d => d.date !== TODAY_DATE);
+  if (nonToday.length === 0) return h;
+  const earliest = nonToday[nonToday.length - 1].date;
+  const filled: DayHistory[] = todayEntry ? [todayEntry] : [];
+  const cursor = new Date();
+  cursor.setDate(cursor.getDate() - 1); // start from yesterday
+  for (let i = 0; i < 60; i++) {
+    const date = cursor.toISOString().split('T')[0];
+    if (date < earliest) break;
+    filled.push(byDate.get(date) ?? { date, ratings: {} });
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return filled;
+}
+
 function Disclaimer({ onAccept }: { onAccept: () => void }) {
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
@@ -280,7 +299,7 @@ export default function App() {
   useEffect(() => {
     if (tab === 'history') {
       setHistoryLoading(true);
-      api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
+      api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
     }
   }, [tab, historyDays]);
 
@@ -521,6 +540,29 @@ export default function App() {
           />
         </div>
       )}
+      {tab === 'today' && (() => {
+        const upcoming = pendingPlans.filter(p => p.scheduledDate > TODAY_DATE);
+        return upcoming.length > 0 ? (
+          <div style={{ padding: '8px 20px 0' }}>
+            {upcoming.map(plan => {
+              const color = COLORS[plan.needId] ?? '#888';
+              return (
+                <div key={plan.id} style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  background: color + '12', border: `1px solid ${color}28`,
+                  borderRadius: 14, padding: '10px 14px', marginBottom: 6,
+                }}>
+                  <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
+                  <div>
+                    <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Твой план на завтра</div>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null;
+      })()}
       {tab === 'today' && (
         <TodayView
           needs={needs}
@@ -530,6 +572,7 @@ export default function App() {
           onSaved={handleSaved}
           onNote={() => setShowTodayNote(true)}
           onOpenPractices={() => setShowPracticesOnboarding(true)}
+          onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
         />
       )}
       {tab === 'history' && (
@@ -642,7 +685,7 @@ export default function App() {
           setShowYesterdaySheet(false);
           if (tab === 'history') {
             setHistoryLoading(true);
-            api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
+            api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
           }
         }} />
       )}
@@ -650,7 +693,7 @@ export default function App() {
         <YesterdaySheet needs={needs} date={backfillDate} onClose={() => {
           setBackfillDate(null);
           setHistoryLoading(true);
-          api.history(historyDays).then(setHistory).finally(() => setHistoryLoading(false));
+          api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
         }} />
       )}
     </div>

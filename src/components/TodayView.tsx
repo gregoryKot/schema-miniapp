@@ -17,6 +17,7 @@ interface Props {
   onSaved: (needId: string, streak?: StreakData) => void;
   onNote: () => void;
   onOpenPractices?: () => void;
+  onPlanCreated?: () => void;
 }
 
 function DonutRing({ percent }: { percent: number }) {
@@ -114,7 +115,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices }: Props) {
+export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices, onPlanCreated }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -341,6 +342,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
           onSaved={() => {
             setPlannedNeeds(prev => new Set([...prev, activePlanNeed.id]));
             setActivePlanNeed(null);
+            onPlanCreated?.();
           }}
         />
       )}

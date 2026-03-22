@@ -56,6 +56,7 @@ export interface PartnerInfo {
   partnerTodayDone: boolean;
   partnerName: string | null;
   partnerTelegramId: number | null;
+  partnerWeekAvgs: (number | null)[];
 }
 
 export interface PairsData {

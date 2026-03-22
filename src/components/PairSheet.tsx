@@ -135,6 +135,23 @@ export function PairSheet({ onClose }: Props) {
                     )}
                   </div>
 
+                  {partner.partnerWeekAvgs?.length > 0 && (
+                    <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 28, marginBottom: 10 }}>
+                      {[...partner.partnerWeekAvgs].reverse().map((v, i) => {
+                        const barH = v !== null ? Math.round((v / 10) * 24) : 3;
+                        const barColor = v === null ? 'rgba(255,255,255,0.08)' : indexColor(v);
+                        return (
+                          <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                            <div style={{ width: '100%', height: barH, borderRadius: 3, background: barColor, transition: 'height 0.3s' }} />
+                            {v !== null && i === partner.partnerWeekAvgs.length - 1 && (
+                              <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.3)' }}>сег</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5, marginBottom: 10 }}>
                     {contextMsg}
                   </div>
