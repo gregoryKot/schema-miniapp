@@ -1,12 +1,11 @@
+import { PartnerInfo } from '../api';
+
 interface Props {
-  partnerIndex: number | null;
-  partnerTodayDone: boolean;
-  partnerName?: string | null;
-  onInvite: () => void;
-  onOpen?: () => void;
+  partners: PartnerInfo[];
+  pendingCode: string | null;
   showInvite: boolean;
-  pendingCode: boolean;
-  onDismiss?: () => void;
+  onOpen: () => void;
+  onDismissInvite: () => void;
 }
 
 function indexColor(v: number): string {
@@ -15,74 +14,73 @@ function indexColor(v: number): string {
   return '#f87171';
 }
 
-export function PairCard({ partnerIndex, partnerTodayDone, partnerName, onInvite, onOpen, showInvite, pendingCode, onDismiss }: Props) {
-  const cardStyle: React.CSSProperties = {
+export function PairCard({ partners, pendingCode, showInvite, onOpen, onDismissInvite }: Props) {
+  const rowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: 10,
     background: 'rgba(255,255,255,0.04)', borderRadius: 14,
-    padding: '12px 16px', marginBottom: 16,
+    padding: '12px 16px', marginBottom: 8,
     border: '1px solid rgba(255,255,255,0.07)',
   };
 
-  if (showInvite && pendingCode) {
-    return (
-      <div style={cardStyle}>
-        <span style={{ fontSize: 22 }}>⏳</span>
-        <div style={{ flex: 1, cursor: 'pointer' }} onClick={onInvite}>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Ждём партнёра</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Ссылка отправлена — напомнить?</div>
-        </div>
-        <span onClick={onInvite} style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}>›</span>
-        {onDismiss && (
-          <button
-            onClick={e => { e.stopPropagation(); onDismiss(); }}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 18, cursor: 'pointer', padding: '0 0 0 4px', lineHeight: 1 }}
-          >
-            ×
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  if (showInvite) {
-    return (
-      <div style={cardStyle}>
-        <span style={{ fontSize: 22 }}>🤝</span>
-        <div style={{ flex: 1, cursor: 'pointer' }} onClick={onInvite}>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Отслеживать вместе</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Пригласи друга или партнёра</div>
-        </div>
-        <span onClick={onInvite} style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}>›</span>
-        {onDismiss && (
-          <button
-            onClick={e => { e.stopPropagation(); onDismiss(); }}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 18, cursor: 'pointer', padding: '0 0 0 4px', lineHeight: 1 }}
-          >
-            ×
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  const name = partnerName ?? 'Партнёр';
-  const color = partnerTodayDone && partnerIndex !== null ? indexColor(partnerIndex) : 'rgba(255,255,255,0.3)';
-
   return (
-    <div style={{ ...cardStyle, cursor: onOpen ? 'pointer' : 'default' }} onClick={onOpen}>
-      <span style={{ fontSize: 22 }}>🤝</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{name} сегодня</div>
-        {partnerTodayDone && partnerIndex !== null ? (
-          <div style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1.2 }}>
-            {partnerIndex.toFixed(1)}
-            <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/10</span>
+    <>
+      {partners.map(partner => {
+        const name = partner.partnerName ?? 'Друг';
+        const done = partner.partnerTodayDone && partner.partnerIndex !== null;
+        const color = done ? indexColor(partner.partnerIndex!) : 'rgba(255,255,255,0.3)';
+        return (
+          <div key={partner.code} style={{ ...rowStyle, cursor: 'pointer' }} onClick={onOpen}>
+            <span style={{ fontSize: 22 }}>🤝</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{name} сегодня</div>
+              {done ? (
+                <div style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1.2 }}>
+                  {partner.partnerIndex!.toFixed(1)}
+                  <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/10</span>
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>ещё не заполнил</div>
+              )}
+            </div>
+            <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
           </div>
-        ) : (
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>ещё не заполнил</div>
-        )}
-      </div>
-      {onOpen && <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>}
-    </div>
+        );
+      })}
+
+      {pendingCode && (
+        <div style={{ ...rowStyle, cursor: 'pointer' }} onClick={onOpen}>
+          <span style={{ fontSize: 22 }}>⏳</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Ждём партнёра</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Ссылка отправлена — напомнить?</div>
+          </div>
+          <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+        </div>
+      )}
+
+      {showInvite && (
+        <div style={rowStyle}>
+          <span style={{ fontSize: 22 }}>🤝</span>
+          <div style={{ flex: 1, cursor: 'pointer' }} onClick={onOpen}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>Отслеживать вместе</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Пригласи друга или партнёра</div>
+          </div>
+          <span onClick={onOpen} style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}>›</span>
+          <button
+            onClick={e => { e.stopPropagation(); onDismissInvite(); }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 18, cursor: 'pointer', padding: '0 0 0 4px', lineHeight: 1 }}
+          >×</button>
+        </div>
+      )}
+
+      {partners.length > 0 && (
+        <div
+          onClick={onOpen}
+          style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center', padding: '2px 0 8px', cursor: 'pointer' }}
+        >
+          + Пригласить ещё
+        </div>
+      )}
+    </>
   );
 }

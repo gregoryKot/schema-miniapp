@@ -1,32 +1,30 @@
 import { useState, useEffect } from 'react';
-import { api } from '../api';
+import { api, PairsData } from '../api';
 import { BottomSheet } from './BottomSheet';
-
-interface PairData {
-  paired: boolean;
-  partnerIndex: number | null;
-  partnerTodayDone: boolean;
-  code: string | null;
-  partnerName: string | null;
-}
 
 interface Props {
   onClose: () => void;
 }
 
+function indexColor(v: number): string {
+  if (v >= 7) return '#06d6a0';
+  if (v >= 4) return '#ffd166';
+  return '#f87171';
+}
+
 export function PairSheet({ onClose }: Props) {
-  const [data, setData] = useState<PairData | null>(null);
-  const [joinCode, setJoinCode] = useState('');
+  const [data, setData] = useState<PairsData | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [view, setView] = useState<'main' | 'join'>('main');
+  const [joinCode, setJoinCode] = useState('');
+  const [joinError, setJoinError] = useState('');
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
   const [copied, setCopied] = useState(false);
-  const [confirmLeave, setConfirmLeave] = useState(false);
-  const [loadError, setLoadError] = useState(false);
-  const [joinError, setJoinError] = useState('');
+  const [confirmLeaveCode, setConfirmLeaveCode] = useState<string | null>(null);
 
   useEffect(() => {
-    api.getPair().then(setData).catch(e => { console.error('getPair failed', e); setLoadError(true); });
+    api.getPair().then(setData).catch(() => setLoadError(true));
   }, []);
 
   async function handleCreateInvite() {
@@ -35,25 +33,17 @@ export function PairSheet({ onClose }: Props) {
       const { url } = await api.createPairInvite();
       setInviteUrl(url);
       api.getPair().then(setData).catch(() => {});
-      // Try native share, but URL block is always shown as fallback
-      try {
-        if (navigator.share) await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` });
-      } catch {}
-    } catch (e) {
-      console.error('createPairInvite failed', e);
-    } finally {
-      setLoading(false);
-    }
+      try { if (navigator.share) await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); } catch {}
+    } catch {}
+    setLoading(false);
   }
 
-  async function handleCopyUrl() {
+  async function handleCopy(text: string) {
     try {
-      await navigator.clipboard.writeText(inviteUrl);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Clipboard not available — URL is visible in the input, user can copy manually
-    }
+    } catch {}
   }
 
   async function handleJoin() {
@@ -62,25 +52,26 @@ export function PairSheet({ onClose }: Props) {
     setJoinError('');
     try {
       await api.joinPair(joinCode.trim().toUpperCase());
-      const updated = await api.getPair();
-      setData(updated);
+      setData(await api.getPair());
       setView('main');
-    } catch (e) {
-      console.error('joinPair failed', e);
+      setJoinCode('');
+    } catch {
       setJoinError('Код не найден или уже использован');
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
-  async function handleLeave() {
+  async function handleLeave(code: string) {
     try {
-      await api.leavePair();
+      await api.leavePair(code);
       setData(await api.getPair());
-    } catch (e) {
-      console.error('leavePair failed', e);
-    }
+      setConfirmLeaveCode(null);
+    } catch {}
   }
+
+  const pendingUrl = data?.pendingCode
+    ? `https://t.me/Emotional_Needs_bot/diary?startapp=pair_${data.pendingCode}`
+    : '';
 
   return (
     <BottomSheet onClose={onClose}>
@@ -91,13 +82,14 @@ export function PairSheet({ onClose }: Props) {
           <div style={{ textAlign: 'center', color: loadError ? '#f87171' : 'rgba(255,255,255,0.3)', padding: '40px 0' }}>
             {loadError ? 'Ошибка загрузки — попробуй закрыть и открыть снова' : 'Загрузка...'}
           </div>
-        ) : data.paired ? (
-          <div>
-            {(() => {
-              const name = data.partnerName ?? 'Партнёр';
-              const done = data.partnerTodayDone && data.partnerIndex !== null;
-              const idx = data.partnerIndex ?? 0;
-              const color = done ? (idx >= 7 ? '#06d6a0' : idx >= 4 ? '#ffd166' : '#f87171') : 'rgba(255,255,255,0.3)';
+        ) : (
+          <>
+            {/* Active partners */}
+            {data.partners.map(partner => {
+              const name = partner.partnerName ?? 'Друг';
+              const done = partner.partnerTodayDone && partner.partnerIndex !== null;
+              const color = done ? indexColor(partner.partnerIndex!) : 'rgba(255,255,255,0.35)';
+              const idx = partner.partnerIndex ?? 0;
               const contextMsg = !done
                 ? `${name} ещё не заполнил дневник — когда заполнит, увидишь как день`
                 : idx < 4
@@ -105,97 +97,109 @@ export function PairSheet({ onClose }: Props) {
                   : idx < 7
                     ? `${name} в норме сегодня. Отслеживаете вместе — это уже кое-что`
                     : `У ${name} хороший день. Приятно, когда у обоих всё неплохо`;
+
               return (
-                <>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px', marginBottom: 12 }}>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 6 }}>{name} сегодня</div>
-                    {done ? (
-                      <div style={{ fontSize: 36, fontWeight: 800, color, lineHeight: 1 }}>
-                        {idx.toFixed(1)}
-                        <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
-                      </div>
-                    ) : (
-                      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил</div>
+                <div key={partner.code} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 2 }}>{name} сегодня</div>
+                      {done ? (
+                        <div style={{ fontSize: 30, fontWeight: 800, color, lineHeight: 1 }}>
+                          {idx.toFixed(1)}
+                          <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил</div>
+                      )}
+                    </div>
+                    {partner.partnerTelegramId && (
+                      <button
+                        onClick={() => window.open(`tg://user?id=${partner.partnerTelegramId}`, '_blank')}
+                        style={{
+                          padding: '8px 14px', border: 'none', borderRadius: 10,
+                          background: 'rgba(79,163,247,0.15)', color: '#4fa3f7',
+                          fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
+                        }}
+                      >
+                        Написать
+                      </button>
                     )}
                   </div>
-                  <div style={{
-                    fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6,
-                    background: 'rgba(255,255,255,0.03)', borderRadius: 12,
-                    padding: '12px 14px', marginBottom: 16,
-                  }}>
+
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5, marginBottom: 10 }}>
                     {contextMsg}
                   </div>
-                </>
-              );
-            })()}
 
-            {confirmLeave ? (
-              <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)', marginBottom: 12 }}>Выйти из пары с {data.partnerName ?? 'партнёром'}?</div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => setConfirmLeave(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
-                  <button onClick={handleLeave} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Выйти</button>
+                  {confirmLeaveCode === partner.code ? (
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => setConfirmLeaveCode(null)} style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer' }}>Отмена</button>
+                      <button onClick={() => handleLeave(partner.code)} style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,80,80,0.2)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Выйти</button>
+                    </div>
+                  ) : (
+                    <button onClick={() => setConfirmLeaveCode(partner.code)} style={{ width: '100%', padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,80,80,0.08)', color: 'rgba(255,100,100,0.6)', fontSize: 13, cursor: 'pointer' }}>
+                      Выйти из пары
+                    </button>
+                  )}
                 </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => setConfirmLeave(true)}
-                style={{ width: '100%', padding: '12px', border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}
-              >Выйти из пары</button>
-            )}
-          </div>
-        ) : (
-          <div>
-            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 20 }}>
-              Приглашай друга или партнёра — видите индексы дня друг друга. Не детали, только число. Просто знать, как день у другого.
-            </p>
+              );
+            })}
 
-            {view === 'main' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {/* Pending invite */}
+            {data.pendingCode && (
+              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 10 }}>⏳ Ждём партнёра</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>
+                  {pendingUrl}
+                </div>
                 <button
-                  onClick={handleCreateInvite}
-                  disabled={loading}
-                  style={{
-                    padding: '14px', border: 'none', borderRadius: 12,
-                    background: '#a78bfa', color: '#fff',
-                    fontSize: 14, fontWeight: 600, cursor: loading ? 'default' : 'pointer',
-                  }}
+                  onClick={() => handleCopy(pendingUrl)}
+                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
-                  {loading ? '...' : data.code ? 'Создать новую ссылку' : 'Создать приглашение'}
+                  {copied ? '✓ Скопировано' : 'Скопировать ссылку'}
                 </button>
+              </div>
+            )}
+
+            {(data.partners.length > 0 || data.pendingCode) && (
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '8px 0 16px' }} />
+            )}
+
+            {/* Add friend section */}
+            {view === 'main' ? (
+              <>
+                {data.partners.length === 0 && !data.pendingCode && (
+                  <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 16 }}>
+                    Приглашай друга или партнёра — видите индексы дня друг друга. Не детали, только число. Просто знать, как день у другого.
+                  </p>
+                )}
+
+                {!data.pendingCode && (
+                  <button
+                    onClick={handleCreateInvite}
+                    disabled={loading}
+                    style={{ width: '100%', padding: '13px', border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: loading ? 'default' : 'pointer', marginBottom: 10 }}
+                  >
+                    {loading ? '...' : data.partners.length > 0 ? 'Пригласить ещё друга' : 'Создать приглашение'}
+                  </button>
+                )}
+
                 {inviteUrl && (
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px' }}>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
-                      Скопируй и отправь другу:
-                    </div>
-                    <div style={{
-                      fontSize: 12, color: 'rgba(255,255,255,0.7)', wordBreak: 'break-all',
-                      lineHeight: 1.5, marginBottom: 10, userSelect: 'all',
-                    }}>
-                      {inviteUrl}
-                    </div>
-                    <button
-                      onClick={handleCopyUrl}
-                      style={{
-                        width: '100%', padding: '10px', border: 'none', borderRadius: 10,
-                        background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)',
-                        color: copied ? '#06d6a0' : '#a78bfa',
-                        fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                      }}
-                    >
+                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px', marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{inviteUrl}</div>
+                    <button onClick={() => handleCopy(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {copied ? '✓ Скопировано' : 'Скопировать ссылку'}
                     </button>
                   </div>
                 )}
+
                 <button
                   onClick={() => setView('join')}
-                  style={{
-                    padding: '14px', border: 'none', borderRadius: 12,
-                    background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)',
-                    fontSize: 14, cursor: 'pointer',
-                  }}
-                >Есть код приглашения</button>
-              </div>
+                  style={{ width: '100%', padding: '13px', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}
+                >
+                  Есть код приглашения
+                </button>
+              </>
             ) : (
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
@@ -206,28 +210,19 @@ export function PairSheet({ onClose }: Props) {
                   value={joinCode}
                   onChange={e => setJoinCode(e.target.value.toUpperCase())}
                   placeholder="Код из приглашения"
-                  style={{
-                    width: '100%', padding: '12px 14px', borderRadius: 12,
-                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#fff', fontSize: 16, fontFamily: 'monospace', outline: 'none',
-                    letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12,
-                  }}
+                  style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16, fontFamily: 'monospace', outline: 'none', letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12 }}
                 />
-                {joinError && (
-                  <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 10 }}>{joinError}</div>
-                )}
+                {joinError && <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 10 }}>{joinError}</div>}
                 <button
                   onClick={handleJoin}
                   disabled={!joinCode.trim() || loading}
-                  style={{
-                    width: '100%', padding: '14px', border: 'none', borderRadius: 12,
-                    background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)',
-                    color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-                  }}
-                >Присоединиться</button>
+                  style={{ width: '100%', padding: '14px', border: 'none', borderRadius: 12, background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Присоединиться
+                </button>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </BottomSheet>

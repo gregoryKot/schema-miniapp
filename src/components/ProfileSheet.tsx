@@ -10,7 +10,8 @@ import { SectionLabel } from './SectionLabel';
 
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
-type PairData = { paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null };
+import { PairsData } from '../api';
+type _PairData = PairsData; // alias for internal use
 
 const DOW = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
 
@@ -90,7 +91,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights] = useState<InsightsData | null>(null);
-  const [pairData, setPairData] = useState<PairData | null>(null);
+  const [pairData, setPairData] = useState<PairsData | null>(null);
   const [pairLoading, setPairLoading] = useState(false);
   const [pairInviteUrl, setPairInviteUrl] = useState('');
   const [pairInviteCopied, setPairInviteCopied] = useState(false);
@@ -185,8 +186,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
     setPairLoading(false);
   }
 
-  async function handleLeave() {
-    await api.leavePair().catch(() => {});
+  async function handleLeave(code: string) {
+    await api.leavePair(code).catch(() => {});
     await api.getPair().then(setPairData).catch(() => {});
   }
 
@@ -768,22 +769,24 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
           <BackHeader title="Вместе" onBack={goBack} />
           {pairLoading && !pairData ? (
             <Loader minHeight="30vh" />
-          ) : !pairData ? null : pairData.paired ? (
+          ) : !pairData ? null : pairData.partners.length > 0 ? (
             <div>
-              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: 16, marginBottom: 16 }}>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>Партнёр сегодня</div>
-                {pairData.partnerTodayDone && pairData.partnerIndex !== null ? (
-                  <div style={{ fontSize: 32, fontWeight: 800, color: '#fff' }}>
-                    {pairData.partnerIndex.toFixed(1)}
-                    <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
-                  </div>
-                ) : (
-                  <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)' }}>Ещё не заполнил дневник</div>
-                )}
-              </div>
-              <button onClick={handleLeave}
-                style={{ width: '100%', padding: 12, border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}
-              >Выйти из пары</button>
+              {pairData.partners.map(p => (
+                <div key={p.code} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: 16, marginBottom: 12 }}>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>{p.partnerName ?? 'Друг'} сегодня</div>
+                  {p.partnerTodayDone && p.partnerIndex !== null ? (
+                    <div style={{ fontSize: 32, fontWeight: 800, color: '#fff', marginBottom: 10 }}>
+                      {p.partnerIndex.toFixed(1)}
+                      <span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.35)', marginBottom: 10 }}>Ещё не заполнил дневник</div>
+                  )}
+                  <button onClick={() => handleLeave(p.code)}
+                    style={{ width: '100%', padding: 12, border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}
+                  >Выйти из пары</button>
+                </div>
+              ))}
             </div>
           ) : (
             <div>
@@ -794,7 +797,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button onClick={handleCreateInvite} disabled={pairLoading}
                     style={{ padding: 14, border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: pairLoading ? 'default' : 'pointer' }}>
-                    {pairLoading ? '...' : pairData.code ? 'Создать новую ссылку' : 'Создать приглашение'}
+                    {pairLoading ? '...' : pairData.pendingCode ? 'Создать новую ссылку' : 'Создать приглашение'}
                   </button>
                   {pairInviteUrl && (
                     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px' }}>

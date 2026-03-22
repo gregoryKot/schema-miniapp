@@ -50,6 +50,19 @@ export interface UserPractice {
   text: string;
 }
 
+export interface PartnerInfo {
+  code: string;
+  partnerIndex: number | null;
+  partnerTodayDone: boolean;
+  partnerName: string | null;
+  partnerTelegramId: number | null;
+}
+
+export interface PairsData {
+  partners: PartnerInfo[];
+  pendingCode: string | null;
+}
+
 export interface PracticePlan {
   id: number;
   needId: string;
@@ -98,15 +111,15 @@ export const api = {
   createPlan:    (needId: string, practiceText: string, reminderUtcHour?: number) =>
     post('/api/plan', { needId, practiceText, reminderUtcHour }),
   checkinPlan:   (id: number, done: boolean) => post(`/api/plan/${id}/checkin`, { done }),
-  getPair: () => get<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null }>('/api/pair'),
+  getPair: () => get<PairsData>('/api/pair'),
   createPairInvite: async () => {
     const res = await fetch(`${BASE}/api/pair/invite`, { method: 'POST', headers: authHeaders(), body: '{}' });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     return res.json() as Promise<{ code: string; url: string }>;
   },
   joinPair: (code: string) => post('/api/pair/join', { code }),
-  leavePair: async () => {
-    const res = await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: authHeaders() });
+  leavePair: async (code: string) => {
+    const res = await fetch(`${BASE}/api/pair`, { method: 'DELETE', headers: authHeaders(), body: JSON.stringify({ code }) });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
   getChildhoodRatings: () => get<Record<string, number>>('/api/childhood-ratings'),

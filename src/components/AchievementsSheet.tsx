@@ -13,8 +13,9 @@ const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: str
   total_50:   { emoji: '📆', title: '50 дней',         desc: '50 дней всего' },
   high_day:   { emoji: '✨', title: 'Хороший день',    desc: 'Средний индекс выше 8' },
   all_above7: { emoji: '🎯', title: 'Баланс',          desc: 'Все потребности выше 7 в один день' },
-  comeback:   { emoji: '🔄', title: 'Возвращение',     desc: 'Вернулся после перерыва в 3+ дня' },
-  growth:     { emoji: '📈', title: 'Рост',            desc: 'Потребность выросла на 3+ за неделю' },
+  comeback:        { emoji: '🔄', title: 'Возвращение',     desc: 'Вернулся после перерыва в 3+ дня' },
+  growth:          { emoji: '📈', title: 'Рост',            desc: 'Потребность выросла на 3+ за неделю' },
+  pair_connected:  { emoji: '🫂', title: 'Не одни',         desc: 'Отслеживаете потребности вместе с другом' },
 };
 
 interface Props {

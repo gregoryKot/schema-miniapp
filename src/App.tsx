@@ -18,7 +18,7 @@ import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
-import { PracticePlan, StreakData } from './api';
+import { PracticePlan, PairsData, StreakData } from './api';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -171,7 +171,7 @@ export default function App() {
   const [backfillDate, setBackfillDate] = useState<string | null>(null);
   const [showYesterdayBanner, setShowYesterdayBanner] = useState(false);
   const [showWeeklyQ, setShowWeeklyQ] = useState(() => shouldShowWeeklyQuestion());
-  const [pairData, setPairData] = useState<{ paired: boolean; partnerIndex: number | null; partnerTodayDone: boolean; code: string | null; partnerName: string | null } | null>(null);
+  const [pairData, setPairData] = useState<PairsData | null>(null);
   const [pairCardDismissed, setPairCardDismissed] = useState<boolean | null>(null);
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
@@ -269,12 +269,12 @@ export default function App() {
 
   // When partner joins — clear dismissed flag so paired card shows
   useEffect(() => {
-    if (pairData?.paired) {
+    if (pairData && pairData.partners.length > 0) {
       localStorage.removeItem('pair_card_dismissed');
       setPairCardDismissed(false);
       api.updateSettings({ pairCardDismissed: false }).catch(() => {});
     }
-  }, [pairData?.paired]);
+  }, [pairData?.partners.length]);
 
   useEffect(() => {
     if (tab === 'history') {
@@ -501,21 +501,18 @@ export default function App() {
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
         </div>
       )}
-      {tab === 'today' && pairData !== null && pairCardDismissed === false && (HAS_HISTORY || pairData.paired) && (
+      {tab === 'today' && pairData !== null && (pairData.partners.length > 0 || pairData.pendingCode || (pairCardDismissed === false && HAS_HISTORY)) && (
         <div style={{ padding: '8px 20px 0' }}>
           <PairCard
-            partnerIndex={pairData.partnerIndex}
-            partnerTodayDone={pairData.partnerTodayDone}
-            partnerName={pairData.partnerName}
-            showInvite={!pairData.paired}
-            pendingCode={!pairData.paired && !!pairData.code}
-            onInvite={() => setShowPairSheet(true)}
-            onOpen={pairData.paired ? () => setShowPairSheet(true) : undefined}
-            onDismiss={!pairData.paired ? () => {
+            partners={pairData.partners}
+            pendingCode={pairData.pendingCode}
+            showInvite={pairData.partners.length === 0 && !pairData.pendingCode && pairCardDismissed === false && HAS_HISTORY}
+            onOpen={() => setShowPairSheet(true)}
+            onDismissInvite={() => {
               localStorage.setItem('pair_card_dismissed', '1');
               setPairCardDismissed(true);
               api.updateSettings({ pairCardDismissed: true }).catch(() => {});
-            } : undefined}
+            }}
           />
         </div>
       )}
