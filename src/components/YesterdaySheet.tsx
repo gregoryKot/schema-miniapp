@@ -13,12 +13,14 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [saveError, setSaveError] = useState(false);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     api.ratings(date)
       .then(r => { setRatings(r); const s: Record<string, boolean> = {}; for (const k of Object.keys(r)) s[k] = true; setSaved(s); })
-      .catch(() => {})
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
     return () => { Object.values(timers.current).forEach(clearTimeout); };
   }, [date]);
@@ -32,7 +34,10 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
       try {
         await api.saveRating(needId, value, date);
         setSaved(prev => ({ ...prev, [needId]: true }));
-      } catch { /* silent */ }
+      } catch {
+        setSaveError(true);
+        setTimeout(() => setSaveError(false), 3000);
+      }
     }, 500);
   }, [date]);
 
@@ -46,6 +51,10 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
 
         {loading ? (
           <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: '40px 0' }}>Загрузка...</div>
+        ) : loadError ? (
+          <div style={{ textAlign: 'center', color: '#f87171', padding: '40px 0', fontSize: 14 }}>
+            Не удалось загрузить — попробуй позже
+          </div>
         ) : needs.map(n => {
           const value = ratings[n.id] ?? 0;
           const color = COLORS[n.id] ?? '#888';
@@ -63,10 +72,15 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
           );
         })}
 
+        {saveError && (
+          <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+            Ошибка сохранения — потяни ползунок ещё раз
+          </div>
+        )}
         <button
           onClick={onClose}
           style={{
-            marginTop: 16, width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
+            marginTop: 8, width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
             background: allDone ? '#a78bfa' : 'rgba(255,255,255,0.08)',
             color: allDone ? '#fff' : 'rgba(255,255,255,0.5)',
             fontSize: 15, fontWeight: 600, cursor: 'pointer',

@@ -163,10 +163,9 @@ function NeedsWheel({
         return (
           <path key={`childhood-${need.id}`} d={d}
             fill="none"
-            stroke={color}
-            strokeWidth={1.5}
-            strokeOpacity={0.4}
-            strokeDasharray="3 3"
+            stroke="rgba(255,255,255,0.55)"
+            strokeWidth={2}
+            strokeDasharray="4 3"
             strokeLinejoin="round"
           />
         );
@@ -498,7 +497,9 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           })}
         </div>
         {onChangeDays && (
-          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>глубина</span>
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3 }}>
             {DAYS_OPTIONS.map(d => {
               const active = days === d;
               return (
@@ -507,6 +508,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 </button>
               );
             })}
+            </div>
           </div>
         )}
       </div>

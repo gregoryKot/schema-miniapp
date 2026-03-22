@@ -194,6 +194,8 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
   const [streak, setStreak] = useState(0);
   const [sharing, setSharing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [fallbackText, setFallbackText] = useState<string | null>(null);
+  const [fallbackCopied, setFallbackCopied] = useState(false);
 
   useEffect(() => {
     api.getStreak().then(s => setStreak(s.currentStreak)).catch(() => {});
@@ -236,31 +238,29 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
         URL.revokeObjectURL(url);
       }
     } catch {
-      // Cancelled or unsupported — try clipboard fallback
-      try {
-        const allAvgs = needs.map(n => calcWeekAvg(history, n.id)).filter(v => v !== null) as number[];
-        const weekIndex = allAvgs.length > 0
-          ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1)
-          : '—';
-        const lines = needs.map(n => {
-          const avg = calcWeekAvg(history, n.id);
-          return `${n.emoji} ${n.chartLabel}: ${avg !== null ? avg.toFixed(1) : '—'}`;
-        });
-        const sorted = [...history].map(d => d.date).sort();
-        const range = sorted.length >= 2
-          ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
-          : '';
-        const text = `Дневник потребностей · ${range}\n\n${lines.join('\n')}\n\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n\n@SchemeHappens`;
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      } catch {}
+      // Share failed — build text fallback and show in sheet
+      const allAvgs = needs.map(n => calcWeekAvg(history, n.id)).filter(v => v !== null) as number[];
+      const weekIndex = allAvgs.length > 0
+        ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1)
+        : '—';
+      const lines = needs.map(n => {
+        const avg = calcWeekAvg(history, n.id);
+        return `${n.emoji} ${n.chartLabel}: ${avg !== null ? avg.toFixed(1) : '—'}`;
+      });
+      const sorted = [...history].map(d => d.date).sort();
+      const range = sorted.length >= 2
+        ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
+        : '';
+      const text = `Дневник потребностей · ${range}\n\n${lines.join('\n')}\n\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n\n@SchemeHappens`;
+      try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2500); } catch {}
+      setFallbackText(text);
     } finally {
       setSharing(false);
     }
   }
 
   return (
+    <>
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
         <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 20 }}>
@@ -306,5 +306,35 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
         )}
       </div>
     </BottomSheet>
+
+    {fallbackText && (
+      <BottomSheet onClose={() => { setFallbackText(null); setFallbackCopied(false); }} zIndex={300}>
+        <div style={{ paddingTop: 4 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 12 }}>Поделиться текстом</div>
+          <pre style={{
+            fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6,
+            background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px',
+            overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+            marginBottom: 14, userSelect: 'all', fontFamily: 'inherit',
+          }}>
+            {fallbackText}
+          </pre>
+          <button
+            onClick={async () => {
+              try { await navigator.clipboard.writeText(fallbackText); setFallbackCopied(true); setTimeout(() => setFallbackCopied(false), 2000); } catch {}
+            }}
+            style={{
+              width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
+              background: fallbackCopied ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.08)',
+              color: fallbackCopied ? '#06d6a0' : 'rgba(255,255,255,0.7)',
+              fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            {fallbackCopied ? '✓ Скопировано' : 'Скопировать'}
+          </button>
+        </div>
+      </BottomSheet>
+    )}
+    </>
   );
 }
