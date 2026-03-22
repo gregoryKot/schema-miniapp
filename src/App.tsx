@@ -573,6 +573,7 @@ export default function App() {
           onNote={() => setShowTodayNote(true)}
           onOpenPractices={() => setShowPracticesOnboarding(true)}
           onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
+          plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate > TODAY_DATE).map(p => p.needId))}
         />
       )}
       {tab === 'history' && (

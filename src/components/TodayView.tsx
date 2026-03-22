@@ -18,6 +18,7 @@ interface Props {
   onNote: () => void;
   onOpenPractices?: () => void;
   onPlanCreated?: () => void;
+  plannedNeedIds?: Set<string>;
 }
 
 function DonutRing({ percent }: { percent: number }) {
@@ -115,7 +116,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices, onPlanCreated }: Props) {
+export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices, onPlanCreated, plannedNeedIds }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -130,7 +131,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
-  const [plannedNeeds, setPlannedNeeds] = useState<Set<string>>(new Set());
+  const [plannedNeeds, setPlannedNeeds] = useState<Set<string>>(() => plannedNeedIds ?? new Set());
   const [activePlanNeed, setActivePlanNeed] = useState<Need | null>(null);
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
