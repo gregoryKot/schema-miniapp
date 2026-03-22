@@ -20,6 +20,7 @@ export function PairSheet({ onClose }: Props) {
   const [view, setView] = useState<'main' | 'join'>('main');
   const [loading, setLoading] = useState(false);
   const [inviteUrl, setInviteUrl] = useState('');
+  const [copied, setCopied] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [joinError, setJoinError] = useState('');
@@ -33,15 +34,25 @@ export function PairSheet({ onClose }: Props) {
     try {
       const { url } = await api.createPairInvite();
       setInviteUrl(url);
-      try {
-        if (navigator.share) { await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); }
-        else { await navigator.clipboard.writeText(url); }
-      } catch {}
       api.getPair().then(setData).catch(() => {});
+      // Try native share, but URL block is always shown as fallback
+      try {
+        if (navigator.share) await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` });
+      } catch {}
     } catch (e) {
       console.error('createPairInvite failed', e);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleCopyUrl() {
+    try {
+      await navigator.clipboard.writeText(inviteUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Clipboard not available — URL is visible in the input, user can copy manually
     }
   }
 
@@ -70,9 +81,6 @@ export function PairSheet({ onClose }: Props) {
       console.error('leavePair failed', e);
     }
   }
-
-  // suppress unused variable warning
-  void inviteUrl;
 
   return (
     <BottomSheet onClose={onClose}>
@@ -150,11 +158,35 @@ export function PairSheet({ onClose }: Props) {
                   style={{
                     padding: '14px', border: 'none', borderRadius: 12,
                     background: '#a78bfa', color: '#fff',
-                    fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                    fontSize: 14, fontWeight: 600, cursor: loading ? 'default' : 'pointer',
                   }}
                 >
-                  {data.code ? 'Поделиться ссылкой снова' : 'Создать приглашение'}
+                  {loading ? '...' : data.code ? 'Создать новую ссылку' : 'Создать приглашение'}
                 </button>
+                {inviteUrl && (
+                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
+                      Скопируй и отправь другу:
+                    </div>
+                    <div style={{
+                      fontSize: 12, color: 'rgba(255,255,255,0.7)', wordBreak: 'break-all',
+                      lineHeight: 1.5, marginBottom: 10, userSelect: 'all',
+                    }}>
+                      {inviteUrl}
+                    </div>
+                    <button
+                      onClick={handleCopyUrl}
+                      style={{
+                        width: '100%', padding: '10px', border: 'none', borderRadius: 10,
+                        background: copied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)',
+                        color: copied ? '#06d6a0' : '#a78bfa',
+                        fontSize: 13, fontWeight: 600, cursor: 'pointer',
+                      }}
+                    >
+                      {copied ? '✓ Скопировано' : 'Скопировать ссылку'}
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={() => setView('join')}
                   style={{

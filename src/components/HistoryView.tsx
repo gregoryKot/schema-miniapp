@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
@@ -373,6 +373,8 @@ const DAYS_OPTIONS = [7, 14, 30];
 export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, days = 7, onChangeDays, onGoToToday, onBackfill }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
+  const dateScrollRef = useRef<HTMLDivElement>(null);
+  const dateBtnRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [showNote, setShowNote] = useState(false);
@@ -382,6 +384,10 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   const [showHint, setShowHint] = useState(
     () => !localStorage.getItem(HISTORY_HINT_KEY)
   );
+
+  useEffect(() => {
+    dateBtnRefs.current[selectedIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }, [selectedIdx]);
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -431,7 +437,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
     <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0 80px' }}>
 
       {/* Date picker */}
-      <div style={{
+      <div ref={dateScrollRef} style={{
         display: 'flex', gap: 8, overflowX: 'auto',
         width: '100%', padding: '0 24px 12px',
         scrollbarWidth: 'none',
@@ -441,6 +447,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           return (
             <button
               key={day.date}
+              ref={el => { dateBtnRefs.current[i] = el; }}
               onClick={() => setSelectedIdx(i)}
               style={{
                 flexShrink: 0,

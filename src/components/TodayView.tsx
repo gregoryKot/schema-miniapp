@@ -114,11 +114,15 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
 
 export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
-    return () => { Object.values(timers.current).forEach(clearTimeout); };
+    return () => {
+      Object.values(timers.current).forEach(clearTimeout);
+      Object.values(unlockTimers.current).forEach(clearTimeout);
+    };
   }, []);
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
@@ -138,6 +142,12 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
+    // Keep slider unlocked while user is actively dragging + 2.5s after last move
+    setUnlocked(prev => new Set([...prev, needId]));
+    clearTimeout(unlockTimers.current[needId]);
+    unlockTimers.current[needId] = setTimeout(() => {
+      setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
+    }, 2500);
     clearTimeout(timers.current[needId]);
     timers.current[needId] = setTimeout(async () => {
       if (value === 0) return; // 0 = not rated, don't save
@@ -145,10 +155,6 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
         const res = await api.saveRating(needId, value);
         onSaved(needId, res.allDone ? res.streak : undefined);
         setLastSavedAt(new Date());
-        // Lock slider 2.5s after save so user can still adjust
-        setTimeout(() => {
-          setUnlocked(prev => { const next = new Set(prev); next.delete(needId); return next; });
-        }, 2500);
       } catch {
         setSaveError(true);
         setTimeout(() => setSaveError(false), 3000);

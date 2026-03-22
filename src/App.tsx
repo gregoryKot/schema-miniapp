@@ -505,7 +505,7 @@ export default function App() {
           <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
         </div>
       )}
-      {tab === 'today' && pairData !== null && pairCardDismissed === false && HAS_HISTORY && (
+      {tab === 'today' && pairData !== null && pairCardDismissed === false && (HAS_HISTORY || pairData.paired) && (
         <div style={{ padding: '8px 20px 0' }}>
           <PairCard
             partnerIndex={pairData.partnerIndex}
@@ -540,7 +540,8 @@ export default function App() {
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
-        const plan = pendingPlans[0];
+        const plan = pendingPlans.find(p => p.scheduledDate <= TODAY_DATE);
+        if (!plan) return null;
         const need = needs.find(n => n.id === plan.needId);
         if (!need) return null;
         return (
@@ -549,7 +550,7 @@ export default function App() {
             needEmoji={need.emoji ?? ''}
             needLabel={need.chartLabel}
             color={COLORS[need.id] ?? '#888'}
-            onDone={() => setPendingPlans(prev => prev.slice(1))}
+            onDone={() => setPendingPlans(prev => prev.filter(p => p.id !== plan.id))}
           />
         );
       })()}

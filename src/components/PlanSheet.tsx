@@ -52,15 +52,23 @@ interface Props {
   onSaved: () => void;
 }
 
+function defaultReminderIdx(): number {
+  const h = new Date().getHours();
+  if (h < 12) return 0; // Утром
+  if (h < 17) return 1; // Днём
+  return 2;             // Вечером
+}
+
 export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSaved }: Props) {
   const [userPractices, setUserPractices] = useState<UserPractice[]>([]);
   const [selectedText, setSelectedText] = useState('');
   const [customText, setCustomText] = useState('');
-  const [reminderIdx, setReminderIdx] = useState(2); // Вечером default
+  const [reminderIdx, setReminderIdx] = useState(defaultReminderIdx);
   const [tzOffset, setTzOffset] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [phase, setPhase] = useState<'pick' | 'confirm'>('pick');
+  const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     api.getPractices(needId).then(setUserPractices).catch(() => {});
@@ -160,14 +168,18 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                     {isUser && id !== undefined && (
                       <div
                         onClick={() => {
-                          api.deletePractice(id);
-                          setUserPractices(prev => prev.filter(p => p.id !== id));
+                          if (deletingIds.has(id)) return;
+                          setDeletingIds(prev => new Set([...prev, id]));
+                          api.deletePractice(id)
+                            .then(() => setUserPractices(prev => prev.filter(p => p.id !== id)))
+                            .catch(() => setDeletingIds(prev => { const s = new Set(prev); s.delete(id); return s; }));
                         }}
                         style={{
                           width: 32, height: 32, borderRadius: 8, flexShrink: 0,
                           background: 'rgba(255,100,100,0.1)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          cursor: 'pointer', fontSize: 16, color: 'rgba(255,100,100,0.5)',
+                          cursor: deletingIds.has(id) ? 'default' : 'pointer',
+                          fontSize: 16, color: deletingIds.has(id) ? 'rgba(255,100,100,0.2)' : 'rgba(255,100,100,0.5)',
                         }}
                       >×</div>
                     )}
