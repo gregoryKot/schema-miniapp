@@ -16,7 +16,7 @@ import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
 import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
-import { PracticesOnboarding, shouldShowPracticesOnboarding } from './components/PracticesOnboarding';
+import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
 import { PracticePlan, StreakData } from './api';
 
@@ -176,7 +176,6 @@ export default function App() {
   const [showPairSheet, setShowPairSheet] = useState(false);
   const [pendingPlans, setPendingPlans] = useState<PracticePlan[]>([]);
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
-  const [practicesOnboardingPending, setPracticesOnboardingPending] = useState(false);
   const [yesterdayBannerDismissed] = useState(() => !!localStorage.getItem('yesterday_banner_' + YESTERDAY_DATE));
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
@@ -323,9 +322,6 @@ export default function App() {
       else { setShowTodayNote(true); }
       if (streak.totalDays >= 5 && shouldShowChildhoodWheel()) {
         setChildhoodWheelPending(true);
-      }
-      if (shouldShowPracticesOnboarding()) {
-        setPracticesOnboardingPending(true);
       }
     }
   }, []);
@@ -531,6 +527,7 @@ export default function App() {
           onChange={handleChange}
           onSaved={handleSaved}
           onNote={() => setShowTodayNote(true)}
+          onOpenPractices={() => setShowPracticesOnboarding(true)}
         />
       )}
       {tab === 'history' && (
@@ -562,10 +559,7 @@ export default function App() {
       {showTodayNote && (
         <NoteSheet date={TODAY_DATE} onClose={() => {
           setShowTodayNote(false);
-          if (practicesOnboardingPending) {
-            setPracticesOnboardingPending(false);
-            setShowPracticesOnboarding(true);
-          } else if (childhoodWheelPending) {
+          if (childhoodWheelPending) {
             setChildhoodWheelPending(false);
             setShowChildhoodWheel(true);
           }

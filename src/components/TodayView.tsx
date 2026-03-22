@@ -7,6 +7,7 @@ import { PlanSheet } from './PlanSheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
 import { SectionLabel } from './SectionLabel';
 import { NEED_DATA } from '../needData';
+import { shouldShowPracticesOnboarding } from './PracticesOnboarding';
 
 interface Props {
   needs: Need[];
@@ -15,6 +16,7 @@ interface Props {
   onChange: (needId: string, value: number) => void;
   onSaved: (needId: string, streak?: StreakData) => void;
   onNote: () => void;
+  onOpenPractices?: () => void;
 }
 
 function DonutRing({ percent }: { percent: number }) {
@@ -112,7 +114,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: Props) {
+export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -131,6 +133,9 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
   const [activePlanNeed, setActivePlanNeed] = useState<Need | null>(null);
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
+  );
+  const [practicesCardVisible, setPracticesCardVisible] = useState(
+    () => shouldShowPracticesOnboarding()
   );
 
   const dismissTooltip = useCallback(() => {
@@ -289,6 +294,30 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote }: 
           ✏️ Заметка
         </button>
       </div>
+
+      {practicesCardVisible && onOpenPractices && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          background: 'rgba(167,139,250,0.08)',
+          border: '1px solid rgba(167,139,250,0.18)',
+          borderRadius: 14, padding: '12px 14px',
+          marginTop: 16, cursor: 'pointer',
+        }}
+          onClick={() => { setPracticesCardVisible(false); onOpenPractices(); }}
+        >
+          <span style={{ fontSize: 20, flexShrink: 0 }}>🗂</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Что тебе помогает?</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
+          </div>
+          <button
+            onClick={e => { e.stopPropagation(); setPracticesCardVisible(false); }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+          >
+            ×
+          </button>
+        </div>
+      )}
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 
