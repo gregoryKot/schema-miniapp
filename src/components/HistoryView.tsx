@@ -385,6 +385,12 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   );
 
   useEffect(() => {
+    if (history.length > 0 && selectedIdx >= history.length) {
+      setSelectedIdx(history.length - 1);
+    }
+  }, [history.length, selectedIdx]);
+
+  useEffect(() => {
     dateBtnRefs.current[selectedIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, [selectedIdx]);
 

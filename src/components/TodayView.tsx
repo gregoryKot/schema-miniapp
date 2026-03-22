@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Need, YESTERDAY, COLORS } from '../types';
 import { api, StreakData } from '../api';
 import { NeedSlider } from './NeedSlider';
@@ -131,7 +131,11 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
   const [activeNeed, setActiveNeed] = useState<Need | null>(null);
   const [showIndexInfo, setShowIndexInfo] = useState(false);
   const [unlocked, setUnlocked] = useState<Set<string>>(new Set());
-  const [plannedNeeds, setPlannedNeeds] = useState<Set<string>>(() => plannedNeedIds ?? new Set());
+  const [sessionPlannedNeeds, setSessionPlannedNeeds] = useState<Set<string>>(new Set());
+  const plannedNeeds = useMemo(
+    () => new Set([...(plannedNeedIds ?? []), ...sessionPlannedNeeds]),
+    [plannedNeedIds, sessionPlannedNeeds],
+  );
   const [activePlanNeed, setActivePlanNeed] = useState<Need | null>(null);
   const [onboardingVisible, setOnboardingVisible] = useState(
     () => !localStorage.getItem(ONBOARDING_KEY)
@@ -329,7 +333,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
           value={ratings[activeNeed.id] ?? 0}
           onChange={(v) => handleChange(activeNeed.id, v)}
           onClose={() => setActiveNeed(null)}
-          onPlanSaved={(needId) => setPlannedNeeds(prev => new Set([...prev, needId]))}
+          onPlanSaved={(needId) => setSessionPlannedNeeds(prev => new Set([...prev, needId]))}
         />
       )}
 
@@ -341,7 +345,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
           color={COLORS[activePlanNeed.id] ?? '#888'}
           onClose={() => setActivePlanNeed(null)}
           onSaved={() => {
-            setPlannedNeeds(prev => new Set([...prev, activePlanNeed.id]));
+            setSessionPlannedNeeds(prev => new Set([...prev, activePlanNeed.id]));
             setActivePlanNeed(null);
             onPlanCreated?.();
           }}
