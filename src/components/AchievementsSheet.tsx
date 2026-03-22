@@ -31,8 +31,8 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
     if (!meta || !selected) return;
     const text = `${meta.emoji} Получил достижение «${meta.title}» в дневнике потребностей!\n\nt.me/Emotional_Needs_bot`;
     try {
-      if (navigator.share) { await navigator.share({ text }); }
-      else { await navigator.clipboard.writeText(text); }
+      try { if (navigator.share) { await navigator.share({ text }); return; } } catch {}
+      try { await navigator.clipboard.writeText(text); } catch {}
     } catch {}
   }
 

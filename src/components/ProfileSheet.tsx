@@ -92,6 +92,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [insights, setInsights] = useState<InsightsData | null>(null);
   const [pairData, setPairData] = useState<PairData | null>(null);
   const [pairLoading, setPairLoading] = useState(false);
+  const [pairInviteUrl, setPairInviteUrl] = useState('');
+  const [pairInviteCopied, setPairInviteCopied] = useState(false);
   const [planHistory, setPlanHistory] = useState<PracticePlan[] | null>(null);
   const [myPracticesNeedIdx, setMyPracticesNeedIdx] = useState(0);
   const [myPractices, setMyPractices] = useState<UserPractice[] | null>(null);
@@ -155,13 +157,19 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
     try {
       const { url } = await api.createPairInvite();
       await api.getPair().then(setPairData);
-      try {
-        if (navigator.share) { await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); }
-        else { await navigator.clipboard.writeText(url); }
-      } catch {}
+      setPairInviteUrl(url);
+      try { if (navigator.share) await navigator.share({ text: `Давай отслеживать потребности вместе! ${url}` }); } catch {}
     } finally {
       setPairLoading(false);
     }
+  }
+
+  async function handleCopyPairInvite() {
+    try {
+      await navigator.clipboard.writeText(pairInviteUrl);
+      setPairInviteCopied(true);
+      setTimeout(() => setPairInviteCopied(false), 2000);
+    } catch {}
   }
 
   async function handleJoin() {
@@ -259,11 +267,11 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
                 }
                 {streak.currentStreak > 0 && (
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       const n = streak.currentStreak;
                       const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
                       const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
-                      try { navigator.share ? navigator.share({ text }) : navigator.clipboard.writeText(text); } catch {}
+                      try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch { try { await navigator.clipboard.writeText(text); } catch {} }
                     }}
                     style={{
                       background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 20,
@@ -497,16 +505,16 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
           {/* Invite + Export */}
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <button
-              onClick={() => {
+              onClick={async () => {
                 const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
-                try { navigator.share ? navigator.share({ text }) : navigator.clipboard.writeText(text); } catch {}
+                try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch { try { await navigator.clipboard.writeText(text); } catch {} }
               }}
               style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
             >Пригласить друга</button>
             <button
               onClick={async () => {
                 const { text } = await api.getExport();
-                try { navigator.share ? navigator.share({ text }) : navigator.clipboard.writeText(text); } catch {}
+                try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch { try { await navigator.clipboard.writeText(text); } catch {} }
               }}
               style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}
             >
@@ -781,9 +789,21 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
               {joinView === 'main' ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <button onClick={handleCreateInvite} disabled={pairLoading}
-                    style={{ padding: 14, border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                    {pairData.code ? 'Поделиться ссылкой снова' : 'Создать приглашение'}
+                    style={{ padding: 14, border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: pairLoading ? 'default' : 'pointer' }}>
+                    {pairLoading ? '...' : pairData.code ? 'Создать новую ссылку' : 'Создать приглашение'}
                   </button>
+                  {pairInviteUrl && (
+                    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px' }}>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>
+                        {pairInviteUrl}
+                      </div>
+                      <button onClick={handleCopyPairInvite}
+                        style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: pairInviteCopied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                        {pairInviteCopied ? '✓ Скопировано' : 'Скопировать ссылку'}
+                      </button>
+                    </div>
+                  )}
                   <button onClick={() => setJoinView('join')}
                     style={{ padding: 14, border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 14, cursor: 'pointer' }}>
                     Есть код приглашения
