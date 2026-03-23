@@ -18,7 +18,7 @@ const NEED_META: Record<NeedId, { label: string; emoji: string; question: string
   attachment: {
     label: 'Привязанность',
     emoji: '🤝',
-    question: 'Чувствовал ли ты себя любимым и принятым близкими?',
+    question: 'Были ли конкретные моменты: тебя обнимали, говорили тёплое, приходили когда было плохо?',
   },
   autonomy: {
     label: 'Автономия',
