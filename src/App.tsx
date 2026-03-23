@@ -541,11 +541,12 @@ export default function App() {
         </div>
       )}
       {tab === 'today' && (() => {
-        const upcoming = pendingPlans.filter(p => p.scheduledDate > TODAY_DATE);
+        const upcoming = pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE);
         return upcoming.length > 0 ? (
           <div style={{ padding: '8px 20px 0' }}>
             {upcoming.map(plan => {
               const color = COLORS[plan.needId] ?? '#888';
+              const isToday = plan.scheduledDate === TODAY_DATE;
               return (
                 <div key={plan.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
@@ -554,7 +555,7 @@ export default function App() {
                 }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
                   <div>
-                    <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Твой план на завтра</div>
+                    <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{isToday ? 'Твой план на сегодня' : 'Твой план на завтра'}</div>
                     <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
                   </div>
                 </div>
@@ -573,7 +574,7 @@ export default function App() {
           onNote={() => setShowTodayNote(true)}
           onOpenPractices={() => setShowPracticesOnboarding(true)}
           onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
-          plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate > TODAY_DATE).map(p => p.needId))}
+          plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
         />
       )}
       {tab === 'history' && (
@@ -587,7 +588,7 @@ export default function App() {
       )}
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
-        const plan = pendingPlans.find(p => p.scheduledDate <= TODAY_DATE);
+        const plan = pendingPlans.find(p => p.scheduledDate < TODAY_DATE);
         if (!plan) return null;
         const need = needs.find(n => n.id === plan.needId);
         if (!need) return null;
