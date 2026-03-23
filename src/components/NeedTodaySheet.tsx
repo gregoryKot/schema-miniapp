@@ -136,10 +136,27 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
       )}
 
       {/* Section 1: Question */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 20 }}>
         <SectionLabel>Спроси себя</SectionLabel>
         <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
           {data.question}
+        </div>
+      </div>
+
+      {/* Section 1b: Examples */}
+      <div style={{ marginBottom: 24 }}>
+        <SectionLabel>Как это выглядит в жизни</SectionLabel>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {data.examples.map((ex, i) => (
+            <div key={i} style={{
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              padding: '8px 0',
+              borderBottom: i < data.examples.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+            }}>
+              <span style={{ color, fontSize: 14, flexShrink: 0, lineHeight: 1.5 }}>›</span>
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{ex}</span>
+            </div>
+          ))}
         </div>
       </div>
 
