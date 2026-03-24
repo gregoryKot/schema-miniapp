@@ -77,7 +77,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
             color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           }}
         >
-          Да, сделал ✓
+          {saving ? 'Сохранение...' : 'Да, сделал ✓'}
         </button>
       </div>
       {error && (

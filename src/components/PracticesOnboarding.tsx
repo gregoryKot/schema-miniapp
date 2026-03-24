@@ -36,7 +36,12 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
     const toSave = [...selected];
     if (input.trim()) toSave.push(input.trim());
     try {
-      await Promise.all(toSave.map(text => api.addPractice(needId, text)));
+      const results = await Promise.allSettled(toSave.map(text => api.addPractice(needId, text)));
+      if (results.some(r => r.status === 'rejected')) {
+        setSaveError(true);
+        setSaving(false);
+        return;
+      }
       setSaveError(false);
     } catch {
       setSaveError(true);
