@@ -352,17 +352,15 @@ export default function App() {
 
   if (error) {
     return (
-      <div style={{ padding: 24, fontSize: 13, wordBreak: 'break-all' }}>
-        <div style={{ color: 'rgba(255,100,100,0.9)', marginBottom: 12 }}>
-          <b>Ошибка загрузки:</b><br />{error}
-        </div>
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginBottom: 16 }}>
-          API: {import.meta.env.VITE_API_URL ?? 'не задан'}<br />
-          initData: {window.Telegram?.WebApp?.initData ? 'есть' : 'пусто'}
+      <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: 16, textAlign: 'center' }}>
+        <div style={{ fontSize: 40 }}>😔</div>
+        <div style={{ fontSize: 17, fontWeight: 600, color: '#fff' }}>Не удалось загрузить</div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+          Проверь подключение и попробуй ещё раз
         </div>
         <button
           onClick={() => window.location.reload()}
-          style={{ padding: '12px 20px', border: 'none', borderRadius: 12, background: '#a78bfa', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
         >
           Повторить
         </button>
@@ -569,6 +567,7 @@ export default function App() {
           needs={needs}
           ratings={ratings}
           saved={saved}
+          isOffline={isOffline}
           onChange={handleChange}
           onSaved={handleSaved}
           onNote={() => setShowTodayNote(true)}

@@ -13,6 +13,7 @@ interface Props {
   needs: Need[];
   ratings: Record<string, number>;
   saved: Record<string, boolean>;
+  isOffline?: boolean;
   onChange: (needId: string, value: number) => void;
   onSaved: (needId: string, streak?: StreakData) => void;
   onNote: () => void;
@@ -116,7 +117,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, onOpenPractices, onPlanCreated, plannedNeedIds }: Props) {
+export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved, onNote, onOpenPractices, onPlanCreated, plannedNeedIds }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -153,6 +154,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
 
   const handleChange = useCallback((needId: string, value: number) => {
     onChange(needId, value);
+    if (isOffline) return; // visual update only — no save while offline
     // Keep slider unlocked while user is actively dragging + 2.5s after last move
     setUnlocked(prev => new Set([...prev, needId]));
     clearTimeout(unlockTimers.current[needId]);
@@ -171,7 +173,7 @@ export function TodayView({ needs, ratings, saved, onChange, onSaved, onNote, on
         setTimeout(() => setSaveError(false), 3000);
       }
     }, 500);
-  }, [onChange, onSaved]);
+  }, [onChange, onSaved, isOffline]);
 
   // Summary calculations
   // index = sum of all needs (unrated = 0) / total needs — same formula as server getPair
