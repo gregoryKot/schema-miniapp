@@ -1,7 +1,18 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, RefObject } from 'react';
 import { Need, COLORS } from '../types';
 import { api } from '../api';
 import { BottomSheet } from './BottomSheet';
+
+/** Prevent the iOS overflowY:auto container from stealing touch events on the slider track */
+function usePreventScrollOnTrack(trackRef: RefObject<HTMLDivElement>) {
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const prevent = (e: TouchEvent) => e.preventDefault();
+    el.addEventListener('touchstart', prevent, { passive: false });
+    return () => el.removeEventListener('touchstart', prevent);
+  }, [trackRef]);
+}
 
 interface Props {
   needs: Need[];
@@ -97,6 +108,7 @@ function SliderRow({ needId, label, value, color, saved, onChange }: {
   needId: string; label: string; value: number; color: string; saved: boolean; onChange: (v: number) => void;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  usePreventScrollOnTrack(trackRef);
   const pct = value * 10;
 
   const calc = useCallback((clientX: number) => {
