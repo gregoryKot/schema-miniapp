@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { api } from '../api';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
@@ -71,8 +71,76 @@ const SCHEMA_HINTS: Record<NeedId, { domain: string; color: string; schemas: str
   },
 };
 
+function ChildhoodWheel({ ratings }: { ratings: Record<NeedId, number> }) {
+  const size = 220;
+  const cx = size / 2;
+  const cy = size / 2;
+  const maxR = 80;
+  const angles = useMemo(
+    () => NEED_IDS.map((_, i) => (i * 2 * Math.PI / 5) - Math.PI / 2),
+    []
+  );
+  const valuePoints = NEED_IDS.map((id, i) => {
+    const r = (ratings[id] / 10) * maxR;
+    return `${(cx + r * Math.cos(angles[i])).toFixed(1)},${(cy + r * Math.sin(angles[i])).toFixed(1)}`;
+  }).join(' ');
+
+  return (
+    <svg width={size} height={size} style={{ display: 'block', margin: '0 auto' }}>
+      {/* Grid rings */}
+      {[0.25, 0.5, 0.75, 1].map(pct => (
+        <polygon key={pct}
+          points={angles.map(a => `${(cx + maxR * pct * Math.cos(a)).toFixed(1)},${(cy + maxR * pct * Math.sin(a)).toFixed(1)}`).join(' ')}
+          fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={1}
+        />
+      ))}
+      {/* Axis lines */}
+      {angles.map((a, i) => (
+        <line key={i} x1={cx} y1={cy}
+          x2={(cx + maxR * Math.cos(a)).toFixed(1)} y2={(cy + maxR * Math.sin(a)).toFixed(1)}
+          stroke="rgba(255,255,255,0.07)" strokeWidth={1}
+        />
+      ))}
+      {/* Value polygon */}
+      <polygon points={valuePoints} fill="rgba(167,139,250,0.18)" stroke="#a78bfa" strokeWidth={1.5} strokeLinejoin="round" />
+      {/* Per-need dots + value labels */}
+      {NEED_IDS.map((id, i) => {
+        const r = (ratings[id] / 10) * maxR;
+        const color = COLORS[id] ?? '#888';
+        const dotX = cx + r * Math.cos(angles[i]);
+        const dotY = cy + r * Math.sin(angles[i]);
+        const labelR = maxR + 22;
+        const labelX = cx + labelR * Math.cos(angles[i]);
+        const labelY = cy + labelR * Math.sin(angles[i]);
+        return (
+          <g key={id}>
+            <circle cx={dotX.toFixed(1)} cy={dotY.toFixed(1)} r={4} fill={color} />
+            <text x={labelX.toFixed(1)} y={labelY.toFixed(1)}
+              textAnchor="middle" dominantBaseline="middle"
+              fontSize={13} style={{ userSelect: 'none' }}>
+              {NEED_META[id].emoji}
+            </text>
+            <text x={labelX.toFixed(1)} y={(labelY + 14).toFixed(1)}
+              textAnchor="middle" dominantBaseline="middle"
+              fontSize={9} fill={color} fontWeight={600} style={{ userSelect: 'none' }}>
+              {ratings[id]}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+
 function Slider({ value, color, onChange }: { value: number; color: string; onChange: (v: number) => void }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const prevent = (e: TouchEvent) => e.preventDefault();
+    el.addEventListener('touchstart', prevent, { passive: false });
+    return () => el.removeEventListener('touchstart', prevent);
+  }, []);
   const pct = value * 10;
 
   const calcValue = useCallback((clientX: number) => {
@@ -246,26 +314,21 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
             </div>
           </div>
 
-          {/* Comparison bars */}
-          <div style={{ marginBottom: 24 }}>
+          {/* Wheel */}
+          <div style={{ marginBottom: 20 }}>
+            <ChildhoodWheel ratings={ratings} />
+          </div>
+
+          {/* Compact score legend */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap', marginBottom: 24 }}>
             {NEED_IDS.map(id => {
-              const meta = NEED_META[id];
-              const color = COLORS[id] ?? '#888';
               const value = ratings[id];
+              const color = COLORS[id] ?? '#888';
               return (
-                <div key={id} style={{ marginBottom: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 14 }}>{meta.emoji}</span>
-                      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{meta.label}</span>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? '#f87171' : value <= 6 ? '#fbbf24' : '#34d399' }}>
-                      {value}/10
-                    </span>
-                  </div>
-                  <div style={{ height: 6, background: 'rgba(255,255,255,0.07)', borderRadius: 6, overflow: 'hidden' }}>
-                    <div style={{ width: `${value * 10}%`, height: '100%', borderRadius: 6, background: value <= 4 ? '#f87171' : value <= 6 ? '#fbbf24' : color }} />
-                  </div>
+                <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ fontSize: 13 }}>{NEED_META[id].emoji}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_META[id].label.split(' ')[0]}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? '#f87171' : value <= 6 ? '#fbbf24' : color }}>{value}</span>
                 </div>
               );
             })}
