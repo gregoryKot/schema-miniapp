@@ -330,17 +330,15 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
             const meta = NEED_META[id];
             const color = COLORS[id] ?? '#888';
             const value = ratings[id];
-            const showLow = value <= 5;
-            const showHigh = value >= 5;
             return (
-              <div key={id} style={{ marginBottom: 28 }}>
+              <div key={id} style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '1f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 10, background: color + '1f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>
                     {meta.emoji}
                   </div>
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{meta.label}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     <button
@@ -359,29 +357,17 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                   </div>
                 </div>
                 <Slider value={value} color={color} onChange={v => setRatings(prev => ({ ...prev, [id]: v }))} />
-                {/* Anchors */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}>
-                  <div style={{
-                    fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
-                    background: showLow && value <= 4 ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.03)',
-                    color: showLow && value <= 4 ? 'rgba(248,113,113,0.75)' : 'rgba(255,255,255,0.25)',
-                    border: showLow && value <= 4 ? '1px solid rgba(248,113,113,0.2)' : '1px solid transparent',
-                    transition: 'all 0.2s',
-                  }}>
-                    <span style={{ fontWeight: 600, display: 'block', marginBottom: 2 }}>0 — дефицит</span>
+                {/* Single contextual anchor — only at extremes */}
+                {value <= 3 && (
+                  <div style={{ fontSize: 11, lineHeight: 1.55, padding: '7px 10px', borderRadius: 10, marginTop: 6, background: 'rgba(248,113,113,0.08)', color: 'rgba(248,113,113,0.7)', border: '1px solid rgba(248,113,113,0.15)' }}>
                     {meta.anchorLow}
                   </div>
-                  <div style={{
-                    fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
-                    background: showHigh && value >= 8 ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.03)',
-                    color: showHigh && value >= 8 ? 'rgba(52,211,153,0.75)' : 'rgba(255,255,255,0.25)',
-                    border: showHigh && value >= 8 ? '1px solid rgba(52,211,153,0.2)' : '1px solid transparent',
-                    transition: 'all 0.2s',
-                  }}>
-                    <span style={{ fontWeight: 600, display: 'block', marginBottom: 2 }}>10 — насыщение</span>
+                )}
+                {value >= 8 && (
+                  <div style={{ fontSize: 11, lineHeight: 1.55, padding: '7px 10px', borderRadius: 10, marginTop: 6, background: 'rgba(52,211,153,0.08)', color: 'rgba(52,211,153,0.7)', border: '1px solid rgba(52,211,153,0.15)' }}>
                     {meta.anchorHigh}
                   </div>
-                </div>
+                )}
                 {/* Examples panel */}
                 {openExampleId === id && (
                   <div style={{ marginTop: 10, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(167,139,250,0.15)' }}>
