@@ -22,6 +22,7 @@ const DISCLAIMER_CONTENT = [
 export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: Props) {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showPlan, setShowPlan] = useState(false);
+  const [showExamples, setShowExamples] = useState(false);
   const data = NEED_DATA[need.id];
   if (!data) return null;
   const color = COLORS[need.id] ?? '#888';
@@ -150,21 +151,29 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
         </div>
       </div>
 
-      {/* Section 1b: Examples */}
+      {/* Section 1b: Examples — collapsible */}
       <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Как это выглядит в жизни</SectionLabel>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {data.examples.map((ex, i) => (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'flex-start', gap: 10,
-              padding: '8px 0',
-              borderBottom: i < data.examples.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-            }}>
-              <span style={{ color, fontSize: 14, flexShrink: 0, lineHeight: 1.5 }}>›</span>
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{ex}</span>
-            </div>
-          ))}
+        <div
+          onClick={() => setShowExamples(v => !v)}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showExamples ? 10 : 0 }}
+        >
+          <SectionLabel mb={0}>Как это выглядит в жизни</SectionLabel>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{showExamples ? '▴' : '▾'}</span>
         </div>
+        {showExamples && (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {data.examples.map((ex, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 10,
+                padding: '8px 0',
+                borderBottom: i < data.examples.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+              }}>
+                <span style={{ color, fontSize: 14, flexShrink: 0, lineHeight: 1.5 }}>›</span>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{ex}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Section 2: Range pills */}

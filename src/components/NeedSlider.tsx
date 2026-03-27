@@ -1,6 +1,13 @@
 import { useRef, useCallback } from 'react';
 import { COLORS, YESTERDAY } from '../types';
 
+const HINTS: Record<string, string> = {
+  attachment: 'близость · связь',
+  autonomy:   'свобода · выбор',
+  expression: 'честность · голос',
+  play:       'игра · лёгкость',
+  limits:     'уважение · защита',
+};
 
 function NeedIcon({ id, color }: { id: string; color: string }) {
   const props = {
@@ -95,12 +102,23 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
           <NeedIcon id={id} color={color} />
         </div>
 
-        {/* Name */}
+        {/* Name + hint */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>
-            {label}
-            {onTap && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)', marginLeft: 5 }}>›</span>}
+          <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>{label}</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+            {HINTS[id] ?? ''}
           </div>
+        </div>
+
+        {/* "?" hint icon */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{
+            width: 18, height: 18, borderRadius: '50%',
+            background: 'rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.35)',
+            fontSize: 11, fontWeight: 600,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>?</div>
         </div>
 
         {/* Score + edit button or delta */}
