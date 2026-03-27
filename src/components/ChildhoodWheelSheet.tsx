@@ -318,7 +318,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
             <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
               Психика защищает нас от боли — поэтому мы склонны помнить хорошее и не замечать систематические паттерны.
               Оценивай <em>не отдельные моменты</em>, а то <em>как было в целом, большую часть времени</em>.
-              Прочти оба описания под ползунком — и честно выбери, какое ближе.
+              Под каждым ползунком — описания крайностей, а по кнопке <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', verticalAlign: 'middle' }}>?</span> — реальные примеры из жизни. Сравни с ними.
             </div>
           </div>
 
