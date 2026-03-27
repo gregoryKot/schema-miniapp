@@ -97,7 +97,10 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
 
         {/* Name */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>{label}</div>
+          <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>
+            {label}
+            {onTap && <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.2)', marginLeft: 5 }}>›</span>}
+          </div>
         </div>
 
         {/* Score + edit button or delta */}
