@@ -227,22 +227,14 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
               <div
                 onClick={() => { dismissTooltip(); setActivePlanNeed(n); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  background: color + '12',
-                  border: `1px solid ${color}28`,
-                  borderRadius: 12, padding: '10px 14px',
-                  marginTop: -8, marginBottom: 20,
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  marginTop: -6, marginBottom: 16, paddingLeft: 2,
                   cursor: 'pointer',
                 }}
               >
-                <span style={{ fontSize: 16, flexShrink: 0 }}>🎯</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, lineHeight: 1.4 }}>
-                    Один маленький шаг — пока помнишь
-                  </div>
-                </div>
-                <span style={{ fontSize: 16, color: color + '88', flexShrink: 0 }}>›</span>
+                <span style={{ fontSize: 12 }}>🎯</span>
+                <span style={{ fontSize: 12, color: color + 'cc' }}>Запланировать что-то для себя</span>
+                <span style={{ fontSize: 12, color: color + '66' }}>→</span>
               </div>
             )}
           </div>

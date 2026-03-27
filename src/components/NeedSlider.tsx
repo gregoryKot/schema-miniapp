@@ -1,13 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { COLORS, YESTERDAY } from '../types';
 
-const HINTS: Record<string, string> = {
-  attachment: 'близость · связь',
-  autonomy:   'свобода · выбор',
-  expression: 'честность · голос',
-  play:       'игра · лёгкость',
-  limits:     'уважение · защита',
-};
 
 function NeedIcon({ id, color }: { id: string; color: string }) {
   const props = {
@@ -64,7 +57,7 @@ interface Props {
   showTooltip?: boolean;
 }
 
-export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, locked, onUnlock }: Props) {
+export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock }: Props) {
   const color = COLORS[id] ?? '#888';
   const hasValue = value !== undefined;
   const pct = hasValue ? value * 10 : 0;
@@ -102,49 +95,9 @@ export function NeedSlider({ id, label, value, onChange, onTap, showTooltip, loc
           <NeedIcon id={id} color={color} />
         </div>
 
-        {/* Name + hint */}
+        {/* Name */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>{label}</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
-            {HINTS[id] ?? ''}
-          </div>
-        </div>
-
-        {/* "?" hint icon with optional onboarding tooltip */}
-        <div style={{ position: 'relative', flexShrink: 0 }}>
-          <div style={{
-            width: 18, height: 18, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.35)',
-            fontSize: 11, fontWeight: 600,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>?</div>
-          {showTooltip && (
-            <div style={{
-              position: 'absolute',
-              bottom: 'calc(100% + 8px)',
-              right: 0,
-              background: 'rgba(255,255,255,0.92)',
-              color: '#000',
-              fontSize: 12,
-              borderRadius: 8,
-              padding: '6px 10px',
-              whiteSpace: 'nowrap',
-              zIndex: 100,
-              pointerEvents: 'none',
-            }}>
-              Нажми чтобы узнать как оценивать
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                right: 6,
-                width: 0, height: 0,
-                borderLeft: '5px solid transparent',
-                borderRight: '5px solid transparent',
-                borderTop: '5px solid rgba(255,255,255,0.92)',
-              }} />
-            </div>
-          )}
         </div>
 
         {/* Score + edit button or delta */}
