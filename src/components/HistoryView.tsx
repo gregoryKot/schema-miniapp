@@ -12,6 +12,7 @@ interface Props {
   currentRatings: Record<string, number>;
   childhoodRatings?: Partial<Record<string, number>>;
   onOpenSchemas?: () => void;
+  onOpenChildhoodWheel?: () => void;
   days?: number;
   onChangeDays?: (days: number) => void;
   onGoToToday?: () => void;
@@ -369,7 +370,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
 
 const DAYS_OPTIONS = [7, 14, 30];
 
-export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, days = 7, onChangeDays, onGoToToday, onBackfill }: Props) {
+export function HistoryView({ needs, history, currentRatings, childhoodRatings = {}, onOpenSchemas, onOpenChildhoodWheel, days = 7, onChangeDays, onGoToToday, onBackfill }: Props) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [subView, setSubView] = useState<'day' | 'week'>('day');
   const dateScrollRef = useRef<HTMLDivElement>(null);
@@ -544,12 +545,24 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
             </div>
 
             {/* Childhood legend */}
-            {Object.keys(childhoodRatings).length > 0 && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6 }}>
+            {Object.keys(childhoodRatings).length > 0 ? (
+              <div
+                onClick={onOpenChildhoodWheel}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6, cursor: onOpenChildhoodWheel ? 'pointer' : 'default' }}
+              >
                 <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(255,255,255,0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
                 <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>детство</span>
+                {onOpenChildhoodWheel && <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)' }}>→</span>}
               </div>
-            )}
+            ) : onOpenChildhoodWheel ? (
+              <div
+                onClick={onOpenChildhoodWheel}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginBottom: 6, cursor: 'pointer' }}
+              >
+                <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)' }}>🌱 Оценить детство</span>
+                <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.35)' }}>→</span>
+              </div>
+            ) : null}
 
             {/* Schema nudge */}
             {onOpenSchemas && (

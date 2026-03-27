@@ -579,7 +579,7 @@ export default function App() {
       {tab === 'history' && (
         historyLoading
           ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onGoToToday={() => {
+          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onOpenChildhoodWheel={() => setShowChildhoodWheel(true)} onGoToToday={() => {
               tabScrollPositions.current['history'] = window.scrollY;
               setTab('today');
               requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
