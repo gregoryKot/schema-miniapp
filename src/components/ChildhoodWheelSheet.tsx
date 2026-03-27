@@ -14,31 +14,44 @@ export function shouldShowChildhoodWheel(): boolean {
 const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'] as const;
 type NeedId = typeof NEED_IDS[number];
 
-const NEED_META: Record<NeedId, { label: string; emoji: string; question: string }> = {
+const NEED_META: Record<NeedId, {
+  label: string; emoji: string; question: string;
+  anchorLow: string; anchorHigh: string;
+}> = {
   attachment: {
     label: 'Привязанность',
     emoji: '🤝',
-    question: 'Был ли рядом взрослый, на которого можно было стабильно рассчитывать — не иногда, а как правило? Ощущал ли ты себя принятым и в безопасности в семье в целом?',
+    question: 'Как часто, когда тебе было плохо, рядом оказывался взрослый который это замечал и откликался?',
+    anchorLow: 'Взрослый отсутствовал или был непредсказуем. В трудный момент некому было обратиться. Было ощущение что ты лишний или нежеланный.',
+    anchorHigh: 'Был стабильный взрослый, которому можно было доверять. Он замечал когда что-то не так и приходил. Ты чувствовал себя нужным и принятым.',
   },
   autonomy: {
     label: 'Автономия',
     emoji: '🧭',
-    question: 'Поощряли ли твою самостоятельность — право иметь своё мнение, делать выбор, справляться самому? Или тебя контролировали, критиковали или решали за тебя?',
+    question: 'Насколько тебе доверяли — право иметь своё мнение, делать выборы по возрасту, справляться самому и ошибаться без катастрофы?',
+    anchorLow: 'Тебя контролировали, решали за тебя, критиковали или не доверяли. Ошибка была катастрофой. Самостоятельность не поощрялась.',
+    anchorHigh: 'Поощряли пробовать самому. Мнение уважали. Ошибки были частью взросления, а не поводом для стыда или наказания.',
   },
   expression: {
     label: 'Выражение чувств',
     emoji: '💬',
-    question: 'Можно ли было регулярно выражать чувства — злость, страх, обиду, грусть — без того чтобы тебя наказывали, игнорировали или стыдили за это?',
+    question: 'Насколько безопасно было выражать злость, страх, грусть или несогласие — без наказания, игнорирования или стыда?',
+    anchorLow: 'Сильные чувства было опасно показывать: наказывали, игнорировали или стыдили. Научился прятать или подавлять то, что чувствуешь.',
+    anchorHigh: 'Можно было плакать, злиться, бояться. Чувства принимались как норма. О своих переживаниях можно было говорить открыто.',
   },
   play: {
     label: 'Спонтанность',
     emoji: '🎉',
-    question: 'Было ли в детстве достаточно места для беззаботности, игры и радости — без постоянного давления, тревоги или чувства вины за то что просто отдыхаешь?',
+    question: 'Насколько в детстве было место для игры, лёгкости и радости — без постоянного давления, тревоги или чувства что надо быть продуктивным?',
+    anchorLow: 'Давление выполнять, достигать, быть серьёзным. Беззаботность вызывала чувство вины. Взрослые рядом были тревожными или холодными.',
+    anchorHigh: 'Было место для игры ради игры. Взрослые умели быть спонтанными. Смех и лёгкость были частью обычной жизни.',
   },
   limits: {
     label: 'Границы',
     emoji: '⚖️',
-    question: 'Были ли правила в семье последовательными и справедливыми? Не слишком жёсткими (наказания, страх) и не слишком размытыми (хаос, вседозволенность)?',
+    question: 'Насколько правила в семье были последовательными — понятными, справедливыми и устойчивыми, а не случайными, жестокими или отсутствующими?',
+    anchorLow: 'Правила были непредсказуемы, слишком жёсткими (страх, жёсткие наказания) или почти отсутствовали. Не было ощущения стабильной структуры.',
+    anchorHigh: 'Правила были понятны и объяснены. Нарушения имели соразмерные последствия. Взрослые держали границы — с теплом, не с жёсткостью.',
   },
 };
 
@@ -267,29 +280,64 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
       {/* ── FILL ── */}
       {phase === 'fill' && (
         <div>
+          {/* Idealization warning */}
+          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 20 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>⚠️ Осторожно: защитная идеализация</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
+              Психика защищает нас от боли — поэтому мы склонны помнить хорошее и не замечать систематические паттерны.
+              Оценивай <em>не отдельные моменты</em>, а то <em>как было в целом, большую часть времени</em>.
+              Прочти оба описания под ползунком — и честно выбери, какое ближе.
+            </div>
+          </div>
+
           <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20, lineHeight: 1.5 }}>
-            Оцени каждую потребность: насколько она удовлетворялась в твоём детстве (0 — совсем нет, 10 — полностью)
+            0 — совсем нет, 10 — в полной мере
           </div>
 
           {NEED_IDS.map(id => {
             const meta = NEED_META[id];
             const color = COLORS[id] ?? '#888';
             const value = ratings[id];
+            const showLow = value <= 5;
+            const showHigh = value >= 5;
             return (
-              <div key={id} style={{ marginBottom: 24 }}>
+              <div key={id} style={{ marginBottom: 28 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: color + '1f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
                     {meta.emoji}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{meta.label}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
                   </div>
                   <div style={{ fontSize: 16, fontWeight: 700, color, flexShrink: 0, minWidth: 28, textAlign: 'right' }}>
                     {value}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>/10</span>
                   </div>
                 </div>
                 <Slider value={value} color={color} onChange={v => setRatings(prev => ({ ...prev, [id]: v }))} />
+                {/* Anchors */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}>
+                  <div style={{
+                    fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
+                    background: showLow && value <= 4 ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.03)',
+                    color: showLow && value <= 4 ? 'rgba(248,113,113,0.75)' : 'rgba(255,255,255,0.25)',
+                    border: showLow && value <= 4 ? '1px solid rgba(248,113,113,0.2)' : '1px solid transparent',
+                    transition: 'all 0.2s',
+                  }}>
+                    <span style={{ fontWeight: 600, display: 'block', marginBottom: 2 }}>0 — дефицит</span>
+                    {meta.anchorLow}
+                  </div>
+                  <div style={{
+                    fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
+                    background: showHigh && value >= 8 ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.03)',
+                    color: showHigh && value >= 8 ? 'rgba(52,211,153,0.75)' : 'rgba(255,255,255,0.25)',
+                    border: showHigh && value >= 8 ? '1px solid rgba(52,211,153,0.2)' : '1px solid transparent',
+                    transition: 'all 0.2s',
+                  }}>
+                    <span style={{ fontWeight: 600, display: 'block', marginBottom: 2 }}>10 — насыщение</span>
+                    {meta.anchorHigh}
+                  </div>
+                </div>
               </div>
             );
           })}
