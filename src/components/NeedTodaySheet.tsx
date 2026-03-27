@@ -245,25 +245,6 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
         </div>
       )}
 
-      {/* Section 4: Tip (reflective) */}
-      <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Попробуй сегодня</SectionLabel>
-        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
-          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
-            {tip}
-            <span
-              onClick={(e) => { e.stopPropagation(); setShowDisclaimer(true); }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 16, height: 16, borderRadius: '50%',
-                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)',
-                fontSize: 10, fontWeight: 600, cursor: 'pointer',
-                marginLeft: 6, verticalAlign: 'middle', flexShrink: 0,
-              }}
-            >?</span>
-          </div>
-        </div>
-      </div>
 
       {showPlan && (
         <PlanSheet
