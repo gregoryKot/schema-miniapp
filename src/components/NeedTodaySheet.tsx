@@ -23,6 +23,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showPlan, setShowPlan] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
+  const [showRanges, setShowRanges] = useState(false);
   const data = NEED_DATA[need.id];
   if (!data) return null;
   const color = COLORS[need.id] ?? '#888';
@@ -176,93 +177,50 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
         )}
       </div>
 
-      {/* Section 2: Range pills */}
+      {/* Section 2: Range pills — collapsible */}
       <div style={{ marginBottom: 24 }}>
-        <SectionLabel>Как понять оценку</SectionLabel>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {data.ranges.map((range, i) => {
-            const active = i === rangeIdx;
-            return (
-              <div
-                key={range.label}
-                onClick={() => onChange(RANGE_VALUES[i])}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                  background: active ? color + '33' : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${active ? color + '55' : 'rgba(255,255,255,0.08)'}`,
-                  borderRadius: 12, padding: '10px 12px',
-                  cursor: 'pointer',
-                }}
-              >
-                <div style={{
-                  width: 7, height: 7, borderRadius: '50%',
-                  background: active ? color : 'rgba(255,255,255,0.2)',
-                  flexShrink: 0, marginTop: 4,
-                }} />
-                <div>
-                  <span style={{
-                    fontSize: 13, fontWeight: 600,
-                    color: active ? color : 'rgba(255,255,255,0.35)',
-                    marginRight: 6,
-                  }}>
-                    {range.label}
-                  </span>
-                  <span style={{
-                    fontSize: 13,
-                    color: active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)',
-                    lineHeight: 1.5,
-                  }}>
-                    {range.description}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+        <div
+          onClick={() => setShowRanges(v => !v)}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showRanges ? 10 : 0 }}
+        >
+          <SectionLabel mb={0}>Как понять оценку</SectionLabel>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{showRanges ? '▴' : '▾'}</span>
         </div>
+        {showRanges && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {data.ranges.map((range, i) => {
+              const active = i === rangeIdx;
+              return (
+                <div
+                  key={range.label}
+                  onClick={() => onChange(RANGE_VALUES[i])}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                    background: active ? color + '33' : 'rgba(255,255,255,0.04)',
+                    border: `1px solid ${active ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+                    borderRadius: 12, padding: '10px 12px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{
+                    width: 7, height: 7, borderRadius: '50%',
+                    background: active ? color : 'rgba(255,255,255,0.2)',
+                    flexShrink: 0, marginTop: 4,
+                  }} />
+                  <div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: active ? color : 'rgba(255,255,255,0.35)', marginRight: 6 }}>
+                      {range.label}
+                    </span>
+                    <span style={{ fontSize: 13, color: active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+                      {range.description}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-
-      {/* Section 3: Actions (low score only) */}
-      {value <= 3 && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <SectionLabel mb={0}>Сделай прямо сейчас</SectionLabel>
-            <span
-              onClick={(e) => { e.stopPropagation(); setShowDisclaimer(true); }}
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 14, height: 14, borderRadius: '50%',
-                background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)',
-                fontSize: 9, fontWeight: 600, cursor: 'pointer', flexShrink: 0,
-              }}
-            >?</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {data.actions.map((action, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 12,
-                  background: color + '12',
-                  border: `1px solid ${color}28`,
-                  borderRadius: 12, padding: '12px 14px',
-                }}
-              >
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  background: color + '22',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 700, color, marginTop: 1,
-                }}>
-                  {i + 1}
-                </div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55 }}>
-                  {action}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Plan button (low score only) */}
       {value <= 3 && (
