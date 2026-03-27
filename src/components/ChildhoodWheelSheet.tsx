@@ -237,6 +237,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
   });
   const [saving, setSaving] = useState(false);
   const [openExampleId, setOpenExampleId] = useState<NeedId | null>(null);
+  const [openExampleIdx, setOpenExampleIdx] = useState<number | null>(null);
 
   useEffect(() => {
     if (alreadyDone) {
@@ -344,7 +345,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     <button
-                      onClick={() => setOpenExampleId(openExampleId === id ? null : id)}
+                      onClick={() => { setOpenExampleId(openExampleId === id ? null : id); setOpenExampleIdx(null); }}
                       style={{
                         width: 24, height: 24, borderRadius: '50%', border: 'none', cursor: 'pointer',
                         background: openExampleId === id ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.08)',
@@ -389,23 +390,32 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                       Примеры — как это выглядит в жизни
                     </div>
                     {meta.examples.map((ex, i) => {
-                      const isLow = ex.score <= 3;
-                      const isMid = ex.score > 3 && ex.score < 8;
-                      const isHigh = ex.score >= 8;
-                      const badgeColor = isLow ? '#f87171' : isMid ? '#fbbf24' : '#34d399';
+                      const badgeColor = ex.score <= 3 ? '#f87171' : ex.score < 8 ? '#fbbf24' : '#34d399';
+                      const isOpen = openExampleIdx === i;
                       return (
-                        <div key={i} style={{
-                          padding: '10px 12px',
-                          borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                          background: 'rgba(255,255,255,0.02)',
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                        <div
+                          key={i}
+                          onClick={() => setOpenExampleIdx(isOpen ? null : i)}
+                          style={{
+                            padding: '10px 12px', cursor: 'pointer',
+                            borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.05)',
+                            background: isOpen ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <span style={{
                               fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
-                              background: badgeColor + '22', color: badgeColor,
+                              background: badgeColor + '22', color: badgeColor, flexShrink: 0,
                             }}>≈{ex.score}/10</span>
+                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginLeft: 'auto' }}>
+                              {isOpen ? '▴' : '▾'}
+                            </span>
                           </div>
-                          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>{ex.text}</div>
+                          {isOpen && (
+                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginTop: 8 }}>
+                              {ex.text}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
