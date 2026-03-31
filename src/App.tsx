@@ -3,6 +3,7 @@ import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
 import { DiarySection } from './sections/DiarySection';
 import { HomeSection } from './sections/HomeSection';
+import { ProfileSection, DEFAULT_SECTION_KEY } from './sections/ProfileSection';
 import { BottomNav, Section } from './components/BottomNav';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
@@ -56,9 +57,12 @@ function getInitialSection(): Section {
   const s = params.get('section');
   if (s === 'diaries') return 'diaries';
   if (s === 'tracker') return 'tracker';
+  if (s === 'profile') return 'profile';
   const startParam = (window.Telegram?.WebApp as any)?.initDataUnsafe?.start_param as string | undefined;
   if (startParam === 'diaries') return 'diaries';
   if (startParam === 'tracker') return 'tracker';
+  const stored = localStorage.getItem(DEFAULT_SECTION_KEY) as Section | null;
+  if (stored && ['home', 'tracker', 'diaries'].includes(stored)) return stored;
   return 'home';
 }
 
@@ -395,6 +399,13 @@ export default function App() {
 
       {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} />}
 
+      {section === 'profile' && (
+        <ProfileSection
+          onOpenSchema={() => { setShowSchemaInfo(true); setSchemaAutoStartTest(false); }}
+          onOpenProfile={() => setShowProfile(true)}
+        />
+      )}
+
       {section === 'tracker' && !disclaimerDone && (
         <Disclaimer onAccept={() => {
           localStorage.setItem(DISCLAIMER_KEY, '1');
@@ -415,28 +426,10 @@ export default function App() {
         borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}>
         {/* Date row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <div style={{ marginBottom: 10 }}>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
             {formatHeaderDate()}
           </span>
-          {/* Header icons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div
-              onClick={() => setShowSchemaInfo(true)}
-              style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.25)', lineHeight: 1, padding: 2, fontSize: 18 }}
-            >
-              🧠
-            </div>
-            <div
-              onClick={() => setShowProfile(true)}
-              style={{ cursor: 'pointer', color: 'rgba(255,255,255,0.35)', lineHeight: 1, padding: 2 }}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-          </div>
         </div>
 
         {/* Title + subtitle */}
