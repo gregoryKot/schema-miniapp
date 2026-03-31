@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
 import { DiarySection } from './sections/DiarySection';
+import { HomeSection } from './sections/HomeSection';
 import { BottomNav, Section } from './components/BottomNav';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
@@ -52,10 +53,13 @@ const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
 
 function getInitialSection(): Section {
   const params = new URLSearchParams(window.location.search);
-  if (params.get('section') === 'diaries') return 'diaries';
-  const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+  const s = params.get('section');
+  if (s === 'diaries') return 'diaries';
+  if (s === 'tracker') return 'tracker';
+  const startParam = (window.Telegram?.WebApp as any)?.initDataUnsafe?.start_param as string | undefined;
   if (startParam === 'diaries') return 'diaries';
-  return 'tracker';
+  if (startParam === 'tracker') return 'tracker';
+  return 'home';
 }
 
 function fillHistoryGaps(h: DayHistory[]): DayHistory[] {
@@ -388,6 +392,8 @@ export default function App() {
       )}
 
       {section === 'diaries' && <DiarySection />}
+
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} />}
 
       {section === 'tracker' && !disclaimerDone && (
         <Disclaimer onAccept={() => {
