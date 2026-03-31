@@ -87,17 +87,31 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
             <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 18 }}>
               Схемы — устойчивые паттерны мышления и поведения, которые сформировались в детстве. YSQ-тест покажет какие из них активны у тебя — это точка отсчёта для всего остального.
             </div>
-            <button
-              onClick={() => onOpenSchema(true)}
-              style={{
-                width: '100%', padding: '13px 0', borderRadius: 14, border: 'none',
-                background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-                color: '#fff', fontSize: 15, fontWeight: 600,
-                cursor: 'pointer', letterSpacing: '-0.2px',
-              }}
-            >
-              {ysqInProgress ? 'Продолжить YSQ-тест' : 'Пройти YSQ-тест'}
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => onOpenSchema(true)}
+                style={{
+                  flex: 1, padding: '13px 0', borderRadius: 14, border: 'none',
+                  background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+                  color: '#fff', fontSize: 15, fontWeight: 600,
+                  cursor: 'pointer', letterSpacing: '-0.2px',
+                }}
+              >
+                {ysqInProgress ? 'Продолжить тест' : 'Пройти YSQ-тест'}
+              </button>
+              <button
+                onClick={() => onOpenSchema(false)}
+                style={{
+                  padding: '13px 16px', borderRadius: 14,
+                  border: '1px solid rgba(167,139,250,0.25)',
+                  background: 'rgba(167,139,250,0.08)',
+                  color: '#a78bfa', fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', whiteSpace: 'nowrap',
+                }}
+              >
+                Читать
+              </button>
+            </div>
           </div>
         ) : (
           /* YSQ done — show schemas */

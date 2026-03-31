@@ -109,7 +109,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
   );
 
   return (
-    <BottomSheet onClose={onAccept} zIndex={300}>
+    <BottomSheet onClose={() => {}} zIndex={300}>
       <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
         <div style={{ fontSize: 36 }}>🧠</div>
       </div>
@@ -403,7 +403,7 @@ export default function App() {
         <ProfileSection onOpenProfile={() => setShowProfile(true)} />
       )}
 
-      {section === 'tracker' && !disclaimerDone && (
+      {!disclaimerDone && (
         <Disclaimer onAccept={() => {
           localStorage.setItem(DISCLAIMER_KEY, '1');
           api.acceptDisclaimer().catch(() => {});
