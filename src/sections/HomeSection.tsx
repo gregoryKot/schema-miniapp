@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
 import { api } from '../api';
+import { Section } from '../components/BottomNav';
 import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../diaryData';
+import { getTelegramSafeTop } from '../utils/safezone';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from '../components/YSQTestSheet';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
@@ -12,6 +14,7 @@ export const MY_MODE_IDS_KEY = 'my_mode_ids';
 interface Props {
   needs: Need[];
   ratings: Record<string, number>;
+  onNavigate: (s: Section) => void;
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
 }
 
@@ -36,7 +39,7 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function HomeSection({ needs, ratings, onOpenSchema }: Props) {
+export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
@@ -82,7 +85,7 @@ export function HomeSection({ needs, ratings, onOpenSchema }: Props) {
 
   const hasSchemas = activeSchemas.length > 0;
   const hasModes = myModes.length > 0;
-  const safeTop = (window.Telegram?.WebApp as any)?.safeAreaInset?.top ?? 0;
+  const safeTop = getTelegramSafeTop();
 
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 80, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
@@ -212,13 +215,15 @@ export function HomeSection({ needs, ratings, onOpenSchema }: Props) {
 
         {/* ── Streak + Today's needs ── */}
         <div style={{ display: 'flex', gap: 10, animation: 'slide-up 0.3s ease 0.08s both' }}>
-          <div style={{
-            width: 110, flexShrink: 0,
-            background: streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
-            borderRadius: 20, padding: '16px 14px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          }}>
+          <div
+            onClick={() => onNavigate('profile')}
+            style={{
+              width: 110, flexShrink: 0,
+              background: streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              borderRadius: 20, padding: '16px 14px', cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            }}>
             <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
             <div>
               <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)' }}>{streak}</div>
@@ -228,7 +233,7 @@ export function HomeSection({ needs, ratings, onOpenSchema }: Props) {
             </div>
           </div>
 
-          <div style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 14px' }}>
+          <div onClick={() => onNavigate('tracker')} style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 14px', cursor: 'pointer' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
               {allRated ? 'Готово сегодня' : `${ratedCount} из ${needs.length}`}
             </div>

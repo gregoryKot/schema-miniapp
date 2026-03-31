@@ -1,4 +1,5 @@
 import { DiaryType } from '../../types';
+import { getTelegramSafeTop } from '../../utils/safezone';
 
 interface DiaryMeta {
   type: DiaryType;
@@ -101,10 +102,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
     },
   ];
 
-  const safeTop = Math.max(
-    (window.Telegram?.WebApp as any)?.contentSafeAreaInset?.top ?? 0,
-    (window.Telegram?.WebApp as any)?.safeAreaInset?.top ?? 0,
-  );
+  const safeTop = getTelegramSafeTop();
 
   return (
     <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>

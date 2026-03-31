@@ -23,6 +23,7 @@ import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
 import { PracticePlan, PairsData, StreakData } from './api';
+import { getTelegramSafeTop } from './utils/safezone';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -389,8 +390,7 @@ export default function App() {
     );
   }
 
-  const tgWA = (window.Telegram?.WebApp as any);
-  const safeTop = Math.max(tgWA?.contentSafeAreaInset?.top ?? 0, tgWA?.safeAreaInset?.top ?? 0);
+  const safeTop = getTelegramSafeTop();
 
   return (
     <div style={{ minHeight: '100vh' }}>
@@ -402,10 +402,10 @@ export default function App() {
 
       {section === 'diaries' && <DiarySection />}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
 
       {section === 'profile' && (
-        <ProfileSection onOpenProfile={() => setShowProfile(true)} />
+        <ProfileSection onOpenAdvanced={() => setShowProfile(true)} />
       )}
 
       {!disclaimerDone && (
