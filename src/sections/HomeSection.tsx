@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
 import { api } from '../api';
-import { Section } from '../components/BottomNav';
 import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../diaryData';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from '../components/YSQTestSheet';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
@@ -13,7 +12,6 @@ export const MY_MODE_IDS_KEY = 'my_mode_ids';
 interface Props {
   needs: Need[];
   ratings: Record<string, number>;
-  onNavigate: (s: Section) => void;
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
 }
 
@@ -38,7 +36,7 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props) {
+export function HomeSection({ needs, ratings, onOpenSchema }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
@@ -69,10 +67,6 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
     .map(id => ALL_MODES.find(m => m.id === id))
     .filter(Boolean) as typeof ALL_MODES;
 
-  const lastDiary = profile?.lastActivity.schemaDiary
-    ?? profile?.lastActivity.modeDiary
-    ?? profile?.lastActivity.gratitudeDiary;
-
   function saveSchemas(ids: string[]) {
     localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(ids));
     setManualSchemaIds(ids);
@@ -88,9 +82,10 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
 
   const hasSchemas = activeSchemas.length > 0;
   const hasModes = myModes.length > 0;
+  const safeTop = (window.Telegram?.WebApp as any)?.safeAreaInset?.top ?? 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 80, animation: 'fade-in 0.25s ease' }}>
+    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 80, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
 
       {/* Header */}
       <div style={{ padding: '24px 20px 0' }}>
@@ -257,32 +252,6 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
               })}
             </div>
           </div>
-        </div>
-
-        {/* ── Tracker card ── */}
-        <div onClick={() => onNavigate('tracker')} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '18px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, position: 'relative', overflow: 'hidden', animation: 'slide-up 0.3s ease 0.12s both' }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: 'linear-gradient(to bottom, #a78bfa, #60a5fa)', borderRadius: '0 2px 2px 0' }} />
-          <div style={{ width: 46, height: 46, borderRadius: 14, flexShrink: 0, background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📊</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Трекер потребностей</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-              {allRated ? '✓ Всё заполнено на сегодня' : ratedCount > 0 ? `Осталось ${needs.length - ratedCount} потребности` : 'Не заполнено сегодня'}
-            </div>
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
-        </div>
-
-        {/* ── Diary card ── */}
-        <div onClick={() => onNavigate('diaries')} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '18px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, position: 'relative', overflow: 'hidden', animation: 'slide-up 0.3s ease 0.16s both' }}>
-          <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, background: 'linear-gradient(to bottom, #60a5fa, #34d399)', borderRadius: '0 2px 2px 0' }} />
-          <div style={{ width: 46, height: 46, borderRadius: 14, flexShrink: 0, background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>📔</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Дневники</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-              {lastDiary ? `Последняя запись ${new Date(lastDiary).toLocaleDateString('ru', { day: 'numeric', month: 'short' })}` : 'Схемы, режимы, благодарность'}
-            </div>
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
         </div>
 
       </div>

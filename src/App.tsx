@@ -389,6 +389,9 @@ export default function App() {
     );
   }
 
+  const tgWA = (window.Telegram?.WebApp as any);
+  const safeTop = Math.max(tgWA?.contentSafeAreaInset?.top ?? 0, tgWA?.safeAreaInset?.top ?? 0);
+
   return (
     <div style={{ minHeight: '100vh' }}>
       {isOffline && (
@@ -399,7 +402,7 @@ export default function App() {
 
       {section === 'diaries' && <DiarySection />}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
 
       {section === 'profile' && (
         <ProfileSection onOpenProfile={() => setShowProfile(true)} />
@@ -421,7 +424,7 @@ export default function App() {
         background: 'rgba(6,10,18,0.94)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
-        padding: '16px 20px 14px',
+        padding: `${safeTop + 16}px 20px 14px`,
         borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}>
         {/* Date row */}

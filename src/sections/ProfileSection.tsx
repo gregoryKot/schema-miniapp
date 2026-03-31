@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
-import { api, UserSettings } from '../api';
+import { api, UserSettings, StreakData } from '../api';
 import { Section } from '../components/BottomNav';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
-
-const SECTION_LABELS: Record<Exclude<Section, 'profile'>, string> = {
-  home: 'Главная',
-  tracker: 'Трекер',
-  diaries: 'Дневники',
-};
 
 interface Props {
   onOpenProfile: () => void;
@@ -16,9 +10,27 @@ interface Props {
 
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
+function StatCard({ value, label, emoji, color }: { value: number; label: string; emoji: string; color: string }) {
+  return (
+    <div style={{
+      flex: 1, background: 'rgba(255,255,255,0.03)',
+      border: `1px solid ${color}22`,
+      borderRadius: 18, padding: '16px 14px',
+      display: 'flex', flexDirection: 'column', gap: 4,
+    }}>
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>{emoji}</div>
+      <div style={{ fontSize: 28, fontWeight: 800, color, lineHeight: 1, letterSpacing: '-1px' }}>{value}</div>
+      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', lineHeight: 1.3 }}>{label}</div>
+    </div>
+  );
+}
+
 export function ProfileSection({ onOpenProfile }: Props) {
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
+  const safeTop = (window.Telegram?.WebApp as any)?.safeAreaInset?.top ?? 0;
+
   const [settings, setSettings] = useState<UserSettings | null>(null);
+  const [streak, setStreak] = useState<StreakData | null>(null);
   const [defaultSection, setDefaultSection] = useState<Exclude<Section, 'profile'>>(
     () => {
       const stored = localStorage.getItem(DEFAULT_SECTION_KEY);
@@ -31,6 +43,9 @@ export function ProfileSection({ onOpenProfile }: Props) {
     api.getSettings()
       .then(setSettings)
       .catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false }));
+    api.getStreak()
+      .then(setStreak)
+      .catch(() => {});
   }, []);
 
   async function toggleNotify() {
@@ -45,68 +60,51 @@ export function ProfileSection({ onOpenProfile }: Props) {
     localStorage.setItem(DEFAULT_SECTION_KEY, s);
   }
 
-  const SCREENS: Exclude<Section, 'profile'>[] = ['home', 'tracker', 'diaries'];
-
   const notifyOn = settings?.notifyEnabled ?? false;
   const localHour = settings?.notifyLocalHour ?? 21;
+  const currentStreak = streak?.currentStreak ?? 0;
+  const totalDays = streak?.totalDays ?? 0;
+
+  const SCREENS: { id: Exclude<Section, 'profile'>; label: string; emoji: string }[] = [
+    { id: 'home', label: 'Главная', emoji: '🏠' },
+    { id: 'tracker', label: 'Потребности', emoji: '🎯' },
+    { id: 'diaries', label: 'Дневники', emoji: '📔' },
+  ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 90, animation: 'fade-in 0.25s ease' }}>
+    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 90, paddingTop: safeTop + 16, animation: 'fade-in 0.25s ease' }}>
 
       {/* Header */}
-      <div style={{ padding: '24px 20px 0' }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
-          Настройки
-        </div>
-        <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+      <div style={{ padding: '0 20px 20px' }}>
+        <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
           {firstName || 'Профиль'}
+        </div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+          Настройки и прогресс
         </div>
       </div>
 
-      <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Stats */}
+      <div style={{ display: 'flex', gap: 10, padding: '0 20px 14px' }}>
+        <StatCard value={currentStreak} label="дней подряд" emoji="🔥" color="#f97316" />
+        <StatCard value={totalDays} label="всего дней" emoji="📅" color="#60a5fa" />
+      </div>
 
-        {/* Default screen */}
-        <div style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '16px 18px',
-          animation: 'slide-up 0.3s ease 0.05s both',
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-            Экран при открытии
-          </div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            {SCREENS.map(s => {
-              const active = defaultSection === s;
-              return (
-                <button key={s} onClick={() => pickDefault(s)} style={{
-                  flex: 1, padding: '9px 0', borderRadius: 12, border: 'none',
-                  background: active ? 'rgba(167,139,250,0.18)' : 'rgba(255,255,255,0.05)',
-                  color: active ? '#a78bfa' : 'rgba(255,255,255,0.4)',
-                  fontSize: 12, fontWeight: active ? 600 : 400,
-                  cursor: 'pointer', transition: 'all 0.15s',
-                  outline: active ? '1px solid rgba(167,139,250,0.3)' : '1px solid transparent',
-                }}>
-                  {SECTION_LABELS[s]}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
         {/* Notifications */}
         <div style={{
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '16px 18px',
-          animation: 'slide-up 0.3s ease 0.1s both',
+          borderRadius: 20,
+          animation: 'slide-up 0.3s ease 0.05s both',
         }}>
           <div
             onClick={toggleNotify}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', padding: '16px 18px' }}
           >
             <div>
-              <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', marginBottom: 3 }}>Ежедневное напоминание</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 2 }}>Ежедневное напоминание</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
                 {notifyOn ? `Каждый день в ${pad(localHour)}:00` : 'Выключено'}
               </div>
@@ -124,33 +122,66 @@ export function ProfileSection({ onOpenProfile }: Props) {
               }} />
             </div>
           </div>
+          {notifyOn && (
+            <div
+              onClick={onOpenProfile}
+              style={{
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                padding: '12px 18px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                cursor: 'pointer',
+              }}
+            >
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Изменить время и часовой пояс</div>
+              <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</div>
+            </div>
+          )}
         </div>
 
-        {/* Full profile & stats */}
+        {/* Default screen */}
+        <div style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.07)',
+          borderRadius: 20, padding: '16px 18px',
+          animation: 'slide-up 0.3s ease 0.1s both',
+        }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: 12 }}>
+            Открывать сначала
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {SCREENS.map(s => {
+              const active = defaultSection === s.id;
+              return (
+                <button key={s.id} onClick={() => pickDefault(s.id)} style={{
+                  flex: 1, padding: '10px 4px', borderRadius: 14, border: 'none',
+                  background: active ? 'rgba(167,139,250,0.18)' : 'rgba(255,255,255,0.05)',
+                  color: active ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+                  fontSize: 11, fontWeight: active ? 700 : 400,
+                  cursor: 'pointer', transition: 'all 0.15s',
+                  outline: active ? '1px solid rgba(167,139,250,0.3)' : '1px solid transparent',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 16 }}>{s.emoji}</span>
+                  <span>{s.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Detailed settings */}
         <div onClick={onOpenProfile} style={{
           background: 'rgba(255,255,255,0.03)',
           border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '18px 20px',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16,
-          position: 'relative', overflow: 'hidden',
-          animation: 'slide-up 0.3s ease 0.2s both',
+          borderRadius: 20, padding: '16px 18px',
+          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          animation: 'slide-up 0.3s ease 0.15s both',
         }}>
-          <div style={{
-            position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
-            background: 'linear-gradient(to bottom, #60a5fa, #34d399)',
-            borderRadius: '0 2px 2px 0',
-          }} />
-          <div style={{
-            width: 46, height: 46, borderRadius: 14, flexShrink: 0,
-            background: 'rgba(96,165,250,0.12)',
-            border: '1px solid rgba(96,165,250,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-          }}>📊</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Статистика и достижения</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Стрик, инсайты, партнёр, практики</div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 2 }}>Детальные настройки</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Часовой пояс, партнёр, достижения</div>
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
+          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18 }}>›</div>
         </div>
 
       </div>

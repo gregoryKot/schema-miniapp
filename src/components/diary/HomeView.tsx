@@ -101,8 +101,13 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
     },
   ];
 
+  const safeTop = Math.max(
+    (window.Telegram?.WebApp as any)?.contentSafeAreaInset?.top ?? 0,
+    (window.Telegram?.WebApp as any)?.safeAreaInset?.top ?? 0,
+  );
+
   return (
-    <div style={{ padding: '16px 16px 32px' }}>
+    <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 24, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Дневники</div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
