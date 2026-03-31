@@ -14,7 +14,7 @@ interface Props {
   needs: Need[];
   ratings: Record<string, number>;
   onNavigate: (s: Section) => void;
-  onOpenSchema: (startTest?: boolean) => void;
+  onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
 }
 
 function formatGreetingDate(): string {
@@ -120,7 +120,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
                 {hasSchemas ? 'Изменить' : 'Выбрать'}
               </div>
               {ysqDone && (
-                <div onClick={() => onOpenSchema()} style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}>
+                <div onClick={() => onOpenSchema({ tab: 'schemas' })} style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', cursor: 'pointer' }}>
                   Тест →
                 </div>
               )}
@@ -130,10 +130,10 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
           {hasSchemas ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {activeSchemas.map(s => (
-                <span key={s.id} style={{
+                <span key={s.id} onClick={() => onOpenSchema({ tab: 'schemas', highlight: s.name })} style={{
                   fontSize: 12, borderRadius: 10, padding: '5px 11px',
                   background: `${s.domainColor}15`, border: `1px solid ${s.domainColor}30`,
-                  color: s.domainColor, fontWeight: 500,
+                  color: s.domainColor, fontWeight: 500, cursor: 'pointer',
                 }}>{s.name}</span>
               ))}
             </div>
@@ -146,14 +146,14 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
                 Схемы — устойчивые паттерны мышления и поведения из детства. Они влияют на то, как ты реагируешь сегодня.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => onOpenSchema(true)} style={{
+                <button onClick={() => onOpenSchema({ startTest: true })} style={{
                   flex: 1, padding: '12px 0', borderRadius: 14, border: 'none',
                   background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
                   color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
                 }}>
                   {ysqInProgress ? 'Продолжить тест' : 'Пройти YSQ-тест'}
                 </button>
-                <button onClick={() => onOpenSchema(false)} style={{
+                <button onClick={() => onOpenSchema({ tab: 'schemas' })} style={{
                   padding: '12px 16px', borderRadius: 14,
                   border: '1px solid rgba(167,139,250,0.25)',
                   background: 'rgba(167,139,250,0.08)',

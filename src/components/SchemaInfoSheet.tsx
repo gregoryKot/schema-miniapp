@@ -388,7 +388,8 @@ function ModesTab() {
 }
 
 /* ─── Main Component ─── */
-interface Props { onClose: () => void; ratings?: Record<string, number>; autoStartTest?: boolean }
+export type SchemaInfoTab = 'needs' | 'schemas' | 'modes';
+interface Props { onClose: () => void; ratings?: Record<string, number>; autoStartTest?: boolean; initialTab?: SchemaInfoTab; highlightSchema?: string }
 
 const SCHEMA_TABS: { key: Tab; label: string }[] = [
   { key: 'needs', label: 'Потребности' },
@@ -421,14 +422,14 @@ export function SchemaInfoContent({ initialTab, highlight }: { initialTab?: Tab;
   );
 }
 
-export function SchemaInfoSheet({ onClose, ratings, autoStartTest }: Props) {
+export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, highlightSchema: initHighlight }: Props) {
   const [showTest, setShowTest] = useState(autoStartTest ?? false);
   const [contentKey, setContentKey] = useState(0);
-  const [contentInitialTab, setContentInitialTab] = useState<Tab>('needs');
+  const [contentInitialTab, setContentInitialTab] = useState<Tab>(initialTab ?? 'needs');
   const hasResult = !!localStorage.getItem(YSQ_RESULT_KEY);
   const hasProgress = !!localStorage.getItem(YSQ_PROGRESS_KEY);
 
-  const [highlightSchema, setHighlightSchema] = useState<string | undefined>();
+  const [highlightSchema, setHighlightSchema] = useState<string | undefined>(initHighlight);
 
   const handleViewSchemas = (schemaName?: string) => {
     setContentInitialTab('schemas');

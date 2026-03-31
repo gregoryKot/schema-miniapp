@@ -203,6 +203,8 @@ export default function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
   const [schemaAutoStartTest, setSchemaAutoStartTest] = useState(false);
+  const [schemaInitialTab, setSchemaInitialTab] = useState<'needs'|'schemas'|'modes'>('needs');
+  const [schemaHighlight, setSchemaHighlight] = useState<string | undefined>();
   const [showProfile, setShowProfile] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
@@ -397,7 +399,7 @@ export default function App() {
 
       {section === 'diaries' && <DiarySection />}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(startTest) => { setSchemaAutoStartTest(!!startTest); setShowSchemaInfo(true); }} />}
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
 
       {section === 'profile' && (
         <ProfileSection onOpenProfile={() => setShowProfile(true)} />
@@ -712,7 +714,7 @@ export default function App() {
       </>)}
 
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
-      {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
+      {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       <BottomNav section={section} onSelect={setSection} />
     </div>

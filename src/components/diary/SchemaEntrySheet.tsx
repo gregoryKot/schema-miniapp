@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
 import { EMOTIONS, INTENSITY_LABELS, SCHEMA_DOMAINS } from '../../diaryData';
 import { EmotionEntry } from '../../types';
+
+const DRAFT_KEY = 'schema_diary_draft';
 
 interface Props {
   activeSchemaIds?: string[];
@@ -41,23 +43,57 @@ function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onCha
   );
 }
 
+interface DraftData {
+  trigger: string;
+  emotions: EmotionEntry[];
+  thoughts: string;
+  bodyFeelings: string;
+  actualBehavior: string;
+  schemaIds: string[];
+  schemaOrigin: string;
+  healthyView: string;
+  realProblems: string;
+  excessiveReactions: string;
+  healthyBehavior: string;
+}
+
+function loadDraft(): DraftData | null {
+  try {
+    const s = localStorage.getItem(DRAFT_KEY);
+    return s ? JSON.parse(s) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
-  const [trigger, setTrigger] = useState('');
-  const [emotions, setEmotions] = useState<EmotionEntry[]>([]);
-  const [thoughts, setThoughts] = useState('');
-  const [bodyFeelings, setBodyFeelings] = useState('');
-  const [actualBehavior, setActualBehavior] = useState('');
-  const [schemaIds, setSchemaIds] = useState<string[]>([]);
-  const [schemaOrigin, setSchemaOrigin] = useState('');
-  const [healthyView, setHealthyView] = useState('');
-  const [realProblems, setRealProblems] = useState('');
-  const [excessiveReactions, setExcessiveReactions] = useState('');
-  const [healthyBehavior, setHealthyBehavior] = useState('');
+  const draft = loadDraft();
+
+  const [trigger, setTrigger] = useState(draft?.trigger ?? '');
+  const [emotions, setEmotions] = useState<EmotionEntry[]>(draft?.emotions ?? []);
+  const [thoughts, setThoughts] = useState(draft?.thoughts ?? '');
+  const [bodyFeelings, setBodyFeelings] = useState(draft?.bodyFeelings ?? '');
+  const [actualBehavior, setActualBehavior] = useState(draft?.actualBehavior ?? '');
+  const [schemaIds, setSchemaIds] = useState<string[]>(draft?.schemaIds ?? []);
+  const [schemaOrigin, setSchemaOrigin] = useState(draft?.schemaOrigin ?? '');
+  const [healthyView, setHealthyView] = useState(draft?.healthyView ?? '');
+  const [realProblems, setRealProblems] = useState(draft?.realProblems ?? '');
+  const [excessiveReactions, setExcessiveReactions] = useState(draft?.excessiveReactions ?? '');
+  const [healthyBehavior, setHealthyBehavior] = useState(draft?.healthyBehavior ?? '');
   const [saving, setSaving] = useState(false);
   const [showAllSchemas, setShowAllSchemas] = useState(false);
 
   const hasPersonalSchemas = activeSchemaIds && activeSchemaIds.length > 0;
   const useFiltered = hasPersonalSchemas && !showAllSchemas;
+
+  // Auto-save draft on every change
+  useEffect(() => {
+    const data: DraftData = {
+      trigger, emotions, thoughts, bodyFeelings, actualBehavior,
+      schemaIds, schemaOrigin, healthyView, realProblems, excessiveReactions, healthyBehavior,
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  }, [trigger, emotions, thoughts, bodyFeelings, actualBehavior, schemaIds, schemaOrigin, healthyView, realProblems, excessiveReactions, healthyBehavior]);
 
   const toggleEmotion = (id: string) =>
     setEmotions(prev => prev.find(e => e.id === id) ? prev.filter(e => e.id !== id) : [...prev, { id, intensity: 3 }]);
@@ -87,17 +123,24 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         excessiveReactions: excessiveReactions || undefined,
         healthyBehavior: healthyBehavior || undefined,
       });
+      localStorage.removeItem(DRAFT_KEY);
       onClose();
     } finally {
       setSaving(false);
     }
   };
 
+  const hasDraft = !!(draft && Object.values(draft).some(v =>
+    Array.isArray(v) ? v.length > 0 : typeof v === 'string' && v.trim().length > 0
+  ));
+
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Дневник проявления схем</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Новая запись</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+          Новая запись{hasDraft ? ' · черновик восстановлен' : ''}
+        </div>
 
         <FieldLabel title="1. Спусковой механизм" hint="что произошло" />
         <Area value={trigger} onChange={setTrigger} placeholder="Опиши ситуацию: что случилось, где, с кем, когда?" rows={3} />
@@ -204,7 +247,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         </button>
         {!canSave && (
           <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>
-            Обязательно: спусковой механизм, эмоции и схемы
+            Нужно заполнить хотя бы спусковой механизм
           </div>
         )}
       </div>
