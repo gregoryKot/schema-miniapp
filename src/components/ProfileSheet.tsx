@@ -515,7 +515,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
           <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
             <button
               onClick={async () => {
-                const text = 'Дневник потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
+                const text = 'Трекер потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
                 try { if (navigator.share) { await navigator.share({ text }); } else { await navigator.clipboard.writeText(text); } } catch { try { await navigator.clipboard.writeText(text); } catch {} }
               }}
               style={{ flex: 1, padding: '12px 0', border: 'none', borderRadius: 12, background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}

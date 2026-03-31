@@ -64,7 +64,7 @@ function drawCard(
   ctx.font = 'bold 17px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = '#ffffff';
   ctx.textAlign = 'left';
-  ctx.fillText('Дневник потребностей', 28, 56);
+  ctx.fillText('Трекер потребностей', 28, 56);
 
   // Week range
   const sorted = [...history].map(d => d.date).sort();
@@ -186,7 +186,7 @@ function drawCard(
   ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.fillStyle = 'rgba(255,255,255,0.25)';
   ctx.textAlign = 'left';
-  ctx.fillText('@SchemeHappens · Дневник потребностей', 28, footerDivY + 22);
+  ctx.fillText('@SchemeHappens · Трекер потребностей', 28, footerDivY + 22);
 }
 
 export function WeeklyCardSheet({ needs, history, onClose }: Props) {
@@ -222,7 +222,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
       const range = sorted.length >= 2
         ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
         : '';
-      const text = `Мой дневник потребностей за неделю ${range}\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n@SchemeHappens`;
+      const text = `Мой трекер потребностей за неделю ${range}\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n@SchemeHappens`;
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text });
@@ -251,7 +251,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
       const range = sorted.length >= 2
         ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
         : '';
-      const text = `Дневник потребностей · ${range}\n\n${lines.join('\n')}\n\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n\n@SchemeHappens`;
+      const text = `Трекер потребностей · ${range}\n\n${lines.join('\n')}\n\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n\n@SchemeHappens`;
       try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2500); } catch {}
       setFallbackText(text);
     } finally {

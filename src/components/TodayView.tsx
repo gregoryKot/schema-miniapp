@@ -99,7 +99,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>ⓘ</span>
           <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Нажми на <b style={{ color: '#fff' }}>«Дневник потребностей»</b> в заголовке — там про то, зачем это вообще
+            Нажми на <b style={{ color: '#fff' }}>«Трекер потребностей»</b> в заголовке — там про то, зачем это вообще
           </span>
         </div>
       </div>

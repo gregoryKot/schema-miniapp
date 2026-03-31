@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
+import { DiarySection } from './sections/DiarySection';
+import { BottomNav, Section } from './components/BottomNav';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
@@ -47,6 +49,14 @@ const NEEDS_EXPLAINER = [
 type Tab = 'today' | 'history';
 
 const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
+
+function getInitialSection(): Section {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('section') === 'diaries') return 'diaries';
+  const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+  if (startParam === 'diaries') return 'diaries';
+  return 'tracker';
+}
 
 function fillHistoryGaps(h: DayHistory[]): DayHistory[] {
   if (h.length === 0) return h;
@@ -175,6 +185,7 @@ function formatHeaderDate(): string {
 }
 
 export default function App() {
+  const [section, setSection] = useState<Section>(getInitialSection);
   const [disclaimerDone, setDisclaimerDone] = useState(
     () => !!localStorage.getItem(DISCLAIMER_KEY) // quick local check while server responds
   );
@@ -375,13 +386,17 @@ export default function App() {
           Нет подключения — данные не сохраняются
         </div>
       )}
-      {!disclaimerDone && (
+
+      {section === 'diaries' && <DiarySection />}
+
+      {section === 'tracker' && !disclaimerDone && (
         <Disclaimer onAccept={() => {
           localStorage.setItem(DISCLAIMER_KEY, '1');
           api.acceptDisclaimer().catch(() => {});
           setDisclaimerDone(true);
         }} />
       )}
+      {section === 'tracker' && (<>
       {/* Sticky header */}
       <div style={{
         position: 'sticky',
@@ -428,7 +443,7 @@ export default function App() {
             display: 'flex', alignItems: 'center', gap: 8,
           }}
         >
-          Дневник потребностей
+          Трекер потребностей
           <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
           <span style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 6, padding: '2px 6px', fontWeight: 600, letterSpacing: '0.05em', verticalAlign: 'middle' }}>beta</span>
         </h1>
@@ -585,6 +600,7 @@ export default function App() {
               requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
             }} onBackfill={(date) => setBackfillDate(date)} />
       )}
+      <div style={{ height: 70 }} />
 
       {pendingPlans.length > 0 && needs.length > 0 && (() => {
         const plan = pendingPlans.find(p => p.scheduledDate < TODAY_DATE);
@@ -697,6 +713,9 @@ export default function App() {
           api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
         }} />
       )}
+      </>)}
+
+      <BottomNav section={section} onSelect={setSection} />
     </div>
   );
 }

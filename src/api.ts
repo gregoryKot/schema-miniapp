@@ -23,6 +23,21 @@ async function post(path: string, body: unknown): Promise<void> {
   if (!res.ok) throw new Error(`API error: ${res.status}`);
 }
 
+async function postJson<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
+async function del(path: string): Promise<void> {
+  const res = await fetch(`${BASE}${path}`, { method: 'DELETE', headers: authHeaders() });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+}
+
 export interface UserSettings {
   notifyEnabled: boolean;
   notifyUtcHour: number;
@@ -131,4 +146,29 @@ export const api = {
     const res = await fetch(`${BASE}/api/ysq-result`, { method: 'DELETE', headers: authHeaders() });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
+
+  // ─── Profile ────────────────────────────────────────────────────────────────
+  getProfile: () => get<import('./types').UserProfile>('/api/profile'),
+
+  // ─── Diary ──────────────────────────────────────────────────────────────────
+  getSchemaDiary:    () => get<import('./types').SchemaDiaryEntry[]>('/api/diary/schema'),
+  createSchemaDiary: (data: {
+    trigger: string; emotions: import('./types').EmotionEntry[];
+    thoughts?: string; bodyFeelings?: string; actualBehavior?: string;
+    schemaIds: string[]; schemaOrigin?: string; healthyView?: string;
+    realProblems?: string; excessiveReactions?: string; healthyBehavior?: string;
+  }) => postJson<import('./types').SchemaDiaryEntry>('/api/diary/schema', data),
+  deleteSchemaDiary: (id: number) => del(`/api/diary/schema/${id}`),
+
+  getModeDiary: () => get<import('./types').ModeDiaryEntry[]>('/api/diary/mode'),
+  createModeDiary: (data: {
+    modeId: string; situation: string; thoughts?: string; feelings?: string;
+    bodyFeelings?: string; actions?: string; actualNeed?: string; childhoodMemories?: string;
+  }) => postJson<import('./types').ModeDiaryEntry>('/api/diary/mode', data),
+  deleteModeDiary: (id: number) => del(`/api/diary/mode/${id}`),
+
+  getGratitudeDiary:    () => get<import('./types').GratitudeDiaryEntry[]>('/api/diary/gratitude'),
+  createGratitudeDiary: (date: string, items: string[]) =>
+    postJson<import('./types').GratitudeDiaryEntry>('/api/diary/gratitude', { date, items }),
+  deleteGratitudeDiary: (id: number) => del(`/api/diary/gratitude/${id}`),
 };
