@@ -3,11 +3,13 @@ import { Need, UserProfile, COLORS } from '../types';
 import { api } from '../api';
 import { Section } from '../components/BottomNav';
 import { SCHEMA_DOMAINS } from '../diaryData';
+import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from '../components/YSQTestSheet';
 
 interface Props {
   needs: Need[];
   ratings: Record<string, number>;
   onNavigate: (s: Section) => void;
+  onOpenSchema: (startTest?: boolean) => void;
 }
 
 function formatGreetingDate(): string {
@@ -25,7 +27,9 @@ function plural(n: number, one: string, few: string, many: string): string {
   return many;
 }
 
-export function HomeSection({ needs, ratings, onNavigate }: Props) {
+const ALL_SCHEMAS = SCHEMA_DOMAINS.flatMap(d => d.schemas.map(s => ({ ...s, domainColor: d.color })));
+
+export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -37,8 +41,11 @@ export function HomeSection({ needs, ratings, onNavigate }: Props) {
   const ratedCount = needs.filter(n => ratings[n.id] !== undefined).length;
   const allRated = needs.length > 0 && ratedCount === needs.length;
 
+  const ysqDone = !!(profile?.ysq.completedAt ?? localStorage.getItem(YSQ_RESULT_KEY));
+  const ysqInProgress = !ysqDone && !!localStorage.getItem(YSQ_PROGRESS_KEY);
+
   const activeSchemas = (profile?.ysq.activeSchemaIds ?? [])
-    .map(id => SCHEMA_DOMAINS.flatMap(d => d.schemas.map(s => ({ ...s, domainColor: d.color }))).find(s => s.id === id))
+    .map(id => ALL_SCHEMAS.find(s => s.id === id))
     .filter(Boolean) as { id: string; name: string; domainColor: string }[];
 
   const lastDiary = profile?.lastActivity.schemaDiary
@@ -58,84 +65,152 @@ export function HomeSection({ needs, ratings, onNavigate }: Props) {
         </div>
       </div>
 
-      {/* Bento grid: streak + needs */}
-      <div style={{ display: 'flex', gap: 10, padding: '20px 20px 0' }}>
+      <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* Streak */}
-        <div style={{
-          width: 110, flexShrink: 0,
-          background: streak > 0
-            ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))'
-            : 'rgba(255,255,255,0.03)',
-          border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
-          borderRadius: 20, padding: '16px 14px',
-          display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-          animation: 'pop-in 0.3s ease',
-        }}>
-          <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
-          <div>
-            <div style={{
-              fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1,
-              color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)',
-            }}>{streak}</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 3, fontWeight: 500 }}>
-              {plural(streak, 'день', 'дня', 'дней')}
+        {/* ── SCHEMAS BLOCK — foundation of everything ── */}
+        {!ysqDone ? (
+          /* YSQ not done — CTA */
+          <div
+            style={{
+              background: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(96,165,250,0.07))',
+              border: '1px solid rgba(167,139,250,0.25)',
+              borderRadius: 20, padding: '20px',
+              animation: 'pop-in 0.3s ease both',
+            }}
+          >
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(167,139,250,0.7)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>
+              Схема-терапия
+            </div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 8, letterSpacing: '-0.3px' }}>
+              Узнай свои схемы
+            </div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 18 }}>
+              Схемы — устойчивые паттерны мышления и поведения, которые сформировались в детстве. YSQ-тест покажет какие из них активны у тебя — это точка отсчёта для всего остального.
+            </div>
+            <button
+              onClick={() => onOpenSchema(true)}
+              style={{
+                width: '100%', padding: '13px 0', borderRadius: 14, border: 'none',
+                background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+                color: '#fff', fontSize: 15, fontWeight: 600,
+                cursor: 'pointer', letterSpacing: '-0.2px',
+              }}
+            >
+              {ysqInProgress ? 'Продолжить YSQ-тест' : 'Пройти YSQ-тест'}
+            </button>
+          </div>
+        ) : (
+          /* YSQ done — show schemas */
+          <div
+            style={{
+              background: 'rgba(167,139,250,0.05)',
+              border: '1px solid rgba(167,139,250,0.12)',
+              borderRadius: 20, padding: '16px 18px',
+              animation: 'pop-in 0.3s ease both',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(167,139,250,0.6)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+                Твои схемы
+              </div>
+              <div
+                onClick={() => onOpenSchema()}
+                style={{ fontSize: 12, color: '#a78bfa', cursor: 'pointer', fontWeight: 500 }}
+              >
+                Подробнее →
+              </div>
+            </div>
+            {activeSchemas.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {activeSchemas.map(s => (
+                  <span key={s.id} style={{
+                    fontSize: 12, borderRadius: 10, padding: '5px 11px',
+                    background: `${s.domainColor}15`,
+                    border: `1px solid ${s.domainColor}30`,
+                    color: s.domainColor, fontWeight: 500,
+                  }}>{s.name}</span>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>
+                Схемы не выявлены — результаты в норме
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Streak + Today's needs ── */}
+        <div style={{ display: 'flex', gap: 10, animation: 'slide-up 0.3s ease 0.05s both' }}>
+
+          {/* Streak */}
+          <div style={{
+            width: 110, flexShrink: 0,
+            background: streak > 0
+              ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))'
+              : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
+            borderRadius: 20, padding: '16px 14px',
+            display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+          }}>
+            <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
+            <div>
+              <div style={{
+                fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1,
+                color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)',
+              }}>{streak}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 3, fontWeight: 500 }}>
+                {plural(streak, 'день', 'дня', 'дней')}
+              </div>
+            </div>
+          </div>
+
+          {/* Today's needs */}
+          <div style={{
+            flex: 1,
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 20, padding: '16px 14px',
+          }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
+              {allRated ? 'Готово сегодня' : `${ratedCount} из ${needs.length}`}
+            </div>
+            <div style={{ display: 'flex', gap: 5 }}>
+              {needs.map((need, idx) => {
+                const val = ratings[need.id];
+                const color = COLORS[need.id] ?? '#888';
+                const filled = val !== undefined;
+                return (
+                  <div key={need.id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, animation: `slide-up 0.3s ease ${0.05 + idx * 0.04}s both` }}>
+                    <div style={{
+                      width: '100%', height: 44, borderRadius: 8, position: 'relative', overflow: 'hidden',
+                      background: 'rgba(255,255,255,0.05)',
+                      border: `1px solid ${filled ? `${color}40` : 'rgba(255,255,255,0.08)'}`,
+                    }}>
+                      {filled && (
+                        <div style={{
+                          position: 'absolute', bottom: 0, left: 0, right: 0,
+                          height: `${(val / 10) * 100}%`,
+                          background: `linear-gradient(to top, ${color}66, ${color}22)`,
+                          transition: 'height 0.4s ease',
+                        }} />
+                      )}
+                      <div style={{
+                        position: 'absolute', inset: 0, display: 'flex',
+                        alignItems: 'center', justifyContent: 'center',
+                        fontSize: filled ? 13 : 16, fontWeight: 700,
+                        color: filled ? '#fff' : 'rgba(255,255,255,0.2)',
+                      }}>
+                        {filled ? val : need.emoji}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Today's needs */}
-        <div style={{
-          flex: 1,
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '16px 14px',
-          animation: 'pop-in 0.3s ease 0.05s both',
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-            {allRated ? 'Готово сегодня' : `${ratedCount} из ${needs.length}`}
-          </div>
-          <div style={{ display: 'flex', gap: 5 }}>
-            {needs.map((need, idx) => {
-              const val = ratings[need.id];
-              const color = COLORS[need.id] ?? '#888';
-              const filled = val !== undefined;
-              const height = filled ? Math.max(16, (val / 10) * 44) : 44;
-              return (
-                <div key={need.id} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, animation: `slide-up 0.3s ease ${0.05 + idx * 0.04}s both` }}>
-                  <div style={{
-                    width: '100%', height: 44, borderRadius: 8, position: 'relative', overflow: 'hidden',
-                    background: 'rgba(255,255,255,0.05)',
-                    border: `1px solid ${filled ? `${color}40` : 'rgba(255,255,255,0.08)'}`,
-                  }}>
-                    {filled && (
-                      <div style={{
-                        position: 'absolute', bottom: 0, left: 0, right: 0,
-                        height: `${(val / 10) * 100}%`,
-                        background: `linear-gradient(to top, ${color}66, ${color}22)`,
-                        transition: 'height 0.4s ease',
-                      }} />
-                    )}
-                    <div style={{
-                      position: 'absolute', inset: 0, display: 'flex',
-                      alignItems: 'center', justifyContent: 'center',
-                      fontSize: filled ? 13 : 16, fontWeight: 700,
-                      color: filled ? '#fff' : 'rgba(255,255,255,0.2)',
-                    }}>
-                      {filled ? val : need.emoji}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation cards */}
-      <div style={{ padding: '12px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-        {/* Tracker card */}
+        {/* ── Tracker card ── */}
         <div
           onClick={() => onNavigate('tracker')}
           style={{
@@ -171,7 +246,7 @@ export function HomeSection({ needs, ratings, onNavigate }: Props) {
           <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
         </div>
 
-        {/* Diary card */}
+        {/* ── Diary card ── */}
         <div
           onClick={() => onNavigate('diaries')}
           style={{
@@ -204,39 +279,8 @@ export function HomeSection({ needs, ratings, onNavigate }: Props) {
           </div>
           <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
         </div>
+
       </div>
-
-      {/* Active schemas */}
-      {activeSchemas.length > 0 && (
-        <div style={{
-          margin: '12px 20px 0',
-          background: 'rgba(167,139,250,0.05)',
-          border: '1px solid rgba(167,139,250,0.12)',
-          borderRadius: 20, padding: '16px 18px',
-          animation: 'slide-up 0.3s ease 0.2s both',
-        }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(167,139,250,0.6)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-            Твои схемы
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {activeSchemas.map(s => (
-              <span key={s.id} style={{
-                fontSize: 12, borderRadius: 10, padding: '5px 11px',
-                background: `${s.domainColor}15`,
-                border: `1px solid ${s.domainColor}30`,
-                color: s.domainColor,
-                fontWeight: 500,
-              }}>{s.name}</span>
-            ))}
-          </div>
-          {activeSchemas.length === 0 && (
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>
-              Пройди тест YSQ чтобы увидеть свои схемы
-            </div>
-          )}
-        </div>
-      )}
-
     </div>
   );
 }

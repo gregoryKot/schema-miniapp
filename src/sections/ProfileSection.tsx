@@ -11,13 +11,12 @@ const SECTION_LABELS: Record<Exclude<Section, 'profile'>, string> = {
 };
 
 interface Props {
-  onOpenSchema: () => void;
   onOpenProfile: () => void;
 }
 
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
-export function ProfileSection({ onOpenSchema, onOpenProfile }: Props) {
+export function ProfileSection({ onOpenProfile }: Props) {
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [defaultSection, setDefaultSection] = useState<Exclude<Section, 'profile'>>(
@@ -125,33 +124,6 @@ export function ProfileSection({ onOpenSchema, onOpenProfile }: Props) {
               }} />
             </div>
           </div>
-        </div>
-
-        {/* Schema therapy */}
-        <div onClick={onOpenSchema} style={{
-          background: 'rgba(167,139,250,0.05)',
-          border: '1px solid rgba(167,139,250,0.12)',
-          borderRadius: 20, padding: '18px 20px',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16,
-          position: 'relative', overflow: 'hidden',
-          animation: 'slide-up 0.3s ease 0.15s both',
-        }}>
-          <div style={{
-            position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
-            background: 'linear-gradient(to bottom, #a78bfa, #c084fc)',
-            borderRadius: '0 2px 2px 0',
-          }} />
-          <div style={{
-            width: 46, height: 46, borderRadius: 14, flexShrink: 0,
-            background: 'rgba(167,139,250,0.12)',
-            border: '1px solid rgba(167,139,250,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
-          }}>🧠</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Схема-терапия</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>YSQ-тест, твои схемы, режимы</div>
-          </div>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18, flexShrink: 0 }}>›</div>
         </div>
 
         {/* Full profile & stats */}

@@ -397,13 +397,10 @@ export default function App() {
 
       {section === 'diaries' && <DiarySection />}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} />}
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(startTest) => { setSchemaAutoStartTest(!!startTest); setShowSchemaInfo(true); }} />}
 
       {section === 'profile' && (
-        <ProfileSection
-          onOpenSchema={() => { setShowSchemaInfo(true); setSchemaAutoStartTest(false); }}
-          onOpenProfile={() => setShowProfile(true)}
-        />
+        <ProfileSection onOpenProfile={() => setShowProfile(true)} />
       )}
 
       {section === 'tracker' && !disclaimerDone && (
