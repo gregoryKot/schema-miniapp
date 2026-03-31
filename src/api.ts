@@ -40,8 +40,8 @@ async function del(path: string): Promise<void> {
 
 export interface UserSettings {
   notifyEnabled: boolean;
-  notifyUtcHour: number;
-  notifyTzOffset: number;
+  notifyLocalHour: number;
+  notifyTimezone: string;
   notifyReminderEnabled: boolean;
   pairCardDismissed: boolean;
 }

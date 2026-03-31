@@ -3,6 +3,17 @@ import { api, UserPractice } from '../api';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 
+function ianaToUtcOffset(iana: string): number {
+  try {
+    const now = new Date();
+    const utcMs = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+    const localMs = new Date(now.toLocaleString('en-US', { timeZone: iana })).getTime();
+    return Math.round((localMs - utcMs) / 3600000);
+  } catch {
+    return 3;
+  }
+}
+
 export const CURATED: Record<string, string[]> = {
   attachment: [
     'Написать кому-то близкому без повода',
@@ -72,7 +83,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
 
   useEffect(() => {
     api.getPractices(needId).then(setUserPractices).catch(() => {});
-    api.getSettings().then(s => setTzOffset(s.notifyTzOffset)).catch(() => {});
+    api.getSettings().then(s => setTzOffset(ianaToUtcOffset(s.notifyTimezone))).catch(() => {});
   }, [needId]);
 
   const curated = CURATED[needId] ?? [];

@@ -15,7 +15,6 @@ interface Props {
   onOpenProfile: () => void;
 }
 
-function toLocal(utcHour: number, tz: number) { return ((utcHour + tz) % 24 + 24) % 24; }
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
 export function ProfileSection({ onOpenSchema, onOpenProfile }: Props) {
@@ -32,7 +31,7 @@ export function ProfileSection({ onOpenSchema, onOpenProfile }: Props) {
   useEffect(() => {
     api.getSettings()
       .then(setSettings)
-      .catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false, pairCardDismissed: false }));
+      .catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false }));
   }, []);
 
   async function toggleNotify() {
@@ -50,7 +49,7 @@ export function ProfileSection({ onOpenSchema, onOpenProfile }: Props) {
   const SCREENS: Exclude<Section, 'profile'>[] = ['home', 'tracker', 'diaries'];
 
   const notifyOn = settings?.notifyEnabled ?? false;
-  const localHour = settings ? toLocal(settings.notifyUtcHour, settings.notifyTzOffset) : 9;
+  const localHour = settings?.notifyLocalHour ?? 21;
 
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 90, animation: 'fade-in 0.25s ease' }}>

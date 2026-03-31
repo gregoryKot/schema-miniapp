@@ -37,22 +37,20 @@ const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: str
 };
 
 const TIMEZONES = [
-  { label: 'UTC−8 (Лос-Анджелес)', offset: -8 },
-  { label: 'UTC−5 (Нью-Йорк)',      offset: -5 },
-  { label: 'UTC+0 (Лондон)',         offset:  0 },
-  { label: 'UTC+1 (Берлин)',         offset:  1 },
-  { label: 'UTC+2 (Киев, Израиль)', offset:  2 },
-  { label: 'UTC+3 (Москва)',         offset:  3 },
-  { label: 'UTC+4 (Дубай)',          offset:  4 },
-  { label: 'UTC+5 (Ташкент)',        offset:  5 },
-  { label: 'UTC+6 (Алматы)',         offset:  6 },
-  { label: 'UTC+8 (Пекин)',          offset:  8 },
+  { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
+  { label: 'Нью-Йорк (UTC−5)',      iana: 'America/New_York' },
+  { label: 'Лондон (UTC+0)',         iana: 'Europe/London' },
+  { label: 'Берлин (UTC+1)',         iana: 'Europe/Berlin' },
+  { label: 'Киев / Израиль (UTC+2)', iana: 'Europe/Kyiv' },
+  { label: 'Москва (UTC+3)',         iana: 'Europe/Moscow' },
+  { label: 'Дубай (UTC+4)',          iana: 'Asia/Dubai' },
+  { label: 'Ташкент (UTC+5)',        iana: 'Asia/Tashkent' },
+  { label: 'Алматы (UTC+6)',         iana: 'Asia/Almaty' },
+  { label: 'Пекин (UTC+8)',          iana: 'Asia/Shanghai' },
 ];
 
 const HOURS = [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 
-function toLocal(utcHour: number, tz: number) { return ((utcHour + tz) % 24 + 24) % 24; }
-function toUtc(localHour: number, tz: number)  { return ((localHour - tz) % 24 + 24) % 24; }
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
@@ -117,7 +115,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const savedScrollTop = useRef(0);
 
   useEffect(() => {
-    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyUtcHour: 9, notifyTzOffset: 0, notifyReminderEnabled: false, pairCardDismissed: false }));
+    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false }));
     api.getStreak().then(setStreak).catch(() => setStreak({ currentStreak: 0, longestStreak: 0, totalDays: 0, todayDone: false, weekDots: [] }));
     api.getAchievements().then(setAchievements).catch(() => setAchievements([]));
     api.getInsights().then(setInsights).catch(() => setInsights(null));
@@ -201,8 +199,8 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
     return <BottomSheet onClose={onClose}><Loader minHeight="40vh" /></BottomSheet>;
   }
 
-  const localHour = toLocal(settings.notifyUtcHour, settings.notifyTzOffset);
-  const tzLabel = TIMEZONES.find(t => t.offset === settings.notifyTzOffset)?.label ?? `UTC+${settings.notifyTzOffset}`;
+  const localHour = settings.notifyLocalHour;
+  const tzLabel = TIMEZONES.find(t => t.iana === settings.notifyTimezone)?.label ?? settings.notifyTimezone;
   const hasInsights = insights && insights.weeklyStats.some(s => s.avg !== null);
   const risingNeed = insights?.weeklyStats.find(s => s.trend === '↑');
   const insightSummary = insights?.bestDayOfWeek && insights.totalDays >= 7
@@ -560,7 +558,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
             {HOURS.map(h => {
               const active = h === localHour;
               return (
-                <div key={h} onClick={async () => { await patch({ notifyUtcHour: toUtc(h, settings.notifyTzOffset) }); goBack(); }}
+                <div key={h} onClick={async () => { await patch({ notifyLocalHour: h }); goBack(); }}
                   style={{ padding: '12px 0', borderRadius: 12, textAlign: 'center', background: active ? '#a78bfa' : 'rgba(255,255,255,0.06)', color: active ? '#fff' : 'rgba(255,255,255,0.6)', fontSize: 15, fontWeight: active ? 600 : 400, cursor: 'pointer' }}
                 >{pad(h)}:00</div>
               );
@@ -575,9 +573,9 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
           <BackHeader title="Часовой пояс" onBack={goBack} />
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {TIMEZONES.map(tz => {
-              const active = tz.offset === settings.notifyTzOffset;
+              const active = tz.iana === settings.notifyTimezone;
               return (
-                <div key={tz.offset} onClick={async () => { await patch({ notifyTzOffset: tz.offset, notifyUtcHour: toUtc(localHour, tz.offset) }); goBack(); }}
+                <div key={tz.iana} onClick={async () => { await patch({ notifyTimezone: tz.iana }); goBack(); }}
                   style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.04)', color: active ? '#a78bfa' : 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
                 >{tz.label}{active && <span>✓</span>}</div>
               );
