@@ -631,7 +631,7 @@ export default function App() {
         }} />
       )}
 
-      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
+      {/* ProfileSheet moved outside tracker block — accessible from any section */}
 
       {showPracticesOnboarding && needs.length > 0 && (
         <PracticesOnboarding needs={needs} onDone={() => {
@@ -694,7 +694,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
+      {/* SchemaInfoSheet moved outside tracker block — accessible from any section */}
 
       {showYesterdaySheet && (
         <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
@@ -713,6 +713,9 @@ export default function App() {
         }} />
       )}
       </>)}
+
+      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
+      {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); }} ratings={ratings} autoStartTest={schemaAutoStartTest} />}
 
       <BottomNav section={section} onSelect={setSection} />
     </div>
