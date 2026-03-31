@@ -90,4 +90,6 @@ export interface UserProfile {
     modeDiary: string | null;
     gratitudeDiary: string | null;
   };
+  mySchemaIds: string[];
+  myModeIds: string[];
 }

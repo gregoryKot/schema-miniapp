@@ -44,6 +44,8 @@ export interface UserSettings {
   notifyTimezone: string;
   notifyReminderEnabled: boolean;
   pairCardDismissed: boolean;
+  mySchemaIds: string[];
+  myModeIds: string[];
 }
 
 export interface StreakData {

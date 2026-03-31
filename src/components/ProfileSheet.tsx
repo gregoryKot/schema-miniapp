@@ -115,7 +115,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const savedScrollTop = useRef(0);
 
   useEffect(() => {
-    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false }));
+    api.getSettings().then(setSettings).catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false, mySchemaIds: [], myModeIds: [] }));
     api.getStreak().then(setStreak).catch(() => setStreak({ currentStreak: 0, longestStreak: 0, totalDays: 0, todayDone: false, weekDots: [] }));
     api.getAchievements().then(setAchievements).catch(() => setAchievements([]));
     api.getInsights().then(setInsights).catch(() => setInsights(null));

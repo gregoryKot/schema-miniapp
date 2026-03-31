@@ -48,7 +48,18 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
   const [introModeId, setIntroModeId] = useState<string | null>(null);
 
   useEffect(() => {
-    api.getProfile().then(setProfile).catch(() => {});
+    api.getProfile().then(p => {
+      setProfile(p);
+      // Sync server → local (server is source of truth cross-device)
+      if (p.mySchemaIds.length > 0) {
+        setManualSchemaIds(p.mySchemaIds);
+        localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(p.mySchemaIds));
+      }
+      if (p.myModeIds.length > 0) {
+        setMyModeIds(p.myModeIds);
+        localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(p.myModeIds));
+      }
+    }).catch(() => {});
   }, []);
 
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
@@ -73,6 +84,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
   function saveSchemas(ids: string[]) {
     localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(ids));
     setManualSchemaIds(ids);
+    api.updateSettings({ mySchemaIds: ids }).catch(() => {});
   }
 
   function toggleMode(id: string) {
@@ -81,6 +93,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
       : [...myModeIds, id];
     localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(next));
     setMyModeIds(next);
+    api.updateSettings({ myModeIds: next }).catch(() => {});
   }
 
   const hasSchemas = activeSchemas.length > 0;
@@ -265,7 +278,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
       {showModePicker && (
         <ModePickerSheet
           selected={myModeIds}
-          onSave={ids => { localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(ids)); setMyModeIds(ids); }}
+          onSave={ids => { localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(ids)); setMyModeIds(ids); api.updateSettings({ myModeIds: ids }).catch(() => {}); }}
           onClose={() => setShowModePicker(false)}
         />
       )}
