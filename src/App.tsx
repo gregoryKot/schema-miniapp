@@ -403,7 +403,7 @@ export default function App() {
 
       {section === 'diaries' && <DiarySection />}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} />}
+      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} onOpenAdvanced={() => setShowProfile(true)} />}
 
       {section === 'profile' && (
         <ProfileSection onOpenAdvanced={() => setShowProfile(true)} />

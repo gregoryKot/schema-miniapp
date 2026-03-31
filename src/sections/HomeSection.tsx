@@ -16,6 +16,7 @@ interface Props {
   ratings: Record<string, number>;
   onNavigate: (s: Section) => void;
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
+  onOpenAdvanced: () => void;
 }
 
 function formatGreetingDate(): string {
@@ -39,7 +40,7 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props) {
+export function HomeSection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
@@ -114,6 +115,14 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
       </div>
 
       <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+        {/* ── Онбординг ── */}
+        <OnboardingWidget
+          profile={profile}
+          onOpenSchema={onOpenSchema}
+          onNavigate={onNavigate}
+          onOpenAdvanced={onOpenAdvanced}
+        />
 
         {/* ── МОИ СХЕМЫ ── */}
         <div style={{
@@ -295,6 +304,185 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema }: Props)
       {/* ── Mode intro exercise ── */}
       {introModeId && (
         <ModeIntroSheet modeId={introModeId} onClose={() => setIntroModeId(null)} />
+      )}
+    </div>
+  );
+}
+
+// ── Onboarding widget ─────────────────────────────────────────────────────────
+
+const ONBOARDING_DONE_KEY    = 'onboarding_done';
+const ONBOARDING_SKIPPED_KEY = 'onboarding_skipped';
+
+interface StepDef {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  actionLabel: string;
+  canSkip: boolean;
+  isDone: (profile: ReturnType<typeof useState<import('../types').UserProfile | null>>[0]) => boolean;
+}
+
+const STEPS: StepDef[] = [
+  {
+    id: 'ysq',
+    emoji: '🧪',
+    title: 'Пройди YSQ-тест',
+    description: 'Узнай какие схемы активны именно у тебя — это основа всей работы в приложении',
+    actionLabel: 'Начать тест',
+    canSkip: false,
+    isDone: (p) => !!(p?.ysq.completedAt),
+  },
+  {
+    id: 'tracker',
+    emoji: '📅',
+    title: 'Оцени потребности сегодня',
+    description: 'Посмотри на свой день через пять ключевых потребностей — займёт 2 минуты',
+    actionLabel: 'Перейти в трекер',
+    canSkip: false,
+    isDone: (p) => !!(p?.lastActivity.needsTracker),
+  },
+  {
+    id: 'diary',
+    emoji: '📔',
+    title: 'Сделай первую запись в дневнике',
+    description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии',
+    actionLabel: 'Открыть дневник',
+    canSkip: false,
+    isDone: (p) => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary),
+  },
+  {
+    id: 'notify',
+    emoji: '🔔',
+    title: 'Включи ежедневное напоминание',
+    description: 'Без регулярности привычка не формируется. Одно уведомление в день — всё что нужно',
+    actionLabel: 'Настроить',
+    canSkip: true,
+    isDone: (p) => !!(p?.notifications.enabled),
+  },
+  {
+    id: 'childhood',
+    emoji: '🌀',
+    title: 'Исследуй колесо детства',
+    description: 'Откуда пришли твои паттерны — оцени как удовлетворялись потребности в детстве',
+    actionLabel: 'Открыть',
+    canSkip: true,
+    isDone: () => !!localStorage.getItem('childhood_wheel_done'),
+  },
+];
+
+function OnboardingWidget({ profile, onOpenSchema, onNavigate, onOpenAdvanced }: {
+  profile: import('../types').UserProfile | null;
+  onOpenSchema: Props['onOpenSchema'];
+  onNavigate: Props['onNavigate'];
+  onOpenAdvanced: Props['onOpenAdvanced'];
+}) {
+  const [skipped, setSkipped] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(ONBOARDING_SKIPPED_KEY) ?? '[]'); } catch { return []; }
+  });
+  const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
+
+  if (done) return null;
+
+  // Find the current step: first step that is not done and not skipped
+  const current = STEPS.find(s => !s.isDone(profile) && !skipped.includes(s.id));
+
+  // If no pending step — all done/skipped
+  if (!current) {
+    localStorage.setItem(ONBOARDING_DONE_KEY, '1');
+    setDone(true);
+    return null;
+  }
+
+  // Progress: how many steps are resolved (done OR skipped)
+  const resolved = STEPS.filter(s => s.isDone(profile) || skipped.includes(s.id)).length;
+  const total = STEPS.length;
+
+  function handleSkip() {
+    const next = [...skipped, current!.id];
+    localStorage.setItem(ONBOARDING_SKIPPED_KEY, JSON.stringify(next));
+    setSkipped(next);
+  }
+
+  function handleAction() {
+    switch (current!.id) {
+      case 'ysq':      onOpenSchema({ startTest: true }); break;
+      case 'tracker':  onNavigate('tracker'); break;
+      case 'diary':    onNavigate('diaries'); break;
+      case 'notify':   onOpenAdvanced(); break;
+      case 'childhood': onOpenAdvanced(); break;
+    }
+  }
+
+  return (
+    <div style={{
+      borderRadius: 20, padding: '16px 18px',
+      background: 'linear-gradient(135deg, rgba(167,139,250,0.09) 0%, rgba(96,165,250,0.05) 100%)',
+      border: '1px solid rgba(167,139,250,0.22)',
+      animation: 'pop-in 0.3s ease both',
+    }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.6)' }}>
+          С ЧЕГО НАЧАТЬ
+        </div>
+        {/* Progress dots */}
+        <div style={{ display: 'flex', gap: 5 }}>
+          {STEPS.map((s, i) => {
+            const isResolved = s.isDone(profile) || skipped.includes(s.id);
+            const isCurrent  = s.id === current.id;
+            return (
+              <div key={s.id} style={{
+                width: isCurrent ? 18 : 8, height: 8, borderRadius: 4,
+                background: isResolved
+                  ? 'rgba(52,211,153,0.6)'
+                  : isCurrent ? '#a78bfa' : 'rgba(255,255,255,0.12)',
+                transition: 'all 0.3s ease',
+              }} />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Step content */}
+      <div style={{ fontSize: 28, marginBottom: 6 }}>{current.emoji}</div>
+      <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', lineHeight: 1.3, marginBottom: 6 }}>
+        {current.title}
+      </div>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55, marginBottom: 16 }}>
+        {current.description}
+      </div>
+
+      {/* Buttons */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <button
+          onClick={handleAction}
+          style={{
+            flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+            background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+            color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          {current.actionLabel} →
+        </button>
+        {current.canSkip && (
+          <button
+            onClick={handleSkip}
+            style={{
+              padding: '11px 14px', borderRadius: 12, border: 'none',
+              background: 'rgba(255,255,255,0.06)',
+              color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer',
+            }}
+          >
+            Не сейчас
+          </button>
+        )}
+      </div>
+      {!current.canSkip && resolved > 0 && (
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 10 }}>
+          {resolved} из {total} шагов выполнено
+        </div>
       )}
     </div>
   );

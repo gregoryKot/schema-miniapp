@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, UserSettings, StreakData, Achievement, PairsData } from '../api';
 import { getTelegramSafeTop } from '../utils/safezone';
-import { UserProfile } from '../types';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -28,39 +27,6 @@ const SCREENS: { id: SectionId; label: string; emoji: string }[] = [
   { id: 'tracker', label: 'Потребности', emoji: '🎯' },
   { id: 'diaries', label: 'Дневники',    emoji: '📔' },
 ];
-
-// ── Roadmap ──────────────────────────────────────────────────────────────────
-
-const ROADMAP = [
-  { id: 'registered',   emoji: '🌱', title: 'Зарегистрировался',       hint: 'Первый шаг сделан',                xp: 10  },
-  { id: 'ysq',          emoji: '🧪', title: 'Прошёл YSQ-тест',         hint: 'Узнал свои схемы',                 xp: 30  },
-  { id: 'tracker_day1', emoji: '📅', title: 'Первый день трекера',      hint: 'Оценил потребности',               xp: 20  },
-  { id: 'diary_entry',  emoji: '📔', title: 'Первая запись в дневнике', hint: 'Исследовал схему или режим',       xp: 20  },
-  { id: 'streak_3',     emoji: '🔥', title: '3 дня подряд',             hint: 'Привычка начинает формироваться',  xp: 30  },
-  { id: 'childhood',    emoji: '🌀', title: 'Колесо детства',           hint: 'Исследовал прошлое',               xp: 25  },
-  { id: 'streak_7',     emoji: '⭐', title: 'Неделя подряд',            hint: 'Это уже не случайность',           xp: 50  },
-  { id: 'partner',      emoji: '🤝', title: 'Партнёр подключён',        hint: 'Вы идёте вместе',                  xp: 40  },
-  { id: 'streak_30',    emoji: '🏆', title: '30 дней подряд',           hint: 'Ты — мастер наблюдения',           xp: 100 },
-] as const;
-
-const TOTAL_XP = ROADMAP.reduce((s, r) => s + r.xp, 0);
-
-function computeDone(id: string, profile: UserProfile | null, totalDays: number, achievements: Achievement[]): boolean {
-  const earned = (aid: string) => achievements.some(a => a.id === aid && a.earned);
-  const la = profile?.lastActivity;
-  switch (id) {
-    case 'registered':   return true;
-    case 'ysq':          return !!(profile?.ysq.completedAt);
-    case 'tracker_day1': return totalDays >= 1;
-    case 'diary_entry':  return !!(la?.schemaDiary || la?.modeDiary || la?.gratitudeDiary);
-    case 'streak_3':     return earned('streak_3');
-    case 'childhood':    return !!localStorage.getItem('childhood_wheel_done');
-    case 'streak_7':     return earned('streak_7');
-    case 'partner':      return earned('pair_connected');
-    case 'streak_30':    return earned('streak_30');
-    default:             return false;
-  }
-}
 
 // ── Achievement display ────────────────────────────────────────────────────
 
@@ -94,7 +60,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
   const [streak, setStreak]           = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [pairData, setPairData]       = useState<PairsData | null>(null);
-  const [profile, setProfile]         = useState<UserProfile | null>(null);
 
   const [pairLoading, setPairLoading] = useState(false);
   const [joinCode, setJoinCode]       = useState('');
@@ -116,7 +81,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
     api.getStreak().then(setStreak).catch(() => {});
     api.getAchievements().then(setAchievements).catch(() => {});
     api.getPair().then(setPairData).catch(() => {});
-    api.getProfile().then(setProfile).catch(() => {});
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -163,11 +127,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
   const earnedList    = achievements.filter(a => a.earned);
   const partner       = pairData?.partners?.[0];
 
-  // Roadmap
-  const steps = ROADMAP.map(step => ({ ...step, done: computeDone(step.id, profile, totalDays, achievements) }));
-  const earnedXP = steps.filter(s => s.done).reduce((sum, s) => sum + s.xp, 0);
-  const currentIdx = steps.findIndex(s => !s.done);
-
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 100, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
@@ -198,13 +157,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>всего дней</div>
           </div>
-          <div style={{ width: 1, background: 'rgba(255,255,255,0.08)', alignSelf: 'stretch' }} />
-          <div>
-            <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: earnedXP > 0 ? '#a78bfa' : 'rgba(255,255,255,0.25)' }}>
-              {earnedXP}
-            </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>XP</div>
-          </div>
         </div>
 
         {/* 7-day dots */}
@@ -226,87 +178,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
       </div>
 
       <div style={{ padding: '20px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-        {/* ── МОЙ ПУТЬ ── */}
-        <div>
-          <SectionLabel right={
-            <span style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', fontWeight: 600 }}>
-              {earnedXP} / {TOTAL_XP} XP
-            </span>
-          }>МОЙ ПУТЬ</SectionLabel>
-
-          {/* XP bar */}
-          <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,0.08)', marginBottom: 12, overflow: 'hidden' }}>
-            <div style={{
-              height: '100%', borderRadius: 3,
-              width: `${Math.round(earnedXP / TOTAL_XP * 100)}%`,
-              background: 'linear-gradient(90deg, #a78bfa, #60a5fa)',
-              transition: 'width 0.5s ease',
-            }} />
-          </div>
-
-          {/* Steps */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {steps.map((step, i) => {
-              const isCurrent = i === currentIdx;
-              const isLocked  = !step.done && i > currentIdx;
-              return (
-                <div key={step.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 12,
-                  padding: '11px 14px', borderRadius: 14,
-                  background: isCurrent
-                    ? 'rgba(167,139,250,0.1)'
-                    : step.done ? 'rgba(255,255,255,0.03)' : 'transparent',
-                  border: isCurrent
-                    ? '1px solid rgba(167,139,250,0.3)'
-                    : step.done ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-                  opacity: isLocked ? 0.45 : 1,
-                }}>
-                  {/* State icon */}
-                  <div style={{
-                    width: 28, height: 28, borderRadius: 10, flexShrink: 0,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 14,
-                    background: step.done
-                      ? 'rgba(52,211,153,0.15)'
-                      : isCurrent ? 'rgba(167,139,250,0.2)' : 'rgba(255,255,255,0.05)',
-                    border: step.done
-                      ? '1px solid rgba(52,211,153,0.3)'
-                      : isCurrent ? '1px solid rgba(167,139,250,0.4)' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
-                    {step.done ? '✓' : isCurrent ? step.emoji : '○'}
-                  </div>
-
-                  {/* Text */}
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: isCurrent ? 700 : 500, color: step.done ? 'rgba(255,255,255,0.7)' : isCurrent ? '#fff' : 'rgba(255,255,255,0.5)', lineHeight: 1.2 }}>
-                      {step.done ? '' : ''}{step.emoji} {step.title}
-                    </div>
-                    {(step.done || isCurrent) && (
-                      <div style={{ fontSize: 11, color: step.done ? 'rgba(52,211,153,0.7)' : 'rgba(167,139,250,0.6)', marginTop: 2 }}>
-                        {step.hint}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* XP badge */}
-                  <div style={{
-                    fontSize: 11, fontWeight: 700, paddingLeft: 7, paddingRight: 7, paddingTop: 3, paddingBottom: 3,
-                    borderRadius: 8, flexShrink: 0,
-                    background: step.done
-                      ? 'rgba(52,211,153,0.12)'
-                      : isCurrent ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.05)',
-                    color: step.done
-                      ? '#34d399'
-                      : isCurrent ? '#a78bfa' : 'rgba(255,255,255,0.2)',
-                  }}>
-                    +{step.xp}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
 
         {/* ── Достижения ── */}
         {earnedList.length > 0 && (
