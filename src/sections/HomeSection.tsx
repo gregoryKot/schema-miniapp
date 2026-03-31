@@ -119,6 +119,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema, onOpenAd
         {/* ── Онбординг ── */}
         <OnboardingWidget
           profile={profile}
+          hasSchemas={hasSchemas}
           onOpenSchema={onOpenSchema}
           onNavigate={onNavigate}
           onOpenAdvanced={onOpenAdvanced}
@@ -314,6 +315,7 @@ export function HomeSection({ needs, ratings, onNavigate, onOpenSchema, onOpenAd
 const ONBOARDING_DONE_KEY    = 'onboarding_done';
 const ONBOARDING_SKIPPED_KEY = 'onboarding_skipped';
 
+interface StepContext { hasSchemas: boolean }
 interface StepDef {
   id: string;
   emoji: string;
@@ -321,7 +323,7 @@ interface StepDef {
   description: string;
   actionLabel: string;
   canSkip: boolean;
-  isDone: (profile: ReturnType<typeof useState<import('../types').UserProfile | null>>[0]) => boolean;
+  isDone: (profile: import('../types').UserProfile | null, ctx?: StepContext) => boolean;
 }
 
 const STEPS: StepDef[] = [
@@ -332,7 +334,7 @@ const STEPS: StepDef[] = [
     description: 'Узнай какие схемы активны именно у тебя — это основа всей работы в приложении',
     actionLabel: 'Начать тест',
     canSkip: false,
-    isDone: (p) => !!(p?.ysq.completedAt),
+    isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas),
   },
   {
     id: 'tracker',
@@ -372,8 +374,9 @@ const STEPS: StepDef[] = [
   },
 ];
 
-function OnboardingWidget({ profile, onOpenSchema, onNavigate, onOpenAdvanced }: {
+function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpenAdvanced }: {
   profile: import('../types').UserProfile | null;
+  hasSchemas: boolean;
   onOpenSchema: Props['onOpenSchema'];
   onNavigate: Props['onNavigate'];
   onOpenAdvanced: Props['onOpenAdvanced'];
@@ -385,8 +388,10 @@ function OnboardingWidget({ profile, onOpenSchema, onNavigate, onOpenAdvanced }:
 
   if (done) return null;
 
+  const ctx: StepContext = { hasSchemas };
+
   // Find the current step: first step that is not done and not skipped
-  const current = STEPS.find(s => !s.isDone(profile) && !skipped.includes(s.id));
+  const current = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
   // If no pending step — all done/skipped
   if (!current) {
@@ -396,7 +401,7 @@ function OnboardingWidget({ profile, onOpenSchema, onNavigate, onOpenAdvanced }:
   }
 
   // Progress: how many steps are resolved (done OR skipped)
-  const resolved = STEPS.filter(s => s.isDone(profile) || skipped.includes(s.id)).length;
+  const resolved = STEPS.filter(s => s.isDone(profile, ctx) || skipped.includes(s.id)).length;
   const total = STEPS.length;
 
   function handleSkip() {
@@ -430,7 +435,7 @@ function OnboardingWidget({ profile, onOpenSchema, onNavigate, onOpenAdvanced }:
         {/* Progress dots */}
         <div style={{ display: 'flex', gap: 5 }}>
           {STEPS.map((s, i) => {
-            const isResolved = s.isDone(profile) || skipped.includes(s.id);
+            const isResolved = s.isDone(profile, ctx) || skipped.includes(s.id);
             const isCurrent  = s.id === current.id;
             return (
               <div key={s.id} style={{
