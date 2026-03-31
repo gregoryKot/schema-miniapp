@@ -148,8 +148,8 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
   const meta = DIARY_META[type];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f1117', animation: 'slide-in-right 250ms ease' }}>
-      <div style={{ position: 'sticky', top: 0, background: '#0f1117', zIndex: 10, padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ minHeight: '100vh', background: '#060a12', animation: 'slide-in-right 250ms ease' }}>
+      <div style={{ position: 'sticky', top: 0, background: '#060a12', zIndex: 10, padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 10, width: 36, height: 36, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ‹
@@ -177,7 +177,7 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
       <button onClick={onNewEntry} style={{
         position: 'fixed', bottom: 80, right: 20,
         background: meta.color, border: 'none', borderRadius: 20,
-        padding: '14px 20px', color: type === 'gratitude' ? '#0f1117' : '#fff',
+        padding: '14px 20px', color: type === 'gratitude' ? '#060a12' : '#fff',
         fontSize: 15, fontWeight: 700, cursor: 'pointer',
         boxShadow: `0 4px 24px ${meta.color}66`,
       }}>

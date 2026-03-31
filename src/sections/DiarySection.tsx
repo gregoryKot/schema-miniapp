@@ -56,7 +56,7 @@ export function DiarySection() {
   const todayGratitude = gratitudeEntries.find(e => e.date === TODAY);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0f1117' }}>
+    <div style={{ minHeight: '100vh', background: '#060a12' }}>
       {activeDiary ? (
         <DiaryListView
           type={activeDiary}

@@ -42,7 +42,7 @@ function drawCard(
 
   // Background
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#0f1117');
+  bg.addColorStop(0, '#060a12');
   bg.addColorStop(1, '#141720');
   ctx.fillStyle = bg;
   ctx.beginPath();

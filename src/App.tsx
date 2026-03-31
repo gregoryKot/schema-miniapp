@@ -408,7 +408,7 @@ export default function App() {
         position: 'sticky',
         top: 0,
         zIndex: 10,
-        background: 'rgba(15,17,23,0.94)',
+        background: 'rgba(6,10,18,0.94)',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         padding: '16px 20px 14px',
