@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
 import { EMOTIONS, INTENSITY_LABELS, SCHEMA_DOMAINS } from '../../diaryData';
 import { EmotionEntry } from '../../types';
-
-const DRAFT_KEY = 'schema_diary_draft';
+import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
 
 interface Props {
   activeSchemaIds?: string[];
@@ -57,17 +56,9 @@ interface DraftData {
   healthyBehavior: string;
 }
 
-function loadDraft(): DraftData | null {
-  try {
-    const s = localStorage.getItem(DRAFT_KEY);
-    return s ? JSON.parse(s) : null;
-  } catch {
-    return null;
-  }
-}
-
 export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
-  const draft = loadDraft();
+  const existing = loadDraft<DraftData>('schema');
+  const draft = existing?.data ?? null;
 
   const [trigger, setTrigger] = useState(draft?.trigger ?? '');
   const [emotions, setEmotions] = useState<EmotionEntry[]>(draft?.emotions ?? []);
@@ -92,7 +83,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
       trigger, emotions, thoughts, bodyFeelings, actualBehavior,
       schemaIds, schemaOrigin, healthyView, realProblems, excessiveReactions, healthyBehavior,
     };
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+    saveDraft('schema', data);
   }, [trigger, emotions, thoughts, bodyFeelings, actualBehavior, schemaIds, schemaOrigin, healthyView, realProblems, excessiveReactions, healthyBehavior]);
 
   const toggleEmotion = (id: string) =>
@@ -123,7 +114,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         excessiveReactions: excessiveReactions || undefined,
         healthyBehavior: healthyBehavior || undefined,
       });
-      localStorage.removeItem(DRAFT_KEY);
+      clearDraft('schema');
       onClose();
     } finally {
       setSaving(false);

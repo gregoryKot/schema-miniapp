@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
+import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
 
 interface Props {
   onClose: () => void;
@@ -11,10 +12,18 @@ interface Props {
 const TODAY = new Date().toISOString().split('T')[0];
 
 export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Props) {
-  const [items, setItems] = useState<string[]>(existingItems ?? ['', '', '']);
+  const draftDate = date === TODAY ? 'today' : date;
+  const existing = !existingItems ? loadDraft<{ items: string[] }>('gratitude') : null;
+  const initItems = existingItems ?? existing?.data?.items ?? ['', '', ''];
+
+  const [items, setItems] = useState<string[]>(initItems);
   const [saving, setSaving] = useState(false);
 
   const update = (i: number, v: string) => setItems(prev => prev.map((it, idx) => idx === i ? v : it));
+
+  useEffect(() => {
+    if (!existingItems) saveDraft('gratitude', { items });
+  }, [items, existingItems]);
 
   const canSave = items.filter(it => it.trim().length > 0).length >= 1;
 
@@ -23,11 +32,13 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
     setSaving(true);
     try {
       await onSave(date, items.filter(it => it.trim().length > 0));
+      clearDraft('gratitude');
       onClose();
     } finally {
       setSaving(false);
     }
   };
+  void draftDate;
 
   const formatDate = (d: string) => {
     if (d === TODAY) return 'сегодня';

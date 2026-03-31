@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
 import { MODE_GROUPS } from '../../diaryData';
+import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
 
 interface Props {
   onClose: () => void;
@@ -37,15 +38,22 @@ function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onCha
 }
 
 export function ModeEntrySheet({ onClose, onSave }: Props) {
-  const [modeId, setModeId] = useState('');
-  const [situation, setSituation] = useState('');
-  const [thoughts, setThoughts] = useState('');
-  const [feelings, setFeelings] = useState('');
-  const [bodyFeelings, setBodyFeelings] = useState('');
-  const [actions, setActions] = useState('');
-  const [actualNeed, setActualNeed] = useState('');
-  const [childhoodMemories, setChildhoodMemories] = useState('');
+  const existing = loadDraft<{ modeId: string; situation: string; thoughts: string; feelings: string; bodyFeelings: string; actions: string; actualNeed: string; childhoodMemories: string }>('mode');
+  const d = existing?.data;
+
+  const [modeId, setModeId] = useState(d?.modeId ?? '');
+  const [situation, setSituation] = useState(d?.situation ?? '');
+  const [thoughts, setThoughts] = useState(d?.thoughts ?? '');
+  const [feelings, setFeelings] = useState(d?.feelings ?? '');
+  const [bodyFeelings, setBodyFeelings] = useState(d?.bodyFeelings ?? '');
+  const [actions, setActions] = useState(d?.actions ?? '');
+  const [actualNeed, setActualNeed] = useState(d?.actualNeed ?? '');
+  const [childhoodMemories, setChildhoodMemories] = useState(d?.childhoodMemories ?? '');
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    saveDraft('mode', { modeId, situation, thoughts, feelings, bodyFeelings, actions, actualNeed, childhoodMemories });
+  }, [modeId, situation, thoughts, feelings, bodyFeelings, actions, actualNeed, childhoodMemories]);
 
   const canSave = modeId.length > 0 && situation.trim().length > 0;
 
@@ -62,6 +70,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
         actualNeed: actualNeed || undefined,
         childhoodMemories: childhoodMemories || undefined,
       });
+      clearDraft('mode');
       onClose();
     } finally {
       setSaving(false);
@@ -72,7 +81,9 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Дневник режимов</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>Новая запись</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+          {existing ? 'Черновик восстановлен' : 'Новая запись'}
+        </div>
 
         <FieldLabel title="1. Режим" hint="кто включился" />
         {MODE_GROUPS.map(group => (

@@ -254,6 +254,7 @@ export default function App() {
       const tzOffset = Math.round(-new Date().getTimezoneOffset() / 60);
       api.init(tzOffset).then(() => sessionStorage.setItem('init_done', '1')).catch(() => {});
     }
+    api.recordActivity().catch(() => {});
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => {
         setNeeds(n);

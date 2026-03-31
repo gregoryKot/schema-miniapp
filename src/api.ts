@@ -111,6 +111,7 @@ export const api = {
   getNote:         (date: string) => get<{ text: string | null; tags: string[] }>(`/api/note?date=${date}`),
   saveNote:        (date: string, text: string, tags?: string[]) => post('/api/note', { date, text, tags }),
   getStreak:      () => get<StreakData>('/api/streak'),
+  recordActivity: () => post('/api/activity', {}),
   getInsights:    () => get<{
     weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>;
     bestDayOfWeek: string | null;

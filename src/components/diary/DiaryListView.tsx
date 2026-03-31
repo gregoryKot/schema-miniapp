@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { SchemaDiaryEntry, ModeDiaryEntry, GratitudeDiaryEntry, DiaryType } from '../../types';
 import { EMOTIONS, getModeById, getSchemaById } from '../../diaryData';
+import { getTelegramSafeTop } from '../../utils/safezone';
+import { loadDraft, clearDraft, formatDraftAge } from '../../utils/drafts';
 
 interface Props {
   type: DiaryType;
@@ -48,25 +50,29 @@ function SchemaCard({ entry, color, onDelete }: { entry: SchemaDiaryEntry; color
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }} onClick={() => setOpen(o => !o)}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{formatDt(entry.createdAt)}</div>
-          <div style={{ fontSize: 14, color: '#fff', lineHeight: 1.4 }}>{entry.trigger.slice(0, 80)}{entry.trigger.length > 80 ? '…' : ''}</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
-            {emotionMetas.map(em => <span key={em.id} style={{ fontSize: 14 }}>{em.emoji}</span>)}
-            {schemas.slice(0, 2).map(s => s && (
-              <span key={s.id} style={{ fontSize: 11, background: `${s.domainColor}22`, color: s.domainColor, borderRadius: 8, padding: '2px 7px' }}>{s.name}</span>
-            ))}
-          </div>
+      <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDt(entry.createdAt)}</span>
+          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
-        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>{open ? '∧' : '∨'}</span>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 6, lineHeight: 1.4 }}>
+          {entry.trigger.length > 80 && !open ? entry.trigger.slice(0, 80) + '…' : entry.trigger}
+        </div>
+        {!open && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {emotionMetas.slice(0, 3).map(e => <span key={e.id} style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{e.emoji}</span>)}
+            {schemas.slice(0, 2).map(s => s && <span key={s.id} style={{ fontSize: 11, padding: '2px 7px', borderRadius: 8, background: `${color}22`, color }}>{s.name}</span>)}
+          </div>
+        )}
       </div>
       {open && (
-        <div style={{ marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12 }}>
+        <div style={{ marginTop: 10 }}>
+          {emotionMetas.length > 0 && <Field label="Чувства" text={emotionMetas.map(e => `${e.emoji} ${e.label}`).join(', ')} />}
           {entry.thoughts && <Field label="Мысли" text={entry.thoughts} />}
           {entry.bodyFeelings && <Field label="Тело" text={entry.bodyFeelings} />}
-          {entry.actualBehavior && <Field label="Фактическое поведение" text={entry.actualBehavior} />}
-          {entry.schemaOrigin && <Field label="Откуда схема" text={entry.schemaOrigin} />}
+          {entry.actualBehavior && <Field label="Поведение" text={entry.actualBehavior} />}
+          {schemas.length > 0 && <Field label="Схемы" text={schemas.map(s => s?.name).join(', ')} />}
+          {entry.schemaOrigin && <Field label="Происхождение" text={entry.schemaOrigin} />}
           {entry.healthyView && <Field label="Здоровый взгляд" text={entry.healthyView} />}
           {entry.realProblems && <Field label="Реальные проблемы" text={entry.realProblems} />}
           {entry.excessiveReactions && <Field label="Чрезмерные реакции" text={entry.excessiveReactions} />}
@@ -84,26 +90,24 @@ function ModeCard({ entry, color, onDelete }: { entry: ModeDiaryEntry; color: st
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }} onClick={() => setOpen(o => !o)}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{formatDt(entry.createdAt)}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <span style={{ fontSize: 20 }}>{mode?.emoji ?? '🔄'}</span>
-            <div style={{ fontSize: 14, color: '#fff', fontWeight: 600 }}>{mode?.name ?? entry.modeId}</div>
-          </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>{entry.situation.slice(0, 70)}{entry.situation.length > 70 ? '…' : ''}</div>
+      <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDt(entry.createdAt)}</span>
+          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
-        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>{open ? '∧' : '∨'}</span>
+        {mode && <div style={{ fontSize: 13, color, marginBottom: 4 }}>{mode.emoji} {mode.name}</div>}
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4 }}>
+          {entry.situation.length > 80 && !open ? entry.situation.slice(0, 80) + '…' : entry.situation}
+        </div>
       </div>
       {open && (
-        <div style={{ marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12 }}>
-          <Field label="Ситуация" text={entry.situation} />
+        <div style={{ marginTop: 10 }}>
           {entry.thoughts && <Field label="Мысли" text={entry.thoughts} />}
           {entry.feelings && <Field label="Чувства" text={entry.feelings} />}
           {entry.bodyFeelings && <Field label="Тело" text={entry.bodyFeelings} />}
           {entry.actions && <Field label="Действия" text={entry.actions} />}
-          {entry.actualNeed && <Field label="Что на самом деле было нужно" text={entry.actualNeed} />}
-          {entry.childhoodMemories && <Field label="Детские воспоминания" text={entry.childhoodMemories} />}
+          {entry.actualNeed && <Field label="Что было нужно" text={entry.actualNeed} />}
+          {entry.childhoodMemories && <Field label="Воспоминания" text={entry.childhoodMemories} />}
           <DeleteBtn color={color} onClick={onDelete} />
         </div>
       )}
@@ -113,30 +117,94 @@ function ModeCard({ entry, color, onDelete }: { entry: ModeDiaryEntry; color: st
 
 function GratitudeCard({ entry, color, onDelete }: { entry: GratitudeDiaryEntry; color: string; onDelete: () => void }) {
   const [open, setOpen] = useState(false);
-  const d = new Date(entry.date + 'T12:00:00');
-  const dateStr = d.toLocaleDateString('ru', { day: 'numeric', month: 'long', weekday: 'short' });
 
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }} onClick={() => setOpen(o => !o)}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{dateStr}</div>
-          {!open && entry.items.slice(0, 2).map((it, i) => (
-            <div key={i} style={{ fontSize: 14, color: '#fff', lineHeight: 1.4 }}>🌱 {it.slice(0, 55)}{it.length > 55 ? '…' : ''}</div>
-          ))}
-          {!open && entry.items.length > 2 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 3 }}>+ ещё {entry.items.length - 2}</div>}
-          {open && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>{entry.items.length} {entry.items.length === 1 ? 'запись' : 'записи'}</div>}
+      <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+            {new Date(entry.date + 'T12:00:00').toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
+          </span>
+          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
-        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>{open ? '∧' : '∨'}</span>
+        {!open && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+            {entry.items.slice(0, 2).map((item, i) => (
+              <span key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                {i > 0 && '· '}{item.length > 40 ? item.slice(0, 40) + '…' : item}
+              </span>
+            ))}
+            {entry.items.length > 2 && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+{entry.items.length - 2}</span>}
+          </div>
+        )}
+        {open && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{entry.items.length} записи</div>}
       </div>
       {open && (
-        <div style={{ marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12 }}>
-          {entry.items.map((it, i) => (
-            <div key={i} style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 6, lineHeight: 1.5 }}>🌱 {it}</div>
+        <div style={{ marginTop: 10 }}>
+          {entry.items.map((item, i) => (
+            <div key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 6, paddingLeft: 4, borderLeft: `2px solid ${color}44`, lineHeight: 1.5 }}>
+              {item}
+            </div>
           ))}
           <DeleteBtn color={color} onClick={onDelete} />
         </div>
       )}
+    </div>
+  );
+}
+
+function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; color: string; onContinue: () => void; onDelete: () => void }) {
+  const [confirm, setConfirm] = useState(false);
+  const draft = loadDraft<any>(type);
+  if (!draft) return null;
+
+  const preview = type === 'schema' ? draft.data?.trigger :
+    type === 'mode' ? draft.data?.situation :
+    draft.data?.items?.[0];
+
+  return (
+    <div style={{
+      borderRadius: 16, padding: '14px 16px', marginBottom: 14,
+      background: `${color}0a`,
+      border: `1px dashed ${color}44`,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{
+            fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+            padding: '3px 7px', borderRadius: 6, background: `${color}22`, color,
+          }}>Черновик</span>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDraftAge(draft.startedAt)}</span>
+        </div>
+      </div>
+      {preview && (
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginBottom: 10, lineHeight: 1.4 }}>
+          {preview.length > 80 ? preview.slice(0, 80) + '…' : preview}
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={onContinue}
+          style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: 'none', background: color, color: type === 'gratitude' ? '#060a12' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+        >
+          Продолжить
+        </button>
+        {!confirm ? (
+          <button
+            onClick={() => setConfirm(true)}
+            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer' }}
+          >
+            Удалить
+          </button>
+        ) : (
+          <button
+            onClick={onDelete}
+            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.2)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Точно удалить
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -147,10 +215,23 @@ function Empty({ text }: { text: string }) {
 
 export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntries, onBack, onNewEntry, onDelete }: Props) {
   const meta = DIARY_META[type];
+  const safeTop = getTelegramSafeTop();
+  const [draftKey, setDraftKey] = useState(0); // force re-render after draft delete
+
+  const hasDraftEntry = !!loadDraft(type);
+
+  function handleDeleteDraft() {
+    clearDraft(type);
+    setDraftKey(k => k + 1);
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', animation: 'slide-in-right 250ms ease' }}>
-      <div style={{ position: 'sticky', top: 0, background: '#060a12', zIndex: 10, padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{
+        position: 'sticky', top: 0, background: '#060a12', zIndex: 10,
+        padding: `${safeTop + 12}px 16px 12px`,
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 10, width: 36, height: 36, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ‹
@@ -161,16 +242,26 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
       </div>
 
       <div style={{ padding: '16px 16px 120px' }}>
+        {hasDraftEntry && (
+          <DraftCard
+            key={draftKey}
+            type={type}
+            color={meta.color}
+            onContinue={onNewEntry}
+            onDelete={handleDeleteDraft}
+          />
+        )}
+
         {type === 'schema' && (
-          schemaEntries.length === 0 ? <Empty text={meta.emptyText} /> :
+          schemaEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
             schemaEntries.map(e => <SchemaCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('schema', e.id)} />)
         )}
         {type === 'mode' && (
-          modeEntries.length === 0 ? <Empty text={meta.emptyText} /> :
+          modeEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
             modeEntries.map(e => <ModeCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('mode', e.id)} />)
         )}
         {type === 'gratitude' && (
-          gratitudeEntries.length === 0 ? <Empty text={meta.emptyText} /> :
+          gratitudeEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
             gratitudeEntries.map(e => <GratitudeCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('gratitude', e.id)} />)
         )}
       </div>
