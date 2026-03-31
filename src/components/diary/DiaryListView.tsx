@@ -121,10 +121,11 @@ function GratitudeCard({ entry, color, onDelete }: { entry: GratitudeDiaryEntry;
       <div style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }} onClick={() => setOpen(o => !o)}>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>{dateStr}</div>
-          {entry.items.slice(0, 2).map((it, i) => (
+          {!open && entry.items.slice(0, 2).map((it, i) => (
             <div key={i} style={{ fontSize: 14, color: '#fff', lineHeight: 1.4 }}>🌱 {it.slice(0, 55)}{it.length > 55 ? '…' : ''}</div>
           ))}
-          {entry.items.length > 2 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 3 }}>+ ещё {entry.items.length - 2}</div>}
+          {!open && entry.items.length > 2 && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 3 }}>+ ещё {entry.items.length - 2}</div>}
+          {open && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>{entry.items.length} {entry.items.length === 1 ? 'запись' : 'записи'}</div>}
         </div>
         <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 16 }}>{open ? '∧' : '∨'}</span>
       </div>

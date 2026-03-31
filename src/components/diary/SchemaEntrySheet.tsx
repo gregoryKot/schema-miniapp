@@ -68,7 +68,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
   const toggleSchema = (id: string) =>
     setSchemaIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
 
-  const canSave = trigger.trim().length > 0 && emotions.length > 0 && schemaIds.length > 0;
+  const canSave = trigger.trim().length > 0;
 
   const handleSave = async () => {
     if (!canSave || saving) return;
