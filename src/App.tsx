@@ -208,6 +208,7 @@ export default function App() {
   const [schemaInitialTab, setSchemaInitialTab] = useState<'needs'|'schemas'|'modes'>('needs');
   const [schemaHighlight, setSchemaHighlight] = useState<string | undefined>();
   const [showProfile, setShowProfile] = useState(false);
+  const [profileInitialView, setProfileInitialView] = useState<'childhoodWheel' | 'myPractices' | 'plans' | undefined>(undefined);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
   const [showYesterdaySheet, setShowYesterdaySheet] = useState(false);
@@ -340,7 +341,7 @@ export default function App() {
   const backHandlerRef = useRef<() => void>(() => {});
   useEffect(() => {
     backHandlerRef.current =
-      newDiaryEntry ? () => setNewDiaryEntry(null) :
+      newDiaryEntry ? () => { setNewDiaryEntry(null); setShowDiaries(true); } :
       showTracker ? () => { setShowTracker(false); setTrackerTab('today'); } :
       showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
@@ -421,7 +422,7 @@ export default function App() {
           ratings={ratings}
           onNavigate={setSection}
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
-          onOpenAdvanced={() => setShowProfile(true)}
+          onOpenAdvanced={() => { setProfileInitialView(undefined); setShowProfile(true); }}
           onOpenTracker={() => setShowTracker(true)}
           onOpenDiaries={() => setShowDiaries(true)}
         />
@@ -434,7 +435,7 @@ export default function App() {
       )}
 
       {section === 'profile' && (
-        <ProfileSection onOpenAdvanced={() => setShowProfile(true)} />
+        <ProfileSection onOpenAdvanced={(view) => { setProfileInitialView(view); setShowProfile(true); }} />
       )}
 
       {/* ── Tracker overlay ── */}
@@ -736,26 +737,26 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
+      {showProfile && <ProfileSheet onClose={() => { setShowProfile(false); setProfileInitialView(undefined); }} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} initialView={profileInitialView} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
       {newDiaryEntry === 'schema' && (
         <SchemaEntrySheet
           activeSchemaIds={diaryActiveSchemaIds}
-          onClose={() => setNewDiaryEntry(null)}
+          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
           onSave={async (data) => { await api.createSchemaDiary(data); }}
         />
       )}
       {newDiaryEntry === 'mode' && (
         <ModeEntrySheet
-          onClose={() => setNewDiaryEntry(null)}
+          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
           onSave={async (data) => { await api.createModeDiary(data); }}
         />
       )}
       {newDiaryEntry === 'gratitude' && (
         <GratitudeEntrySheet
-          onClose={() => setNewDiaryEntry(null)}
+          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
           date={TODAY_DATE}
           onSave={async (date, items) => { await api.createGratitudeDiary(date, items); }}
         />
@@ -764,6 +765,7 @@ export default function App() {
       {/* ── Floating pill (always above bottom bar) ── */}
       {!showTracker && !showDiaries && !showSchemaInfo && !showProfile && !newDiaryEntry && (
         <FloatingPill
+          onOpenTracker={() => setShowTracker(true)}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
           onOpenModeDiary={() => setNewDiaryEntry('mode')}
           onOpenGratitude={() => setNewDiaryEntry('gratitude')}

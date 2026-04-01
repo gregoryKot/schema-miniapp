@@ -5,9 +5,10 @@ interface Props {
   onOpenSchemaDiary: () => void;
   onOpenModeDiary: () => void;
   onOpenGratitude: () => void;
+  onOpenTracker: () => void;
 }
 
-export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitude }: Props) {
+export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitude, onOpenTracker }: Props) {
   const [showPicker, setShowPicker] = useState(false);
 
   return (
@@ -52,6 +53,13 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
               Что записать?
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <DiaryTypeButton
+                emoji="📊"
+                label="Потребности"
+                sub="Оцени день по пяти шкалам"
+                color="#fb923c"
+                onClick={() => { setShowPicker(false); onOpenTracker(); }}
+              />
               <DiaryTypeButton
                 emoji="📓"
                 label="Схема"

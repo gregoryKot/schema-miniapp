@@ -28,8 +28,6 @@ const SCREENS: { id: SectionId; label: string; emoji: string }[] = [
   { id: 'profile', label: 'Я',       emoji: '👤' },
 ];
 
-// ── Achievement display ────────────────────────────────────────────────────
-
 const ACHIEVEMENT_META: Record<string, { emoji: string; title: string }> = {
   first_day:      { emoji: '🌱', title: 'Первый шаг' },
   streak_3:       { emoji: '🔥', title: '3 дня' },
@@ -46,25 +44,38 @@ const ACHIEVEMENT_META: Record<string, { emoji: string; title: string }> = {
   pair_connected: { emoji: '🤝', title: 'Партнёр' },
 };
 
+const NEED_NAMES: Record<string, string> = {
+  attachment: 'Привязанность', autonomy: 'Автономия',
+  expression: 'Выражение', play: 'Спонтанность', limits: 'Границы',
+};
+
+type InsightsData = {
+  weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>;
+  bestDayOfWeek: string | null;
+  worstDayOfWeek: string | null;
+  totalDays: number;
+};
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 interface Props {
-  onOpenAdvanced: () => void;
+  onOpenAdvanced: (view?: 'childhoodWheel' | 'myPractices' | 'plans') => void;
 }
 
 export function ProfileSection({ onOpenAdvanced }: Props) {
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const safeTop = getTelegramSafeTop();
 
-  const [settings, setSettings]       = useState<UserSettings | null>(null);
-  const [streak, setStreak]           = useState<StreakData | null>(null);
+  const [settings, setSettings]         = useState<UserSettings | null>(null);
+  const [streak, setStreak]             = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
-  const [pairData, setPairData]       = useState<PairsData | null>(null);
+  const [pairData, setPairData]         = useState<PairsData | null>(null);
+  const [insights, setInsights]         = useState<InsightsData | null>(null);
 
-  const [pairLoading, setPairLoading] = useState(false);
-  const [joinCode, setJoinCode]       = useState('');
-  const [joinView, setJoinView]       = useState<'hidden' | 'input'>('hidden');
-  const [inviteUrl, setInviteUrl]     = useState('');
+  const [pairLoading, setPairLoading]   = useState(false);
+  const [joinCode, setJoinCode]         = useState('');
+  const [joinView, setJoinView]         = useState<'hidden' | 'input'>('hidden');
+  const [inviteUrl, setInviteUrl]       = useState('');
   const [inviteCopied, setInviteCopied] = useState(false);
   const [showTzPicker, setShowTzPicker] = useState(false);
 
@@ -81,6 +92,7 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
     api.getStreak().then(setStreak).catch(() => {});
     api.getAchievements().then(setAchievements).catch(() => {});
     api.getPair().then(setPairData).catch(() => {});
+    api.getInsights().then(setInsights).catch(() => {});
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -115,60 +127,51 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
     } catch {} finally { setPairLoading(false); }
   }
 
-  // ── Derived state ──────────────────────────────────────────────────────────
+  // ── Derived ──────────────────────────────────────────────────────────────
 
-  const notifyOn   = settings?.notifyEnabled ?? false;
-  const localHour  = settings?.notifyLocalHour ?? 21;
-  const tzIana     = settings?.notifyTimezone ?? 'Europe/Moscow';
-  const tzLabel    = TIMEZONES.find(t => t.iana === tzIana)?.label ?? tzIana;
+  const notifyOn      = settings?.notifyEnabled ?? false;
+  const localHour     = settings?.notifyLocalHour ?? 21;
+  const tzIana        = settings?.notifyTimezone ?? 'Europe/Moscow';
+  const tzLabel       = TIMEZONES.find(t => t.iana === tzIana)?.label ?? tzIana;
   const currentStreak = streak?.currentStreak ?? 0;
   const totalDays     = streak?.totalDays ?? 0;
   const weekDots      = streak?.weekDots ?? [];
   const earnedList    = achievements.filter(a => a.earned);
   const partner       = pairData?.partners?.[0];
 
+  const hasInsights   = insights && insights.weeklyStats.some(s => s.avg !== null);
+  const risingNeed    = insights?.weeklyStats.find(s => s.trend === '↑');
+  const fallingNeed   = insights?.weeklyStats.find(s => s.trend === '↓');
+
   return (
-    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 100, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
       {/* ── Hero ── */}
       <div style={{ margin: '16px 16px 0', borderRadius: 24, padding: '20px', background: 'linear-gradient(135deg, rgba(167,139,250,0.1) 0%, rgba(96,165,250,0.06) 100%)', border: '1px solid rgba(167,139,250,0.18)', position: 'relative', overflow: 'hidden' }}>
-        {/* Decorative circle */}
         <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, borderRadius: '50%', background: 'rgba(167,139,250,0.06)', pointerEvents: 'none' }} />
-
         <div style={{ fontSize: 13, color: 'rgba(167,139,250,0.7)', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 4 }}>
-          {firstName ? `${firstName}` : 'Профиль'}
+          {firstName || 'Профиль'}
         </div>
         <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px', marginBottom: 16 }}>
           {currentStreak > 7 ? 'Ты в потоке 🔥' : currentStreak > 0 ? 'Отличная работа ✨' : 'Начнём сначала 🌱'}
         </div>
-
-        {/* Stats row */}
-        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 16, marginBottom: weekDots.length > 0 ? 16 : 0 }}>
           <div>
-            <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: currentStreak > 0 ? '#fb923c' : 'rgba(255,255,255,0.25)' }}>
-              {currentStreak}
-            </div>
+            <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: currentStreak > 0 ? '#fb923c' : 'rgba(255,255,255,0.25)' }}>{currentStreak}</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>дней подряд</div>
           </div>
           <div style={{ width: 1, background: 'rgba(255,255,255,0.08)', alignSelf: 'stretch' }} />
           <div>
-            <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: totalDays > 0 ? '#60a5fa' : 'rgba(255,255,255,0.25)' }}>
-              {totalDays}
-            </div>
+            <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: totalDays > 0 ? '#60a5fa' : 'rgba(255,255,255,0.25)' }}>{totalDays}</div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>всего дней</div>
           </div>
         </div>
-
-        {/* 7-day dots */}
         {weekDots.length > 0 && (
           <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             {weekDots.map((done, i) => (
               <div key={i} style={{
-                width: done ? 28 : 24, height: done ? 10 : 8,
-                borderRadius: 5, flexShrink: 0,
-                background: done
-                  ? 'linear-gradient(90deg, #a78bfa, #60a5fa)'
-                  : 'rgba(255,255,255,0.1)',
+                width: done ? 28 : 24, height: done ? 10 : 8, borderRadius: 5, flexShrink: 0,
+                background: done ? 'linear-gradient(90deg, #a78bfa, #60a5fa)' : 'rgba(255,255,255,0.1)',
                 transition: 'all 0.2s',
               }} />
             ))}
@@ -177,7 +180,7 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
         )}
       </div>
 
-      <div style={{ padding: '20px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
         {/* ── Достижения ── */}
         {earnedList.length > 0 && (
@@ -188,13 +191,7 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
                 const meta = ACHIEVEMENT_META[a.id];
                 if (!meta) return null;
                 return (
-                  <div key={a.id} style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                    padding: '10px 12px', borderRadius: 14,
-                    background: 'rgba(167,139,250,0.07)',
-                    border: '1px solid rgba(167,139,250,0.15)',
-                    minWidth: 60,
-                  }}>
+                  <div key={a.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 12px', borderRadius: 14, background: 'rgba(167,139,250,0.07)', border: '1px solid rgba(167,139,250,0.15)', minWidth: 60 }}>
                     <span style={{ fontSize: 22 }}>{meta.emoji}</span>
                     <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', textAlign: 'center', lineHeight: 1.3 }}>{meta.title}</span>
                   </div>
@@ -204,11 +201,42 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
           </div>
         )}
 
+        {/* ── Инсайты ── */}
+        {hasInsights && (
+          <div>
+            <SectionLabel>ИНСАЙТЫ</SectionLabel>
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '14px 16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {insights!.weeklyStats.filter(s => s.avg !== null).map(s => {
+                  const barW = Math.round(((s.avg ?? 0) / 10) * 100);
+                  const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
+                  return (
+                    <div key={s.needId}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId] ?? s.needId}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: trendColor }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
+                      </div>
+                      <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
+                        <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
+                      </div>
+                    </div>
+                  );
+                })}
+                {(insights!.bestDayOfWeek || insights!.worstDayOfWeek) && insights!.totalDays >= 7 && (
+                  <div style={{ display: 'flex', gap: 12, marginTop: 6, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                    {insights!.bestDayOfWeek && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Лучше всего — <strong style={{ color: '#ffd166' }}>{insights!.bestDayOfWeek}</strong></span>}
+                    {insights!.worstDayOfWeek && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Тяжелее — <strong style={{ color: '#f87171' }}>{insights!.worstDayOfWeek}</strong></span>}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Настройки ── */}
         <div>
           <SectionLabel>НАСТРОЙКИ</SectionLabel>
 
-          {/* Уведомления */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden', marginBottom: 8 }}>
             <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: notifyOn ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
               <div>
@@ -258,7 +286,6 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
             )}
           </div>
 
-          {/* Открывать сначала */}
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '14px 16px' }}>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 10, fontWeight: 500 }}>Открывать сначала</div>
             <div style={{ display: 'flex', gap: 6 }}>
@@ -309,50 +336,42 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
                   {pairLoading ? 'Создаю...' : '🔗 Пригласить партнёра'}
                 </button>
                 {joinView === 'hidden' ? (
-                  <button onClick={() => setJoinView('input')} style={{
-                    padding: '10px', borderRadius: 12, border: 'none',
-                    background: 'rgba(255,255,255,0.04)',
-                    color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer',
-                  }}>У меня есть код</button>
+                  <button onClick={() => setJoinView('input')} style={{ padding: '10px', borderRadius: 12, border: 'none', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer' }}>
+                    У меня есть код
+                  </button>
                 ) : (
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={joinCode} onChange={e => setJoinCode(e.target.value)} placeholder="Введи код партнёра" style={{
-                      flex: 1, padding: '10px 12px', borderRadius: 10,
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13, outline: 'none',
-                    }} />
-                    <button onClick={handleJoin} disabled={pairLoading || !joinCode.trim()} style={{
-                      padding: '10px 16px', borderRadius: 10, border: 'none',
-                      background: '#60a5fa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-                    }}>OK</button>
+                    <input value={joinCode} onChange={e => setJoinCode(e.target.value)} placeholder="Введи код партнёра" style={{ flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13, outline: 'none' }} />
+                    <button onClick={handleJoin} disabled={pairLoading || !joinCode.trim()} style={{ padding: '10px 16px', borderRadius: 10, border: 'none', background: '#60a5fa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>OK</button>
                   </div>
                 )}
               </div>
             )}
             {inviteUrl && (
-              <div onClick={async () => { await navigator.clipboard.writeText(inviteUrl).catch(() => {}); setInviteCopied(true); setTimeout(() => setInviteCopied(false), 2000); }} style={{
-                marginTop: 10, padding: '10px 12px', borderRadius: 10,
-                background: 'rgba(255,255,255,0.04)', cursor: 'pointer',
-                fontSize: 12, color: inviteCopied ? '#4ade80' : 'rgba(255,255,255,0.5)',
-              }}>
+              <div onClick={async () => { await navigator.clipboard.writeText(inviteUrl).catch(() => {}); setInviteCopied(true); setTimeout(() => setInviteCopied(false), 2000); }} style={{ marginTop: 10, padding: '10px 12px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontSize: 12, color: inviteCopied ? '#4ade80' : 'rgba(255,255,255,0.5)' }}>
                 {inviteCopied ? '✓ Ссылка скопирована' : '📋 Скопировать ссылку-приглашение'}
               </div>
             )}
           </div>
         </div>
 
-        {/* ── Дополнительно ── */}
-        <div onClick={onOpenAdvanced} style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '14px 16px', borderRadius: 18,
-          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
-          cursor: 'pointer',
-        }}>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>Инсайты, практики, данные</div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Аналитика, колесо детства, экспорт</div>
+        {/* ── Инструменты ── */}
+        <div>
+          <SectionLabel>ИНСТРУМЕНТЫ</SectionLabel>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+            <ToolRow emoji="🌀" label="Колесо детства" sub="Паттерны из прошлого" onClick={() => onOpenAdvanced('childhoodWheel')} />
+            <ToolRow emoji="🎯" label="Мои практики" sub="Персональные упражнения" onClick={() => onOpenAdvanced('myPractices')} divider />
+            <ToolRow emoji="📋" label="История планов" sub="Выполненные и пропущенные" onClick={() => onOpenAdvanced('plans')} divider />
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 18 }}>›</div>
+        </div>
+
+        {/* ── Данные ── */}
+        <div>
+          <SectionLabel>ДАННЫЕ</SectionLabel>
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+            <ToolRow emoji="📤" label="Экспорт данных" sub="Скопировать всю историю" onClick={() => onOpenAdvanced()} />
+            <ToolRow emoji="🗑" label="Удалить аккаунт" sub="Удалить все данные" onClick={() => onOpenAdvanced()} divider color="#f87171" />
+          </div>
         </div>
 
       </div>
@@ -362,13 +381,10 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function SectionLabel({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) {
+function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingTop: 4 }}>
-      <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)' }}>
-        {children}
-      </div>
-      {right}
+    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 10, paddingTop: 4 }}>
+      {children}
     </div>
   );
 }
@@ -385,6 +401,22 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
         width: 20, height: 20, borderRadius: 10, background: '#fff',
         transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
       }} />
+    </div>
+  );
+}
+
+function ToolRow({ emoji, label, sub, onClick, divider, color }: { emoji: string; label: string; sub: string; onClick: () => void; divider?: boolean; color?: string }) {
+  return (
+    <div onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer',
+      borderTop: divider ? '1px solid rgba(255,255,255,0.05)' : undefined,
+    }}>
+      <span style={{ fontSize: 20, width: 28, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: color ?? '#fff' }}>{label}</div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{sub}</div>
+      </div>
+      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 16 }}>›</span>
     </div>
   );
 }

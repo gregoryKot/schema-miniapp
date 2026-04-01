@@ -156,6 +156,22 @@ export function SchemasSection({ onOpenSchema }: Props) {
           )}
         </div>
 
+        {/* ── Библиотека схемотерапии ── */}
+        <div
+          onClick={() => onOpenSchema({ tab: 'schemas' })}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
+            borderRadius: 16, padding: '14px 18px', cursor: 'pointer',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Описания схем, режимов, потребностей</div>
+          </div>
+          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
+        </div>
+
         {/* ── Режимы ── */}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: myModes.length > 0 ? 14 : 0 }}>

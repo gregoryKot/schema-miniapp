@@ -81,9 +81,9 @@ function BackHeader({ title, onBack }: { title: string; onBack: () => void }) {
 
 type View = 'main' | 'time' | 'tz' | 'achievements' | 'pair' | 'plans' | 'myPractices' | 'childhoodWheel';
 
-interface Props { onClose: () => void; onOpenSchemas?: () => void; onChildhoodSaved?: (r: Record<string, number>) => void; childhoodRatings?: Record<string, number> }
+interface Props { onClose: () => void; onOpenSchemas?: () => void; onChildhoodSaved?: (r: Record<string, number>) => void; childhoodRatings?: Record<string, number>; initialView?: View }
 
-export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childhoodRatings: childhoodRatingsProp }: Props) {
+export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childhoodRatings: childhoodRatingsProp, initialView }: Props) {
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -110,7 +110,7 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [exportText, setExportText] = useState<string | null>(null);
   const [exportCopied, setExportCopied] = useState(false);
-  const [view, setView] = useState<View>('main');
+  const [view, setView] = useState<View>(initialView ?? 'main');
   const scrollRef = useRef<HTMLDivElement>(null);
   const savedScrollTop = useRef(0);
 
