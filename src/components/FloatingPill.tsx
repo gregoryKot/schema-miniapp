@@ -16,33 +16,32 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
       <div
         style={{
           position: 'fixed',
-          bottom: 76,
-          left: '50%',
-          transform: 'translateX(-50%)',
+          bottom: 84,
+          right: 16,
           zIndex: 49,
         }}
       >
         <button
           onClick={() => setShowPicker(true)}
           style={{
+            width: 56,
+            height: 56,
+            borderRadius: '50%',
+            border: 'none',
+            background: '#a78bfa',
+            color: '#fff',
+            fontSize: 26,
+            fontWeight: 300,
+            cursor: 'pointer',
+            boxShadow: '0 4px 16px rgba(167,139,250,0.45)',
+            WebkitTapHighlightColor: 'transparent',
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            padding: '12px 22px',
-            borderRadius: 100,
-            border: 'none',
-            background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-            color: '#fff',
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 20px rgba(167,139,250,0.4)',
-            WebkitTapHighlightColor: 'transparent',
-            whiteSpace: 'nowrap',
+            justifyContent: 'center',
+            lineHeight: 1,
           }}
         >
-          <span style={{ fontSize: 16, lineHeight: 1 }}>✚</span>
-          Записать
+          +
         </button>
       </div>
 

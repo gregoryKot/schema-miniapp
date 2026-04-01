@@ -10,7 +10,7 @@ import { FloatingPill } from './components/FloatingPill';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
-import { ProfileSheet } from './components/ProfileSheet';
+import { SettingsSheet } from './components/SettingsSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
@@ -207,8 +207,7 @@ export default function App() {
   const [schemaAutoStartTest, setSchemaAutoStartTest] = useState(false);
   const [schemaInitialTab, setSchemaInitialTab] = useState<'needs'|'schemas'|'modes'>('needs');
   const [schemaHighlight, setSchemaHighlight] = useState<string | undefined>();
-  const [showProfile, setShowProfile] = useState(false);
-  const [profileInitialView, setProfileInitialView] = useState<'childhoodWheel' | 'myPractices' | 'plans' | undefined>(undefined);
+  const [showSettings, setShowSettings] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
   const [showYesterdaySheet, setShowYesterdaySheet] = useState(false);
@@ -345,7 +344,7 @@ export default function App() {
       showTracker ? () => { setShowTracker(false); setTrackerTab('today'); } :
       showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
-      showProfile ? () => setShowProfile(false) :
+      showSettings ? () => setShowSettings(false) :
       showAbout ? () => setShowAbout(false) :
       showPairSheet ? () => { setShowPairSheet(false); api.getPair().then(setPairData); } :
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
@@ -354,9 +353,9 @@ export default function App() {
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showProfile || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showProfile, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -422,7 +421,7 @@ export default function App() {
           ratings={ratings}
           onNavigate={setSection}
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
-          onOpenAdvanced={() => { setProfileInitialView(undefined); setShowProfile(true); }}
+          onOpenAdvanced={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
           onOpenDiaries={() => setShowDiaries(true)}
         />
@@ -435,7 +434,7 @@ export default function App() {
       )}
 
       {section === 'profile' && (
-        <ProfileSection onOpenAdvanced={(view) => { setProfileInitialView(view); setShowProfile(true); }} />
+        <ProfileSection onOpenSettings={() => setShowSettings(true)} onOpenChildhoodWheel={() => setShowChildhoodWheel(true)} onNavigate={setSection} />
       )}
 
       {/* ── Tracker overlay ── */}
@@ -737,7 +736,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showProfile && <ProfileSheet onClose={() => { setShowProfile(false); setProfileInitialView(undefined); }} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} initialView={profileInitialView} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
@@ -763,7 +762,7 @@ export default function App() {
       )}
 
       {/* ── Floating pill (always above bottom bar) ── */}
-      {!showTracker && !showDiaries && !showSchemaInfo && !showProfile && !newDiaryEntry && (
+      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !newDiaryEntry && (
         <FloatingPill
           onOpenTracker={() => setShowTracker(true)}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
