@@ -659,7 +659,7 @@ export default function App() {
       {/* ── Diaries overlay ── */}
       {showDiaries && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto' }}>
-          <DiarySection />
+          <DiarySection onClose={() => setShowDiaries(false)} />
         </div>
       )}
 

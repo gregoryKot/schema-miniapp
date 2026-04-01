@@ -19,6 +19,7 @@ interface Props {
   lastModeDiaryDate?: string;
   lastGratitudeDiaryDate?: string;
   onOpen: (type: DiaryType) => void;
+  onClose?: () => void;
 }
 
 function formatDate(iso?: string): string | undefined {
@@ -71,7 +72,7 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
   );
 }
 
-export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount, lastSchemaDiaryDate, lastModeDiaryDate, lastGratitudeDiaryDate, onOpen }: Props) {
+export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount, lastSchemaDiaryDate, lastModeDiaryDate, lastGratitudeDiaryDate, onOpen, onClose }: Props) {
   const diaries: DiaryMeta[] = [
     {
       type: 'schema',
@@ -106,8 +107,11 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
 
   return (
     <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        {onClose && <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>}
+        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>Дневники</span>
+      </div>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 24, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Дневники</div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
           Инструменты схема-терапии для самонаблюдения. Веди один или все три — как удобно.
         </div>

@@ -9,7 +9,9 @@ import { GratitudeEntrySheet } from '../components/diary/GratitudeEntrySheet';
 
 const TODAY = new Date().toISOString().split('T')[0];
 
-export function DiarySection() {
+interface Props { onClose?: () => void; }
+
+export function DiarySection({ onClose }: Props = {}) {
   const [activeDiary, setActiveDiary] = useState<DiaryType | null>(null);
   const [newEntry, setNewEntry] = useState<DiaryType | null>(null);
   const [schemaEntries, setSchemaEntries] = useState<SchemaDiaryEntry[]>([]);
@@ -76,6 +78,7 @@ export function DiarySection() {
           lastModeDiaryDate={modeEntries[0]?.createdAt}
           lastGratitudeDiaryDate={gratitudeEntries[0]?.date}
           onOpen={type => setActiveDiary(type)}
+          onClose={onClose}
         />
       )}
 

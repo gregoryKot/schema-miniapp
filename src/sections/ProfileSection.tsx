@@ -204,10 +204,10 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
           <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
-              {earnedList.length > 0 ? (
+              {achievements.length > 0 ? (
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
-                  {earnedList.slice(0, 8).map(a => (
-                    <span key={a.id} style={{ fontSize: 22 }}>
+                  {achievements.slice(0, 8).map(a => (
+                    <span key={a.id} style={{ fontSize: 22, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.25)' }}>
                       {(ACHIEVEMENT_META[a.id] ?? {}).emoji}
                     </span>
                   ))}
