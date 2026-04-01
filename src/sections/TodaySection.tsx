@@ -3,11 +3,9 @@ import { Need, UserProfile, COLORS } from '../types';
 import { api } from '../api';
 import { Section } from '../components/BottomNav';
 import { getTelegramSafeTop } from '../utils/safezone';
-import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from '../components/YSQTestSheet';
-import { BottomSheet } from '../components/BottomSheet';
+import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
-export const MY_SCHEMA_IDS_KEY = 'my_schema_ids';
-export const MY_MODE_IDS_KEY   = 'my_mode_ids';
+export { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY };
 
 interface Props {
   needs: Need[];
@@ -41,7 +39,6 @@ function readLocalIds(key: string): string[] {
 export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
-  const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
 
   useEffect(() => {
@@ -52,7 +49,6 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(p.mySchemaIds));
       }
       if (p.myModeIds.length > 0) {
-        setMyModeIds(p.myModeIds);
         localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(p.myModeIds));
       }
     }).catch(() => {});

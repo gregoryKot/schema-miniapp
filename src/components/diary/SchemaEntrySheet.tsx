@@ -183,7 +183,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         <FieldLabel title="6. Схемы" hint="какая проявилась, откуда она у меня" />
         {SCHEMA_DOMAINS.map(domain => {
           const schemas = useFiltered
-            ? domain.schemas.filter(s => activeSchemaIds!.includes(s.id))
+            ? domain.schemas.filter(s => activeSchemaIds?.includes(s.id) ?? false)
             : domain.schemas;
           if (schemas.length === 0) return null;
           return (

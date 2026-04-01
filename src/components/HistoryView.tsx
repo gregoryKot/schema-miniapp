@@ -81,8 +81,6 @@ function NeedsWheel({
   const prevAvg = hasPrev
     ? needs.reduce((s, nd) => s + (prevRatings[nd.id] ?? 0), 0) / needs.length
     : null;
-  const diff = prevAvg !== null ? avg - prevAvg : null;
-
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
@@ -160,7 +158,6 @@ function NeedsWheel({
         const r = Math.sqrt(cValue / 10) * R;
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;
-        const color = COLORS[need.id] ?? '#888';
         return (
           <path key={`childhood-${need.id}`} d={d}
             fill="none"

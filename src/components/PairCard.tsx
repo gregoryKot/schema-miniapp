@@ -27,7 +27,7 @@ export function PairCard({ partners, pendingCode, showInvite, onOpen, onDismissI
       {partners.map(partner => {
         const name = partner.partnerName ?? 'Друг';
         const done = partner.partnerTodayDone && partner.partnerIndex !== null;
-        const color = done ? indexColor(partner.partnerIndex!) : 'rgba(255,255,255,0.3)';
+        const color = done ? indexColor(partner.partnerIndex ?? 0) : 'rgba(255,255,255,0.3)';
         return (
           <div key={partner.code} style={{ ...rowStyle, cursor: 'pointer' }} onClick={onOpen}>
             <span style={{ fontSize: 22 }}>🤝</span>
@@ -35,7 +35,7 @@ export function PairCard({ partners, pendingCode, showInvite, onOpen, onDismissI
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{name} сегодня</div>
               {done ? (
                 <div style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1.2 }}>
-                  {partner.partnerIndex!.toFixed(1)}
+                  {(partner.partnerIndex ?? 0).toFixed(1)}
                   <span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/10</span>
                 </div>
               ) : (

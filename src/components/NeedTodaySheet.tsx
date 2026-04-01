@@ -31,15 +31,6 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
   const rangeIdx = value <= 3 ? 0 : value <= 6 ? 1 : 2;
   const RANGE_VALUES = [1, 4, 7];
 
-  // Stable random index per tipKey — recomputed only when level changes
-  const tipSeeds = useRef<Partial<Record<string, number>>>({});
-  const tipKey = value <= 3 ? 'low' : value <= 6 ? 'medium' : 'high';
-  const tipPool = data.tips[tipKey];
-  if (tipSeeds.current[tipKey] === undefined) {
-    tipSeeds.current[tipKey] = Math.floor(Math.random() * tipPool.length);
-  }
-  const tip = tipPool[tipSeeds.current[tipKey]!];
-
   // Inline slider — prevent iOS scroll container from stealing touch events
   const trackRef = useRef<HTMLDivElement>(null);
   useEffect(() => {

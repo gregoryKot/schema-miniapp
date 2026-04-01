@@ -336,12 +336,12 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
                 </div>
                 {insightsOpen && (
                   <div style={{ padding: '12px 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                    {(insights!.bestDayOfWeek || insights!.worstDayOfWeek) && insights!.totalDays >= 7 && (
+                    {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && insights?.totalDays >= 7 && (
                       <div style={{ display: 'flex', gap: 8, marginTop: 12, marginBottom: 14, flexWrap: 'wrap' }}>
-                        {insights!.bestDayOfWeek && (
+                        {insights?.bestDayOfWeek && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                              Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights!.bestDayOfWeek}</span>
+                              Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights?.bestDayOfWeek}</span>
                             </span>
                             <span
                               onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }}
@@ -354,15 +354,15 @@ export function ProfileSheet({ onClose, onOpenSchemas, onChildhoodSaved, childho
                             >?</span>
                           </div>
                         )}
-                        {insights!.worstDayOfWeek && (
+                        {insights?.worstDayOfWeek && (
                           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                            Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights!.worstDayOfWeek}</span>
+                            Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights?.worstDayOfWeek}</span>
                           </span>
                         )}
                       </div>
                     )}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      {insights!.weeklyStats.filter(s => s.avg !== null).map(s => {
+                      {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
                         const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
                         const barW = Math.round(((s.avg ?? 0) / 10) * 100);
                         return (

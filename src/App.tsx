@@ -63,7 +63,6 @@ function getInitialSection(): Section {
   const s = params.get('section');
   if (s === 'profile') return 'profile';
   if (s === 'schemas') return 'schemas';
-  const startParam = (window.Telegram?.WebApp as any)?.initDataUnsafe?.start_param as string | undefined;
   const stored = localStorage.getItem(DEFAULT_SECTION_KEY) as Section | null;
   if (stored && ['today', 'schemas', 'profile'].includes(stored)) return stored;
   return 'today';

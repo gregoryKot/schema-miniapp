@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
-import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES, ALL_SCHEMAS } from '../diaryData';
+import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../diaryData';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
-
-const MY_SCHEMA_IDS_KEY = 'my_schema_ids';
-const MY_MODE_IDS_KEY   = 'my_mode_ids';
+import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
 function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
