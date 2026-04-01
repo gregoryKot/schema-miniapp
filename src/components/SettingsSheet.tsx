@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { api, UserSettings, PairsData, PracticePlan, UserPractice } from '../api';
+import { api, UserSettings, PairsData } from '../api';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { getTelegramSafeTop } from '../utils/safezone';
-import { COLORS } from '../types';
-import { NEED_DATA } from '../needData';
-import { CHILDHOOD_DONE_KEY } from './ChildhoodWheelSheet';
 
 const TIMEZONES = [
   { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
@@ -23,22 +20,15 @@ const TIMEZONES = [
 
 const HOURS = [8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23];
 
-const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
-const NEED_NAMES: Record<string, string> = {
-  attachment: 'Привязанность', autonomy: 'Автономия',
-  expression: 'Выражение чувств', play: 'Спонтанность', limits: 'Границы',
-};
-
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
 type View = 'main' | 'time' | 'tz';
 
 interface Props {
   onClose: () => void;
-  onOpenChildhoodWheel: () => void;
 }
 
-export function SettingsSheet({ onClose, onOpenChildhoodWheel }: Props) {
+export function SettingsSheet({ onClose }: Props) {
   const safeTop = getTelegramSafeTop();
   const [view, setView]             = useState<View>('main');
   const [settings, setSettings]     = useState<UserSettings | null>(null);
@@ -54,16 +44,6 @@ export function SettingsSheet({ onClose, onOpenChildhoodWheel }: Props) {
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting]     = useState(false);
-
-  // Tools
-  const [showPractices, setShowPractices]     = useState(false);
-  const [showPlans, setShowPlans]             = useState(false);
-  const [practicesNeedIdx, setPracticesNeedIdx] = useState(0);
-  const [practices, setPractices]             = useState<UserPractice[] | null>(null);
-  const [practicesInput, setPracticesInput]   = useState('');
-  const [practicesSaving, setPracticesSaving] = useState(false);
-  const [planHistory, setPlanHistory]         = useState<PracticePlan[] | null>(null);
-  const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
 
   useEffect(() => {
     api.getSettings()
@@ -252,16 +232,6 @@ export function SettingsSheet({ onClose, onOpenChildhoodWheel }: Props) {
                 </div>
               </div>
 
-              {/* Инструменты */}
-              <div style={{ marginBottom: 8 }}>
-                <SettingsLabel>ИНСТРУМЕНТЫ</SettingsLabel>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
-                  <Row label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} emoji="🌱" onClick={() => { onOpenChildhoodWheel(); onClose(); }} />
-                  <Row label="Мои практики" sub="Что помогает в трудный день" emoji="🗂" divider onClick={() => { setShowPractices(true); setPracticesNeedIdx(0); setPractices(null); api.getPractices(NEED_IDS[0]).then(setPractices).catch(() => setPractices([])); }} />
-                  <Row label="История планов" sub="Что планировал, что сделал" emoji="📋" divider onClick={() => { setShowPlans(true); if (!planHistory) api.getPlanHistory(30).then(setPlanHistory).catch(() => setPlanHistory([])); }} />
-                </div>
-              </div>
-
               {/* Поделиться + Экспорт */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ПОДЕЛИТЬСЯ</SettingsLabel>
@@ -304,86 +274,6 @@ export function SettingsSheet({ onClose, onOpenChildhoodWheel }: Props) {
               style={{ width: '100%', padding: '13px 0', border: 'none', borderRadius: 12, background: exportCopied ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.08)', color: exportCopied ? '#06d6a0' : 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {exportCopied ? '✓ Скопировано' : 'Скопировать'}
             </button>
-          </div>
-        </BottomSheet>
-      )}
-
-      {/* Practices sheet */}
-      {showPractices && (
-        <BottomSheet onClose={() => setShowPractices(false)} zIndex={200}>
-          <div style={{ paddingTop: 4 }}>
-            <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Мои практики</div>
-            <div style={{ display: 'flex', gap: 6, marginBottom: 16, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
-              {NEED_IDS.map((id, i) => {
-                const color = COLORS[id] ?? '#888';
-                const emoji = NEED_DATA[id]?.emoji ?? '';
-                const active = i === practicesNeedIdx;
-                return (
-                  <div key={id} onClick={() => { setPracticesNeedIdx(i); setPracticesInput(''); setPractices(null); api.getPractices(id).then(setPractices).catch(() => setPractices([])); }}
-                    style={{ flexShrink: 0, padding: '7px 12px', borderRadius: 20, background: active ? color + '28' : 'rgba(255,255,255,0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                    {emoji} {NEED_NAMES[id]}
-                  </div>
-                );
-              })}
-            </div>
-            {!practices ? <Loader minHeight="20vh" /> : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
-                {practices.length === 0 && <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '12px 0' }}>Пока пусто — добавь ниже</div>}
-                {practices.map(p => (
-                  <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '11px 14px' }}>
-                    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', flex: 1, lineHeight: 1.45 }}>{p.text}</div>
-                    <div onClick={() => { setPractices(prev => prev?.filter(x => x.id !== p.id) ?? null); api.deletePractice(p.id).catch(() => {}); }}
-                      style={{ width: 28, height: 28, borderRadius: 8, flexShrink: 0, background: 'rgba(255,100,100,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 15, color: 'rgba(255,100,100,0.5)' }}>×</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div style={{ display: 'flex', gap: 8 }}>
-              <input value={practicesInput} onChange={e => setPracticesInput(e.target.value)}
-                onKeyDown={async e => {
-                  if (e.key !== 'Enter') return;
-                  const text = practicesInput.trim();
-                  if (!text || practicesSaving) return;
-                  setPracticesSaving(true);
-                  try { await api.addPractice(NEED_IDS[practicesNeedIdx], text); setPracticesInput(''); api.getPractices(NEED_IDS[practicesNeedIdx]).then(setPractices).catch(() => {}); } catch {}
-                  setPracticesSaving(false);
-                }}
-                placeholder="Добавить практику..." maxLength={200}
-                style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '11px 14px', color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
-              />
-              <button onClick={async () => {
-                const text = practicesInput.trim();
-                if (!text || practicesSaving) return;
-                setPracticesSaving(true);
-                try { await api.addPractice(NEED_IDS[practicesNeedIdx], text); setPracticesInput(''); api.getPractices(NEED_IDS[practicesNeedIdx]).then(setPractices).catch(() => {}); } catch {}
-                setPracticesSaving(false);
-              }} disabled={!practicesInput.trim() || practicesSaving}
-                style={{ padding: '11px 16px', borderRadius: 12, border: 'none', background: practicesInput.trim() ? (COLORS[NEED_IDS[practicesNeedIdx]] ?? '#a78bfa') : 'rgba(255,255,255,0.07)', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>+</button>
-            </div>
-          </div>
-        </BottomSheet>
-      )}
-
-      {/* Plans sheet */}
-      {showPlans && (
-        <BottomSheet onClose={() => setShowPlans(false)} zIndex={200}>
-          <div style={{ paddingTop: 4 }}>
-            <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 16 }}>История планов</div>
-            {!planHistory ? <Loader minHeight="30vh" /> : planHistory.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: 'rgba(255,255,255,0.3)', fontSize: 14 }}>Планов пока нет.<br />Создай первый из дневника.</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {planHistory.map(plan => (
-                  <div key={plan.id} style={{ background: plan.done === true ? 'rgba(6,214,160,0.07)' : 'rgba(255,255,255,0.03)', border: `1px solid ${plan.done === true ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: 14, padding: '12px 14px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{plan.scheduledDate}</div>
-                      <div style={{ fontSize: 13 }}>{plan.done === true ? '✅' : plan.done === false ? '❌' : '⏳'}</div>
-                    </div>
-                    <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.45 }}>{plan.practiceText}</div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </BottomSheet>
       )}

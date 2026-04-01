@@ -11,6 +11,8 @@ import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { SettingsSheet } from './components/SettingsSheet';
+import { PracticesScreen } from './components/PracticesScreen';
+import { PlansScreen } from './components/PlansScreen';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
@@ -208,6 +210,8 @@ export default function App() {
   const [schemaInitialTab, setSchemaInitialTab] = useState<'needs'|'schemas'|'modes'>('needs');
   const [schemaHighlight, setSchemaHighlight] = useState<string | undefined>();
   const [showSettings, setShowSettings] = useState(false);
+  const [showPractices, setShowPractices] = useState(false);
+  const [showPlans, setShowPlans] = useState(false);
   const [celebrationStreak, setCelebrationStreak] = useState<number | null>(null);
   const [showTodayNote, setShowTodayNote] = useState(false);
   const [showYesterdaySheet, setShowYesterdaySheet] = useState(false);
@@ -345,6 +349,8 @@ export default function App() {
       showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
       showSettings ? () => setShowSettings(false) :
+      showPractices ? () => setShowPractices(false) :
+      showPlans ? () => setShowPlans(false) :
       showAbout ? () => setShowAbout(false) :
       showPairSheet ? () => { setShowPairSheet(false); api.getPair().then(setPairData); } :
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
@@ -353,9 +359,9 @@ export default function App() {
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -434,7 +440,13 @@ export default function App() {
       )}
 
       {section === 'profile' && (
-        <ProfileSection onOpenSettings={() => setShowSettings(true)} onOpenChildhoodWheel={() => setShowChildhoodWheel(true)} onNavigate={setSection} />
+        <ProfileSection
+          onOpenSettings={() => setShowSettings(true)}
+          onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
+          onOpenPractices={() => setShowPractices(true)}
+          onOpenPlans={() => setShowPlans(true)}
+          onNavigate={setSection}
+        />
       )}
 
       {/* ── Tracker overlay ── */}
@@ -736,7 +748,9 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} onOpenChildhoodWheel={() => { setShowSettings(false); setShowChildhoodWheel(true); }} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
+      {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} />}
+      {showPlans && <PlansScreen onClose={() => setShowPlans(false)} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
@@ -762,7 +776,7 @@ export default function App() {
       )}
 
       {/* ── Floating pill (always above bottom bar) ── */}
-      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !newDiaryEntry && (
+      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !newDiaryEntry && (
         <FloatingPill
           onOpenTracker={() => setShowTracker(true)}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}

@@ -5,6 +5,7 @@ import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { SCHEMA_DOMAINS, ALL_MODES } from '../diaryData';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
+import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -41,10 +42,12 @@ function readLocalIds(key: string): string[] {
 interface Props {
   onOpenSettings: () => void;
   onOpenChildhoodWheel: () => void;
+  onOpenPractices: () => void;
+  onOpenPlans: () => void;
   onNavigate: (s: Section) => void;
 }
 
-export function ProfileSection({ onOpenSettings, onNavigate }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onNavigate }: Props) {
   const safeTop = getTelegramSafeTop();
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
 
@@ -59,6 +62,7 @@ export function ProfileSection({ onOpenSettings, onNavigate }: Props) {
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
 
   useEffect(() => {
     api.getStreak().then(setStreak).catch(() => {});
@@ -281,6 +285,16 @@ export function ProfileSection({ onOpenSettings, onNavigate }: Props) {
           </div>
         )}
 
+        {/* ── Мои инструменты ── */}
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+          <div style={{ padding: '14px 16px 6px' }}>
+            <SectionLabel>МОИ ИНСТРУМЕНТЫ</SectionLabel>
+          </div>
+          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} onClick={onOpenChildhoodWheel} />
+          <ToolRow emoji="🗂" label="Мои практики" sub="Что помогает в трудный день" divider onClick={onOpenPractices} />
+          <ToolRow emoji="📋" label="История планов" sub="Что планировал, что сделал" divider onClick={onOpenPlans} />
+        </div>
+
       </div>
 
       {/* ── BottomSheet: Достижения ── */}
@@ -348,6 +362,19 @@ function SectionLabel({ children, style }: { children: React.ReactNode; style?: 
   return (
     <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 8, ...style }}>
       {children}
+    </div>
+  );
+}
+
+function ToolRow({ emoji, label, sub, divider, onClick }: { emoji: string; label: string; sub?: string; divider?: boolean; onClick: () => void }) {
+  return (
+    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', borderTop: divider ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
+      <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{sub}</div>}
+      </div>
+      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 16 }}>›</span>
     </div>
   );
 }
