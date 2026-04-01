@@ -5,9 +5,10 @@ import { getTelegramSafeTop } from '../utils/safezone';
 
 interface Props {
   onClose: () => void;
+  onOpenTracker?: () => void;
 }
 
-export function PlansScreen({ onClose }: Props) {
+export function PlansScreen({ onClose, onOpenTracker }: Props) {
   const safeTop = getTelegramSafeTop();
   const [plans, setPlans] = useState<PracticePlan[] | null>(null);
 
@@ -32,9 +33,14 @@ export function PlansScreen({ onClose }: Props) {
             <div style={{ textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>
               Планов пока нет
             </div>
-            <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.7 }}>
-              Планы создаются в трекере потребностей —<br />в разделе «Сегодня» выбери потребность<br />и нажми «Запланировать практику»
+            <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.7, marginBottom: 20 }}>
+              Планы создаются в трекере — выбери потребность и нажми «Запланировать практику»
             </div>
+            {onOpenTracker && (
+              <button onClick={() => { onClose(); onOpenTracker(); }} style={{ display: 'block', margin: '0 auto', padding: '12px 28px', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                Открыть трекер
+              </button>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

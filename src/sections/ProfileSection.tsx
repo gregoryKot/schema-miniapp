@@ -92,59 +92,81 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
 
         {/* ── Стрик ── */}
         <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-            <div style={{ fontSize: 44, lineHeight: 1 }}>
-              {todayDone ? '🔥' : currentStreak > 0 ? '🫥' : '🌱'}
-            </div>
-            <div style={{ flex: 1 }}>
-              {currentStreak > 0 ? (
-                <>
-                  <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{currentStreak}</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
-                    {currentStreak === 1 ? 'день подряд' : currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
-                    {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
-                  </div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-                    {totalDays === 0
-                      ? 'Первая запись — самая важная'
-                      : 'Заполни сегодня — серия начнётся снова'}
-                  </div>
-                </>
-              )}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
-              {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{longestStreak}</span></div>}
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{totalDays}</span></div>
-            </div>
-          </div>
-
-          {weekDots.length > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: currentStreak > 0 ? 12 : 0 }}>
-              {weekDots.map((done, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: done ? 13 : 0 }}>
-                    {done && '✓'}
-                  </div>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{DOW[i]}</div>
+          {streak === null ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ width: '40%', height: 36, borderRadius: 8, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '55%', height: 12, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
                 </div>
-              ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {[0,1,2,3,4,5,6].map(i => (
+                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+                    <div style={{ width: 14, height: 8, borderRadius: 3, background: 'rgba(255,255,255,0.04)' }} />
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+                <div style={{ fontSize: 44, lineHeight: 1 }}>
+                  {todayDone ? '🔥' : currentStreak > 0 ? '🫥' : '🌱'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  {currentStreak > 0 ? (
+                    <>
+                      <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{currentStreak}</div>
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                        {currentStreak === 1 ? 'день подряд' : currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
+                        {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+                        {totalDays === 0
+                          ? 'Первая запись — самая важная'
+                          : 'Заполни сегодня — серия начнётся снова'}
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
+                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{longestStreak}</span></div>}
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{totalDays}</span></div>
+                </div>
+              </div>
 
-          {currentStreak >= 3 && (
-            <button onClick={async () => {
-              const n = currentStreak;
-              const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
-              const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
-              try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
-            }} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-              Поделиться серией
-            </button>
+              {weekDots.length > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: currentStreak > 0 ? 12 : 0 }}>
+                  {weekDots.map((done, i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: done ? 13 : 0 }}>
+                        {done && '✓'}
+                      </div>
+                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{DOW[i]}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {currentStreak >= 3 && (
+                <button onClick={async () => {
+                  const n = currentStreak;
+                  const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
+                  const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
+                  try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
+                }} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  Поделиться серией
+                </button>
+              )}
+            </>
           )}
         </div>
 

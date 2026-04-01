@@ -225,6 +225,7 @@ export default function App() {
   const [showPracticesOnboarding, setShowPracticesOnboarding] = useState(false);
   const [yesterdayBannerDismissed] = useState(() => !!localStorage.getItem('yesterday_banner_' + YESTERDAY_DATE));
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
+  const [todayRefreshKey, setTodayRefreshKey] = useState(0);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
@@ -333,6 +334,14 @@ export default function App() {
     }
   }, [pairData?.partners.length]);
 
+  // Refresh Today section data after returning from overlays
+  const prevOverlayRef = useRef(false);
+  useEffect(() => {
+    const anyOpen = showTracker || showDiaries || showSchemaInfo;
+    if (!anyOpen && prevOverlayRef.current) setTodayRefreshKey(k => k + 1);
+    prevOverlayRef.current = anyOpen;
+  }, [showTracker, showDiaries, showSchemaInfo]);
+
   useEffect(() => {
     if (trackerTab === 'history') {
       setHistoryLoading(true);
@@ -344,7 +353,7 @@ export default function App() {
   const backHandlerRef = useRef<() => void>(() => {});
   useEffect(() => {
     backHandlerRef.current =
-      newDiaryEntry ? () => { setNewDiaryEntry(null); setShowDiaries(true); } :
+      newDiaryEntry ? () => setNewDiaryEntry(null) :
       showTracker ? () => { setShowTracker(false); setTrackerTab('today'); } :
       showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
@@ -431,6 +440,7 @@ export default function App() {
           onOpenTracker={() => setShowTracker(true)}
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
+          refreshKey={todayRefreshKey}
         />
       )}
 
@@ -747,26 +757,26 @@ export default function App() {
 
       {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} />}
-      {showPlans && <PlansScreen onClose={() => setShowPlans(false)} />}
+      {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
       {newDiaryEntry === 'schema' && (
         <SchemaEntrySheet
           activeSchemaIds={diaryActiveSchemaIds}
-          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
+          onClose={() => setNewDiaryEntry(null)}
           onSave={async (data) => { await api.createSchemaDiary(data); }}
         />
       )}
       {newDiaryEntry === 'mode' && (
         <ModeEntrySheet
-          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
+          onClose={() => setNewDiaryEntry(null)}
           onSave={async (data) => { await api.createModeDiary(data); }}
         />
       )}
       {newDiaryEntry === 'gratitude' && (
         <GratitudeEntrySheet
-          onClose={() => { setNewDiaryEntry(null); setShowDiaries(true); }}
+          onClose={() => setNewDiaryEntry(null)}
           date={TODAY_DATE}
           onSave={async (date, items) => { await api.createGratitudeDiary(date, items); }}
         />

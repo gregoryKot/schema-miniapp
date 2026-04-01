@@ -16,6 +16,7 @@ interface Props {
   onOpenTracker: () => void;
   onOpenDiaries: () => void;
   onOpenChildhoodWheel: () => void;
+  refreshKey?: number;
 }
 
 function formatGreetingDate(): string {
@@ -37,12 +38,16 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: Props) {
+export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel, refreshKey }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
+  const [diariesLoaded, setDiariesLoaded] = useState(false);
 
   useEffect(() => {
+    setProfile(null);
+    setDiariesLoaded(false);
+
     api.getProfile().then(p => {
       setProfile(p);
       if (p.mySchemaIds.length > 0) {
@@ -64,8 +69,8 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         ];
         all.sort((a, b) => b.date.localeCompare(a.date));
         setRecentDiaries(all.slice(0, 4));
-      }).catch(() => {});
-  }, []);
+      }).catch(() => {}).finally(() => setDiariesLoaded(true));
+  }, [refreshKey]);
 
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const streak = profile?.streak ?? 0;
@@ -107,18 +112,30 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           <div
             style={{
               width: 110, flexShrink: 0,
-              background: streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              background: profile === null ? 'rgba(255,255,255,0.03)' : streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${profile !== null && streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
               borderRadius: 20, padding: '16px 14px',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             }}>
-            <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
-            <div>
-              <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)' }}>{streak}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 3, fontWeight: 500 }}>
-                {plural(streak, 'день', 'дня', 'дней')}
-              </div>
-            </div>
+            {profile === null ? (
+              <>
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ width: '70%', height: 28, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '50%', height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
+                <div>
+                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)' }}>{streak}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 3, fontWeight: 500 }}>
+                    {plural(streak, 'день', 'дня', 'дней')}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Tracker button */}
@@ -159,16 +176,24 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
             cursor: 'pointer',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 ? 12 : 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 || !diariesLoaded ? 12 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
               Дневник
             </div>
-            <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500 }}>
-              {recentDiaries.length > 0 ? 'Все записи →' : 'Открыть →'}
-            </div>
+            {diariesLoaded && (
+              <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500 }}>
+                {recentDiaries.length > 0 ? 'Все записи →' : 'Открыть →'}
+              </div>
+            )}
           </div>
 
-          {recentDiaries.length > 0 ? (
+          {!diariesLoaded ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[80, 65, 90].map((w, i) => (
+                <div key={i} style={{ height: 12, borderRadius: 6, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+              ))}
+            </div>
+          ) : recentDiaries.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {recentDiaries.map((entry, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
