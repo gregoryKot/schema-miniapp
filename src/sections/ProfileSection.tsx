@@ -3,8 +3,6 @@ import { api, Achievement } from '../api';
 import { Section } from '../components/BottomNav';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
-import { SCHEMA_DOMAINS, ALL_MODES } from '../diaryData';
-import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
@@ -35,10 +33,6 @@ const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: str
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
 
-function readLocalIds(key: string): string[] {
-  try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
-}
-
 interface Props {
   onOpenSettings: () => void;
   onOpenChildhoodWheel: () => void;
@@ -47,16 +41,13 @@ interface Props {
   onNavigate: (s: Section) => void;
 }
 
-export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onNavigate }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans }: Props) {
   const safeTop = getTelegramSafeTop();
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
 
   const [streak, setStreak]             = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights]         = useState<InsightsData | null>(null);
-
-  const [mySchemaIds, setMySchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
-  const [myModeIds, setMyModeIds]     = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
 
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
@@ -68,10 +59,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
     api.getStreak().then(setStreak).catch(() => {});
     api.getAchievements().then(setAchievements).catch(() => {});
     api.getInsights().then(setInsights).catch(() => {});
-    api.getProfile().then(p => {
-      if (p.mySchemaIds.length > 0) { setMySchemaIds(p.mySchemaIds); localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(p.mySchemaIds)); }
-      if (p.myModeIds.length > 0)   { setMyModeIds(p.myModeIds);     localStorage.setItem(MY_MODE_IDS_KEY,   JSON.stringify(p.myModeIds)); }
-    }).catch(() => {});
   }, []);
 
   const currentStreak = streak?.currentStreak ?? 0;
@@ -89,12 +76,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
     if (rising) return `${NEED_NAMES[rising.needId]} растёт`;
     return 'Заполняй дневник каждый день';
   })();
-
-  // Schemas and modes for display
-  const activeSchemas = SCHEMA_DOMAINS.flatMap(d =>
-    d.schemas.filter(s => mySchemaIds.includes(s.id)).map(s => ({ ...s, color: d.color }))
-  );
-  const activeModes = myModeIds.map(id => ALL_MODES.find(m => m.id === id)).filter(Boolean) as typeof ALL_MODES;
 
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
@@ -167,118 +148,86 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
           )}
         </div>
 
-        {/* ── Мои схемы ── */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: activeSchemas.length > 0 ? 12 : 0 }}>
-            <SectionLabel>МОИ СХЕМЫ</SectionLabel>
-            <span onClick={() => onNavigate('schemas')} style={{ fontSize: 12, color: '#a78bfa', cursor: 'pointer', fontWeight: 500 }}>
-              {activeSchemas.length > 0 ? 'Все →' : 'Настроить →'}
-            </span>
-          </div>
-          {activeSchemas.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {activeSchemas.map(s => (
-                <span key={s.id} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, background: s.color + '18', color: s.color, border: `1px solid ${s.color}30`, fontWeight: 500 }}>
-                  {s.name}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
-              Не выбрано — перейди в Схемы, чтобы добавить
-            </div>
-          )}
-        </div>
-
-        {/* ── Мои режимы ── */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: activeModes.length > 0 ? 10 : 0 }}>
-            <SectionLabel>МОИ РЕЖИМЫ</SectionLabel>
-            <span onClick={() => onNavigate('schemas')} style={{ fontSize: 12, color: '#60a5fa', cursor: 'pointer', fontWeight: 500 }}>
-              {activeModes.length > 0 ? 'Все →' : 'Настроить →'}
-            </span>
-          </div>
-          {activeModes.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {activeModes.map(m => (
-                <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 12, background: m.groupColor + '0d', border: `1px solid ${m.groupColor}20` }}>
-                  <span style={{ fontSize: 18 }}>{m.emoji}</span>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#fff' }}>{m.name}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
-              Не выбрано — перейди в Схемы, чтобы добавить
-            </div>
-          )}
-        </div>
-
         {/* ── Паттерны (инсайты) ── */}
-        {hasInsights && (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
-            <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
-              <div>
-                <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
-              </div>
-              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
-            </div>
-            {insightsOpen && (
-              <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
-                  <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {insights?.bestDayOfWeek && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                          Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
-                        </span>
-                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
-                      </div>
-                    )}
-                    {insights?.worstDayOfWeek && (
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                        Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
-                      </span>
-                    )}
-                  </div>
-                )}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
-                  {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
-                    const barW = Math.round(((s.avg ?? 0) / 10) * 100);
-                    return (
-                      <div key={s.needId}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
-                          <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
-                        </div>
-                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
-                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
-                        </div>
-                      </div>
-                    );
-                  })}
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+          {hasInsights ? (
+            <>
+              <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
+                <div>
+                  <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
+                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
                 </div>
+                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
               </div>
-            )}
-          </div>
-        )}
+              {insightsOpen && (
+                <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                  {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
+                    <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                      {insights?.bestDayOfWeek && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                            Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
+                          </span>
+                          <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
+                        </div>
+                      )}
+                      {insights?.worstDayOfWeek && (
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                          Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+                    {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
+                      const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
+                      const barW = Math.round(((s.avg ?? 0) / 10) * 100);
+                      return (
+                        <div key={s.needId}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
+                            <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
+                          </div>
+                          <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
+                            <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ padding: '14px 16px 16px' }}>
+              <SectionLabel>ПАТТЕРНЫ</SectionLabel>
+              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+                Появятся после нескольких дней в трекере — увидишь какие потребности растут, а какие западают
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ── Достижения ── */}
         {achievements && (
           <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
-                {achievements.slice(0, 10).map(a => (
-                  <span key={a.id} style={{ fontSize: 22, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.2)' }}>
-                    {(ACHIEVEMENT_META[a.id] ?? {}).emoji}
-                  </span>
-                ))}
-              </div>
+              {earnedList.length > 0 ? (
+                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
+                  {earnedList.slice(0, 8).map(a => (
+                    <span key={a.id} style={{ fontSize: 22 }}>
+                      {(ACHIEVEMENT_META[a.id] ?? {}).emoji}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+                  Первое — за первую запись в дневник
+                </div>
+              )}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 12 }}>
               <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>{earnedList.length}/{achievements.length}</span>
               <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
             </div>

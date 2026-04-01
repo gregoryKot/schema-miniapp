@@ -91,6 +91,9 @@ export function PracticesScreen({ onClose }: Props) {
         )}
 
         {/* Add input */}
+        <div style={{ marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+          Небольшое конкретное действие, которое помогает — например «позвонить другу» или «прогулка 20 минут»
+        </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
             value={input}
@@ -105,10 +108,6 @@ export function PracticesScreen({ onClose }: Props) {
             disabled={!input.trim() || saving}
             style={{ padding: '12px 18px', borderRadius: 12, border: 'none', background: input.trim() ? needColor : 'rgba(255,255,255,0.07)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: input.trim() ? 'pointer' : 'default', flexShrink: 0 }}
           >+</button>
-        </div>
-
-        <div style={{ marginTop: 20, fontSize: 12, color: 'rgba(255,255,255,0.25)', lineHeight: 1.6 }}>
-          Практики — небольшие конкретные действия, которые помогают удовлетворить потребность в трудный день.
         </div>
       </div>
     </div>

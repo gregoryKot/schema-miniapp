@@ -27,8 +27,14 @@ export function PlansScreen({ onClose }: Props) {
         {!plans ? (
           <Loader minHeight="30vh" />
         ) : plans.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.3)', fontSize: 14, lineHeight: 1.7 }}>
-            Планов пока нет.<br />Создай первый из раздела «Сегодня».
+          <div style={{ padding: '32px 0' }}>
+            <div style={{ textAlign: 'center', fontSize: 36, marginBottom: 16 }}>📋</div>
+            <div style={{ textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>
+              Планов пока нет
+            </div>
+            <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.7 }}>
+              Планы создаются в трекере потребностей —<br />в разделе «Сегодня» выбери потребность<br />и нажми «Запланировать практику»
+            </div>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

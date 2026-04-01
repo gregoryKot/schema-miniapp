@@ -48,17 +48,10 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
       {showPicker && (
         <BottomSheet onClose={() => setShowPicker(false)} zIndex={200}>
           <div style={{ paddingTop: 4, paddingBottom: 8 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: 16, letterSpacing: '0.03em' }}>
-              Что записать?
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+              Записать момент
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <DiaryTypeButton
-                emoji="📊"
-                label="Потребности"
-                sub="Оцени день по пяти шкалам"
-                color="#fb923c"
-                onClick={() => { setShowPicker(false); onOpenTracker(); }}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
               <DiaryTypeButton
                 emoji="📓"
                 label="Схема"
@@ -79,6 +72,18 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
                 sub="Что было хорошего"
                 color="#34d399"
                 onClick={() => { setShowPicker(false); onOpenGratitude(); }}
+              />
+            </div>
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+                Оценить день
+              </div>
+              <DiaryTypeButton
+                emoji="📅"
+                label="Трекер потребностей"
+                sub="Оцени день по пяти шкалам"
+                color="#fb923c"
+                onClick={() => { setShowPicker(false); onOpenTracker(); }}
               />
             </div>
           </div>

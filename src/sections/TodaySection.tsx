@@ -103,12 +103,11 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         <div style={{ display: 'flex', gap: 10, animation: 'slide-up 0.3s ease 0.08s both' }}>
           {/* Streak badge */}
           <div
-            onClick={() => onNavigate('profile')}
             style={{
               width: 110, flexShrink: 0,
               background: streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
               border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
-              borderRadius: 20, padding: '16px 14px', cursor: 'pointer',
+              borderRadius: 20, padding: '16px 14px',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             }}>
             <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
@@ -148,32 +147,35 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         </div>
 
         {/* ── Последние записи дневника ── */}
-        <div style={{
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.07)',
-          borderRadius: 20, padding: '16px 18px',
-          animation: 'pop-in 0.3s ease 0.12s both',
-        }}>
+        <div
+          onClick={onOpenDiaries}
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 20, padding: '16px 18px',
+            animation: 'pop-in 0.3s ease 0.12s both',
+            cursor: 'pointer',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 ? 12 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
               Дневник
             </div>
-            <div onClick={onOpenDiaries} style={{ fontSize: 12, color: '#a78bfa', cursor: 'pointer', fontWeight: 500 }}>
+            <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500 }}>
               {recentDiaries.length > 0 ? 'Все записи →' : 'Открыть →'}
             </div>
           </div>
 
           {recentDiaries.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {recentDiaries.map((entry, i) => (
-                <div key={i} onClick={onOpenDiaries} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', borderRadius: 12, background: 'rgba(255,255,255,0.03)', cursor: 'pointer' }}>
-                  <span style={{ fontSize: 16, flexShrink: 0 }}>{entry.emoji}</span>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
+                  <span style={{ fontSize: 15, flexShrink: 0 }}>{entry.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.label}
                     </div>
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14, flexShrink: 0 }}>›</span>
                 </div>
               ))}
             </div>
