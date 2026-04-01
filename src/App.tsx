@@ -430,6 +430,7 @@ export default function App() {
           onOpenAdvanced={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
           onOpenDiaries={() => setShowDiaries(true)}
+          onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
         />
       )}
 
@@ -445,7 +446,6 @@ export default function App() {
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           onOpenPractices={() => setShowPractices(true)}
           onOpenPlans={() => setShowPlans(true)}
-          onNavigate={setSection}
         />
       )}
 
@@ -477,17 +477,14 @@ export default function App() {
             </div>
 
             <h1
-              onClick={() => setShowAbout(true)}
               style={{
                 fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
                 color: '#fff', marginBottom: 3, lineHeight: 1.1,
-                cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
                 display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
               Трекер потребностей
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
-              <span style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 6, padding: '2px 6px', fontWeight: 600, letterSpacing: '0.05em', verticalAlign: 'middle' }}>beta</span>
+              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'rgba(255,255,255,0.35)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
             </h1>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
               {trackerTab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
@@ -513,7 +510,7 @@ export default function App() {
                       cursor: 'pointer', transition: 'all 0.15s ease',
                     }}
                   >
-                    {t === 'today' ? 'Сегодня' : 'История'}
+                    {t === 'today' ? 'Сейчас' : 'История'}
                   </button>
                 );
               })}
@@ -776,7 +773,7 @@ export default function App() {
       )}
 
       {/* ── Floating pill (always above bottom bar) ── */}
-      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !newDiaryEntry && (
+      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
         <FloatingPill
           onOpenTracker={() => setShowTracker(true)}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
@@ -785,7 +782,9 @@ export default function App() {
         />
       )}
 
-      <BottomNav section={section} onSelect={setSection} />
+      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
+        <BottomNav section={section} onSelect={setSection} />
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { api, Achievement } from '../api';
-import { Section } from '../components/BottomNav';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
@@ -38,7 +37,6 @@ interface Props {
   onOpenChildhoodWheel: () => void;
   onOpenPractices: () => void;
   onOpenPlans: () => void;
-  onNavigate: (s: Section) => void;
 }
 
 export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans }: Props) {
@@ -112,7 +110,9 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
                     {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-                    {totalDays === 0 ? 'Первая запись — самая важная' : 'Заполни дневник — и серия начнётся'}
+                    {totalDays === 0
+                      ? 'Первая запись — самая важная'
+                      : 'Заполни сегодня — серия начнётся снова'}
                   </div>
                 </>
               )}
@@ -136,7 +136,7 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
             </div>
           )}
 
-          {currentStreak > 0 && (
+          {currentStreak >= 3 && (
             <button onClick={async () => {
               const n = currentStreak;
               const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
@@ -149,64 +149,55 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         </div>
 
         {/* ── Паттерны (инсайты) ── */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
-          {hasInsights ? (
-            <>
-              <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
-                <div>
-                  <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
-                  <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
-                </div>
-                <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
+        {hasInsights && (
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+            <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
+              <div>
+                <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
+                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
               </div>
-              {insightsOpen && (
-                <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
-                    <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                      {insights?.bestDayOfWeek && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                            Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
-                          </span>
-                          <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
-                        </div>
-                      )}
-                      {insights?.worstDayOfWeek && (
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
-                          Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
-                        </span>
-                      )}
-                    </div>
-                  )}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
-                    {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                      const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
-                      const barW = Math.round(((s.avg ?? 0) / 10) * 100);
-                      return (
-                        <div key={s.needId}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
-                            <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
-                          </div>
-                          <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
-                            <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
-            <div style={{ padding: '14px 16px 16px' }}>
-              <SectionLabel>ПАТТЕРНЫ</SectionLabel>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
-                Появятся после нескольких дней в трекере — увидишь какие потребности растут, а какие западают
-              </div>
+              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
             </div>
-          )}
-        </div>
+            {insightsOpen && (
+              <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
+                  <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                    {insights?.bestDayOfWeek && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                          Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
+                        </span>
+                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
+                      </div>
+                    )}
+                    {insights?.worstDayOfWeek && (
+                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                        Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
+                  {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
+                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
+                    const barW = Math.round(((s.avg ?? 0) / 10) * 100);
+                    return (
+                      <div key={s.needId}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
+                          <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
+                        </div>
+                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
+                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Достижения ── */}
         {achievements && (

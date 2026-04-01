@@ -86,8 +86,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {SCHEMA_DOMAINS.map(domain => {
                 const domainActive = domain.schemas.filter(s => allSchemaIds.includes(s.id));
-                const domainInactive = domain.schemas.filter(s => !allSchemaIds.includes(s.id));
-                if (domainActive.length === 0 && domainInactive.length === 0) return null;
+                if (domainActive.length === 0) return null;
                 return (
                   <div key={domain.id}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: domain.color, opacity: 0.8, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
@@ -107,19 +106,6 @@ export function SchemasSection({ onOpenSchema }: Props) {
                           <div style={{ width: 8, height: 8, borderRadius: '50%', background: domain.color, flexShrink: 0 }} />
                           <span style={{ fontSize: 14, color: '#fff', fontWeight: 500, flex: 1 }}>{s.name}</span>
                           <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>›</span>
-                        </div>
-                      ))}
-                      {domainInactive.map(s => (
-                        <div
-                          key={s.id}
-                          onClick={() => onOpenSchema({ tab: 'schemas', highlight: s.name })}
-                          style={{
-                            display: 'flex', alignItems: 'center', gap: 10,
-                            padding: '9px 12px', borderRadius: 12, cursor: 'pointer',
-                          }}
-                        >
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />
-                          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', flex: 1 }}>{s.name}</span>
                         </div>
                       ))}
                     </div>
@@ -154,22 +140,6 @@ export function SchemasSection({ onOpenSchema }: Props) {
               </div>
             </>
           )}
-        </div>
-
-        {/* ── Библиотека схемотерапии ── */}
-        <div
-          onClick={() => onOpenSchema({ tab: 'schemas' })}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
-            borderRadius: 16, padding: '14px 18px', cursor: 'pointer',
-          }}
-        >
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Описания схем, режимов, потребностей</div>
-          </div>
-          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
         </div>
 
         {/* ── Режимы ── */}
@@ -214,6 +184,22 @@ export function SchemasSection({ onOpenSchema }: Props) {
               Добавь режимы которые тебе близки — и познакомься с каждым
             </div>
           )}
+        </div>
+
+        {/* ── Библиотека схемотерапии ── */}
+        <div
+          onClick={() => onOpenSchema({ tab: 'schemas' })}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
+            borderRadius: 16, padding: '14px 18px', cursor: 'pointer',
+          }}
+        >
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Описания схем, режимов, потребностей</div>
+          </div>
+          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
         </div>
 
       </div>

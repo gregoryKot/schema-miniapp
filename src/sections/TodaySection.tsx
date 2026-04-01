@@ -15,6 +15,7 @@ interface Props {
   onOpenAdvanced: () => void;
   onOpenTracker: () => void;
   onOpenDiaries: () => void;
+  onOpenChildhoodWheel: () => void;
 }
 
 function formatGreetingDate(): string {
@@ -36,7 +37,7 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries }: Props) {
+export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
@@ -96,6 +97,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           onNavigate={onNavigate}
           onOpenAdvanced={onOpenAdvanced}
           onOpenTracker={onOpenTracker}
+          onOpenChildhoodWheel={onOpenChildhoodWheel}
           onOpenDiaries={onOpenDiaries}
         />
 
@@ -255,7 +257,7 @@ const STEPS: StepDef[] = [
   },
 ];
 
-function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpenAdvanced, onOpenTracker, onOpenDiaries }: {
+function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
   profile: UserProfile | null;
   hasSchemas: boolean;
   onOpenSchema: Props['onOpenSchema'];
@@ -263,6 +265,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
   onOpenAdvanced: Props['onOpenAdvanced'];
   onOpenTracker: Props['onOpenTracker'];
   onOpenDiaries: Props['onOpenDiaries'];
+  onOpenChildhoodWheel: Props['onOpenChildhoodWheel'];
 }) {
   const [skipped, setSkipped] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem(ONBOARDING_SKIPPED_KEY) ?? '[]'); } catch { return []; }
@@ -295,7 +298,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
       case 'tracker':  onOpenTracker(); break;
       case 'diary':    onOpenDiaries(); break;
       case 'notify':   onOpenAdvanced(); break;
-      case 'childhood': onOpenAdvanced(); break;
+      case 'childhood': onOpenChildhoodWheel(); break;
     }
   }
 
