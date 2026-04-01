@@ -21,11 +21,11 @@ const TIMEZONES = [
 
 const HOURS = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
 
-type SectionId = 'home' | 'tracker' | 'diaries';
+type SectionId = 'today' | 'schemas' | 'profile';
 const SCREENS: { id: SectionId; label: string; emoji: string }[] = [
-  { id: 'home',    label: 'Главная',     emoji: '🏠' },
-  { id: 'tracker', label: 'Потребности', emoji: '🎯' },
-  { id: 'diaries', label: 'Дневники',    emoji: '📔' },
+  { id: 'today',   label: 'Сегодня', emoji: '📅' },
+  { id: 'schemas', label: 'Схемы',   emoji: '🧩' },
+  { id: 'profile', label: 'Я',       emoji: '👤' },
 ];
 
 // ── Achievement display ────────────────────────────────────────────────────
@@ -70,8 +70,8 @@ export function ProfileSection({ onOpenAdvanced }: Props) {
 
   const [defaultSection, setDefaultSection] = useState<SectionId>(() => {
     const s = localStorage.getItem(DEFAULT_SECTION_KEY);
-    if (s === 'tracker' || s === 'diaries') return s;
-    return 'home';
+    if (s === 'schemas' || s === 'profile') return s;
+    return 'today';
   });
 
   useEffect(() => {

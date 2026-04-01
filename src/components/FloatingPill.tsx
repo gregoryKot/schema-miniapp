@@ -1,0 +1,102 @@
+import { useState } from 'react';
+import { BottomSheet } from './BottomSheet';
+
+interface Props {
+  onOpenSchemaDiary: () => void;
+  onOpenModeDiary: () => void;
+  onOpenGratitude: () => void;
+}
+
+export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitude }: Props) {
+  const [showPicker, setShowPicker] = useState(false);
+
+  return (
+    <>
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 76,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 49,
+        }}
+      >
+        <button
+          onClick={() => setShowPicker(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '12px 22px',
+            borderRadius: 100,
+            border: 'none',
+            background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+            color: '#fff',
+            fontSize: 15,
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 4px 20px rgba(167,139,250,0.4)',
+            WebkitTapHighlightColor: 'transparent',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <span style={{ fontSize: 16, lineHeight: 1 }}>✚</span>
+          Записать
+        </button>
+      </div>
+
+      {showPicker && (
+        <BottomSheet onClose={() => setShowPicker(false)} zIndex={200}>
+          <div style={{ paddingTop: 4, paddingBottom: 8 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginBottom: 16, letterSpacing: '0.03em' }}>
+              Что записать?
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <DiaryTypeButton
+                emoji="📓"
+                label="Схема"
+                sub="Когда сработал паттерн"
+                color="#a78bfa"
+                onClick={() => { setShowPicker(false); onOpenSchemaDiary(); }}
+              />
+              <DiaryTypeButton
+                emoji="🔄"
+                label="Режим"
+                sub="Какой режим активировался"
+                color="#60a5fa"
+                onClick={() => { setShowPicker(false); onOpenModeDiary(); }}
+              />
+              <DiaryTypeButton
+                emoji="🌱"
+                label="Благодарность"
+                sub="Что было хорошего"
+                color="#34d399"
+                onClick={() => { setShowPicker(false); onOpenGratitude(); }}
+              />
+            </div>
+          </div>
+        </BottomSheet>
+      )}
+    </>
+  );
+}
+
+function DiaryTypeButton({ emoji, label, sub, color, onClick }: { emoji: string; label: string; sub: string; color: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+        padding: '14px 16px', borderRadius: 16, border: `1px solid ${color}22`,
+        background: `${color}0d`, cursor: 'pointer', textAlign: 'left',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
+      <span style={{ fontSize: 26 }}>{emoji}</span>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{label}</div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+      </div>
+    </button>
+  );
+}

@@ -1,4 +1,4 @@
-export type Section = 'home' | 'tracker' | 'diaries' | 'profile';
+export type Section = 'today' | 'schemas' | 'profile';
 
 interface Props {
   section: Section;
@@ -6,10 +6,9 @@ interface Props {
 }
 
 const TABS: { id: Section; label: string; activeColor: string }[] = [
-  { id: 'home',    label: 'Главная',   activeColor: '#a78bfa' },
-  { id: 'tracker', label: 'Потребности', activeColor: '#60a5fa' },
-  { id: 'diaries', label: 'Дневники',  activeColor: '#34d399' },
-  { id: 'profile', label: 'Я',         activeColor: '#f472b6' },
+  { id: 'today',   label: 'Сегодня', activeColor: '#a78bfa' },
+  { id: 'schemas', label: 'Схемы',   activeColor: '#60a5fa' },
+  { id: 'profile', label: 'Я',       activeColor: '#f472b6' },
 ];
 
 function TabIcon({ id, active, color }: { id: Section; active: boolean; color: string }) {
@@ -20,30 +19,20 @@ function TabIcon({ id, active, color }: { id: Section; active: boolean; color: s
     filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'none',
   };
 
-  if (id === 'home') return (
+  if (id === 'today') return (
     <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
-      <path d="M9 21V12h6v9" />
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
 
-  if (id === 'tracker') return (
+  if (id === 'schemas') return (
     <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="12" y1="3" x2="12" y2="7" />
-      <line x1="12" y1="17" x2="12" y2="21" />
-      <line x1="3" y1="12" x2="7" y2="12" />
-      <line x1="17" y1="12" x2="21" y2="12" />
-    </svg>
-  );
-
-  if (id === 'diaries') return (
-    <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-      <line x1="9" y1="8" x2="15" y2="8" />
-      <line x1="9" y1="12" x2="15" y2="12" />
+      <path d="M12 2L2 7l10 5 10-5-10-5z" />
+      <path d="M2 17l10 5 10-5" />
+      <path d="M2 12l10 5 10-5" />
     </svg>
   );
 

@@ -2,9 +2,11 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { Need, DayHistory, COLORS } from './types';
 import { api } from './api';
 import { DiarySection } from './sections/DiarySection';
-import { HomeSection } from './sections/HomeSection';
+import { TodaySection } from './sections/TodaySection';
+import { SchemasSection } from './sections/SchemasSection';
 import { ProfileSection, DEFAULT_SECTION_KEY } from './sections/ProfileSection';
 import { BottomNav, Section } from './components/BottomNav';
+import { FloatingPill } from './components/FloatingPill';
 import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
@@ -12,7 +14,7 @@ import { ProfileSheet } from './components/ProfileSheet';
 import { Celebration } from './components/Celebration';
 import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
-import { SchemaInfoSheet, SchemaInfoContent } from './components/SchemaInfoSheet';
+import { SchemaInfoSheet } from './components/SchemaInfoSheet';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './components/YSQTestSheet';
 import { YesterdaySheet } from './components/YesterdaySheet';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
@@ -24,6 +26,9 @@ import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
 import { PracticePlan, PairsData, StreakData } from './api';
 import { getTelegramSafeTop } from './utils/safezone';
+import { SchemaEntrySheet } from './components/diary/SchemaEntrySheet';
+import { ModeEntrySheet } from './components/diary/ModeEntrySheet';
+import { GratitudeEntrySheet } from './components/diary/GratitudeEntrySheet';
 
 const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
 const TODAY_DATE = new Date().toISOString().split('T')[0];
@@ -49,22 +54,19 @@ const NEEDS_EXPLAINER = [
   { emoji: '⚖️', name: 'Границы', text: 'Потребность про две стороны. Внешняя: уметь говорить нет и защищать своё время и пространство. Внутренняя: удерживать себя от импульсов — работать когда надо, откладывать удовольствие осознанно. Вместе это даёт устойчивость.' },
 ];
 
-type Tab = 'today' | 'history';
+type TrackerTab = 'today' | 'history';
 
 const DISCLAIMER_KEY = 'disclaimer_v2_accepted';
 
 function getInitialSection(): Section {
   const params = new URLSearchParams(window.location.search);
   const s = params.get('section');
-  if (s === 'diaries') return 'diaries';
-  if (s === 'tracker') return 'tracker';
   if (s === 'profile') return 'profile';
+  if (s === 'schemas') return 'schemas';
   const startParam = (window.Telegram?.WebApp as any)?.initDataUnsafe?.start_param as string | undefined;
-  if (startParam === 'diaries') return 'diaries';
-  if (startParam === 'tracker') return 'tracker';
   const stored = localStorage.getItem(DEFAULT_SECTION_KEY) as Section | null;
-  if (stored && ['home', 'tracker', 'diaries'].includes(stored)) return stored;
-  return 'home';
+  if (stored && ['today', 'schemas', 'profile'].includes(stored)) return stored;
+  return 'today';
 }
 
 function fillHistoryGaps(h: DayHistory[]): DayHistory[] {
@@ -196,11 +198,11 @@ function formatHeaderDate(): string {
 export default function App() {
   const [section, setSection] = useState<Section>(getInitialSection);
   const [disclaimerDone, setDisclaimerDone] = useState(
-    () => !!localStorage.getItem(DISCLAIMER_KEY) // quick local check while server responds
+    () => !!localStorage.getItem(DISCLAIMER_KEY)
   );
   const historyDays = 30;
-  const [tab, setTab] = useState<Tab>('today');
-  const tabScrollPositions = useRef<Record<Tab, number>>({ today: 0, history: 0 });
+  const [trackerTab, setTrackerTab] = useState<TrackerTab>('today');
+  const tabScrollPositions = useRef<Record<TrackerTab, number>>({ today: 0, history: 0 });
   const [showAbout, setShowAbout] = useState(false);
   const [showSchemaInfo, setShowSchemaInfo] = useState(false);
   const [schemaAutoStartTest, setSchemaAutoStartTest] = useState(false);
@@ -235,6 +237,12 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
+  // Overlay states (open over current tab)
+  const [showTracker, setShowTracker] = useState(false);
+  const [showDiaries, setShowDiaries] = useState(false);
+  const [newDiaryEntry, setNewDiaryEntry] = useState<'schema' | 'mode' | 'gratitude' | null>(null);
+  const [diaryActiveSchemaIds, setDiaryActiveSchemaIds] = useState<string[] | undefined>(undefined);
+
   useEffect(() => {
     const handleOffline = () => setIsOffline(true);
     const handleOnline = () => setIsOffline(false);
@@ -262,7 +270,6 @@ export default function App() {
         const initialSaved: Record<string, boolean> = {};
         for (const key of Object.keys(r)) initialSaved[key] = true;
         setSaved(initialSaved);
-        // If all needs already rated today, mark done to prevent duplicate celebration
         if (n.length > 0 && n.every(need => r[need.id] !== undefined)) {
           localStorage.setItem(TODAY_KEY, '1');
         }
@@ -298,6 +305,9 @@ export default function App() {
         if (!localStorage.getItem(YSQ_BANNER_DISMISSED_KEY)) setShowYsqBanner(true);
       }
     }).catch(() => {});
+    api.getProfile().then(p => {
+      setDiaryActiveSchemaIds(p.ysq.activeSchemaIds);
+    }).catch(() => {});
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -308,9 +318,10 @@ export default function App() {
         api.updateSettings({ pairCardDismissed: false }).catch(() => {});
       })).catch(e => console.error('joinPair failed', e));
     }
+    if (startParam === 'diaries') setShowDiaries(true);
+    if (startParam === 'tracker') setShowTracker(true);
   }, []);
 
-  // When partner joins — clear dismissed flag so paired card shows
   useEffect(() => {
     if (pairData && pairData.partners.length > 0) {
       localStorage.removeItem('pair_card_dismissed');
@@ -320,16 +331,19 @@ export default function App() {
   }, [pairData?.partners.length]);
 
   useEffect(() => {
-    if (tab === 'history') {
+    if (trackerTab === 'history') {
       setHistoryLoading(true);
       api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
     }
-  }, [tab, historyDays]);
+  }, [trackerTab, historyDays]);
 
-  // Telegram back button — single stable handler, reads current state via ref
+  // Telegram back button
   const backHandlerRef = useRef<() => void>(() => {});
   useEffect(() => {
     backHandlerRef.current =
+      newDiaryEntry ? () => setNewDiaryEntry(null) :
+      showTracker ? () => { setShowTracker(false); setTrackerTab('today'); } :
+      showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
       showProfile ? () => setShowProfile(false) :
       showAbout ? () => setShowAbout(false) :
@@ -340,9 +354,9 @@ export default function App() {
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = showSchemaInfo || showProfile || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showProfile || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [showSchemaInfo, showProfile, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showProfile, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -401,12 +415,244 @@ export default function App() {
         </div>
       )}
 
-      {section === 'diaries' && <DiarySection />}
+      {/* ── Main sections ── */}
+      {section === 'today' && (
+        <TodaySection
+          needs={needs}
+          ratings={ratings}
+          onNavigate={setSection}
+          onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
+          onOpenAdvanced={() => setShowProfile(true)}
+          onOpenTracker={() => setShowTracker(true)}
+          onOpenDiaries={() => setShowDiaries(true)}
+        />
+      )}
 
-      {section === 'home' && <HomeSection needs={needs} ratings={ratings} onNavigate={setSection} onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }} onOpenAdvanced={() => setShowProfile(true)} />}
+      {section === 'schemas' && (
+        <SchemasSection
+          onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
+        />
+      )}
 
       {section === 'profile' && (
         <ProfileSection onOpenAdvanced={() => setShowProfile(true)} />
+      )}
+
+      {/* ── Tracker overlay ── */}
+      {showTracker && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto' }}>
+          {/* Sticky header */}
+          <div style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            background: 'rgba(6,10,18,0.94)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            padding: `${safeTop + 16}px 20px 14px`,
+            borderBottom: '1px solid rgba(255,255,255,0.04)',
+          }}>
+            {/* Back + date row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+              <button
+                onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
+                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
+              >
+                ‹ Назад
+              </button>
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+                {formatHeaderDate()}
+              </span>
+            </div>
+
+            <h1
+              onClick={() => setShowAbout(true)}
+              style={{
+                fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
+                color: '#fff', marginBottom: 3, lineHeight: 1.1,
+                cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
+                display: 'flex', alignItems: 'center', gap: 8,
+              }}
+            >
+              Трекер потребностей
+              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
+              <span style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 6, padding: '2px 6px', fontWeight: 600, letterSpacing: '0.05em', verticalAlign: 'middle' }}>beta</span>
+            </h1>
+            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
+              {trackerTab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
+            </p>
+
+            {/* Pill tabs */}
+            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3 }}>
+              {(['today', 'history'] as TrackerTab[]).map((t) => {
+                const active = trackerTab === t;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => {
+                      tabScrollPositions.current[trackerTab] = window.scrollY;
+                      setTrackerTab(t);
+                      requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current[t]));
+                    }}
+                    style={{
+                      flex: 1, padding: '8px 0', border: 'none', borderRadius: 10,
+                      background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
+                      color: active ? '#fff' : 'rgba(255,255,255,0.4)',
+                      fontSize: 14, fontWeight: active ? 500 : 400,
+                      cursor: 'pointer', transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {t === 'today' ? 'Сегодня' : 'История'}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {trackerTab === 'today' && showYesterdayBanner && (
+            <div style={{ padding: '12px 20px 0' }}>
+              <div
+                onClick={() => { setShowYesterdaySheet(true); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
+                style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 14, padding: '12px 14px', cursor: 'pointer' }}
+              >
+                <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить вчера</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
+                </div>
+                <button
+                  onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+                >×</button>
+              </div>
+            </div>
+          )}
+          {trackerTab === 'today' && showYsqBanner && (
+            <div style={{ padding: '12px 20px 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px' }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
+                <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
+                </div>
+                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
+              </div>
+            </div>
+          )}
+          {trackerTab === 'today' && showWeeklyQ && (
+            <div style={{ padding: '16px 20px 0' }}>
+              <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
+            </div>
+          )}
+          {trackerTab === 'today' && pairData !== null && (pairData.partners.length > 0 || pairData.pendingCode || (pairCardDismissed === false && HAS_HISTORY)) && (
+            <div style={{ padding: '8px 20px 0' }}>
+              <PairCard
+                partners={pairData.partners}
+                pendingCode={pairData.pendingCode}
+                showInvite={pairData.partners.length === 0 && !pairData.pendingCode && pairCardDismissed === false && HAS_HISTORY}
+                onOpen={() => setShowPairSheet(true)}
+                onDismissInvite={() => {
+                  localStorage.setItem('pair_card_dismissed', '1');
+                  setPairCardDismissed(true);
+                  api.updateSettings({ pairCardDismissed: true }).catch(() => {});
+                }}
+              />
+            </div>
+          )}
+          {trackerTab === 'today' && (() => {
+            const upcoming = pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE);
+            return upcoming.length > 0 ? (
+              <div style={{ padding: '8px 20px 0' }}>
+                {upcoming.map(plan => {
+                  const color = COLORS[plan.needId] ?? '#888';
+                  const isToday = plan.scheduledDate === TODAY_DATE;
+                  return (
+                    <div key={plan.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: color + '12', border: `1px solid ${color}28`, borderRadius: 14, padding: '10px 14px', marginBottom: 6 }}>
+                      <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
+                      <div>
+                        <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{isToday ? 'Твой план на сегодня' : 'Твой план на завтра'}</div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null;
+          })()}
+          {trackerTab === 'today' && (
+            <TodayView
+              needs={needs}
+              ratings={ratings}
+              saved={saved}
+              isOffline={isOffline}
+              onChange={handleChange}
+              onSaved={handleSaved}
+              onNote={() => setShowTodayNote(true)}
+              onOpenPractices={() => setShowPracticesOnboarding(true)}
+              onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
+              plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
+            />
+          )}
+          {trackerTab === 'history' && (
+            historyLoading
+              ? <Loader minHeight="60vh" />
+              : <HistoryView
+                  needs={needs}
+                  history={history}
+                  currentRatings={ratings}
+                  childhoodRatings={childhoodRatings}
+                  onOpenSchemas={() => setShowSchemaInfo(true)}
+                  onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
+                  onGoToToday={() => {
+                    tabScrollPositions.current['history'] = window.scrollY;
+                    setTrackerTab('today');
+                    requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
+                  }}
+                  onBackfill={(date) => setBackfillDate(date)}
+                />
+          )}
+          <div style={{ height: 80 }} />
+
+          {pendingPlans.length > 0 && needs.length > 0 && (() => {
+            const plan = pendingPlans.find(p => p.scheduledDate < TODAY_DATE);
+            if (!plan) return null;
+            const need = needs.find(n => n.id === plan.needId);
+            if (!need) return null;
+            return (
+              <CheckInSheet
+                plan={plan}
+                needEmoji={need.emoji ?? ''}
+                needLabel={need.chartLabel}
+                color={COLORS[need.id] ?? '#888'}
+                onDone={() => setPendingPlans(prev => prev.filter(p => p.id !== plan.id))}
+              />
+            );
+          })()}
+
+          {showYesterdaySheet && (
+            <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
+              setShowYesterdaySheet(false);
+              if (trackerTab === 'history') {
+                setHistoryLoading(true);
+                api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
+              }
+            }} />
+          )}
+          {backfillDate && (
+            <YesterdaySheet needs={needs} date={backfillDate} onClose={() => {
+              setBackfillDate(null);
+              setHistoryLoading(true);
+              api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
+            }} />
+          )}
+        </div>
+      )}
+
+      {/* ── Diaries overlay ── */}
+      {showDiaries && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto' }}>
+          <DiarySection />
+        </div>
       )}
 
       {!disclaimerDone && (
@@ -416,209 +662,6 @@ export default function App() {
           setDisclaimerDone(true);
         }} />
       )}
-      {section === 'tracker' && (<>
-      {/* Sticky header */}
-      <div style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-        background: 'rgba(6,10,18,0.94)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        padding: `${safeTop + 16}px 20px 14px`,
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-      }}>
-        {/* Date row */}
-        <div style={{ marginBottom: 10 }}>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
-            {formatHeaderDate()}
-          </span>
-        </div>
-
-        {/* Title + subtitle */}
-        <h1
-          onClick={() => setShowAbout(true)}
-          style={{
-            fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
-            color: '#fff', marginBottom: 3, lineHeight: 1.1,
-            cursor: 'pointer', WebkitTapHighlightColor: 'transparent',
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}
-        >
-          Трекер потребностей
-          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)', fontWeight: 400, lineHeight: 1 }}>ⓘ</span>
-          <span style={{ fontSize: 10, color: '#a78bfa', background: 'rgba(167,139,250,0.15)', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 6, padding: '2px 6px', fontWeight: 600, letterSpacing: '0.05em', verticalAlign: 'middle' }}>beta</span>
-        </h1>
-        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
-          {tab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
-        </p>
-
-        {/* Pill tabs */}
-        <div style={{
-          display: 'flex',
-          background: 'rgba(255,255,255,0.06)',
-          borderRadius: 12,
-          padding: 3,
-        }}>
-          {(['today', 'history'] as Tab[]).map((t) => {
-            const active = tab === t;
-            return (
-              <button
-                key={t}
-                onClick={() => {
-                  tabScrollPositions.current[tab] = window.scrollY;
-                  setTab(t);
-                  requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current[t]));
-                }}
-                style={{
-                  flex: 1,
-                  padding: '8px 0',
-                  border: 'none',
-                  borderRadius: 10,
-                  background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                  color: active ? '#fff' : 'rgba(255,255,255,0.4)',
-                  fontSize: 14,
-                  fontWeight: active ? 500 : 400,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {t === 'today' ? 'Сегодня' : 'История'}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {tab === 'today' && showYesterdayBanner && (
-        <div style={{ padding: '12px 20px 0' }}>
-          <div
-            onClick={() => { setShowYesterdaySheet(true); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
-              borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
-            }}
-          >
-            <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить вчера</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
-            </div>
-            <button
-              onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-      {tab === 'today' && showYsqBanner && (
-        <div style={{ padding: '12px 20px 0' }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)',
-            borderRadius: 14, padding: '12px 14px',
-          }}>
-            <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
-            <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
-            </div>
-            <button
-              onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
-      {tab === 'today' && showWeeklyQ && (
-        <div style={{ padding: '16px 20px 0' }}>
-          <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
-        </div>
-      )}
-      {tab === 'today' && pairData !== null && (pairData.partners.length > 0 || pairData.pendingCode || (pairCardDismissed === false && HAS_HISTORY)) && (
-        <div style={{ padding: '8px 20px 0' }}>
-          <PairCard
-            partners={pairData.partners}
-            pendingCode={pairData.pendingCode}
-            showInvite={pairData.partners.length === 0 && !pairData.pendingCode && pairCardDismissed === false && HAS_HISTORY}
-            onOpen={() => setShowPairSheet(true)}
-            onDismissInvite={() => {
-              localStorage.setItem('pair_card_dismissed', '1');
-              setPairCardDismissed(true);
-              api.updateSettings({ pairCardDismissed: true }).catch(() => {});
-            }}
-          />
-        </div>
-      )}
-      {tab === 'today' && (() => {
-        const upcoming = pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE);
-        return upcoming.length > 0 ? (
-          <div style={{ padding: '8px 20px 0' }}>
-            {upcoming.map(plan => {
-              const color = COLORS[plan.needId] ?? '#888';
-              const isToday = plan.scheduledDate === TODAY_DATE;
-              return (
-                <div key={plan.id} style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  background: color + '12', border: `1px solid ${color}28`,
-                  borderRadius: 14, padding: '10px 14px', marginBottom: 6,
-                }}>
-                  <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
-                  <div>
-                    <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{isToday ? 'Твой план на сегодня' : 'Твой план на завтра'}</div>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : null;
-      })()}
-      {tab === 'today' && (
-        <TodayView
-          needs={needs}
-          ratings={ratings}
-          saved={saved}
-          isOffline={isOffline}
-          onChange={handleChange}
-          onSaved={handleSaved}
-          onNote={() => setShowTodayNote(true)}
-          onOpenPractices={() => setShowPracticesOnboarding(true)}
-          onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
-          plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
-        />
-      )}
-      {tab === 'history' && (
-        historyLoading
-          ? <Loader minHeight="60vh" />
-          : <HistoryView needs={needs} history={history} currentRatings={ratings} childhoodRatings={childhoodRatings} onOpenSchemas={() => setShowSchemaInfo(true)} onOpenChildhoodWheel={() => setShowChildhoodWheel(true)} onGoToToday={() => {
-              tabScrollPositions.current['history'] = window.scrollY;
-              setTab('today');
-              requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
-            }} onBackfill={(date) => setBackfillDate(date)} />
-      )}
-      <div style={{ height: 70 }} />
-
-      {pendingPlans.length > 0 && needs.length > 0 && (() => {
-        const plan = pendingPlans.find(p => p.scheduledDate < TODAY_DATE);
-        if (!plan) return null;
-        const need = needs.find(n => n.id === plan.needId);
-        if (!need) return null;
-        return (
-          <CheckInSheet
-            plan={plan}
-            needEmoji={need.emoji ?? ''}
-            needLabel={need.chartLabel}
-            color={COLORS[need.id] ?? '#888'}
-            onDone={() => setPendingPlans(prev => prev.filter(p => p.id !== plan.id))}
-          />
-        );
-      })()}
 
       {celebrationStreak !== null && (
         <Celebration streak={celebrationStreak} onDone={() => { setCelebrationStreak(null); setShowTodayNote(true); }} />
@@ -633,8 +676,6 @@ export default function App() {
           }
         }} />
       )}
-
-      {/* ProfileSheet moved outside tracker block — accessible from any section */}
 
       {showPracticesOnboarding && needs.length > 0 && (
         <PracticesOnboarding needs={needs} onDone={() => {
@@ -679,10 +720,9 @@ export default function App() {
             <div
               onClick={() => { setShowAbout(false); setShowSchemaInfo(true); }}
               style={{
-                background: 'rgba(167,139,250,0.1)',
-                border: '1px solid rgba(167,139,250,0.2)',
-                borderRadius: 14, padding: '14px 16px',
-                cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)',
+                borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               }}
             >
               <div>
@@ -697,28 +737,39 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {/* SchemaInfoSheet moved outside tracker block — accessible from any section */}
-
-      {showYesterdaySheet && (
-        <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
-          setShowYesterdaySheet(false);
-          if (tab === 'history') {
-            setHistoryLoading(true);
-            api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
-          }
-        }} />
-      )}
-      {backfillDate && (
-        <YesterdaySheet needs={needs} date={backfillDate} onClose={() => {
-          setBackfillDate(null);
-          setHistoryLoading(true);
-          api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
-        }} />
-      )}
-      </>)}
-
       {showProfile && <ProfileSheet onClose={() => setShowProfile(false)} onOpenSchemas={() => { setShowProfile(false); setShowSchemaInfo(true); }} onChildhoodSaved={setChildhoodRatings} childhoodRatings={childhoodRatings} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
+
+      {/* ── Diary entry sheets (from FloatingPill) ── */}
+      {newDiaryEntry === 'schema' && (
+        <SchemaEntrySheet
+          activeSchemaIds={diaryActiveSchemaIds}
+          onClose={() => setNewDiaryEntry(null)}
+          onSave={async (data) => { await api.createSchemaDiary(data); }}
+        />
+      )}
+      {newDiaryEntry === 'mode' && (
+        <ModeEntrySheet
+          onClose={() => setNewDiaryEntry(null)}
+          onSave={async (data) => { await api.createModeDiary(data); }}
+        />
+      )}
+      {newDiaryEntry === 'gratitude' && (
+        <GratitudeEntrySheet
+          onClose={() => setNewDiaryEntry(null)}
+          date={TODAY_DATE}
+          onSave={async (date, items) => { await api.createGratitudeDiary(date, items); }}
+        />
+      )}
+
+      {/* ── Floating pill (always above bottom bar) ── */}
+      {!showTracker && !showDiaries && !showSchemaInfo && !showProfile && !newDiaryEntry && (
+        <FloatingPill
+          onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
+          onOpenModeDiary={() => setNewDiaryEntry('mode')}
+          onOpenGratitude={() => setNewDiaryEntry('gratitude')}
+        />
+      )}
 
       <BottomNav section={section} onSelect={setSection} />
     </div>
