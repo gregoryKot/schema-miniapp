@@ -29,19 +29,19 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
             borderRadius: '50%',
             border: 'none',
             background: '#a78bfa',
-            color: '#fff',
-            fontSize: 26,
-            fontWeight: 300,
             cursor: 'pointer',
             boxShadow: '0 4px 16px rgba(167,139,250,0.45)',
             WebkitTapHighlightColor: 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            lineHeight: 1,
+            padding: 0,
           }}
         >
-          +
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="9" y="2" width="2" height="16" rx="1" fill="white"/>
+            <rect x="2" y="9" width="16" height="2" rx="1" fill="white"/>
+          </svg>
         </button>
       </div>
 

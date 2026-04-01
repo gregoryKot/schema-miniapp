@@ -736,7 +736,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} onOpenChildhoodWheel={() => { setShowSettings(false); setShowChildhoodWheel(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
