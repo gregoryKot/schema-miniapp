@@ -456,6 +456,7 @@ export default function App() {
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           onOpenPractices={() => setShowPractices(true)}
           onOpenPlans={() => setShowPlans(true)}
+          onOpenTracker={() => setShowTracker(true)}
         />
       )}
 

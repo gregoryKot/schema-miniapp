@@ -44,19 +44,44 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {plans.map(plan => (
-              <div key={plan.id} style={{
-                background: plan.done === true ? 'rgba(6,214,160,0.07)' : plan.done === false ? 'rgba(248,113,113,0.05)' : 'rgba(255,255,255,0.03)',
-                border: `1px solid ${plan.done === true ? 'rgba(6,214,160,0.2)' : plan.done === false ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.07)'}`,
-                borderRadius: 14, padding: '13px 14px',
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{plan.scheduledDate}</div>
-                  <div style={{ fontSize: 15 }}>{plan.done === true ? '✅' : plan.done === false ? '❌' : '⏳'}</div>
+            {plans.map(plan => {
+              const isPending = plan.done === null;
+              return (
+                <div key={plan.id} style={{
+                  background: plan.done === true ? 'rgba(6,214,160,0.07)' : plan.done === false ? 'rgba(248,113,113,0.05)' : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${plan.done === true ? 'rgba(6,214,160,0.2)' : plan.done === false ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.07)'}`,
+                  borderRadius: 14, padding: '13px 14px',
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{plan.scheduledDate}</div>
+                    <div style={{ fontSize: 15 }}>{plan.done === true ? '✅' : plan.done === false ? '❌' : '⏳'}</div>
+                  </div>
+                  <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>{plan.practiceText}</div>
+                  {isPending && (
+                    <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                      <button
+                        onClick={() => {
+                          api.checkinPlan(plan.id, true).catch(() => {});
+                          setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: true } : p));
+                        }}
+                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(6,214,160,0.15)', color: '#06d6a0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        ✓ Выполнено
+                      </button>
+                      <button
+                        onClick={() => {
+                          api.checkinPlan(plan.id, false).catch(() => {});
+                          setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: false } : p));
+                        }}
+                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(248,113,113,0.1)', color: '#f87171', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                      >
+                        Не вышло
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>{plan.practiceText}</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

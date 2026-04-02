@@ -32,14 +32,17 @@ const ACHIEVEMENT_META: Record<string, { emoji: string; title: string; desc: str
 type StreakData = { currentStreak: number; longestStreak: number; totalDays: number; todayDone: boolean; weekDots: boolean[] };
 type InsightsData = { weeklyStats: Array<{ needId: string; avg: number | null; trend: '↑' | '↓' | '→' }>; bestDayOfWeek: string | null; worstDayOfWeek: string | null; totalDays: number };
 
+const TODAY_DOW_IDX = (new Date().getDay() + 6) % 7; // 0=пн ... 6=вс
+
 interface Props {
   onOpenSettings: () => void;
   onOpenChildhoodWheel: () => void;
   onOpenPractices: () => void;
   onOpenPlans: () => void;
+  onOpenTracker?: () => void;
 }
 
-export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker }: Props) {
   const safeTop = getTelegramSafeTop();
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
 
@@ -161,17 +164,32 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
 
               {weekDots.length > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: currentStreak > 0 ? 12 : 0 }}>
-                  {weekDots.map((done, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: done ? 13 : 0 }}>
-                        {done && '✓'}
+                  {weekDots.map((done, i) => {
+                    const isToday = i === TODAY_DOW_IDX;
+                    return (
+                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                        <div style={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: done ? 13 : 0,
+                          outline: isToday ? '2px solid rgba(167,139,250,0.5)' : 'none',
+                          outlineOffset: 2,
+                        }}>
+                          {done && '✓'}
+                        </div>
+                        <div style={{ fontSize: 10, color: isToday ? '#a78bfa' : 'rgba(255,255,255,0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
                       </div>
-                      <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>{DOW[i]}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
+              {currentStreak === 0 && totalDays > 0 && onOpenTracker && (
+                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  Заполнить сегодня →
+                </button>
+              )}
               {currentStreak >= 3 && (
                 <button onClick={async () => {
                   const n = currentStreak;

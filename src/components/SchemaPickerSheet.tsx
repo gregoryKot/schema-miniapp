@@ -8,6 +8,29 @@ interface Props {
   onClose: () => void;
 }
 
+const SCHEMA_DESC: Record<string, string> = {
+  emotional_deprivation:   'Убеждение что эмоциональные потребности никогда не будут удовлетворены',
+  abandonment:             'Страх что близкие бросят или станут недоступны',
+  mistrust:                'Ожидание что люди причинят боль, используют или обманут',
+  defectiveness:           'Ощущение себя плохим, неполноценным или нелюбимым',
+  social_isolation:        'Ощущение чужим — отличным от всех остальных людей',
+  dependence:              'Ощущение неспособности справляться с жизнью самостоятельно',
+  vulnerability:           'Преувеличенный страх катастрофы: болезни, краха, аварии',
+  enmeshment:              'Чрезмерная вовлечённость с близкими за счёт своей идентичности',
+  failure:                 'Убеждение что неизбежно потерпишь неудачу там где другие успешны',
+  entitlement:             'Ощущение что правила для других, а ты особенный',
+  insufficient_self_control:'Сложно терпеть дискомфорт, откладывать удовольствия или рутину',
+  subjugation:             'Подавление своих желаний чтобы избежать гнева или отвержения',
+  self_sacrifice:          'Чрезмерный фокус на нуждах других в ущерб собственным',
+  approval_seeking:        'Сильная потребность в одобрении в ущерб подлинному себе',
+  negativity:              'Фокус на негативе: потере, разочаровании, худшем сценарии',
+  emotion_inhibition_fear: 'Страх потерять контроль над эмоциями или импульсами',
+  emotional_inhibition:    'Сдерживание эмоций, спонтанности и естественного общения',
+  unrelenting_standards:   'Жёсткие внутренние требования чтобы избежать критики',
+  punitiveness_self:       'Жёсткое наказание себя за ошибки',
+  punitiveness_others:     'Жёсткое суждение и наказание других за ошибки',
+};
+
 export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
   const [ids, setIds] = useState<string[]>(selected);
 
@@ -30,24 +53,30 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
             }}>
               {domain.domain}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {domain.schemas.map(s => {
                 const active = ids.includes(s.id);
                 return (
-                  <button
+                  <div
                     key={s.id}
                     onClick={() => toggle(s.id)}
                     style={{
-                      padding: '7px 13px', borderRadius: 12, border: 'none', cursor: 'pointer',
-                      background: active ? `${domain.color}22` : 'rgba(255,255,255,0.05)',
-                      color: active ? domain.color : 'rgba(255,255,255,0.5)',
-                      fontSize: 13, fontWeight: active ? 600 : 400,
-                      outline: active ? `1px solid ${domain.color}55` : '1px solid transparent',
+                      display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '10px 12px', borderRadius: 12, cursor: 'pointer',
+                      background: active ? `${domain.color}12` : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${active ? `${domain.color}30` : 'rgba(255,255,255,0.06)'}`,
                       transition: 'all 0.15s',
                     }}
                   >
-                    {s.name}
-                  </button>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: active ? domain.color : 'rgba(255,255,255,0.2)', flexShrink: 0, marginTop: 2 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(255,255,255,0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
+                      {SCHEMA_DESC[s.id] && (
+                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
+                      )}
+                    </div>
+                    {active && <span style={{ color: domain.color, fontSize: 14, flexShrink: 0 }}>✓</span>}
+                  </div>
                 );
               })}
             </div>
