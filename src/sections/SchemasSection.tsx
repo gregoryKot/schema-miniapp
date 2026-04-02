@@ -19,6 +19,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
   const [ysqSchemaIds, setYsqSchemaIds] = useState<string[]>([]);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [showSchemaPicker, setShowSchemaPicker] = useState(false);
   const [showModePicker, setShowModePicker] = useState(false);
   const [introModeId, setIntroModeId] = useState<string | null>(null);
@@ -35,7 +36,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
         localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(p.myModeIds));
       }
       setYsqSchemaIds(p.ysq.activeSchemaIds ?? []);
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setProfileLoading(false));
   }, []);
 
   const allSchemaIds = [...new Set([...ysqSchemaIds, ...manualSchemaIds])];
@@ -82,7 +83,13 @@ export function SchemasSection({ onOpenSchema }: Props) {
             </div>
           </div>
 
-          {hasAnySchemas ? (
+          {profileLoading && !hasAnySchemas ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {[90, 75, 60].map((w, i) => (
+                <div key={i} style={{ height: 38, borderRadius: 12, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+              ))}
+            </div>
+          ) : hasAnySchemas ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {SCHEMA_DOMAINS.map(domain => {
                 const domainActive = domain.schemas.filter(s => allSchemaIds.includes(s.id));

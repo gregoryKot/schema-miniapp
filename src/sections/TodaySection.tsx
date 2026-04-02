@@ -299,6 +299,25 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
 
   if (done) return null;
 
+  // While profile loads, show skeleton to avoid rendering wrong step
+  if (profile === null) {
+    return (
+      <div style={{ borderRadius: 20, padding: '16px 18px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', animation: 'pop-in 0.3s ease both' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <div style={{ width: 80, height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+          <div style={{ display: 'flex', gap: 5 }}>
+            {[0,1,2,3,4].map(i => <div key={i} style={{ width: i === 0 ? 18 : 8, height: 8, borderRadius: 4, background: 'rgba(167,139,250,0.2)' }} />)}
+          </div>
+        </div>
+        <div style={{ width: 32, height: 28, borderRadius: 6, marginBottom: 10, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '70%', height: 17, borderRadius: 6, marginBottom: 8, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '90%', height: 11, borderRadius: 4, marginBottom: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '60%', height: 11, borderRadius: 4, marginBottom: 18, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ height: 42, borderRadius: 14, background: 'linear-gradient(90deg,rgba(167,139,250,0.1) 25%,rgba(167,139,250,0.18) 50%,rgba(167,139,250,0.1) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+      </div>
+    );
+  }
+
   const ctx: StepContext = { hasSchemas };
   const current = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
