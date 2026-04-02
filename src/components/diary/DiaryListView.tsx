@@ -36,10 +36,23 @@ function Field({ label, text }: { label: string; text: string }) {
 }
 
 function DeleteBtn({ color, onClick }: { color: string; onClick: () => void }) {
+  const [confirm, setConfirm] = useState(false);
+  if (!confirm) {
+    return (
+      <button onClick={() => setConfirm(true)} style={{ marginTop: 8, background: `${color}22`, border: 'none', borderRadius: 8, padding: '6px 12px', color, fontSize: 12, cursor: 'pointer' }}>
+        Удалить запись
+      </button>
+    );
+  }
   return (
-    <button onClick={onClick} style={{ marginTop: 8, background: `${color}22`, border: 'none', borderRadius: 8, padding: '6px 12px', color, fontSize: 12, cursor: 'pointer' }}>
-      Удалить запись
-    </button>
+    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+      <button onClick={onClick} style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        Удалить навсегда
+      </button>
+      <button onClick={() => setConfirm(false)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer' }}>
+        Отмена
+      </button>
+    </div>
   );
 }
 

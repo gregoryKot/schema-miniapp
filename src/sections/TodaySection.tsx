@@ -241,7 +241,7 @@ const STEPS: StepDef[] = [
     title: 'Пройди YSQ-тест',
     description: 'Узнай какие схемы активны именно у тебя — это основа всей работы в приложении',
     actionLabel: 'Начать тест',
-    canSkip: false,
+    canSkip: true,
     isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas),
   },
   {
@@ -340,12 +340,13 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
         </div>
         <div style={{ display: 'flex', gap: 5 }}>
           {STEPS.map((s) => {
-            const isResolved = s.isDone(profile, ctx) || skipped.includes(s.id);
-            const isCurrent  = s.id === current.id;
+            const isDone    = s.isDone(profile, ctx);
+            const isSkipped = skipped.includes(s.id) && !isDone;
+            const isCurrent = s.id === current.id;
             return (
               <div key={s.id} style={{
                 width: isCurrent ? 18 : 8, height: 8, borderRadius: 4,
-                background: isResolved ? 'rgba(52,211,153,0.6)' : isCurrent ? '#a78bfa' : 'rgba(255,255,255,0.12)',
+                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? '#a78bfa' : 'rgba(255,255,255,0.12)',
                 transition: 'all 0.3s ease',
               }} />
             );

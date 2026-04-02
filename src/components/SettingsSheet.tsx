@@ -41,6 +41,7 @@ export function SettingsSheet({ onClose }: Props) {
   const [exportText, setExportText] = useState<string | null>(null);
   const [exportCopied, setExportCopied] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting]     = useState(false);
@@ -156,6 +157,7 @@ export function SettingsSheet({ onClose }: Props) {
                   <Row label="Итоги дня" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
                   {settings.notifyEnabled && (
                     <>
+                      <Row label="Напоминание заполнить" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
                       <Row label="Время" right={<RowRight text={`${pad(localHour)}:00`} />} onClick={() => setView('time')} divider />
                       <Row label="Часовой пояс" right={<RowRight text={tzLabel} small />} onClick={() => setView('tz')} divider />
                     </>
@@ -254,7 +256,7 @@ export function SettingsSheet({ onClose }: Props) {
                 <SettingsLabel>ДАННЫЕ</SettingsLabel>
                 <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
                   <Row label="О данных и конфиденциальности" emoji="🔒" onClick={() => setShowPrivacy(true)} />
-                  <Row label="Удалить все данные" emoji="🗑" divider color="#f87171" onClick={() => setShowPrivacy(true)} />
+                  <Row label="Удалить все данные" emoji="🗑" divider color="#f87171" onClick={() => { setDeleteConfirm(false); setShowDeleteSheet(true); }} />
                 </div>
               </div>
             </>
@@ -343,6 +345,36 @@ export function SettingsSheet({ onClose }: Props) {
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
               Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
             </div>
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* Delete sheet — прямой флоу */}
+      {showDeleteSheet && (
+        <BottomSheet onClose={() => { setShowDeleteSheet(false); setDeleteConfirm(false); }} zIndex={300}>
+          <div style={{ paddingTop: 4 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#f87171', marginBottom: 8 }}>Удалить все данные</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+              Дневник, оценки, практики, колесо детства, результаты тестов — всё удалится с сервера. Это действие необратимо.
+            </div>
+            {!deleteConfirm ? (
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setShowDeleteSheet(false)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer' }}>
+                  Отмена
+                </button>
+                <button onClick={() => setDeleteConfirm(true)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                  Удалить
+                </button>
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize: 14, color: '#f87171', textAlign: 'center', marginBottom: 16, fontWeight: 500 }}>Точно? Восстановить невозможно.</div>
+                <button disabled={deleting} onClick={async () => { setDeleting(true); try { await api.deleteAllUserData(); localStorage.clear(); sessionStorage.clear(); window.location.reload(); } catch { setDeleting(false); setDeleteConfirm(false); } }}
+                  style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: '#ef4444', color: '#fff', fontSize: 15, fontWeight: 700, cursor: deleting ? 'default' : 'pointer' }}>
+                  {deleting ? 'Удаляем...' : 'Да, удалить всё навсегда'}
+                </button>
+              </div>
+            )}
           </div>
         </BottomSheet>
       )}

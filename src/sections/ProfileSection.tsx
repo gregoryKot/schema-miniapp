@@ -51,12 +51,28 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const [practiceCount, setPracticeCount] = useState<number | null>(null);
+  const [planCount, setPlanCount] = useState<number | null>(null);
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
+
+  const NEED_IDS_ALL = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
+
+  function plural(n: number, one: string, few: string, many: string) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m100 >= 11 && m100 <= 19) return many;
+    if (m10 === 1) return one;
+    if (m10 >= 2 && m10 <= 4) return few;
+    return many;
+  }
 
   useEffect(() => {
     api.getStreak().then(setStreak).catch(() => {});
     api.getAchievements().then(setAchievements).catch(() => {});
     api.getInsights().then(setInsights).catch(() => {});
+    Promise.all(NEED_IDS_ALL.map(id => api.getPractices(id)))
+      .then(results => setPracticeCount(results.reduce((s, r) => s + r.length, 0)))
+      .catch(() => setPracticeCount(0));
+    api.getPlanHistory(30).then(p => setPlanCount(p.length)).catch(() => setPlanCount(0));
   }, []);
 
   const currentStreak = streak?.currentStreak ?? 0;
@@ -253,8 +269,8 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
             <SectionLabel>МОИ ИНСТРУМЕНТЫ</SectionLabel>
           </div>
           <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} onClick={onOpenChildhoodWheel} />
-          <ToolRow emoji="🗂" label="Мои практики" sub="Что помогает в трудный день" divider onClick={onOpenPractices} />
-          <ToolRow emoji="📋" label="История планов" sub="Что планировал, что сделал" divider onClick={onOpenPlans} />
+          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Добавь первую практику' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
+          <ToolRow emoji="📋" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
         </div>
 
       </div>
@@ -271,12 +287,25 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
               {achievements.map(a => {
                 const m = ACHIEVEMENT_META[a.id];
                 if (!m) return null;
+                const progress = !a.earned ? (() => {
+                  switch (a.id) {
+                    case 'streak_3':   return currentStreak > 0 ? `${currentStreak}/3` : null;
+                    case 'streak_7':   return currentStreak > 0 ? `${currentStreak}/7` : null;
+                    case 'streak_14':  return currentStreak > 0 ? `${currentStreak}/14` : null;
+                    case 'streak_30':  return currentStreak > 0 ? `${currentStreak}/30` : null;
+                    case 'streak_100': return currentStreak > 0 ? `${currentStreak}/100` : null;
+                    case 'total_10':   return totalDays > 0 ? `${totalDays}/10` : null;
+                    case 'total_50':   return totalDays > 0 ? `${totalDays}/50` : null;
+                    default: return null;
+                  }
+                })() : null;
                 return (
                   <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
                     style={{ background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
                     <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>{m.title}</div>
                     <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>{m.desc}</div>
+                    {progress && <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
                   </div>
                 );
               })}

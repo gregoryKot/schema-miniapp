@@ -609,6 +609,7 @@ export default function App() {
               onOpenPractices={() => setShowPracticesOnboarding(true)}
               onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
               plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
+              onClose={() => { setShowTracker(false); setTrackerTab('today'); }}
             />
           )}
           {trackerTab === 'history' && (
