@@ -61,8 +61,9 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                     <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                       <button
                         onClick={() => {
-                          api.checkinPlan(plan.id, true).catch(() => {});
+                          const snapshot = plans!;
                           setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: true } : p));
+                          api.checkinPlan(plan.id, true).catch(() => setPlans(snapshot));
                         }}
                         style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(6,214,160,0.15)', color: '#06d6a0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                       >
@@ -70,8 +71,9 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                       </button>
                       <button
                         onClick={() => {
-                          api.checkinPlan(plan.id, false).catch(() => {});
+                          const snapshot = plans!;
                           setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: false } : p));
+                          api.checkinPlan(plan.id, false).catch(() => setPlans(snapshot));
                         }}
                         style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(248,113,113,0.1)', color: '#f87171', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
                       >

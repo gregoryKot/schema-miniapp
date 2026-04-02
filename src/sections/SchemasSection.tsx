@@ -240,6 +240,8 @@ export function SchemasSection({ onOpenSchema }: Props) {
 
 // ── Mode picker sheet ──────────────────────────────────────────────────────────
 
+const POPULAR_MODE_IDS = ['vulnerable_child', 'detached_protector', 'demanding_critic', 'abandoned_child', 'compliant_surrenderer'];
+
 const MODE_DESC: Record<string, string> = {
   vulnerable_child:      'Беспомощность, грусть, страх — нуждается в защите',
   lonely_child:          'Одиночество и непонятость даже среди людей',
@@ -289,6 +291,34 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20, lineHeight: 1.5 }}>
           Выбери режимы которые ты замечаешь у себя. Потом можно познакомиться с каждым.
         </div>
+
+        {/* Популярные */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
+            С чего начать
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {POPULAR_MODE_IDS.map(id => {
+              const mode = ALL_MODES.find(m => m.id === id);
+              if (!mode) return null;
+              const active = ids.includes(id);
+              const groupColor = mode.groupColor;
+              return (
+                <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${groupColor}12` : 'rgba(255,255,255,0.04)', border: `1px solid ${active ? `${groupColor}30` : 'rgba(255,255,255,0.08)'}`, transition: 'all 0.15s' }}>
+                  <span style={{ fontSize: 18, flexShrink: 0 }}>{mode.emoji}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(255,255,255,0.6)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
+                    {MODE_DESC[id] && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[id]}</div>}
+                  </div>
+                  {active && <span style={{ color: groupColor, fontSize: 14, flexShrink: 0 }}>✓</span>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', marginBottom: 18 }} />
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 14 }}>Все режимы</div>
 
         {MODE_GROUPS.map(group => (
           <div key={group.id} style={{ marginBottom: 18 }}>

@@ -218,6 +218,32 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
   );
 }
 
+// ── Onboarding completion card ────────────────────────────────────────────────
+
+import { useEffect as _useEffect } from 'react';
+
+function OnboardingComplete({ onDone }: { onDone: () => void }) {
+  _useEffect(() => {
+    const t = setTimeout(onDone, 2800);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div style={{
+      borderRadius: 20, padding: '20px 18px',
+      background: 'linear-gradient(135deg, rgba(52,211,153,0.12) 0%, rgba(96,165,250,0.07) 100%)',
+      border: '1px solid rgba(52,211,153,0.3)',
+      animation: 'pop-in 0.3s ease both',
+      textAlign: 'center',
+    }}>
+      <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
+      <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Отличный старт!</div>
+      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+        Теперь просто заполняй трекер каждый день — через неделю начнут проявляться паттерны
+      </div>
+    </div>
+  );
+}
+
 // ── Onboarding widget ─────────────────────────────────────────────────────────
 
 const ONBOARDING_DONE_KEY    = 'onboarding_done';
@@ -296,6 +322,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
     try { return JSON.parse(localStorage.getItem(ONBOARDING_SKIPPED_KEY) ?? '[]'); } catch { return []; }
   });
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
+  const [celebrating, setCelebrating] = useState(false);
 
   if (done) return null;
 
@@ -321,11 +348,22 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
   const ctx: StepContext = { hasSchemas };
   const current = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
-  if (!current) {
-    localStorage.setItem(ONBOARDING_DONE_KEY, '1');
-    setDone(true);
+  if (!current && !celebrating) {
+    if (!localStorage.getItem(ONBOARDING_DONE_KEY)) {
+      setCelebrating(true);
+    } else {
+      setDone(true);
+    }
     return null;
   }
+
+  if (celebrating) {
+    return (
+      <OnboardingComplete onDone={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); setCelebrating(false); }} />
+    );
+  }
+
+  if (!current) return null;
 
   const resolved = STEPS.filter(s => s.isDone(profile, ctx) || skipped.includes(s.id)).length;
   const total = STEPS.length;

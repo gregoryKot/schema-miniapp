@@ -327,18 +327,6 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
         </div>
       )}
 
-      {needs.length > 0 && needs.every(n => saved[n.id]) && onClose && (
-        <button
-          onClick={onClose}
-          style={{
-            width: '100%', marginTop: 20, padding: '14px 0', borderRadius: 16, border: 'none',
-            background: 'rgba(52,211,153,0.12)', color: '#34d399', fontSize: 15, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          Готово — закрыть трекер ✓
-        </button>
-      )}
-
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 
       {activeNeed && (

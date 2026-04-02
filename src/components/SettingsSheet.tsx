@@ -45,6 +45,7 @@ export function SettingsSheet({ onClose }: Props) {
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting]     = useState(false);
+  const [savedToast, setSavedToast] = useState(false);
 
   useEffect(() => {
     api.getSettings()
@@ -58,6 +59,8 @@ export function SettingsSheet({ onClose }: Props) {
     if (!settings) return;
     setSettings(s => s ? { ...s, ...update } : s);
     await api.updateSettings(update).catch(() => {});
+    setSavedToast(true);
+    setTimeout(() => setSavedToast(false), 1800);
   }
 
   async function handleCreateInvite() {
@@ -109,8 +112,11 @@ export function SettingsSheet({ onClose }: Props) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
           <span onClick={() => view !== 'main' ? setView('main') : onClose()} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
-          <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>
+          <span style={{ fontSize: 18, fontWeight: 600, color: '#fff', flex: 1 }}>
             {view === 'time' ? 'Время уведомления' : view === 'tz' ? 'Часовой пояс' : 'Настройки'}
+          </span>
+          <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: savedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+            Сохранено ✓
           </span>
         </div>
 
