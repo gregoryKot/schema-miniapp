@@ -21,6 +21,7 @@ export function PracticesScreen({ onClose }: Props) {
   const [practices, setPractices] = useState<UserPractice[] | null>(null);
   const [input, setInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [addedToast, setAddedToast] = useState(false);
 
   useEffect(() => {
     setPractices(null);
@@ -34,6 +35,8 @@ export function PracticesScreen({ onClose }: Props) {
     try {
       await api.addPractice(NEED_IDS[needIdx], text);
       setInput('');
+      setAddedToast(true);
+      setTimeout(() => setAddedToast(false), 2000);
       api.getPractices(NEED_IDS[needIdx]).then(setPractices).catch(() => {});
     } catch {}
     setSaving(false);
@@ -51,7 +54,8 @@ export function PracticesScreen({ onClose }: Props) {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
         <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
-        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>Мои практики</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff', flex: 1 }}>Мои практики</span>
+        <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
       </div>
 
       <div style={{ padding: '12px 16px 140px' }}>

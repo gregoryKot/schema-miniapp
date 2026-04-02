@@ -220,10 +220,8 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
 
 // ── Onboarding completion card ────────────────────────────────────────────────
 
-import { useEffect as _useEffect } from 'react';
-
 function OnboardingComplete({ onDone }: { onDone: () => void }) {
-  _useEffect(() => {
+  useEffect(() => {
     const t = setTimeout(onDone, 2800);
     return () => clearTimeout(t);
   }, []);

@@ -40,9 +40,10 @@ interface Props {
   onOpenPractices: () => void;
   onOpenPlans: () => void;
   onOpenTracker?: () => void;
+  refreshKey?: number;
 }
 
-export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, refreshKey }: Props) {
   const safeTop = getTelegramSafeTop();
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
 
@@ -69,6 +70,9 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   }
 
   useEffect(() => {
+    setStreak(null);
+    setAchievements(null);
+    setInsights(null);
     api.getStreak().then(setStreak).catch(() => {});
     api.getAchievements().then(setAchievements).catch(() => {});
     api.getInsights().then(setInsights).catch(() => {});
@@ -76,7 +80,7 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
       .then(results => setPracticeCount(results.reduce((s, r) => s + r.length, 0)))
       .catch(() => setPracticeCount(0));
     api.getPlanHistory(30).then(p => setPlanCount(p.length)).catch(() => setPlanCount(0));
-  }, []);
+  }, [refreshKey]);
 
   const currentStreak = streak?.currentStreak ?? 0;
   const longestStreak = streak?.longestStreak ?? 0;

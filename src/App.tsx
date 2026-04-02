@@ -226,6 +226,7 @@ export default function App() {
   const [yesterdayBannerDismissed] = useState(() => !!localStorage.getItem('yesterday_banner_' + YESTERDAY_DATE));
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [todayRefreshKey, setTodayRefreshKey] = useState(0);
+  const [profileRefreshKey, setProfileRefreshKey] = useState(0);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
@@ -342,6 +343,16 @@ export default function App() {
     prevOverlayRef.current = anyOpen;
   }, [showTracker, showDiaries, showSchemaInfo]);
 
+  // Refresh Profile section data after returning from settings/practices/plans/tracker
+  const prevProfileOverlayRef = useRef(false);
+  useEffect(() => {
+    const anyOpen = showSettings || showPractices || showPlans || showTracker || showChildhoodWheel;
+    if (!anyOpen && prevProfileOverlayRef.current && section === 'profile') {
+      setProfileRefreshKey(k => k + 1);
+    }
+    prevProfileOverlayRef.current = anyOpen;
+  }, [showSettings, showPractices, showPlans, showTracker, showChildhoodWheel, section]);
+
   useEffect(() => {
     if (trackerTab === 'history') {
       setHistoryLoading(true);
@@ -457,6 +468,7 @@ export default function App() {
           onOpenPractices={() => setShowPractices(true)}
           onOpenPlans={() => setShowPlans(true)}
           onOpenTracker={() => setShowTracker(true)}
+          refreshKey={profileRefreshKey}
         />
       )}
 

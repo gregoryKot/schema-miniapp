@@ -67,25 +67,6 @@ export function SchemasSection({ onOpenSchema }: Props) {
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* ── Библиотека схемотерапии ── */}
-        <div
-          onClick={() => onOpenSchema({ tab: 'schemas' })}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
-            borderRadius: 16, padding: '12px 16px', cursor: 'pointer',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18 }}>📚</span>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>Описания схем, режимов, потребностей</div>
-            </div>
-          </div>
-          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
-        </div>
-
         {/* ── Схемы ── */}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -166,6 +147,25 @@ export function SchemasSection({ onOpenSchema }: Props) {
               </div>
             </>
           )}
+        </div>
+
+        {/* ── Библиотека схемотерапии ── */}
+        <div
+          onClick={() => onOpenSchema({ tab: 'schemas' })}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
+            borderRadius: 16, padding: '12px 16px', cursor: 'pointer',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18 }}>📚</span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>Описания схем, режимов, потребностей</div>
+            </div>
+          </div>
+          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
         </div>
 
         {/* ── Режимы ── */}
@@ -326,7 +326,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
               {group.group}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {group.items.map(m => {
+              {group.items.filter(m => !POPULAR_MODE_IDS.includes(m.id)).map(m => {
                 const active = ids.includes(m.id);
                 return (
                   <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${group.color}12` : 'rgba(255,255,255,0.03)', border: `1px solid ${active ? `${group.color}30` : 'rgba(255,255,255,0.06)'}`, transition: 'all 0.15s' }}>
