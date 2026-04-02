@@ -187,6 +187,12 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         </div>
 
         {/* ── Паттерны (инсайты) ── */}
+        {insights === null && (
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px' }}>
+            <div style={{ width: 80, height: 10, borderRadius: 4, marginBottom: 10, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+            <div style={{ width: '60%', height: 14, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+          </div>
+        )}
         {hasInsights && (
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
             <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
@@ -238,6 +244,16 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         )}
 
         {/* ── Достижения ── */}
+        {achievements === null && (
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px' }}>
+            <div style={{ width: 100, height: 10, borderRadius: 4, marginBottom: 12, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[0,1,2,3,4,5,6,7].map(i => (
+                <div key={i} style={{ width: 30, height: 30, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+              ))}
+            </div>
+          </div>
+        )}
         {achievements && (
           <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
