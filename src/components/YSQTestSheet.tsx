@@ -578,8 +578,15 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               <div style={{ height: '100%', width: `${((page + 1) / TOTAL_PAGES) * 100}%`, background: '#a78bfa', borderRadius: 2, transition: 'width 0.3s ease' }} />
             </div>
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>
-            ~{Math.ceil((TOTAL_PAGES - page) * 0.4)} мин осталось
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+              ~{Math.ceil((TOTAL_PAGES - page) * 0.4)} мин осталось
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '4px 10px' }}>
+              <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>1 — не про меня</span>
+              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.15)' }}>·</span>
+              <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.6)' }}>6 — полностью про меня</span>
+            </div>
           </div>
 
           {/* Questions */}

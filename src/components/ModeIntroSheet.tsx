@@ -4,6 +4,44 @@ import { getModeById } from '../diaryData';
 
 const STORAGE_KEY = (modeId: string) => `mode_intro_${modeId}`;
 
+const MODE_DESC: Record<string, string> = {
+  vulnerable_child:      'Ощущение беспомощности, грусти, страха — нуждается в защите и утешении',
+  lonely_child:          'Одиночество и непонятость даже среди людей',
+  abandoned_child:       'Страх быть брошенным, тревога при угрозе близким отношениям',
+  humiliated_child:      'Стыд и ощущение дефективности, страх осуждения',
+  dependent_child:       'Нужна постоянная поддержка, страх самостоятельных решений',
+  angry_child:           'Злость из-за неудовлетворённых потребностей',
+  stubborn_child:        'Упрямое сопротивление требованиям и контролю',
+  enraged_child:         'Неконтролируемая ярость при угрозе или несправедливости',
+  impulsive_child:       'Действует не думая, следует желаниям без учёта последствий',
+  undisciplined_child:   'Избегает скучного, быстро теряет интерес и бросает',
+  compliant_surrenderer: 'Соглашается со всем, чтобы избежать конфликта',
+  helpless_surrenderer:  'Ощущает себя беспомощным, ждёт что другие всё решат',
+  detached_protector:    'Отключается эмоционально, уходит в себя чтобы не чувствовать',
+  detached_self_soother: 'Успокаивает себя через еду, экраны, привычки',
+  avoidant_protector:    'Избегает ситуаций и людей, которые могут причинить боль',
+  angry_protector:       'Отталкивает других злостью, защищаясь от уязвимости',
+  self_aggrandiser:      'Ощущение особости и превосходства над другими',
+  overcontroller:        'Стремится всё контролировать, тревожится от неопределённости',
+  perfectionistic_oc:    'Недостижимые стандарты, страх малейшей ошибки',
+  suspicious_oc:         'Постоянная настороженность, ищет скрытые угрозы',
+  invincible_oc:         'Отрицает слабость — должен быть сильным всегда',
+  flagellating_oc:       'Наказывает себя за ошибки строже чем нужно',
+  compulsive_oc:         'Навязчивые ритуалы и действия для снижения тревоги',
+  worrying_oc:           'Хроническое беспокойство о будущих катастрофах',
+  bully_attack:          'Добивается своего через запугивание и агрессию',
+  manipulative:          'Влияет на людей косвенно, скрывая истинные намерения',
+  predator:              'Использует других в своих интересах без сочувствия',
+  attention_seeker:      'Постоянно ищет признания и похвалы от окружающих',
+  pollyanna:             'Отрицает проблемы, видит всё в розовом цвете',
+  demanding_critic:      'Внутренний голос завышенных требований и критики',
+  punitive_critic:       'Жёсткое внутреннее осуждение и приговоры себе',
+  guilt_critic:          'Постоянное чувство вины и самообвинения',
+  happy_child:           'Спонтанность, радость и игривость без тревоги',
+  healthy_adult:         'Взвешенные решения, забота о себе и других',
+  good_parent:           'Внутренний поддерживающий голос, ободряет и успокаивает',
+};
+
 interface IntroData {
   triggers: string;
   feelings: string;
@@ -98,7 +136,19 @@ export function ModeIntroSheet({ modeId, onClose }: Props) {
           </div>
         </div>
 
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: 20 }}>
+        {MODE_DESC[modeId] && (
+          <div style={{
+            background: `${mode.groupColor}12`,
+            border: `1px solid ${mode.groupColor}25`,
+            borderRadius: 12, padding: '10px 14px', marginBottom: 14,
+          }}>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+              {MODE_DESC[modeId]}
+            </div>
+          </div>
+        )}
+
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 20 }}>
           Ответь на вопросы — не торопись, это для себя. Чем честнее, тем точнее будет картина.
         </div>
 

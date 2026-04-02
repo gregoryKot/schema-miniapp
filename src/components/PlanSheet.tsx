@@ -78,6 +78,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
   const [tzOffset, setTzOffset] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
   const [phase, setPhase] = useState<'pick' | 'confirm'>('pick');
   const [deletingIds, setDeletingIds] = useState<Set<number>>(new Set());
 
@@ -121,7 +122,8 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
         await api.addPractice(needId, selectedText);
       }
       await api.createPlan(needId, selectedText, reminderUtcHour);
-      onSaved();
+      setSavedOk(true);
+      setTimeout(() => onSaved(), 1200);
     } catch {
       setSaving(false);
       setSaveError(true);
@@ -350,14 +352,15 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             </button>
             <button
               onClick={() => { setSaveError(false); handleSave(); }}
-              disabled={saving}
+              disabled={saving || savedOk}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-                background: saving ? 'rgba(255,255,255,0.1)' : color,
-                color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
+                background: savedOk ? 'rgba(52,211,153,0.2)' : saving ? 'rgba(255,255,255,0.1)' : color,
+                color: savedOk ? '#34d399' : '#fff', fontSize: 15, fontWeight: 600, cursor: (saving || savedOk) ? 'default' : 'pointer',
+                transition: 'all 0.3s',
               }}
             >
-              {saving ? '...' : 'Сохранить план'}
+              {savedOk ? '✓ Запланировано' : saving ? '...' : 'Сохранить план'}
             </button>
           </div>
         </>
