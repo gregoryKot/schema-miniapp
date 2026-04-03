@@ -5,6 +5,7 @@ import { getTelegramSafeTop } from '../utils/safezone';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
+import { TherapyNote } from '../components/TherapyNote';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
 function readLocalIds(key: string): string[] {
@@ -90,29 +91,44 @@ export function SchemasSection({ onOpenSchema }: Props) {
               ))}
             </div>
           ) : hasAnySchemas ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {SCHEMA_DOMAINS.map(domain => {
                 const domainActive = domain.schemas.filter(s => allSchemaIds.includes(s.id));
                 if (domainActive.length === 0) return null;
                 return (
                   <div key={domain.id}>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: domain.color, opacity: 0.8, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 8 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: domain.color, opacity: 0.75, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
                       {domain.domain}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       {domainActive.map(s => (
                         <div
                           key={s.id}
                           onClick={() => onOpenSchema({ tab: 'schemas', highlight: s.name })}
                           style={{
-                            display: 'flex', alignItems: 'center', gap: 10,
-                            padding: '9px 12px', borderRadius: 12, cursor: 'pointer',
-                            background: `${domain.color}10`, border: `1px solid ${domain.color}28`,
+                            display: 'flex', alignItems: 'center', gap: 12,
+                            padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
+                            background: `${domain.color}0d`, border: `1px solid ${domain.color}22`,
                           }}
                         >
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: domain.color, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, color: '#fff', fontWeight: 500, flex: 1 }}>{s.name}</span>
-                          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14 }}>›</span>
+                          <div style={{
+                            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                            background: `${domain.color}18`,
+                            border: `1px solid ${domain.color}30`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 20,
+                          }}>
+                            {(s as any).emoji ?? '●'}
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{s.name}</div>
+                            {(s as any).desc && (
+                              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, lineHeight: 1.4 }}>
+                                {(s as any).desc}
+                              </div>
+                            )}
+                          </div>
+                          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 14, flexShrink: 0 }}>›</span>
                         </div>
                       ))}
                     </div>
@@ -148,6 +164,8 @@ export function SchemasSection({ onOpenSchema }: Props) {
             </>
           )}
         </div>
+
+        <TherapyNote compact />
 
         {/* ── Библиотека схемотерапии ── */}
         <div

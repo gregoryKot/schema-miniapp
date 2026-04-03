@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { YSQTestSheet, YSQ_RESULT_KEY, YSQ_PROGRESS_KEY } from './YSQTestSheet';
+import { TherapyNote } from './TherapyNote';
 
 type Tab = 'needs' | 'schemas' | 'modes';
 
@@ -418,6 +419,9 @@ export function SchemaInfoContent({ initialTab, highlight }: { initialTab?: Tab;
       {tab === 'needs' && <NeedsTab />}
       {tab === 'schemas' && <SchemasTab highlight={highlight} />}
       {tab === 'modes' && <ModesTab />}
+      <div style={{ marginTop: 24 }}>
+        <TherapyNote />
+      </div>
     </div>
   );
 }

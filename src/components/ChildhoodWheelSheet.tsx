@@ -4,6 +4,7 @@ import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
+import { TherapyNote } from './TherapyNote';
 
 export const CHILDHOOD_DONE_KEY = 'childhood_wheel_done';
 
@@ -528,6 +529,10 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
               </div>
             </div>
           )}
+
+          <div style={{ marginBottom: 16 }}>
+            <TherapyNote compact />
+          </div>
 
           <div style={{ display: 'flex', gap: 10 }}>
             <button
