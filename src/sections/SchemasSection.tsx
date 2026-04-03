@@ -56,13 +56,22 @@ export function SchemasSection({ onOpenSchema }: Props) {
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
 
       {/* Header */}
-      <div style={{ padding: '24px 20px 16px' }}>
-        <div style={{ fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-          Мои схемы и режимы
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '24px 20px 16px' }}>
+        <div>
+          <div style={{ fontSize: 26, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+            Мои схемы и режимы
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+            Личная карта паттернов
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-          Личная карта паттернов
-        </div>
+        <button
+          onClick={() => onOpenSchema({ tab: 'needs' })}
+          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.1)', color: '#a78bfa', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
+          title="Библиотека схемотерапии"
+        >
+          📚
+        </button>
       </div>
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -165,25 +174,6 @@ export function SchemasSection({ onOpenSchema }: Props) {
         </div>
 
         <TherapyNote compact />
-
-        {/* ── Библиотека схемотерапии ── */}
-        <div
-          onClick={() => onOpenSchema({ tab: 'schemas' })}
-          style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.15)',
-            borderRadius: 16, padding: '12px 16px', cursor: 'pointer',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 18 }}>📚</span>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Библиотека схемотерапии</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>Описания схем, режимов, потребностей</div>
-            </div>
-          </div>
-          <span style={{ color: 'rgba(167,139,250,0.4)', fontSize: 18 }}>›</span>
-        </div>
 
         {/* ── Режимы ── */}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 18px' }}>
