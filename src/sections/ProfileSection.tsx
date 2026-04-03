@@ -3,6 +3,8 @@ import { api, Achievement } from '../api';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
+import { SchemaFlashcard } from '../components/SchemaFlashcard';
+import { LetterToSelf } from '../components/LetterToSelf';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -56,6 +58,8 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const [showFlashcard, setShowFlashcard] = useState(false);
+  const [showLetterToSelf, setShowLetterToSelf] = useState(false);
   const [practiceCount, setPracticeCount] = useState<number | null>(null);
   const [planCount, setPlanCount] = useState<number | null>(null);
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
@@ -298,14 +302,19 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
           </div>
         )}
 
-        {/* ── Мои инструменты ── */}
+        {/* ── Инструменты самоисследования ── */}
         {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 6px' }}>
-            <SectionLabel>МОИ ИНСТРУМЕНТЫ</SectionLabel>
+          <div style={{ padding: '14px 16px 4px' }}>
+            <SectionLabel>ИНСТРУМЕНТЫ</SectionLabel>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: -4, marginBottom: 8, lineHeight: 1.4 }}>
+              Упражнения схема-терапии для самостоятельной работы
+            </div>
           </div>
-          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} onClick={onOpenChildhoodWheel} />
-          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Добавь первую практику' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
-          <ToolRow emoji="📋" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
+          <ToolRow emoji="📋" label="Схема-флэшкарта" sub="Разобрать что сейчас происходит — 5 шагов" onClick={() => setShowFlashcard(true)} />
+          <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
+          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
+          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
+          <ToolRow emoji="🗓" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
         </div>}
 
       </div>
@@ -369,6 +378,9 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
           </div>
         );
       })()}
+
+      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} />}
+      {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} />}
 
       {/* Best day tooltip */}
       {showBestDayInfo && (

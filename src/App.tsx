@@ -196,8 +196,11 @@ function formatHeaderDate(): string {
   return `${dow}, ${date}`;
 }
 
+const SECTIONS: Section[] = ['today', 'schemas', 'profile'];
+
 export default function App() {
   const [section, setSection] = useState<Section>(getInitialSection);
+  const swipeTouchRef = useRef<{ x: number; y: number } | null>(null);
   const [disclaimerDone, setDisclaimerDone] = useState(
     () => !!localStorage.getItem(DISCLAIMER_KEY)
   );
@@ -391,6 +394,28 @@ export default function App() {
     return () => bb.offClick(handler);
   }, []);
 
+  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote);
+
+  const handleSwipeStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipeTouchRef.current = { x: t.clientX, y: t.clientY };
+  }, []);
+
+  const handleSwipeEnd = useCallback((e: React.TouchEvent) => {
+    if (!swipeTouchRef.current || anyOverlayOpen) { swipeTouchRef.current = null; return; }
+    const t = e.changedTouches[0];
+    const dx = t.clientX - swipeTouchRef.current.x;
+    const dy = t.clientY - swipeTouchRef.current.y;
+    swipeTouchRef.current = null;
+    if (Math.abs(dx) < 72 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+    setSection(cur => {
+      const idx = SECTIONS.indexOf(cur);
+      if (dx < 0 && idx < SECTIONS.length - 1) return SECTIONS[idx + 1];
+      if (dx > 0 && idx > 0) return SECTIONS[idx - 1];
+      return cur;
+    });
+  }, [anyOverlayOpen]);
+
   const handleChange = useCallback((needId: string, value: number) => {
     setRatings((prev) => ({ ...prev, [needId]: value }));
     setSaved((prev) => ({ ...prev, [needId]: false }));
@@ -433,7 +458,7 @@ export default function App() {
   const safeTop = getTelegramSafeTop();
 
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       {isOffline && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#fff' }}>
           Нет подключения — данные не сохраняются
