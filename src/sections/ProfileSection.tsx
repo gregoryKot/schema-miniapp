@@ -50,6 +50,7 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   const [streak, setStreak]             = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights]         = useState<InsightsData | null>(null);
+  const [ready, setReady]               = useState(false);
 
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
@@ -70,16 +71,19 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   }
 
   useEffect(() => {
+    setReady(false);
     setStreak(null);
     setAchievements(null);
     setInsights(null);
-    api.getStreak().then(setStreak).catch(() => {});
-    api.getAchievements().then(setAchievements).catch(() => {});
-    api.getInsights().then(setInsights).catch(() => {});
-    Promise.all(NEED_IDS_ALL.map(id => api.getPractices(id)))
-      .then(results => setPracticeCount(results.reduce((s, r) => s + r.length, 0)))
-      .catch(() => setPracticeCount(0));
-    api.getPlanHistory(30).then(p => setPlanCount(p.length)).catch(() => setPlanCount(0));
+    Promise.all([
+      api.getStreak().then(setStreak).catch(() => {}),
+      api.getAchievements().then(setAchievements).catch(() => {}),
+      api.getInsights().then(setInsights).catch(() => {}),
+      Promise.all(NEED_IDS_ALL.map(id => api.getPractices(id)))
+        .then(results => setPracticeCount(results.reduce((s, r) => s + r.length, 0)))
+        .catch(() => setPracticeCount(0)),
+      api.getPlanHistory(30).then(p => setPlanCount(p.length)).catch(() => setPlanCount(0)),
+    ]).finally(() => setReady(true));
   }, [refreshKey]);
 
   const currentStreak = streak?.currentStreak ?? 0;
@@ -113,8 +117,17 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
 
       <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
+        {/* ── Скелетон всего раздела ── */}
+        {!ready && (
+          <>
+            {[120, 72, 80, 90].map((h, i) => (
+              <div key={i} style={{ height: h, borderRadius: 20, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+            ))}
+          </>
+        )}
+
         {/* ── Стрик ── */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '20px' }}>
+        {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '20px' }}>
           {streak === null ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -206,16 +219,10 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
               )}
             </>
           )}
-        </div>
+        </div>}
 
         {/* ── Паттерны (инсайты) ── */}
-        {insights === null && (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px' }}>
-            <div style={{ width: 80, height: 10, borderRadius: 4, marginBottom: 10, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-            <div style={{ width: '60%', height: 14, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-          </div>
-        )}
-        {hasInsights && (
+        {ready && hasInsights && (
           <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
             <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
               <div>
@@ -266,17 +273,7 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         )}
 
         {/* ── Достижения ── */}
-        {achievements === null && (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px' }}>
-            <div style={{ width: 100, height: 10, borderRadius: 4, marginBottom: 12, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-            <div style={{ display: 'flex', gap: 6 }}>
-              {[0,1,2,3,4,5,6,7].map(i => (
-                <div key={i} style={{ width: 30, height: 30, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-              ))}
-            </div>
-          </div>
-        )}
-        {achievements && (
+        {ready && achievements && (
           <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
@@ -302,14 +299,14 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         )}
 
         {/* ── Мои инструменты ── */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+        {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 6px' }}>
             <SectionLabel>МОИ ИНСТРУМЕНТЫ</SectionLabel>
           </div>
           <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} onClick={onOpenChildhoodWheel} />
           <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Добавь первую практику' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
           <ToolRow emoji="📋" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
-        </div>
+        </div>}
 
       </div>
 

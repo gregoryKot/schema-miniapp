@@ -28,16 +28,15 @@ export function SchemasSection({ onOpenSchema }: Props) {
 
   useEffect(() => {
     api.getProfile().then(p => {
-      if (p.mySchemaIds.length > 0) {
-        setManualSchemaIds(p.mySchemaIds);
-        localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(p.mySchemaIds));
-      }
-      if (p.myModeIds.length > 0) {
-        setMyModeIds(p.myModeIds);
-        localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(p.myModeIds));
-      }
+      const serverSchemas = p.mySchemaIds ?? [];
+      const serverModes   = p.myModeIds ?? [];
+      setManualSchemaIds(serverSchemas);
+      if (serverSchemas.length > 0) localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(serverSchemas));
+      setMyModeIds(serverModes);
+      if (serverModes.length > 0) localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(serverModes));
       setYsqSchemaIds(p.ysq.activeSchemaIds ?? []);
-    }).catch(() => {}).finally(() => setProfileLoading(false));
+      setProfileLoading(false);
+    }).catch(() => setProfileLoading(false));
   }, []);
 
   const allSchemaIds = [...new Set([...ysqSchemaIds, ...manualSchemaIds])];
@@ -84,10 +83,10 @@ export function SchemasSection({ onOpenSchema }: Props) {
             </div>
           </div>
 
-          {profileLoading && !hasAnySchemas ? (
+          {profileLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[90, 75, 60].map((w, i) => (
-                <div key={i} style={{ height: 38, borderRadius: 12, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div key={i} style={{ height: 62, borderRadius: 14, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
               ))}
             </div>
           ) : hasAnySchemas ? (
@@ -188,7 +187,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
 
         {/* ── Режимы ── */}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 18px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: myModes.length > 0 ? 14 : 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: (myModes.length > 0 || profileLoading) ? 14 : 0 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)' }}>
               Режимы
             </div>
@@ -197,7 +196,13 @@ export function SchemasSection({ onOpenSchema }: Props) {
             </div>
           </div>
 
-          {myModes.length > 0 ? (
+          {profileLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
+              {[85, 70].map((w, i) => (
+                <div key={i} style={{ height: 62, borderRadius: 14, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+              ))}
+            </div>
+          ) : myModes.length > 0 ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {myModes.map(m => {
                 const introSaved = !!localStorage.getItem(`mode_intro_${m.id}`);

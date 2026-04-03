@@ -13,15 +13,21 @@ const NEED_NAMES: Record<string, string> = {
 
 interface Props {
   onClose: () => void;
+  onOpenTracker?: () => void;
 }
 
-export function PracticesScreen({ onClose }: Props) {
+export function PracticesScreen({ onClose, onOpenTracker }: Props) {
   const safeTop = getTelegramSafeTop();
   const [needIdx, setNeedIdx] = useState(0);
   const [practices, setPractices] = useState<UserPractice[] | null>(null);
   const [input, setInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
+  const [ratings, setRatings] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    api.ratings().then(setRatings).catch(() => {});
+  }, []);
 
   useEffect(() => {
     setPractices(null);
@@ -47,7 +53,11 @@ export function PracticesScreen({ onClose }: Props) {
     api.deletePractice(id).catch(() => {});
   }
 
-  const needColor = COLORS[NEED_IDS[needIdx]] ?? '#a78bfa';
+  const needId = NEED_IDS[needIdx];
+  const needColor = COLORS[needId] ?? '#a78bfa';
+  const todayScore = ratings[needId];
+  const isLow = todayScore !== undefined && todayScore <= 4;
+  const isMid = todayScore !== undefined && todayScore > 4 && todayScore <= 7;
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto', paddingTop: safeTop }}>
@@ -58,21 +68,57 @@ export function PracticesScreen({ onClose }: Props) {
         <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
       </div>
 
+      {/* Context banner */}
+      <div style={{ padding: '4px 16px 0', marginBottom: 4 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.55 }}>
+          Практики — конкретные действия, которые наполняют потребность.
+          {onOpenTracker && (
+            <> Видишь что что-то просело?{' '}
+              <span onClick={onOpenTracker} style={{ color: '#a78bfa', cursor: 'pointer' }}>Открой трекер →</span>
+            </>
+          )}
+        </div>
+      </div>
+
       <div style={{ padding: '12px 16px 140px' }}>
         {/* Need tabs */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 20, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 16, overflowX: 'auto', paddingBottom: 2, scrollbarWidth: 'none' }}>
           {NEED_IDS.map((id, i) => {
             const color = COLORS[id] ?? '#888';
             const emoji = NEED_DATA[id]?.emoji ?? '';
             const active = i === needIdx;
+            const score = ratings[id];
             return (
               <div key={id} onClick={() => { setNeedIdx(i); setInput(''); }}
-                style={{ flexShrink: 0, padding: '8px 14px', borderRadius: 20, background: active ? color + '28' : 'rgba(255,255,255,0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: active ? 600 : 400 }}>
+                style={{ flexShrink: 0, padding: '7px 12px', borderRadius: 20, background: active ? color + '28' : 'rgba(255,255,255,0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: 5 }}>
                 {emoji} {NEED_NAMES[id]}
+                {score !== undefined && (
+                  <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.7, color: score <= 4 ? '#f87171' : score <= 7 ? '#fbbf24' : '#34d399' }}>
+                    {score}
+                  </span>
+                )}
               </div>
             );
           })}
         </div>
+
+        {/* Contextual card when need is low */}
+        {isLow && (
+          <div style={{ background: `${needColor}12`, border: `1px solid ${needColor}25`, borderRadius: 14, padding: '11px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18 }}>📍</span>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+              Сегодня <span style={{ color: needColor, fontWeight: 600 }}>{NEED_NAMES[needId]}</span> на {todayScore}/10 — хороший момент чтобы что-то сделать для этой потребности.
+            </div>
+          </div>
+        )}
+        {isMid && (
+          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '11px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 18 }}>💛</span>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+              Сегодня {NEED_NAMES[needId]} — {todayScore}/10. Есть куда расти.
+            </div>
+          </div>
+        )}
 
         {/* Practices list */}
         {!practices ? (
@@ -96,7 +142,7 @@ export function PracticesScreen({ onClose }: Props) {
 
         {/* Add input */}
         <div style={{ marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
-          Небольшое конкретное действие, которое помогает — например «позвонить другу» или «прогулка 20 минут»
+          Небольшое конкретное действие — например «позвонить другу» или «прогулка 20 минут»
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <input

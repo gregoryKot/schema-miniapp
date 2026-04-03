@@ -780,7 +780,7 @@ export default function App() {
       )}
 
       {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
-      {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} />}
+      {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
