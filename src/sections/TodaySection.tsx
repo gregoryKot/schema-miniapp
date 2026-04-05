@@ -45,10 +45,12 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
   const [diariesLoaded, setDiariesLoaded] = useState(false);
 
   useEffect(() => {
+    let ignore = false;
     setProfile(null);
     setDiariesLoaded(false);
 
     api.getProfile().then(p => {
+      if (ignore) return;
       setProfile(p);
       if (p.mySchemaIds.length > 0) {
         setManualSchemaIds(p.mySchemaIds);
@@ -62,6 +64,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
     // Load recent diary entries
     Promise.all([api.getSchemaDiary(), api.getModeDiary(), api.getGratitudeDiary()])
       .then(([schema, mode, gratitude]) => {
+        if (ignore) return;
         const all: Array<{ type: string; emoji: string; label: string; date: string }> = [
           ...schema.slice(0, 3).map(e => ({ type: 'schema', emoji: '📓', label: e.trigger.slice(0, 40), date: e.createdAt })),
           ...mode.slice(0, 3).map(e => ({ type: 'mode', emoji: '🔄', label: e.situation.slice(0, 40), date: e.createdAt })),
@@ -69,7 +72,9 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         ];
         all.sort((a, b) => b.date.localeCompare(a.date));
         setRecentDiaries(all.slice(0, 4));
-      }).catch(() => {}).finally(() => setDiariesLoaded(true));
+      }).catch(() => {}).finally(() => { if (!ignore) setDiariesLoaded(true); });
+
+    return () => { ignore = true; };
   }, [refreshKey]);
 
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';

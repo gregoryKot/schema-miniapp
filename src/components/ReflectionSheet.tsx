@@ -69,7 +69,6 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
           onChange={e => setText(e.target.value)}
           placeholder="Напиши, что приходит в голову..."
           maxLength={500}
-          autoFocus={loaded}
           style={{
             width: '100%', minHeight: 120,
             background: 'rgba(255,255,255,0.05)',

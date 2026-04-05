@@ -266,7 +266,6 @@ export function SchemaFlashcard({ onClose }: Props) {
         </div>
 
         <textarea
-          autoFocus
           value={val}
           onChange={e => setDraft(d => ({ ...d, [cur.key]: e.target.value }))}
           placeholder={cur.placeholder}

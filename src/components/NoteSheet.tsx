@@ -97,7 +97,6 @@ export function NoteSheet({ date, onClose }: Props) {
           onChange={e => setText(e.target.value)}
           placeholder="Что происходило сегодня? Любая мысль..."
           maxLength={500}
-          autoFocus={loaded}
           style={{
             width: '100%', minHeight: 100,
             background: 'rgba(255,255,255,0.05)',

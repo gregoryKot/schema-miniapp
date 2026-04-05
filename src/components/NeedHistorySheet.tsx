@@ -27,8 +27,10 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
   // Trend
   const scores = history.map(d => d.ratings[need.id] ?? 0);
   const n = scores.length;
-  const recentAvg = scores.slice(0, Math.min(3, n)).reduce((s, v) => s + v, 0) / Math.min(3, n);
-  const olderAvg = scores.slice(-Math.min(3, n)).reduce((s, v) => s + v, 0) / Math.min(3, n);
+  const recentCount = Math.min(3, n);
+  const olderCount = Math.min(3, n);
+  const recentAvg = recentCount > 0 ? scores.slice(0, recentCount).reduce((s, v) => s + v, 0) / recentCount : 0;
+  const olderAvg = olderCount > 0 ? scores.slice(-olderCount).reduce((s, v) => s + v, 0) / olderCount : 0;
   const trendDiff = recentAvg - olderAvg;
   const trendLabel = trendDiff > 0.5 ? 'Растёт' : trendDiff < -0.5 ? 'Падает' : 'Стабильно';
   const trendSign = trendDiff >= 0 ? '+' : '';
@@ -47,8 +49,8 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
   const pts = reversed.map((d, i) => ({ x: i * xStep, y: yFor(d.ratings[need.id] ?? 0) }));
   const polyStr = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
   const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-  const areaPath = `${linePath} L ${pts[reversed.length - 1].x.toFixed(1)} ${H} L 0 ${H} Z`;
-  const lastPt = pts[pts.length - 1];
+  const lastPt = pts.length > 0 ? pts[pts.length - 1] : null;
+  const areaPath = lastPt ? `${linePath} L ${lastPt.x.toFixed(1)} ${H} L 0 ${H} Z` : '';
 
   return (
     <BottomSheet onClose={onClose}>
@@ -102,7 +104,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
             <path d={areaPath} fill={`url(#sheet-area-${need.id})`} />
             <polyline points={polyStr} fill="none" stroke={color} strokeWidth={2}
               strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx={lastPt.x} cy={lastPt.y} r={3} fill={color} />
+            {lastPt && <circle cx={lastPt.x} cy={lastPt.y} r={3} fill={color} />}
             {childhoodValue !== undefined && (() => {
               const cy = yFor(childhoodValue);
               return (

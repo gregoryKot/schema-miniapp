@@ -139,7 +139,6 @@ export function BeliefCheck({ onClose }: Props) {
               </div>
             </div>
             <textarea
-              autoFocus
               value={belief}
               onChange={e => setBelief(e.target.value)}
               placeholder="Например: я всегда всё порчу, меня никто не любит..."
@@ -225,7 +224,6 @@ export function BeliefCheck({ onClose }: Props) {
               </div>
             </div>
             <textarea
-              autoFocus
               value={reframe}
               onChange={e => setReframe(e.target.value)}
               placeholder="Например: иногда я ошибаюсь, но это не значит что я всегда всё порчу..."

@@ -102,7 +102,6 @@ export function SafePlace({ onClose }: Props) {
         </div>
 
         <textarea
-          autoFocus
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="Это небольшой уютный лес недалеко от дома. Я слышу птиц..."
