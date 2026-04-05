@@ -115,7 +115,13 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
   return (
     <BottomSheet onClose={() => {}} zIndex={300}>
       <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
-        <div style={{ fontSize: 36 }}>🧠</div>
+        <div style={{ fontSize: 36, marginBottom: 8 }}>🧠</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: '#fbbf24', letterSpacing: '0.1em' }}>
+          БЕТА-ВЕРСИЯ
+        </div>
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6, lineHeight: 1.4 }}>
+          Приложение в стадии тестирования — функции могут меняться,<br />данные могут быть сброшены
+        </div>
       </div>
 
       <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>

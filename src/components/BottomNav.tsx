@@ -50,14 +50,19 @@ export function BottomNav({ section, onSelect }: Props) {
     <div style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
-      height: 64,
       background: 'rgba(6,10,18,0.92)',
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
       borderTop: '1px solid rgba(255,255,255,0.06)',
-      display: 'flex',
       zIndex: 50,
     }}>
+      {/* Beta strip */}
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 2 }}>
+        <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 20, padding: '1px 9px', fontSize: 9, fontWeight: 700, color: 'rgba(251,191,36,0.55)', letterSpacing: '0.12em' }}>
+          БЕТА · данные могут быть сброшены
+        </div>
+      </div>
+      <div style={{ height: 60, display: 'flex' }}>
       {TABS.map(tab => {
         const active = section === tab.id;
         return (
@@ -101,6 +106,7 @@ export function BottomNav({ section, onSelect }: Props) {
           </button>
         );
       })}
+      </div>
     </div>
   );
 }
