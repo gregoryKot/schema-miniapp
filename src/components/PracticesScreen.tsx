@@ -23,6 +23,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
   const [input, setInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [addedToast, setAddedToast] = useState(false);
+  const [errorToast, setErrorToast] = useState(false);
   const [ratings, setRatings] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -44,8 +45,12 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
       setAddedToast(true);
       setTimeout(() => setAddedToast(false), 2000);
       api.getPractices(NEED_IDS[needIdx]).then(setPractices).catch(() => {});
-    } catch {}
-    setSaving(false);
+    } catch {
+      setErrorToast(true);
+      setTimeout(() => setErrorToast(false), 2500);
+    } finally {
+      setSaving(false);
+    }
   }
 
   function handleDelete(id: number) {
@@ -65,7 +70,10 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
         <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
         <span style={{ fontSize: 18, fontWeight: 600, color: '#fff', flex: 1 }}>Мои практики</span>
-        <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
+        {errorToast
+          ? <span style={{ fontSize: 12, color: '#f87171', fontWeight: 600, opacity: 1, transition: 'opacity 0.3s ease' }}>Ошибка сохранения</span>
+          : <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
+        }
       </div>
 
       {/* Context banner */}

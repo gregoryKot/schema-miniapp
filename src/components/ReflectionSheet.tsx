@@ -37,6 +37,9 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
       await api.saveNote(date, text.trim());
       onClose();
     } catch {
+      // save failed — still close, note typed locally
+      onClose();
+    } finally {
       setSaving(false);
     }
   }

@@ -8,14 +8,24 @@ function authHeaders(): Record<string, string> {
   };
 }
 
+async function fetchWithTimeout(input: string, init: RequestInit, ms = 15000): Promise<Response> {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(input, { ...init, signal: ctrl.signal });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, { headers: authHeaders() });
+  const res = await fetchWithTimeout(`${BASE}${path}`, { headers: authHeaders() });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
 }
 
 async function post(path: string, body: unknown): Promise<void> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetchWithTimeout(`${BASE}${path}`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(body),
@@ -24,7 +34,7 @@ async function post(path: string, body: unknown): Promise<void> {
 }
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetchWithTimeout(`${BASE}${path}`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(body),
@@ -34,7 +44,7 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 async function del(path: string): Promise<void> {
-  const res = await fetch(`${BASE}${path}`, { method: 'DELETE', headers: authHeaders() });
+  const res = await fetchWithTimeout(`${BASE}${path}`, { method: 'DELETE', headers: authHeaders() });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
 }
 

@@ -44,15 +44,10 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
 
   async function handleSave() {
     setSaving(true);
-    try {
-      await api.saveNote(date, `[Вопрос недели] ${question}\n\n${text.trim()}`);
-      localStorage.setItem(getWeekKey(), '1');
-      onDismiss();
-    } catch {
-      // silent — button re-enables via finally
-    } finally {
-      setSaving(false);
-    }
+    localStorage.setItem(getWeekKey(), '1');
+    api.saveNote(date, `[Вопрос недели] ${question}\n\n${text.trim()}`).catch(() => {});
+    setSaving(false);
+    onDismiss();
   }
 
   function handleSkip() {

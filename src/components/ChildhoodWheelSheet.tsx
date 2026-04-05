@@ -253,14 +253,13 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
   async function handleSave() {
     if (saving) return;
     setSaving(true);
-    try {
-      await api.saveChildhoodRatings(ratings as Record<string, number>);
-      localStorage.setItem(CHILDHOOD_DONE_KEY, '1');
-      onSaved?.(ratings as Record<string, number>);
-      setPhase('result');
-    } finally {
-      setSaving(false);
-    }
+    // Save locally first so UI never gets stuck
+    localStorage.setItem(CHILDHOOD_DONE_KEY, '1');
+    onSaved?.(ratings as Record<string, number>);
+    setPhase('result');
+    setSaving(false);
+    // Sync to server in background
+    api.saveChildhoodRatings(ratings as Record<string, number>).catch(() => {});
   }
 
   function finish() {

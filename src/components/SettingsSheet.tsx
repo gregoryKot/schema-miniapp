@@ -38,6 +38,7 @@ export function SettingsSheet({ onClose }: Props) {
   const [pairInviteCopied, setPairInviteCopied] = useState(false);
   const [joinCode, setJoinCode]     = useState('');
   const [joinView, setJoinView]     = useState<'main' | 'join'>('main');
+  const [joinError, setJoinError]   = useState(false);
   const [exportText, setExportText] = useState<string | null>(null);
   const [exportCopied, setExportCopied] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -80,11 +81,16 @@ export function SettingsSheet({ onClose }: Props) {
   async function handleJoin() {
     if (!joinCode.trim()) return;
     setPairLoading(true);
+    setJoinError(false);
     try {
       await api.joinPair(joinCode.trim().toUpperCase());
       await api.getPair().then(setPairData);
       setJoinView('main');
-    } catch {} finally { setPairLoading(false); }
+    } catch {
+      setJoinError(true);
+    } finally {
+      setPairLoading(false);
+    }
   }
 
   async function handleLeave(code: string) {
@@ -231,6 +237,11 @@ export function SettingsSheet({ onClose }: Props) {
                       <input value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Код из приглашения"
                         style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: 16, fontFamily: 'monospace', outline: 'none', letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12 }}
                       />
+                      {joinError && (
+                        <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+                          Код не найден или уже использован
+                        </div>
+                      )}
                       <button onClick={handleJoin} disabled={!joinCode.trim() || pairLoading}
                         style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                         Присоединиться

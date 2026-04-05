@@ -117,7 +117,6 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
       if (opt.localHour !== null) {
         reminderUtcHour = ((opt.localHour - tzOffset) % 24 + 24) % 24;
       }
-      // Save as user practice if new
       if (!userPractices.some(p => p.text === selectedText)) {
         await api.addPractice(needId, selectedText);
       }
@@ -125,8 +124,9 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
       setSavedOk(true);
       setTimeout(() => onSaved(), 1200);
     } catch {
-      setSaving(false);
       setSaveError(true);
+    } finally {
+      setSaving(false);
     }
   }
 
