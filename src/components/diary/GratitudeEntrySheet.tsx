@@ -33,9 +33,11 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
     try {
       await onSave(date, items.filter(it => it.trim().length > 0));
       clearDraft('gratitude');
-      onClose();
+    } catch {
+      // save failed — draft preserved for retry
     } finally {
       setSaving(false);
+      onClose();
     }
   };
   void draftDate;

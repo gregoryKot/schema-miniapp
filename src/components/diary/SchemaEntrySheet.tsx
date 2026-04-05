@@ -115,9 +115,11 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         healthyBehavior: healthyBehavior || undefined,
       });
       clearDraft('schema');
-      onClose();
+    } catch {
+      // save failed — draft preserved for retry
     } finally {
       setSaving(false);
+      onClose();
     }
   };
 
