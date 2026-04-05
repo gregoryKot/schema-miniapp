@@ -139,8 +139,8 @@ export function SchemaFlashcard({ onClose }: Props) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Схема-флэшкарта</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Что сейчас происходит?</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Мне сейчас плохо</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Разбираемся вместе — что именно происходит</div>
           </div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>{step + 1} / {STEPS.length}</div>
         </div>

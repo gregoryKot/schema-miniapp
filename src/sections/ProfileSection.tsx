@@ -5,6 +5,9 @@ import { BottomSheet } from '../components/BottomSheet';
 import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
 import { SchemaFlashcard } from '../components/SchemaFlashcard';
 import { LetterToSelf } from '../components/LetterToSelf';
+import { BeliefCheck } from '../components/BeliefCheck';
+import { SafePlace } from '../components/SafePlace';
+import { TherapyNote } from '../components/TherapyNote';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -60,6 +63,8 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [showFlashcard, setShowFlashcard] = useState(false);
   const [showLetterToSelf, setShowLetterToSelf] = useState(false);
+  const [showBeliefCheck, setShowBeliefCheck] = useState(false);
+  const [showSafePlace, setShowSafePlace] = useState(false);
   const [practiceCount, setPracticeCount] = useState<number | null>(null);
   const [planCount, setPlanCount] = useState<number | null>(null);
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
@@ -304,17 +309,43 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
 
         {/* ── Инструменты самоисследования ── */}
         {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 4px' }}>
-            <SectionLabel>ИНСТРУМЕНТЫ</SectionLabel>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: -4, marginBottom: 8, lineHeight: 1.4 }}>
+          <div style={{ padding: '14px 16px 8px' }}>
+            <SectionLabel>САМОПОМОЩЬ</SectionLabel>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: -4, marginBottom: 4, lineHeight: 1.4 }}>
               Упражнения схема-терапии для самостоятельной работы
             </div>
           </div>
-          <ToolRow emoji="📋" label="Схема-флэшкарта" sub="Разобрать что сейчас происходит — 5 шагов" onClick={() => setShowFlashcard(true)} />
+
+          {/* Экстренная помощь */}
+          <div style={{ padding: '4px 16px 2px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(248,113,113,0.5)' }}>🚨 Прямо сейчас</div>
+          </div>
+          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит прямо сейчас — 5 шагов" onClick={() => setShowFlashcard(true)} />
+
+          {/* Работа с мыслями */}
+          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.5)' }}>💭 Работа с мыслями</div>
+          </div>
+          <ToolRow emoji="🔍" label="Проверить убеждение" sub="Правда ли это? Собрать доказательства за и против" divider onClick={() => setShowBeliefCheck(true)} />
           <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
+
+          {/* Ресурс */}
+          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.5)' }}>🌿 Ресурс</div>
+          </div>
+          <ToolRow emoji="🏡" label="Безопасное место" sub="Описать и перечитывать в тревожный момент" divider onClick={() => setShowSafePlace(true)} />
           <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
+
+          {/* Отслеживание */}
+          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(251,191,36,0.5)' }}>📊 Отслеживание</div>
+          </div>
           <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
           <ToolRow emoji="🗓" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
+
+          <div style={{ padding: '12px 16px' }}>
+            <TherapyNote compact />
+          </div>
         </div>}
 
       </div>
@@ -381,6 +412,8 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
 
       {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} />}
       {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} />}
+      {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} />}
+      {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} />}
 
       {/* Best day tooltip */}
       {showBestDayInfo && (
