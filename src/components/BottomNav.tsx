@@ -56,10 +56,10 @@ export function BottomNav({ section, onSelect }: Props) {
       borderTop: '1px solid rgba(255,255,255,0.06)',
       zIndex: 50,
     }}>
-      {/* Beta strip */}
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 2 }}>
-        <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.18)', borderRadius: 20, padding: '1px 9px', fontSize: 9, fontWeight: 700, color: 'rgba(251,191,36,0.55)', letterSpacing: '0.12em' }}>
-          БЕТА · данные могут быть сброшены
+      {/* Beta badge */}
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 1 }}>
+        <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}>
+          β бета
         </div>
       </div>
       <div style={{ height: 60, display: 'flex' }}>
