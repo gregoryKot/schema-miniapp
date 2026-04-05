@@ -2,12 +2,6 @@ import { useEffect, useState } from 'react';
 import { api, Achievement } from '../api';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
-import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
-import { SchemaFlashcard } from '../components/SchemaFlashcard';
-import { LetterToSelf } from '../components/LetterToSelf';
-import { BeliefCheck } from '../components/BeliefCheck';
-import { SafePlace } from '../components/SafePlace';
-import { TherapyNote } from '../components/TherapyNote';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -41,14 +35,11 @@ const TODAY_DOW_IDX = (new Date().getDay() + 6) % 7; // 0=пн ... 6=вс
 
 interface Props {
   onOpenSettings: () => void;
-  onOpenChildhoodWheel: () => void;
-  onOpenPractices: () => void;
-  onOpenPlans: () => void;
   onOpenTracker?: () => void;
   refreshKey?: number;
 }
 
-export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, refreshKey }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey }: Props) {
   const safeTop = getTelegramSafeTop();
   const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
 
@@ -61,23 +52,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
-  const [showFlashcard, setShowFlashcard] = useState(false);
-  const [showLetterToSelf, setShowLetterToSelf] = useState(false);
-  const [showBeliefCheck, setShowBeliefCheck] = useState(false);
-  const [showSafePlace, setShowSafePlace] = useState(false);
-  const [practiceCount, setPracticeCount] = useState<number | null>(null);
-  const [planCount, setPlanCount] = useState<number | null>(null);
-  const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
-
-  const NEED_IDS_ALL = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
-
-  function plural(n: number, one: string, few: string, many: string) {
-    const m10 = n % 10, m100 = n % 100;
-    if (m100 >= 11 && m100 <= 19) return many;
-    if (m10 === 1) return one;
-    if (m10 >= 2 && m10 <= 4) return few;
-    return many;
-  }
 
   useEffect(() => {
     setReady(false);
@@ -88,10 +62,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
       api.getStreak().then(setStreak).catch(() => {}),
       api.getAchievements().then(setAchievements).catch(() => {}),
       api.getInsights().then(setInsights).catch(() => {}),
-      Promise.all(NEED_IDS_ALL.map(id => api.getPractices(id)))
-        .then(results => setPracticeCount(results.reduce((s, r) => s + r.length, 0)))
-        .catch(() => setPracticeCount(0)),
-      api.getPlanHistory(30).then(p => setPlanCount(p.length)).catch(() => setPlanCount(0)),
     ]).finally(() => setReady(true));
   }, [refreshKey]);
 
@@ -307,46 +277,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
           </div>
         )}
 
-        {/* ── Инструменты самоисследования ── */}
-        {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 8px' }}>
-            <SectionLabel>САМОПОМОЩЬ</SectionLabel>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: -4, marginBottom: 4, lineHeight: 1.4 }}>
-              Упражнения схема-терапии для самостоятельной работы
-            </div>
-          </div>
-
-          {/* Экстренная помощь */}
-          <div style={{ padding: '4px 16px 2px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(248,113,113,0.5)' }}>🚨 Прямо сейчас</div>
-          </div>
-          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит прямо сейчас — 5 шагов" onClick={() => setShowFlashcard(true)} />
-
-          {/* Работа с мыслями */}
-          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.5)' }}>💭 Работа с мыслями</div>
-          </div>
-          <ToolRow emoji="🔍" label="Проверить убеждение" sub="Правда ли это? Собрать доказательства за и против" divider onClick={() => setShowBeliefCheck(true)} />
-          <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
-
-          {/* Ресурс */}
-          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.5)' }}>🌿 Ресурс</div>
-          </div>
-          <ToolRow emoji="🏡" label="Безопасное место" sub="Описать и перечитывать в тревожный момент" divider onClick={() => setShowSafePlace(true)} />
-          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
-
-          {/* Отслеживание */}
-          <div style={{ padding: '10px 16px 2px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(251,191,36,0.5)' }}>📊 Отслеживание</div>
-          </div>
-          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount === null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} divider onClick={onOpenPractices} />
-          <ToolRow emoji="🗓" label="История планов" sub={planCount === null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
-
-          <div style={{ padding: '12px 16px' }}>
-            <TherapyNote compact />
-          </div>
-        </div>}
 
       </div>
 
@@ -410,11 +340,6 @@ export function ProfileSection({ onOpenSettings, onOpenChildhoodWheel, onOpenPra
         );
       })()}
 
-      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} />}
-      {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} />}
-      {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} />}
-      {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} />}
-
       {/* Best day tooltip */}
       {showBestDayInfo && (
         <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
@@ -437,15 +362,3 @@ function SectionLabel({ children, style }: { children: React.ReactNode; style?: 
   );
 }
 
-function ToolRow({ emoji, label, sub, divider, onClick }: { emoji: string; label: string; sub?: string; divider?: boolean; onClick: () => void }) {
-  return (
-    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', borderTop: divider ? '1px solid rgba(255,255,255,0.05)' : undefined }}>
-      <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{sub}</div>}
-      </div>
-      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 16 }}>›</span>
-    </div>
-  );
-}

@@ -5,6 +5,7 @@ import { DiarySection } from './sections/DiarySection';
 import { TodaySection } from './sections/TodaySection';
 import { SchemasSection } from './sections/SchemasSection';
 import { ProfileSection, DEFAULT_SECTION_KEY } from './sections/ProfileSection';
+import { HelpSection } from './sections/HelpSection';
 import { BottomNav, Section } from './components/BottomNav';
 import { FloatingPill } from './components/FloatingPill';
 import { TodayView } from './components/TodayView';
@@ -65,8 +66,9 @@ function getInitialSection(): Section {
   const s = params.get('section');
   if (s === 'profile') return 'profile';
   if (s === 'schemas') return 'schemas';
+  if (s === 'help') return 'help';
   const stored = localStorage.getItem(DEFAULT_SECTION_KEY) as Section | null;
-  if (stored && ['today', 'schemas', 'profile'].includes(stored)) return stored;
+  if (stored && ['today', 'help', 'schemas', 'profile'].includes(stored)) return stored;
   return 'today';
 }
 
@@ -202,7 +204,7 @@ function formatHeaderDate(): string {
   return `${dow}, ${date}`;
 }
 
-const SECTIONS: Section[] = ['today', 'schemas', 'profile'];
+const SECTIONS: Section[] = ['today', 'help', 'schemas', 'profile'];
 
 export default function App() {
   const [section, setSection] = useState<Section>(getInitialSection);
@@ -236,6 +238,8 @@ export default function App() {
   const [showChildhoodWheel, setShowChildhoodWheel] = useState(false);
   const [todayRefreshKey, setTodayRefreshKey] = useState(0);
   const [profileRefreshKey, setProfileRefreshKey] = useState(0);
+  const [helpPracticeCount, setHelpPracticeCount] = useState<number | null>(null);
+  const [helpPlanCount, setHelpPlanCount] = useState<number | null>(null);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
@@ -277,6 +281,10 @@ export default function App() {
       api.init(tzOffset).then(() => sessionStorage.setItem('init_done', '1')).catch(() => {});
     }
     api.recordActivity().catch(() => {});
+    const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
+    Promise.all(NEED_IDS.map(id => api.getPractices(id)))
+      .then(r => setHelpPracticeCount(r.reduce((s, a) => s + a.length, 0))).catch(() => setHelpPracticeCount(0));
+    api.getPlanHistory(30).then(p => setHelpPlanCount(p.length)).catch(() => setHelpPlanCount(0));
     Promise.all([api.needs(), api.ratings()])
       .then(([n, r]) => {
         setNeeds(n);
@@ -492,12 +500,19 @@ export default function App() {
         />
       )}
 
-      {section === 'profile' && (
-        <ProfileSection
-          onOpenSettings={() => setShowSettings(true)}
+      {section === 'help' && (
+        <HelpSection
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           onOpenPractices={() => setShowPractices(true)}
           onOpenPlans={() => setShowPlans(true)}
+          practiceCount={helpPracticeCount}
+          planCount={helpPlanCount}
+        />
+      )}
+
+      {section === 'profile' && (
+        <ProfileSection
+          onOpenSettings={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
           refreshKey={profileRefreshKey}
         />
