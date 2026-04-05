@@ -100,9 +100,26 @@ export function BeliefCheck({ onClose }: Props) {
     );
   }
 
+  const STEP_ORDER: Step[] = ['belief', 'for', 'against', 'reframe'];
+  const stepIndex = STEP_ORDER.indexOf(step as Exclude<Step, 'done'>);
+  const STEP_LABELS = ['Убеждение', 'За', 'Против', 'Переформулировка'];
+
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
+        {/* Progress */}
+        <div style={{ display: 'flex', gap: 5, marginBottom: 6 }}>
+          {STEP_ORDER.map((_, i) => (
+            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= stepIndex ? '#60a5fa' : 'rgba(255,255,255,0.1)', transition: 'background 0.2s' }} />
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          {STEP_LABELS.map((label, i) => (
+            <div key={i} style={{ fontSize: 9, color: i === stepIndex ? '#60a5fa' : 'rgba(255,255,255,0.2)', fontWeight: i === stepIndex ? 700 : 400, transition: 'color 0.2s', textAlign: 'center', flex: 1 }}>
+              {label}
+            </div>
+          ))}
+        </div>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(96,165,250,0.12)', border: '1px solid rgba(96,165,250,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
