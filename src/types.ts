@@ -72,6 +72,7 @@ export interface GratitudeDiaryEntry {
 }
 
 export interface UserProfile {
+  name: string | null;
   role: 'CLIENT' | 'THERAPIST';
   ysq: {
     completedAt: string | null;

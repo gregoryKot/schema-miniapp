@@ -194,6 +194,7 @@ export const api = {
 
   // ─── Profile ────────────────────────────────────────────────────────────────
   getProfile: () => get<import('./types').UserProfile>('/api/profile'),
+  updateName: (name: string) => postJson<{ ok: boolean }>('/api/profile/name', { name }),
 
   // ─── Diary ──────────────────────────────────────────────────────────────────
   getSchemaDiary:    () => get<import('./types').SchemaDiaryEntry[]>('/api/diary/schema'),

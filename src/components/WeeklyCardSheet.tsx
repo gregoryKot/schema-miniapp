@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { api } from '../api';
+import { TherapyNote } from './TherapyNote';
 
 interface Props {
   needs: Need[];
@@ -302,6 +303,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
             >
               {copied ? '✓ Скопировано' : sharing ? 'Подготовка...' : 'Поделиться'}
             </button>
+            <div style={{ marginTop: 12 }}><TherapyNote compact /></div>
           </>
         )}
       </div>

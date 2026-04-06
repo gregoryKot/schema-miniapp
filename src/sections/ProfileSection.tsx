@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { api, Achievement } from '../api';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
+import { TherapyNote } from '../components/TherapyNote';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -37,11 +38,13 @@ interface Props {
   onOpenSettings: () => void;
   onOpenTracker?: () => void;
   refreshKey?: number;
+  displayName?: string | null;
 }
 
-export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey }: Props) {
+export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, displayName }: Props) {
   const safeTop = getTelegramSafeTop();
-  const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
+  const tgName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
+  const firstName = displayName || tgName;
 
   const [streak, setStreak]             = useState<StreakData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
@@ -278,6 +281,9 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey }: Pr
         )}
 
 
+        <div style={{ padding: '4px 0' }}>
+          <TherapyNote compact />
+        </div>
       </div>
 
       {/* ── BottomSheet: Достижения ── */}

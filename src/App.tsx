@@ -246,6 +246,7 @@ export default function App() {
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const [showTherapistCabinet, setShowTherapistCabinet] = useState(false);
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
+  const [displayName, setDisplayName] = useState<string | null>(null);
   const [helpTasks, setHelpTasks] = useState<UserTask[] | null>(null);
   const [helpTasksKey, setHelpTasksKey] = useState(0);
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
@@ -336,6 +337,7 @@ export default function App() {
     api.getProfile().then(p => {
       setDiaryActiveSchemaIds(p.ysq.activeSchemaIds);
       setUserRole(p.role);
+      if (p.name) setDisplayName(p.name);
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
       if (p.role === 'THERAPIST') {
         cacheTherapistContact({ role: 'THERAPIST', partnerId: null, partnerName: null, myId: tgUser?.id ?? null, myName: tgUser?.first_name ?? null });
@@ -541,6 +543,7 @@ export default function App() {
           onOpenSettings={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
           refreshKey={profileRefreshKey}
+          displayName={displayName}
         />
       )}
 
@@ -852,7 +855,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} onOpenTherapistCabinet={() => { setShowSettings(false); setShowTherapistCabinet(true); }} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setShowTherapistCabinet(true); }} />}
       {showTherapistCabinet && <TherapistClientSheet onClose={() => setShowTherapistCabinet(false)} />}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}

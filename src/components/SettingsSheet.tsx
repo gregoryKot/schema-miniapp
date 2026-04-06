@@ -27,10 +27,12 @@ type View = 'main' | 'time' | 'tz';
 interface Props {
   onClose: () => void;
   userRole?: 'CLIENT' | 'THERAPIST';
+  displayName?: string | null;
+  onNameChanged?: (name: string) => void;
   onOpenTherapistCabinet?: () => void;
 }
 
-export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Props) {
+export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, onOpenTherapistCabinet }: Props) {
   const safeTop = getTelegramSafeTop();
   const [view, setView]             = useState<View>('main');
   const [settings, setSettings]     = useState<UserSettings | null>(null);
@@ -57,6 +59,9 @@ export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Pro
   const [therapistCode, setTherapistCode] = useState('');
   const [therapistCodeError, setTherapistCodeError] = useState('');
   const [therapistCodeLoading, setTherapistCodeLoading] = useState(false);
+  const tgName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
+  const [editName, setEditName] = useState(displayName ?? tgName ?? '');
+  const [nameSaving, setNameSaving] = useState(false);
 
   useEffect(() => {
     api.getSettings()
@@ -170,6 +175,44 @@ export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Pro
           {/* ── MAIN VIEW ── */}
           {view === 'main' && (
             <>
+              {/* Имя */}
+              <div style={{ marginBottom: 8 }}>
+                <SettingsLabel>КАК ТЕБЯ ЗОВУТ</SettingsLabel>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <input
+                    value={editName}
+                    onChange={e => setEditName(e.target.value)}
+                    placeholder="Твоё имя"
+                    maxLength={50}
+                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14 }}
+                  />
+                  {editName !== (displayName ?? tgName) && (
+                    <button
+                      disabled={nameSaving || !editName.trim()}
+                      onClick={async () => {
+                        const name = editName.trim();
+                        if (!name) return;
+                        setNameSaving(true);
+                        try {
+                          await api.updateName(name);
+                          onNameChanged?.(name);
+                          setSavedToast(true);
+                          setTimeout(() => setSavedToast(false), 1800);
+                        } catch {} finally { setNameSaving(false); }
+                      }}
+                      style={{ background: 'rgba(167,139,250,0.2)', border: 'none', borderRadius: 10, padding: '6px 14px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                    >
+                      {nameSaving ? '...' : 'Сохранить'}
+                    </button>
+                  )}
+                </div>
+                {tgName && editName !== tgName && (
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 4, padding: '0 4px' }}>
+                    В Telegram: {tgName}
+                  </div>
+                )}
+              </div>
+
               {/* Уведомления */}
               <div style={{ marginBottom: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
