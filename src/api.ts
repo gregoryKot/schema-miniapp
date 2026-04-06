@@ -100,6 +100,35 @@ export interface PracticePlan {
   done: boolean | null;
 }
 
+export interface UserTask {
+  id: number;
+  userId: number;
+  assignedBy: number | null;
+  type: string;
+  text: string;
+  targetDays: number | null;
+  needId: string | null;
+  dueDate: string | null;
+  done: boolean | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+export interface TherapyRelationInfo {
+  role: 'therapist' | 'client';
+  status: string;
+  partnerName: string | null;
+  code: string;
+}
+
+export interface TherapyClientSummary {
+  telegramId: number;
+  name: string | null;
+  streak: number;
+  lastActiveDate: string | null;
+  todayIndex: number | null;
+}
+
 export const api = {
   init:           (tzOffset?: number) => post('/api/init', { tzOffset }),
   getDisclaimer:  () => get<{ accepted: boolean }>('/api/disclaimer'),
@@ -185,4 +214,17 @@ export const api = {
   createGratitudeDiary: (date: string, items: string[]) =>
     postJson<import('./types').GratitudeDiaryEntry>('/api/diary/gratitude', { date, items }),
   deleteGratitudeDiary: (id: number) => del(`/api/diary/gratitude/${id}`),
+
+  // ─── Therapy / Tasks ─────────────────────────────────────────────────────────
+  createTherapyInvite: () => postJson<{ code: string; url: string }>('/api/therapy/invite', {}),
+  getTherapyRelation: () => get<TherapyRelationInfo | null>('/api/therapy/relation'),
+  joinTherapy: (code: string) => post('/api/therapy/join', { code }),
+  leaveTherapy: () => del('/api/therapy/relation'),
+  getTherapyClients: () => get<TherapyClientSummary[]>('/api/therapy/clients'),
+  createTask: (body: { type: string; text: string; targetDays?: number; needId?: string; dueDate?: string; clientId?: number }) =>
+    postJson<UserTask>('/api/therapy/tasks', body),
+  getTasks: () => get<UserTask[]>('/api/therapy/tasks'),
+  getTaskHistory: () => get<UserTask[]>('/api/therapy/tasks/history'),
+  completeTask: (id: number, done: boolean) => post(`/api/therapy/tasks/${id}/complete`, { done }),
+  getTherapyTasksForClient: (clientId: number) => get<UserTask[]>(`/api/therapy/tasks/client/${clientId}`),
 };

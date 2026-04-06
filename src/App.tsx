@@ -12,6 +12,7 @@ import { TodayView } from './components/TodayView';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { SettingsSheet } from './components/SettingsSheet';
+import { TherapistClientSheet } from './components/TherapistClientSheet';
 import { PracticesScreen } from './components/PracticesScreen';
 import { PlansScreen } from './components/PlansScreen';
 import { Celebration } from './components/Celebration';
@@ -242,6 +243,8 @@ export default function App() {
   const [helpPlanCount, setHelpPlanCount] = useState<number | null>(null);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
+  const [showTherapistCabinet, setShowTherapistCabinet] = useState(false);
+  const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
   const [showYsqBanner, setShowYsqBanner] = useState(
     () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY) && !localStorage.getItem('ysq_banner_dismissed')
@@ -329,6 +332,7 @@ export default function App() {
     }).catch(() => {});
     api.getProfile().then(p => {
       setDiaryActiveSchemaIds(p.ysq.activeSchemaIds);
+      setUserRole(p.role);
     }).catch(() => {});
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
@@ -342,6 +346,10 @@ export default function App() {
     }
     if (startParam === 'diaries') setShowDiaries(true);
     if (startParam === 'tracker') setShowTracker(true);
+    if (startParam?.startsWith('therapy_')) {
+      const code = startParam.replace('therapy_', '');
+      api.joinTherapy(code).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -393,12 +401,13 @@ export default function App() {
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
+      showTherapistCabinet ? () => setShowTherapistCabinet(false) :
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || showTherapistCabinet;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, showTherapistCabinet]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -408,7 +417,7 @@ export default function App() {
     return () => bb.offClick(handler);
   }, []);
 
-  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote);
+  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || showTherapistCabinet);
 
   const handleSwipeStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -826,7 +835,8 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} onOpenTherapistCabinet={() => { setShowSettings(false); setShowTherapistCabinet(true); }} />}
+      {showTherapistCabinet && <TherapistClientSheet onClose={() => setShowTherapistCabinet(false)} />}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}

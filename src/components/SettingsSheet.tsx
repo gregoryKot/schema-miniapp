@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api, UserSettings, PairsData } from '../api';
+import { api, UserSettings, PairsData, TherapyRelationInfo } from '../api';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
@@ -26,9 +26,11 @@ type View = 'main' | 'time' | 'tz';
 
 interface Props {
   onClose: () => void;
+  userRole?: 'CLIENT' | 'THERAPIST';
+  onOpenTherapistCabinet?: () => void;
 }
 
-export function SettingsSheet({ onClose }: Props) {
+export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Props) {
   const safeTop = getTelegramSafeTop();
   const [view, setView]             = useState<View>('main');
   const [settings, setSettings]     = useState<UserSettings | null>(null);
@@ -47,6 +49,10 @@ export function SettingsSheet({ onClose }: Props) {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting]     = useState(false);
   const [savedToast, setSavedToast] = useState(false);
+  const [therapyRelation, setTherapyRelation] = useState<TherapyRelationInfo | null | undefined>(undefined);
+  const [therapyJoinCode, setTherapyJoinCode] = useState('');
+  const [therapyJoinError, setTherapyJoinError] = useState('');
+  const [therapyInviteUrl, setTherapyInviteUrl] = useState('');
 
   useEffect(() => {
     api.getSettings()
@@ -54,6 +60,7 @@ export function SettingsSheet({ onClose }: Props) {
       .catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false, mySchemaIds: [], myModeIds: [] }));
     setPairLoading(true);
     api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
+    api.getTherapyRelation().then(setTherapyRelation).catch(() => setTherapyRelation(null));
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -182,6 +189,102 @@ export function SettingsSheet({ onClose }: Props) {
                   </div>
                 )}
               </div>
+
+              {/* Терапевт — CLIENT view */}
+              {userRole !== 'THERAPIST' && (
+                <div style={{ marginBottom: 8 }}>
+                  <SettingsLabel>МОЙ ТЕРАПЕВТ</SettingsLabel>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 16 }}>
+                    {therapyRelation === undefined ? (
+                      <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
+                    ) : therapyRelation?.status === 'active' ? (
+                      <div>
+                        <div style={{ fontSize: 14, color: '#fff', marginBottom: 4 }}>
+                          👨‍⚕️ {therapyRelation.partnerName ?? 'Терапевт'} подключён
+                        </div>
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>
+                          Терапевт видит: трекер, задания
+                        </div>
+                        <button
+                          onClick={() => { api.leaveTherapy().then(() => setTherapyRelation(null)).catch(() => {}); }}
+                          style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '8px 16px', color: '#f87171', fontSize: 13, cursor: 'pointer' }}
+                        >
+                          Отключиться
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
+                          Если терапевт дал код — введи его здесь
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <input
+                            value={therapyJoinCode}
+                            onChange={e => setTherapyJoinCode(e.target.value.toUpperCase())}
+                            placeholder="ABCDEF"
+                            maxLength={8}
+                            style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: `1px solid ${therapyJoinError ? '#f87171' : 'rgba(255,255,255,0.12)'}`, borderRadius: 10, padding: '9px 12px', color: '#fff', fontSize: 14 }}
+                          />
+                          <button
+                            onClick={async () => {
+                              if (!therapyJoinCode.trim()) return;
+                              setTherapyJoinError('');
+                              try {
+                                await api.joinTherapy(therapyJoinCode.trim());
+                                const rel = await api.getTherapyRelation();
+                                setTherapyRelation(rel);
+                                setTherapyJoinCode('');
+                              } catch { setTherapyJoinError('Неверный код'); }
+                            }}
+                            style={{ background: '#a78bfa', border: 'none', borderRadius: 10, padding: '9px 16px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            Войти
+                          </button>
+                        </div>
+                        {therapyJoinError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{therapyJoinError}</div>}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Терапевт — THERAPIST view */}
+              {userRole === 'THERAPIST' && (
+                <div style={{ marginBottom: 8 }}>
+                  <SettingsLabel>КАБИНЕТ ТЕРАПЕВТА</SettingsLabel>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+                    <div
+                      onClick={onOpenTherapistCabinet}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
+                    >
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>Открыть кабинет</div>
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Клиенты, задания, приглашения</div>
+                      </div>
+                      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 18 }}>›</span>
+                    </div>
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', padding: '12px 16px' }}>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const { url } = await api.createTherapyInvite();
+                            setTherapyInviteUrl(url);
+                            try { await navigator.clipboard.writeText(url); } catch { /* ignore */ }
+                          } catch { /* ignore */ }
+                        }}
+                        style={{ background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', borderRadius: 10, padding: '8px 16px', color: '#a78bfa', fontSize: 13, cursor: 'pointer' }}
+                      >
+                        + Создать приглашение клиенту
+                      </button>
+                      {therapyInviteUrl && (
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 8, wordBreak: 'break-all' }}>
+                          Скопировано: {therapyInviteUrl.slice(0, 50)}...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Партнёр */}
               <div style={{ marginBottom: 8 }}>
