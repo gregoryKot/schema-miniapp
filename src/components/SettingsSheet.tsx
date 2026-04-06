@@ -53,6 +53,10 @@ export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Pro
   const [therapyJoinCode, setTherapyJoinCode] = useState('');
   const [therapyJoinError, setTherapyJoinError] = useState('');
   const [therapyInviteUrl, setTherapyInviteUrl] = useState('');
+  const [showBecomeTherapist, setShowBecomeTherapist] = useState(false);
+  const [therapistCode, setTherapistCode] = useState('');
+  const [therapistCodeError, setTherapistCodeError] = useState('');
+  const [therapistCodeLoading, setTherapistCodeLoading] = useState(false);
 
   useEffect(() => {
     api.getSettings()
@@ -172,19 +176,19 @@ export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Pro
                   <SettingsLabel>УВЕДОМЛЕНИЯ</SettingsLabel>
                   <span onClick={() => setShowNotifyInfo(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer', flexShrink: 0, marginBottom: 10 }}>?</span>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden', marginBottom: settings.notifyEnabled ? 0 : 8 }}>
-                  <Row label="Итоги дня" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
-                  {settings.notifyEnabled && (
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden', marginBottom: 8 }}>
+                  <Row label="Итоги дня" sub="Ежедневный отчёт по потребностям" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
+                  <Row label="Напоминание" sub="Заполнить трекер вечером" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
+                  {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
                     <>
-                      <Row label="Напоминание заполнить" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
                       <Row label="Время" right={<RowRight text={`${pad(localHour)}:00`} />} onClick={() => setView('time')} divider />
                       <Row label="Часовой пояс" right={<RowRight text={tzLabel} small />} onClick={() => setView('tz')} divider />
                     </>
                   )}
                 </div>
-                {settings.notifyEnabled && (
+                {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5, marginBottom: 8, padding: '0 4px' }}>
-                    Уведомления приходят через{' '}
+                    Приходят через{' '}
                     <a href="https://t.me/Emotional_Needs_bot" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.7)', textDecoration: 'none' }}>@Emotional_Needs_bot</a>
                   </div>
                 )}
@@ -245,6 +249,55 @@ export function SettingsSheet({ onClose, userRole, onOpenTherapistCabinet }: Pro
                       </div>
                     )}
                   </div>
+                </div>
+              )}
+
+              {/* Стать терапевтом */}
+              {userRole !== 'THERAPIST' && (
+                <div style={{ marginBottom: 8 }}>
+                  {!showBecomeTherapist ? (
+                    <div
+                      onClick={() => setShowBecomeTherapist(true)}
+                      style={{ textAlign: 'center', padding: '8px 0', fontSize: 12, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}
+                    >
+                      Я психолог — войти как специалист
+                    </div>
+                  ) : (
+                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 16 }}>
+                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
+                        Введи код специалиста
+                      </div>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <input
+                          value={therapistCode}
+                          onChange={e => setTherapistCode(e.target.value)}
+                          placeholder="Код"
+                          type="password"
+                          style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: `1px solid ${therapistCodeError ? '#f87171' : 'rgba(255,255,255,0.12)'}`, borderRadius: 10, padding: '9px 12px', color: '#fff', fontSize: 14 }}
+                        />
+                        <button
+                          disabled={therapistCodeLoading}
+                          onClick={async () => {
+                            if (!therapistCode.trim()) return;
+                            setTherapistCodeError('');
+                            setTherapistCodeLoading(true);
+                            try {
+                              await api.becomeTherapist(therapistCode.trim());
+                              window.location.reload();
+                            } catch {
+                              setTherapistCodeError('Неверный код');
+                            } finally {
+                              setTherapistCodeLoading(false);
+                            }
+                          }}
+                          style={{ background: '#a78bfa', border: 'none', borderRadius: 10, padding: '9px 16px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                        >
+                          Войти
+                        </button>
+                      </div>
+                      {therapistCodeError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{therapistCodeError}</div>}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -112,6 +112,7 @@ export interface UserTask {
   done: boolean | null;
   completedAt: string | null;
   createdAt: string;
+  doneToday?: boolean;
 }
 
 export interface TherapyRelationInfo {
@@ -221,6 +222,7 @@ export const api = {
   joinTherapy: (code: string) => post('/api/therapy/join', { code }),
   leaveTherapy: () => del('/api/therapy/relation'),
   getTherapyClients: () => get<TherapyClientSummary[]>('/api/therapy/clients'),
+  becomeTherapist: (code: string) => postJson<{ ok: boolean }>('/api/therapy/become-therapist', { code }),
   createTask: (body: { type: string; text: string; targetDays?: number; needId?: string; dueDate?: string; clientId?: number }) =>
     postJson<UserTask>('/api/therapy/tasks', body),
   getTasks: () => get<UserTask[]>('/api/therapy/tasks'),

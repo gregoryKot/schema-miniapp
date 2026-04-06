@@ -55,27 +55,31 @@ const TASK_EMOJI: Record<string, string> = {
 };
 
 function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
+  const isStreakTask = task.type === 'diary_streak' || task.type === 'tracker_streak';
   return (
     <div
-      onClick={onOpen}
-      style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}
+      onClick={task.doneToday ? undefined : onOpen}
+      style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-start', gap: 10, cursor: task.doneToday ? 'default' : 'pointer', opacity: task.doneToday ? 0.6 : 1 }}
     >
-      <span style={{ fontSize: 15, flexShrink: 0 }}>{TASK_EMOJI[task.type] ?? '⏳'}</span>
+      <span style={{ fontSize: 15, flexShrink: 0 }}>{task.doneToday ? '✅' : (TASK_EMOJI[task.type] ?? '⏳')}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, color: '#fff' }}>{task.text}</div>
+        {task.doneToday && isStreakTask && (
+          <div style={{ fontSize: 11, color: 'rgba(52,211,153,0.7)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
+        )}
         <TaskProgressBar task={task} />
         {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {formatDate(task.dueDate)}</div>}
       </div>
-      {onComplete && task.done === null ? (
+      {!task.doneToday && onComplete && task.done === null ? (
         <button
           onClick={e => { e.stopPropagation(); onComplete(); }}
           style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
         >
           Сделал
         </button>
-      ) : (
+      ) : !task.doneToday ? (
         <span style={{ color: 'rgba(167,139,250,0.5)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
-      )}
+      ) : null}
     </div>
   );
 }

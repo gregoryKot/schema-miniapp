@@ -12,7 +12,7 @@ interface Props {
 
 const STREAK_OPTIONS = [3, 7, 14, 30];
 
-type TaskType = 'diary_streak' | 'tracker_streak' | 'belief_check' | 'letter_to_self' | 'safe_place' | 'childhood_wheel' | 'flashcard' | 'custom';
+type TaskType = 'diary_streak' | 'tracker_streak' | 'belief_check' | 'letter_to_self' | 'safe_place' | 'flashcard' | 'custom';
 
 const TASK_OPTIONS: { type: TaskType; emoji: string; label: string; sub: string; hasStreak?: boolean }[] = [
   { type: 'diary_streak',   emoji: '📔', label: 'Дневник',              sub: 'Заполнять N дней подряд',      hasStreak: true },
@@ -20,7 +20,6 @@ const TASK_OPTIONS: { type: TaskType; emoji: string; label: string; sub: string;
   { type: 'belief_check',   emoji: '🔍', label: 'Проверить убеждение',   sub: 'Собрать доказательства за и против' },
   { type: 'letter_to_self', emoji: '✉️', label: 'Письмо себе',           sub: 'Написать Уязвимому Ребёнку' },
   { type: 'safe_place',     emoji: '🏡', label: 'Безопасное место',      sub: 'Описать и перечитывать' },
-  { type: 'childhood_wheel',emoji: '🌱', label: 'Колесо детства',        sub: 'Паттерны из детства' },
   { type: 'flashcard',      emoji: '🆘', label: 'Мне сейчас плохо',      sub: 'Разобрать ситуацию — 5 шагов' },
   { type: 'custom',         emoji: '✏️', label: 'Своё задание',          sub: 'Любой текст' },
 ];
@@ -42,7 +41,6 @@ export function TaskCreateSheet({ clientId, clientName, onCreated, onClose }: Pr
       case 'belief_check':    return 'Проверить убеждение';
       case 'letter_to_self':  return 'Написать письмо Уязвимому Ребёнку';
       case 'safe_place':      return 'Описать Безопасное место';
-      case 'childhood_wheel': return 'Заполнить Колесо детства';
       case 'flashcard':       return 'Разобрать сложную ситуацию по шагам';
       default:                return text;
     }
