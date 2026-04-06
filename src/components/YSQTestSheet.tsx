@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
+import { getTherapistContact } from '../utils/therapistContact';
 import { api } from '../api';
 
 export const YSQ_RESULT_KEY = 'ysq_result';
@@ -795,7 +796,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   Схемы — это паттерны, сформировавшиеся давно. Их можно менять, но это требует времени и поддержки. Схема-терапия — один из самых эффективных методов для этой работы.
                 </div>
                 <a
-                  href="https://t.me/kotlarewski"
+                  href={getTherapistContact().url}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -806,7 +807,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                     textDecoration: 'none',
                   }}
                 >
-                  Поговорить с психологом →
+                  {getTherapistContact().name === 'автору' ? 'Поговорить с психологом →' : `Написать ${getTherapistContact().name} →`}
                 </a>
               </div>
             )}

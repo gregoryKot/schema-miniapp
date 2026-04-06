@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Need, DayHistory, COLORS } from '../types';
 import { NeedHistorySheet } from './NeedHistorySheet';
+import { getTherapistContact } from '../utils/therapistContact';
 import { IndexInfoSheet } from './IndexInfoSheet';
 import { NoteSheet } from './NoteSheet';
 import { WeeklyCardSheet } from './WeeklyCardSheet';
@@ -634,7 +635,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                       {label} несколько дней невысокая. Иногда за этим стоит что-то важное. Терапевт поможет разобраться — и сводка из приложения сэкономит вам обоим час разговора.
                     </div>
                     <a
-                      href="https://cal.com/kotlarewski"
+                      href={getTherapistContact().bookingUrl}
                       target="_blank"
                       rel="noreferrer"
                       style={{
@@ -727,7 +728,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                     {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
                   </div>
                   <a
-                    href="https://cal.com/kotlarewski"
+                    href={getTherapistContact().bookingUrl}
                     target="_blank"
                     rel="noreferrer"
                     style={{

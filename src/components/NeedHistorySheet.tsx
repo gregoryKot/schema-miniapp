@@ -3,6 +3,7 @@ import { Need, DayHistory, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
+import { getTherapistContact } from '../utils/therapistContact';
 
 const DISCLAIMER_CONTENT = [
   'Дневник помогает видеть паттерны и чуть лучше понимать себя.',
@@ -183,7 +184,9 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
             {DISCLAIMER_CONTENT.map((p, i) => (
               <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>{p}</p>
             ))}
-            <a href="https://t.me/kotlarewski" style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>→ Написать автору</a>
+            <a href={getTherapistContact().url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>
+              → {getTherapistContact().name === 'автору' ? 'Поговорить с психологом' : `Написать ${getTherapistContact().name}`}
+            </a>
           </div>
         </BottomSheet>
       )}

@@ -20,6 +20,8 @@ interface Props {
   practiceCount?: number | null;
   planCount?: number | null;
   refreshKey?: number;
+  initialTasks?: UserTask[] | null;
+  onTasksChanged?: () => void;
 }
 
 function ToolRow({ emoji, label, sub, divider, onClick, accent }: { emoji: string; label: string; sub?: string; divider?: boolean; onClick: () => void; accent?: string }) {
@@ -100,7 +102,7 @@ function TaskProgressBar({ task }: { task: UserTask }) {
   );
 }
 
-export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, onOpenDiaries, practiceCount, planCount, refreshKey }: Props) {
+export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, onOpenDiaries, practiceCount, planCount, refreshKey, initialTasks, onTasksChanged }: Props) {
   const safeTop = getTelegramSafeTop();
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
 
@@ -110,11 +112,16 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const [showSafePlace, setShowSafePlace] = useState(false);
   const [showTaskCreate, setShowTaskCreate] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
-  const [tasks, setTasks] = useState<UserTask[]>([]);
-  const [relation, setRelation] = useState<TherapyRelationInfo | null | undefined>(undefined);
+  const [tasks, setTasks] = useState<UserTask[]>(initialTasks ?? []);
+  const [relation, setRelation] = useState<TherapyRelationInfo | null | undefined>(initialTasks !== undefined ? null : undefined);
+
+  useEffect(() => {
+    if (initialTasks !== undefined) setTasks(initialTasks ?? []);
+  }, [initialTasks]);
 
   useEffect(() => {
     let ignore = false;
+    // Background refresh (initialTasks already shown so no delay)
     api.getTasks().then(t => { if (!ignore) setTasks(t); }).catch(() => {});
     api.getTherapyRelation().then(r => { if (!ignore) setRelation(r); }).catch(() => { if (!ignore) setRelation(null); });
     return () => { ignore = true; };
@@ -141,9 +148,9 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>Самопомощь</div>
+        <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>Помощь</div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginTop: 4, lineHeight: 1.5 }}>
-          Упражнения схема-терапии для самостоятельной работы
+          Инструменты схема-терапии и твои задания
         </div>
       </div>
 
@@ -250,7 +257,10 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} />}
       {showTaskCreate && (
         <TaskCreateSheet
-          onCreated={() => { setShowTaskCreate(false); api.getTasks().then(setTasks).catch(() => {}); }}
+          onCreated={() => {
+            setShowTaskCreate(false);
+            api.getTasks().then(t => { setTasks(t); onTasksChanged?.(); }).catch(() => {});
+          }}
           onClose={() => setShowTaskCreate(false)}
         />
       )}

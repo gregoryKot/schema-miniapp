@@ -3,6 +3,7 @@ import { Need, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
+import { getTherapistContact } from '../utils/therapistContact';
 import { PlanSheet } from './PlanSheet';
 
 interface Props {
@@ -278,10 +279,11 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
               </p>
             ))}
             <a
-              href="https://t.me/kotlarewski"
+              href={getTherapistContact().url}
+              target="_blank" rel="noopener noreferrer"
               style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}
             >
-              → Написать автору
+              → {getTherapistContact().name === 'автору' ? 'Поговорить с психологом' : `Написать ${getTherapistContact().name}`}
             </a>
           </div>
         </BottomSheet>

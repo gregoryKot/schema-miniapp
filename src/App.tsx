@@ -28,8 +28,9 @@ import { PairSheet } from './components/PairSheet';
 import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
-import { PracticePlan, PairsData, StreakData } from './api';
+import { PracticePlan, PairsData, StreakData, UserTask } from './api';
 import { getTelegramSafeTop } from './utils/safezone';
+import { cacheTherapistContact } from './utils/therapistContact';
 import { SchemaEntrySheet } from './components/diary/SchemaEntrySheet';
 import { ModeEntrySheet } from './components/diary/ModeEntrySheet';
 import { GratitudeEntrySheet } from './components/diary/GratitudeEntrySheet';
@@ -245,6 +246,8 @@ export default function App() {
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const [showTherapistCabinet, setShowTherapistCabinet] = useState(false);
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
+  const [helpTasks, setHelpTasks] = useState<UserTask[] | null>(null);
+  const [helpTasksKey, setHelpTasksKey] = useState(0);
   const YSQ_BANNER_DISMISSED_KEY = 'ysq_banner_dismissed';
   const [showYsqBanner, setShowYsqBanner] = useState(
     () => !!localStorage.getItem(YSQ_PROGRESS_KEY) && !localStorage.getItem(YSQ_RESULT_KEY) && !localStorage.getItem('ysq_banner_dismissed')
@@ -333,7 +336,16 @@ export default function App() {
     api.getProfile().then(p => {
       setDiaryActiveSchemaIds(p.ysq.activeSchemaIds);
       setUserRole(p.role);
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+      if (p.role === 'THERAPIST') {
+        cacheTherapistContact({ role: 'THERAPIST', partnerId: null, partnerName: null, myId: tgUser?.id ?? null, myName: tgUser?.first_name ?? null });
+      } else {
+        api.getTherapyRelation().then(rel => {
+          cacheTherapistContact({ role: 'CLIENT', partnerId: rel?.partnerId ?? null, partnerName: rel?.partnerName ?? null, myId: null, myName: null });
+        }).catch(() => {});
+      }
     }).catch(() => {});
+    api.getTasks().then(setHelpTasks).catch(() => setHelpTasks([]));
     const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if (startParam?.startsWith('pair_')) {
       const code = startParam.replace('pair_', '');
@@ -518,6 +530,9 @@ export default function App() {
           onOpenDiaries={() => setShowDiaries(true)}
           practiceCount={helpPracticeCount}
           planCount={helpPlanCount}
+          initialTasks={helpTasks}
+          refreshKey={helpTasksKey}
+          onTasksChanged={() => { api.getTasks().then(setHelpTasks).catch(() => {}); setHelpTasksKey(k => k + 1); }}
         />
       )}
 

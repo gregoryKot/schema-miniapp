@@ -119,6 +119,7 @@ export interface TherapyRelationInfo {
   role: 'therapist' | 'client';
   status: string;
   partnerName: string | null;
+  partnerId: number | null;
   code: string;
 }
 
