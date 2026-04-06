@@ -15,6 +15,8 @@ interface Props {
   onOpenChildhoodWheel: () => void;
   onOpenPractices: () => void;
   onOpenPlans: () => void;
+  onOpenTracker: () => void;
+  onOpenDiaries: () => void;
   practiceCount?: number | null;
   planCount?: number | null;
   refreshKey?: number;
@@ -46,6 +48,38 @@ function formatDate(s: string) {
   return `${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]}`;
 }
 
+const TASK_EMOJI: Record<string, string> = {
+  diary_streak: '📔', tracker_streak: '📊', belief_check: '🔍',
+  letter_to_self: '✉️', safe_place: '🏡', childhood_wheel: '🌱',
+  flashcard: '🆘', custom: '✏️',
+};
+
+function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
+  return (
+    <div
+      onClick={onOpen}
+      style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}
+    >
+      <span style={{ fontSize: 15, flexShrink: 0 }}>{TASK_EMOJI[task.type] ?? '⏳'}</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, color: '#fff' }}>{task.text}</div>
+        <TaskProgressBar task={task} />
+        {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {formatDate(task.dueDate)}</div>}
+      </div>
+      {onComplete && task.done === null ? (
+        <button
+          onClick={e => { e.stopPropagation(); onComplete(); }}
+          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+        >
+          Сделал
+        </button>
+      ) : (
+        <span style={{ color: 'rgba(167,139,250,0.5)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
+      )}
+    </div>
+  );
+}
+
 function TaskProgressBar({ task }: { task: UserTask }) {
   if (task.type === 'custom' || !task.targetDays) return null;
   const target = task.targetDays;
@@ -62,7 +96,7 @@ function TaskProgressBar({ task }: { task: UserTask }) {
   );
 }
 
-export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans, practiceCount, planCount, refreshKey }: Props) {
+export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, onOpenDiaries, practiceCount, planCount, refreshKey }: Props) {
   const safeTop = getTelegramSafeTop();
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
 
@@ -85,6 +119,19 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const myTasks = tasks.filter(t => t.assignedBy === null);
   const therapistTasks = tasks.filter(t => t.assignedBy !== null);
 
+  function openTask(task: UserTask) {
+    switch (task.type) {
+      case 'diary_streak':    onOpenDiaries(); break;
+      case 'tracker_streak':  onOpenTracker(); break;
+      case 'belief_check':    setShowBeliefCheck(true); break;
+      case 'letter_to_self':  setShowLetterToSelf(true); break;
+      case 'safe_place':      setShowSafePlace(true); break;
+      case 'childhood_wheel': onOpenChildhoodWheel(); break;
+      case 'flashcard':       setShowFlashcard(true); break;
+      default: break;
+    }
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#060a12', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
@@ -98,77 +145,57 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* Tasks card */}
-        {(myTasks.length > 0 || therapistTasks.length > 0 || relation !== undefined) && (
+        {/* Tasks card — always shown once relation is loaded */}
+        {relation !== undefined && (
           <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 20, overflow: 'hidden' }}>
-            <div style={{ padding: '14px 16px 4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '14px 16px 4px' }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)' }}>🎯 Задания</div>
             </div>
-            {myTasks.slice(0, 3).map(task => (
-              <div key={task.id} style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                <span style={{ fontSize: 15, flexShrink: 0 }}>{task.done === true ? '✅' : '⏳'}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, color: '#fff' }}>{task.text}</div>
-                  <TaskProgressBar task={task} />
-                </div>
+
+            {tasks.length === 0 && (
+              <div style={{ padding: '8px 16px 12px', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>
+                Нет активных заданий
               </div>
+            )}
+
+            {myTasks.slice(0, 3).map(task => (
+              <TaskRow
+                key={task.id} task={task}
+                onOpen={() => openTask(task)}
+              />
             ))}
+
             {therapistTasks.length > 0 && (
               <>
                 <div style={{ padding: '10px 16px 4px', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(255,200,100,0.7)' }}>👨‍⚕️ ОТ ТЕРАПЕВТА</div>
                 </div>
                 {therapistTasks.slice(0, 2).map(task => (
-                  <div
-                    key={task.id}
-                    style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'flex-start', gap: 10 }}
-                    onClick={() => {
-                      api.completeTask(task.id, true).then(() =>
-                        api.getTasks().then(setTasks).catch(() => {})
-                      ).catch(() => {});
-                    }}
-                  >
-                    <span style={{ fontSize: 15, flexShrink: 0 }}>{task.done === true ? '✅' : '⏳'}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 13, color: '#fff' }}>{task.text}</div>
-                      {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {formatDate(task.dueDate)}</div>}
-                    </div>
-                  </div>
+                  <TaskRow
+                    key={task.id} task={task}
+                    onOpen={() => openTask(task)}
+                    onComplete={() => api.completeTask(task.id, true).then(() => api.getTasks().then(setTasks).catch(() => {})).catch(() => {})}
+                  />
                 ))}
               </>
             )}
+
             <div style={{ padding: '4px 8px 10px', display: 'flex', gap: 8 }}>
-              <div
-                onClick={() => setShowAllTasks(true)}
-                style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
-              >
-                Все задания
-              </div>
+              {tasks.length > 0 && (
+                <div
+                  onClick={() => setShowAllTasks(true)}
+                  style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
+                >
+                  Все задания
+                </div>
+              )}
               <div
                 onClick={() => setShowTaskCreate(true)}
-                style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
+                style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
               >
                 + Поставить цель
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Empty state — show task create button even with no tasks */}
-        {tasks.length === 0 && relation === null && (
-          <div
-            onClick={() => setShowTaskCreate(true)}
-            style={{
-              background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)',
-              borderRadius: 20, padding: '14px 16px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>🎯 Поставить цель</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Дневник N дней, трекер, своё задание</div>
-            </div>
-            <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 16 }}>›</span>
           </div>
         )}
 

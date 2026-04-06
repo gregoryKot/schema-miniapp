@@ -4,8 +4,7 @@ import { SectionLabel } from './SectionLabel';
 import { api } from '../api';
 
 interface Props {
-  defaultType?: 'diary_streak' | 'tracker_streak' | 'custom';
-  clientId?: number; // for therapist assigning to client
+  clientId?: number;
   clientName?: string;
   onCreated: () => void;
   onClose: () => void;
@@ -13,25 +12,40 @@ interface Props {
 
 const STREAK_OPTIONS = [3, 7, 14, 30];
 
-export function TaskCreateSheet({ defaultType = 'custom', clientId, clientName, onCreated, onClose }: Props) {
-  const [type, setType] = useState<'diary_streak' | 'tracker_streak' | 'custom'>(defaultType);
+type TaskType = 'diary_streak' | 'tracker_streak' | 'belief_check' | 'letter_to_self' | 'safe_place' | 'childhood_wheel' | 'flashcard' | 'custom';
+
+const TASK_OPTIONS: { type: TaskType; emoji: string; label: string; sub: string; hasStreak?: boolean }[] = [
+  { type: 'diary_streak',   emoji: '📔', label: 'Дневник',              sub: 'Заполнять N дней подряд',      hasStreak: true },
+  { type: 'tracker_streak', emoji: '📊', label: 'Трекер потребностей',  sub: 'Отмечать N дней подряд',       hasStreak: true },
+  { type: 'belief_check',   emoji: '🔍', label: 'Проверить убеждение',   sub: 'Собрать доказательства за и против' },
+  { type: 'letter_to_self', emoji: '✉️', label: 'Письмо себе',           sub: 'Написать Уязвимому Ребёнку' },
+  { type: 'safe_place',     emoji: '🏡', label: 'Безопасное место',      sub: 'Описать и перечитывать' },
+  { type: 'childhood_wheel',emoji: '🌱', label: 'Колесо детства',        sub: 'Паттерны из детства' },
+  { type: 'flashcard',      emoji: '🆘', label: 'Мне сейчас плохо',      sub: 'Разобрать ситуацию — 5 шагов' },
+  { type: 'custom',         emoji: '✏️', label: 'Своё задание',          sub: 'Любой текст' },
+];
+
+export function TaskCreateSheet({ clientId, clientName, onCreated, onClose }: Props) {
+  const [type, setType] = useState<TaskType>('diary_streak');
   const [targetDays, setTargetDays] = useState(7);
   const [text, setText] = useState('');
   const [dueDate, setDueDate] = useState('');
-  const [needId, setNeedId] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const NEED_LABELS: Record<string, string> = {
-    attachment: 'Привязанность', autonomy: 'Автономия',
-    expression: 'Выражение', play: 'Спонтанность', limits: 'Границы',
-  };
-  const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
+  const selected = TASK_OPTIONS.find(o => o.type === type)!;
 
-  const getAutoText = () => {
-    if (type === 'diary_streak') return `Заполнять дневник ${targetDays} дней`;
-    if (type === 'tracker_streak') return `Отмечать потребности ${targetDays} дней подряд`;
-    return text;
+  const getAutoText = (): string => {
+    switch (type) {
+      case 'diary_streak':    return `Заполнять дневник ${targetDays} дней подряд`;
+      case 'tracker_streak':  return `Отмечать потребности ${targetDays} дней подряд`;
+      case 'belief_check':    return 'Проверить убеждение';
+      case 'letter_to_self':  return 'Написать письмо Уязвимому Ребёнку';
+      case 'safe_place':      return 'Описать Безопасное место';
+      case 'childhood_wheel': return 'Заполнить Колесо детства';
+      case 'flashcard':       return 'Разобрать сложную ситуацию по шагам';
+      default:                return text;
+    }
   };
 
   async function handleCreate() {
@@ -43,8 +57,7 @@ export function TaskCreateSheet({ defaultType = 'custom', clientId, clientName, 
       await api.createTask({
         type,
         text: finalText,
-        targetDays: type !== 'custom' ? targetDays : undefined,
-        needId: needId || undefined,
+        targetDays: selected.hasStreak ? targetDays : undefined,
         dueDate: dueDate || undefined,
         clientId,
       });
@@ -63,32 +76,31 @@ export function TaskCreateSheet({ defaultType = 'custom', clientId, clientName, 
       </SectionLabel>
 
       {/* Type selector */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-        {(['diary_streak', 'tracker_streak', 'custom'] as const).map(t => {
-          const labels: Record<string, string> = {
-            diary_streak: '📔 Дневник — N дней подряд',
-            tracker_streak: '📊 Трекер потребностей — N дней',
-            custom: '✏️ Своё задание',
-          };
-          return (
-            <div
-              key={t}
-              onClick={() => setType(t)}
-              style={{
-                padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
-                background: type === t ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${type === t ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                fontSize: 14, color: type === t ? '#a78bfa' : 'rgba(255,255,255,0.7)',
-              }}
-            >
-              {labels[t]}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 20 }}>
+        {TASK_OPTIONS.map(opt => (
+          <div
+            key={opt.type}
+            onClick={() => setType(opt.type)}
+            style={{
+              padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
+              background: type === opt.type ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.03)',
+              border: `1px solid ${type === opt.type ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.07)'}`,
+              display: 'flex', alignItems: 'center', gap: 10,
+            }}
+          >
+            <span style={{ fontSize: 16, flexShrink: 0 }}>{opt.emoji}</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? '#a78bfa' : 'rgba(255,255,255,0.8)' }}>
+                {opt.label}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{opt.sub}</div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
       {/* Streak day picker */}
-      {type !== 'custom' && (
+      {selected.hasStreak && (
         <div style={{ marginBottom: 20 }}>
           <SectionLabel mb={8}>Цель в днях</SectionLabel>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -127,39 +139,7 @@ export function TaskCreateSheet({ defaultType = 'custom', clientId, clientName, 
         </div>
       )}
 
-      {/* Need tag (optional) */}
-      <div style={{ marginBottom: 20 }}>
-        <SectionLabel mb={8}>Потребность (необязательно)</SectionLabel>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-          <div
-            onClick={() => setNeedId('')}
-            style={{
-              padding: '6px 12px', borderRadius: 20, cursor: 'pointer', fontSize: 12,
-              background: !needId ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${!needId ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
-              color: !needId ? '#fff' : 'rgba(255,255,255,0.4)',
-            }}
-          >
-            Любая
-          </div>
-          {NEED_IDS.map(nid => (
-            <div
-              key={nid}
-              onClick={() => setNeedId(nid === needId ? '' : nid)}
-              style={{
-                padding: '6px 12px', borderRadius: 20, cursor: 'pointer', fontSize: 12,
-                background: needId === nid ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${needId === nid ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.08)'}`,
-                color: needId === nid ? '#a78bfa' : 'rgba(255,255,255,0.5)',
-              }}
-            >
-              {NEED_LABELS[nid]}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Due date (optional, for custom only or therapist) */}
+      {/* Due date */}
       {(type === 'custom' || clientId) && (
         <div style={{ marginBottom: 24 }}>
           <SectionLabel mb={8}>Срок (необязательно)</SectionLabel>
