@@ -21,6 +21,7 @@ interface Props {
   onPlanCreated?: () => void;
   plannedNeedIds?: Set<string>;
   onClose?: () => void;
+  onOpenHelp?: () => void;
 }
 
 function DonutRing({ percent }: { percent: number }) {
@@ -118,7 +119,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   );
 }
 
-export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved, onNote, onOpenPractices, onPlanCreated, plannedNeedIds, onClose }: Props) {
+export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved, onNote, onOpenPractices, onPlanCreated, plannedNeedIds, onClose, onOpenHelp }: Props) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
@@ -336,6 +337,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
           onChange={(v) => handleChange(activeNeed.id, v)}
           onClose={() => setActiveNeed(null)}
           onPlanSaved={(needId) => setSessionPlannedNeeds(prev => new Set([...prev, needId]))}
+          onOpenHelp={onOpenHelp}
         />
       )}
 

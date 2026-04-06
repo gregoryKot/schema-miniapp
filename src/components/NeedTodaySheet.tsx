@@ -11,6 +11,7 @@ interface Props {
   onChange: (v: number) => void;
   onClose: () => void;
   onPlanSaved?: (needId: string) => void;
+  onOpenHelp?: () => void;
 }
 
 const DISCLAIMER_CONTENT = [
@@ -19,7 +20,7 @@ const DISCLAIMER_CONTENT = [
   'Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему. Безопасно, глубоко, рядом живой человек.',
 ];
 
-export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: Props) {
+export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, onOpenHelp }: Props) {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [showPlan, setShowPlan] = useState(false);
   const [showExamples, setShowExamples] = useState(false);
@@ -213,9 +214,9 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
         )}
       </div>
 
-      {/* Plan button (low score only) */}
+      {/* Plan button + Help link (low score only) */}
       {value <= 3 && (
-        <div style={{ marginBottom: 24 }}>
+        <div style={{ marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div
             onClick={() => setShowPlan(true)}
             style={{
@@ -233,6 +234,25 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved }: 
             </div>
             <div style={{ fontSize: 18, color: color + 'aa', flexShrink: 0 }}>›</div>
           </div>
+          {onOpenHelp && (
+            <div
+              onClick={() => { onClose(); onOpenHelp(); }}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: 'rgba(248,113,113,0.08)',
+                border: '1px solid rgba(248,113,113,0.2)',
+                borderRadius: 12, padding: '12px 16px', cursor: 'pointer',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: '#f87171' }}>Раздел Помощь</div>
+                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                  Инструменты прямо сейчас
+                </div>
+              </div>
+              <div style={{ fontSize: 18, color: 'rgba(248,113,113,0.6)', flexShrink: 0 }}>›</div>
+            </div>
+          )}
         </div>
       )}
 

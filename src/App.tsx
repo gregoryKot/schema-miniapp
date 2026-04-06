@@ -669,6 +669,7 @@ export default function App() {
               onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
               plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
               onClose={() => { setShowTracker(false); setTrackerTab('today'); }}
+              onOpenHelp={() => { setShowTracker(false); setTrackerTab('today'); setSection('help'); }}
             />
           )}
           {trackerTab === 'today' && needs.length > 0 && needs.every(n => saved[n.id]) && (
