@@ -3,18 +3,12 @@ import { Need, DayHistory, COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { api } from '../api';
 import { TherapyNote } from './TherapyNote';
+import { fmtDate } from '../utils/format';
 
 interface Props {
   needs: Need[];
   history: DayHistory[];
   onClose: () => void;
-}
-
-const SHORT_MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-
-function fmtDate(dateStr: string): string {
-  const [, m, d] = dateStr.split('-');
-  return `${parseInt(d)} ${SHORT_MONTHS[parseInt(m) - 1]}`;
 }
 
 function calcWeekAvg(history: DayHistory[], needId: string): number | null {
@@ -207,6 +201,25 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
     drawCard(canvasRef.current, needs, history, streak);
   }, [needs, history, streak]);
 
+  function buildShareText(detailed: boolean): { text: string; range: string; weekIndex: string } {
+    const allAvgs = needs.map(n => calcWeekAvg(history, n.id)).filter(v => v !== null) as number[];
+    const weekIndex = allAvgs.length > 0
+      ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1)
+      : '—';
+    const sorted = [...history].map(d => d.date).sort();
+    const range = sorted.length >= 2
+      ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
+      : sorted.length === 1 ? fmtDate(sorted[0]) : '';
+    const streakSuffix = streak > 0 ? ` · Серия: ${streak} дней 🔥` : '';
+    const text = detailed
+      ? `Трекер потребностей · ${range}\n\n${needs.map(n => {
+          const avg = calcWeekAvg(history, n.id);
+          return `${n.emoji} ${n.chartLabel}: ${avg !== null ? avg.toFixed(1) : '—'}`;
+        }).join('\n')}\n\nИндекс: ${weekIndex}/10${streakSuffix}\n\n@SchemeHappens`
+      : `Мой трекер потребностей за неделю ${range}\nИндекс: ${weekIndex}/10${streakSuffix}\n@SchemeHappens`;
+    return { text, range, weekIndex };
+  }
+
   async function handleShare() {
     if (!canvasRef.current) return;
     setSharing(true);
@@ -215,15 +228,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
         canvasRef.current!.toBlob(b => b ? resolve(b) : reject(new Error('canvas empty')), 'image/png');
       });
       const file = new File([blob], 'needs-week.png', { type: 'image/png' });
-      const allAvgs = needs.map(n => calcWeekAvg(history, n.id)).filter(v => v !== null) as number[];
-      const weekIndex = allAvgs.length > 0
-        ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1)
-        : '—';
-      const sorted = [...history].map(d => d.date).sort();
-      const range = sorted.length >= 2
-        ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
-        : '';
-      const text = `Мой трекер потребностей за неделю ${range}\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n@SchemeHappens`;
+      const { text } = buildShareText(false);
 
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text });
@@ -239,20 +244,8 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
         URL.revokeObjectURL(url);
       }
     } catch {
-      // Share failed — build text fallback and show in sheet
-      const allAvgs = needs.map(n => calcWeekAvg(history, n.id)).filter(v => v !== null) as number[];
-      const weekIndex = allAvgs.length > 0
-        ? (allAvgs.reduce((s, v) => s + v, 0) / allAvgs.length).toFixed(1)
-        : '—';
-      const lines = needs.map(n => {
-        const avg = calcWeekAvg(history, n.id);
-        return `${n.emoji} ${n.chartLabel}: ${avg !== null ? avg.toFixed(1) : '—'}`;
-      });
-      const sorted = [...history].map(d => d.date).sort();
-      const range = sorted.length >= 2
-        ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
-        : '';
-      const text = `Трекер потребностей · ${range}\n\n${lines.join('\n')}\n\nИндекс: ${weekIndex}/10${streak > 0 ? ` · Серия: ${streak} дней 🔥` : ''}\n\n@SchemeHappens`;
+      // Share failed — build detailed text fallback
+      const { text } = buildShareText(true);
       try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2500); } catch {}
       setFallbackText(text);
     } finally {

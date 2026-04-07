@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
 import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
+import { fmtDateLong, todayStr } from '../../utils/format';
 
 interface Props {
   onClose: () => void;
@@ -9,10 +10,7 @@ interface Props {
   onSave: (date: string, items: string[]) => Promise<void>;
 }
 
-const TODAY = new Date().toISOString().split('T')[0];
-
 export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Props) {
-  const draftDate = date === TODAY ? 'today' : date;
   const existing = !existingItems ? loadDraft<{ items: string[] }>('gratitude') : null;
   const initItems = existingItems ?? existing?.data?.items ?? ['', '', ''];
 
@@ -40,19 +38,15 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
       onClose();
     }
   };
-  void draftDate;
 
-  const formatDate = (d: string) => {
-    if (d === TODAY) return 'сегодня';
-    return new Date(d).toLocaleDateString('ru', { day: 'numeric', month: 'long' });
-  };
+  const dateLabel = date === todayStr() ? 'сегодня' : fmtDateLong(date);
 
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Дневник благодарности</div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>
-          {formatDate(date)}
+          {dateLabel}
         </div>
         <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 16, lineHeight: 1.5 }}>
           Три вещи, за которые ты благодарен. Даже маленькие — они тоже считаются.

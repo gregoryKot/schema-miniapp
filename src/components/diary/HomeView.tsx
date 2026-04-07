@@ -1,5 +1,6 @@
 import { DiaryType } from '../../types';
 import { getTelegramSafeTop } from '../../utils/safezone';
+import { fmtDateLong } from '../../utils/format';
 
 interface DiaryMeta {
   type: DiaryType;
@@ -22,11 +23,6 @@ interface Props {
   onClose?: () => void;
 }
 
-function formatDate(iso?: string): string | undefined {
-  if (!iso) return undefined;
-  const d = new Date(iso);
-  return d.toLocaleDateString('ru', { day: 'numeric', month: 'long' });
-}
 
 function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
   return (
@@ -63,7 +59,7 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
         {meta.count > 0 && (
           <div style={{ fontSize: 11, color: meta.color, marginTop: 6, fontWeight: 500 }}>
             {meta.count} {meta.count === 1 ? 'запись' : meta.count < 5 ? 'записи' : 'записей'}
-            {meta.lastDate && ` · последняя ${formatDate(meta.lastDate)}`}
+            {meta.lastDate && ` · последняя ${fmtDateLong(meta.lastDate)}`}
           </div>
         )}
       </div>

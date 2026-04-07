@@ -34,14 +34,15 @@ import { cacheTherapistContact } from './utils/therapistContact';
 import { SchemaEntrySheet } from './components/diary/SchemaEntrySheet';
 import { ModeEntrySheet } from './components/diary/ModeEntrySheet';
 import { GratitudeEntrySheet } from './components/diary/GratitudeEntrySheet';
+import { todayStr } from './utils/format';
 
-const TODAY_KEY = 'celebrated_' + new Date().toISOString().split('T')[0];
-const TODAY_DATE = new Date().toISOString().split('T')[0];
+const TODAY_DATE = todayStr();
+const TODAY_KEY = 'celebrated_' + TODAY_DATE;
 const HAS_HISTORY = Object.keys(localStorage).some(k => k.startsWith('celebrated_') && k !== TODAY_KEY);
 const YESTERDAY_DATE = (() => {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().split('T')[0];
+  const [y, m, d] = TODAY_DATE.split('-').map(Number);
+  const prev = new Date(y, m - 1, d - 1);
+  return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`;
 })();
 
 const ABOUT_TEXT = [
