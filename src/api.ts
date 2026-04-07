@@ -113,6 +113,7 @@ export interface UserTask {
   completedAt: string | null;
   createdAt: string;
   doneToday?: boolean;
+  progress?: number;
 }
 
 export interface TherapyRelationInfo {

@@ -89,13 +89,13 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
 function TaskProgressBar({ task }: { task: UserTask }) {
   if (task.type === 'custom' || !task.targetDays) return null;
   const target = task.targetDays;
-  const created = new Date(task.createdAt).getTime();
-  const elapsed = Math.floor((Date.now() - created) / 86_400_000);
-  const progress = Math.min(elapsed, target);
+  // Use server-computed progress (actual days done) if available, else fall back to elapsed days
+  const progress = task.progress !== undefined ? Math.min(task.progress, target) : 0;
+  const pct = target > 0 ? (progress / target) * 100 : 0;
   return (
     <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
       <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 4, overflow: 'hidden' }}>
-        <div style={{ width: `${(progress / target) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
+        <div style={{ width: `${pct}%`, height: '100%', background: '#a78bfa', borderRadius: 4, transition: 'width 0.3s ease' }} />
       </div>
       <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{progress}/{target}</span>
     </div>
