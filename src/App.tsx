@@ -898,7 +898,18 @@ export default function App() {
       )}
 
       {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
-        <BottomNav section={section} onSelect={setSection} />
+        <BottomNav
+          section={section}
+          onSelect={(s) => {
+            if (s === 'help' && userRole === 'THERAPIST') {
+              setCabinetView('list');
+              setShowTherapistCabinet(true);
+            } else {
+              setSection(s);
+            }
+          }}
+          userRole={userRole}
+        />
       )}
     </div>
   );

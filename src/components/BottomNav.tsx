@@ -3,6 +3,7 @@ export type Section = 'today' | 'help' | 'schemas' | 'profile';
 interface Props {
   section: Section;
   onSelect: (s: Section) => void;
+  userRole?: 'CLIENT' | 'THERAPIST';
 }
 
 const TABS: { id: Section; label: string; activeColor: string }[] = [
@@ -12,7 +13,7 @@ const TABS: { id: Section; label: string; activeColor: string }[] = [
   { id: 'profile', label: 'Я',       activeColor: '#f472b6' },
 ];
 
-function TabIcon({ id, active, color }: { id: Section; active: boolean; color: string }) {
+function TabIcon({ id, active, color, isTherapist }: { id: Section; active: boolean; color: string; isTherapist?: boolean }) {
   const style = {
     width: 22, height: 22,
     color: active ? color : 'rgba(255,255,255,0.3)',
@@ -29,11 +30,18 @@ function TabIcon({ id, active, color }: { id: Section; active: boolean; color: s
     </svg>
   );
 
-  if (id === 'help') return (
-    <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
-  );
+  if (id === 'help') return isTherapist
+    ? (
+      <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    )
+    : (
+      <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
+    );
 
   if (id === 'schemas') return (
     <svg style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -52,7 +60,12 @@ function TabIcon({ id, active, color }: { id: Section; active: boolean; color: s
   );
 }
 
-export function BottomNav({ section, onSelect }: Props) {
+export function BottomNav({ section, onSelect, userRole }: Props) {
+  const tabs = TABS.map(t =>
+    t.id === 'help' && userRole === 'THERAPIST'
+      ? { ...t, label: 'Кабинет' }
+      : t,
+  );
   return (
     <div style={{
       position: 'fixed',
@@ -70,7 +83,7 @@ export function BottomNav({ section, onSelect }: Props) {
         </div>
       </div>
       <div style={{ height: 60, display: 'flex' }}>
-      {TABS.map(tab => {
+      {tabs.map(tab => {
         const active = section === tab.id;
         return (
           <button
@@ -100,7 +113,7 @@ export function BottomNav({ section, onSelect }: Props) {
                 boxShadow: `0 0 8px ${tab.activeColor}88`,
               }} />
             )}
-            <TabIcon id={tab.id} active={active} color={tab.activeColor} />
+            <TabIcon id={tab.id} active={active} color={tab.activeColor} isTherapist={userRole === 'THERAPIST'} />
             <span style={{
               fontSize: 10,
               fontWeight: active ? 600 : 400,

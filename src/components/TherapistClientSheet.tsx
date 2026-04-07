@@ -2,16 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { api, TherapyClientSummary, UserTask } from '../api';
 import { TaskCreateSheet } from './TaskCreateSheet';
 import { SectionLabel } from './SectionLabel';
+import { fmtDate } from '../utils/format';
 
 interface Props {
   view: 'list' | 'client';
   onViewChange: (v: 'list' | 'client') => void;
   onClose: () => void;
-}
-
-function formatDate(s: string) {
-  const d = new Date(s);
-  return `${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]}`;
 }
 
 function streakEmoji(s: number) {
@@ -178,7 +174,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
                     {streakEmoji(c.streak)} {c.streak} дн.
-                    {c.lastActiveDate && ` · Активен: ${formatDate(c.lastActiveDate)}`}
+                    {c.lastActiveDate && ` · Активен: ${fmtDate(c.lastActiveDate)}`}
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -211,7 +207,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               {selectedClient.lastActiveDate && (
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>Последняя активность</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{formatDate(selectedClient.lastActiveDate)}</div>
+                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{fmtDate(selectedClient.lastActiveDate)}</div>
                 </div>
               )}
             </div>
@@ -233,7 +229,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, color: '#fff' }}>{task.text}</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                    {task.dueDate ? `Срок: ${formatDate(task.dueDate)}` : formatDate(task.createdAt)}
+                    {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt)}
                     {task.needId && ` · ${task.needId}`}
                   </div>
                   {task.progress !== undefined && task.targetDays && (

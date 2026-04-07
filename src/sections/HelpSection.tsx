@@ -10,6 +10,7 @@ import { TaskCreateSheet } from '../components/TaskCreateSheet';
 import { api, UserTask, TherapyRelationInfo } from '../api';
 import { BottomSheet } from '../components/BottomSheet';
 import { SectionLabel } from '../components/SectionLabel';
+import { fmtDate } from '../utils/format';
 
 interface Props {
   onOpenChildhoodWheel: () => void;
@@ -47,10 +48,6 @@ function plural(n: number, one: string, few: string, many: string) {
   return many;
 }
 
-function formatDate(s: string) {
-  const d = new Date(s);
-  return `${d.getDate()} ${['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][d.getMonth()]}`;
-}
 
 const TASK_EMOJI: Record<string, string> = {
   diary_streak: '📔', tracker_streak: '📊', belief_check: '🔍',
@@ -72,7 +69,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
           <div style={{ fontSize: 11, color: 'rgba(52,211,153,0.7)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
         <TaskProgressBar task={task} />
-        {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {formatDate(task.dueDate)}</div>}
+        {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
       </div>
       {!task.doneToday && onComplete && task.done === null ? (
         <button
@@ -305,7 +302,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
                   {task.text}
                 </div>
                 <TaskProgressBar task={task} />
-                {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {formatDate(task.dueDate)}</div>}
+                {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
               </div>
               {task.done === null && task.assignedBy !== null && (
                 <button
