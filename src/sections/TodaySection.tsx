@@ -121,7 +121,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               width: 110, flexShrink: 0,
               background: profile === null ? 'rgba(255,255,255,0.03)' : streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
               border: `1px solid ${profile !== null && streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
-              borderRadius: 20, padding: '16px 14px',
+              borderRadius: 16, padding: '16px 14px',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             }}>
             {profile === null ? (
@@ -146,7 +146,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           </div>
 
           {/* Tracker button */}
-          <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, padding: '16px 14px', cursor: 'pointer' }}>
+          <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '16px 14px', cursor: 'pointer' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
               {allRated ? 'Готово сегодня ✓' : `${ratedCount} из ${needs.length}`}
             </div>
@@ -178,7 +178,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           style={{
             background: 'rgba(255,255,255,0.03)',
             border: '1px solid rgba(255,255,255,0.07)',
-            borderRadius: 20, padding: '16px 18px',
+            borderRadius: 16, padding: '16px 18px',
             animation: 'pop-in 0.3s ease 0.12s both',
             cursor: 'pointer',
           }}
@@ -251,7 +251,7 @@ function OnboardingComplete({ onDone }: { onDone: () => void }) {
   }, []);
   return (
     <div style={{
-      borderRadius: 20, padding: '20px 18px',
+      borderRadius: 16, padding: '20px 18px',
       background: 'linear-gradient(135deg, rgba(52,211,153,0.12) 0%, rgba(96,165,250,0.07) 100%)',
       border: '1px solid rgba(52,211,153,0.3)',
       animation: 'pop-in 0.3s ease both',
@@ -351,7 +351,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
   // While profile loads, show skeleton to avoid rendering wrong step
   if (profile === null) {
     return (
-      <div style={{ borderRadius: 20, padding: '16px 18px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', animation: 'pop-in 0.3s ease both' }}>
+      <div style={{ borderRadius: 16, padding: '16px 18px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', animation: 'pop-in 0.3s ease both' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div style={{ width: 80, height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
           <div style={{ display: 'flex', gap: 5 }}>
@@ -408,7 +408,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
 
   return (
     <div style={{
-      borderRadius: 20, padding: '16px 18px',
+      borderRadius: 16, padding: '16px 18px',
       background: 'linear-gradient(135deg, rgba(167,139,250,0.09) 0%, rgba(96,165,250,0.05) 100%)',
       border: '1px solid rgba(167,139,250,0.22)',
       animation: 'pop-in 0.3s ease both',

@@ -162,7 +162,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
             style={{
               background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(79,163,247,0.1))',
               border: '1px solid rgba(167,139,250,0.3)',
-              borderRadius: 18, padding: '16px 18px', cursor: 'pointer',
+              borderRadius: 16, padding: '16px 18px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}
           >
@@ -180,7 +180,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
         {/* Tasks card — always shown once relation is loaded */}
         {relation !== undefined && (
-          <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 20, overflow: 'hidden' }}>
+          <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 16, overflow: 'hidden' }}>
             <div style={{ padding: '14px 16px 4px' }}>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)' }}>🎯 Задания</div>
             </div>
@@ -233,7 +233,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         )}
 
         {/* Emergency */}
-        <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.18)', borderRadius: 20, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.18)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(248,113,113,0.7)' }}>🚨 Прямо сейчас</div>
           </div>
@@ -241,7 +241,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         </div>
 
         {/* Работа с мыслями */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.6)' }}>💭 Работа с мыслями</div>
           </div>
@@ -250,7 +250,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         </div>
 
         {/* Ресурс */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.6)' }}>🌿 Ресурс</div>
           </div>
@@ -259,7 +259,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         </div>
 
         {/* Отслеживание */}
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, overflow: 'hidden' }}>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(251,191,36,0.6)' }}>📊 Отслеживание</div>
           </div>

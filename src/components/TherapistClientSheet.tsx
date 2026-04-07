@@ -3,6 +3,7 @@ import { api, TherapyClientSummary, UserTask } from '../api';
 import { TaskCreateSheet } from './TaskCreateSheet';
 import { SectionLabel } from './SectionLabel';
 import { fmtDate } from '../utils/format';
+import { getTelegramSafeTop } from '../utils/safezone';
 
 interface Props {
   view: 'list' | 'client';
@@ -23,6 +24,7 @@ function indexColor(v: number) {
 }
 
 export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
+  const safeTop = getTelegramSafeTop();
   const [clients, setClients] = useState<TherapyClientSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<TherapyClientSummary | null>(null);
@@ -59,7 +61,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
       setInviteCopied(true);
       setTimeout(() => setInviteCopied(false), 2000);
     } catch {
-      // Fallback: select the input so user can copy manually
       inviteInputRef.current?.select();
     }
   }
@@ -69,7 +70,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     if (navigator.share) {
       navigator.share({ text: 'Подключись к Схемалабу как мой клиент:', url: inviteUrl }).catch(() => {});
     } else {
-      // Telegram-specific: open share dialog
       const tgUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent('Подключись ко мне в Схемалабе')}`;
       window.Telegram?.WebApp?.openLink(tgUrl);
     }
@@ -77,32 +77,32 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 90, background: '#060a12', overflowY: 'auto' }}>
-      <div style={{ padding: '20px 20px 100px' }}>
+      <div style={{ padding: `${safeTop + 20}px 20px 100px` }}>
+
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <div
             onClick={view === 'list' ? onClose : () => onViewChange('list')}
-            style={{ fontSize: 22, color: 'rgba(255,255,255,0.5)', cursor: 'pointer', lineHeight: 1 }}
+            style={{ fontSize: 24, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}
           >
             ‹
           </div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>
             {view === 'list' ? 'Кабинет терапевта' : selectedClient?.name ?? 'Клиент'}
           </div>
         </div>
 
+        {/* ── LIST VIEW ── */}
         {view === 'list' && (
           <>
-            {/* Invite section */}
-            <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 16, padding: '14px 16px', marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa', marginBottom: 10 }}>
-                Пригласить клиента
-              </div>
+            {/* Invite card */}
+            <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 16, padding: 16, marginBottom: 24 }}>
+              <SectionLabel purple mb={12}>Пригласить клиента</SectionLabel>
               {!inviteUrl ? (
                 <button
                   onClick={createInvite}
                   disabled={inviteLoading}
-                  style={{ width: '100%', padding: '11px 0', borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.2)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
+                  style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.2)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
                 >
                   {inviteLoading ? 'Создаю...' : '+ Создать ссылку'}
                 </button>
@@ -114,18 +114,16 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                     value={inviteUrl}
                     onClick={() => inviteInputRef.current?.select()}
                     style={{
-                      width: '100%', boxSizing: 'border-box',
+                      width: '100%', boxSizing: 'border-box', marginBottom: 10,
                       background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                      borderRadius: 10, padding: '9px 12px',
-                      color: 'rgba(255,255,255,0.6)', fontSize: 12,
-                      fontFamily: 'monospace', marginBottom: 10,
-                      outline: 'none', cursor: 'text',
+                      borderRadius: 10, padding: '9px 12px', outline: 'none', cursor: 'text',
+                      color: 'rgba(255,255,255,0.6)', fontSize: 12, fontFamily: 'monospace',
                     }}
                   />
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
                       onClick={copyInvite}
-                      style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.08)', color: inviteCopied ? '#06d6a0' : 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                      style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'rgba(6,214,160,0.15)' : 'rgba(255,255,255,0.07)', color: inviteCopied ? '#06d6a0' : 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                     >
                       {inviteCopied ? '✓ Скопировано' : 'Скопировать'}
                     </button>
@@ -138,7 +136,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   </div>
                   <button
                     onClick={() => { setInviteUrl(''); setInviteCopied(false); }}
-                    style={{ width: '100%', marginTop: 8, background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 12, cursor: 'pointer' }}
+                    style={{ width: '100%', marginTop: 8, background: 'none', border: 'none', color: 'rgba(255,255,255,0.2)', fontSize: 12, cursor: 'pointer', padding: '4px 0' }}
                   >
                     Создать новую
                   </button>
@@ -147,15 +145,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
             </div>
 
             {/* Client list */}
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>
-              Клиенты
-            </div>
+            <SectionLabel mb={10}>Клиенты</SectionLabel>
+
             {loading ? (
               <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>
                 Загружаю...
               </div>
             ) : clients.length === 0 ? (
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.6 }}>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.7 }}>
                 Нет подключённых клиентов.<br />Пригласи клиента по ссылке выше.
               </div>
             ) : clients.map(c => (
@@ -165,7 +162,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 14, padding: '14px 16px', marginBottom: 10, cursor: 'pointer',
+                  borderRadius: 16, padding: '14px 16px', marginBottom: 8, cursor: 'pointer',
                 }}
               >
                 <div>
@@ -174,12 +171,12 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
                     {streakEmoji(c.streak)} {c.streak} дн.
-                    {c.lastActiveDate && ` · Активен: ${fmtDate(c.lastActiveDate)}`}
+                    {c.lastActiveDate && ` · ${fmtDate(c.lastActiveDate)}`}
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {c.todayIndex !== null && (
-                    <div style={{ fontSize: 15, fontWeight: 700, color: indexColor(c.todayIndex) }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: indexColor(c.todayIndex) }}>
                       {c.todayIndex}
                     </div>
                   )}
@@ -190,66 +187,70 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
           </>
         )}
 
+        {/* ── CLIENT VIEW ── */}
         {view === 'client' && selectedClient && (
           <>
-            {/* Client summary */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '12px 16px', marginBottom: 20, display: 'flex', gap: 16 }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>Серия</div>
+            {/* Stats row */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+              <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '12px 14px', textAlign: 'center' }}>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Серия</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#fb923c' }}>{streakEmoji(selectedClient.streak)} {selectedClient.streak}</div>
               </div>
               {selectedClient.todayIndex !== null && (
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>Индекс сегодня</div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '12px 14px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Индекс сегодня</div>
                   <div style={{ fontSize: 22, fontWeight: 700, color: indexColor(selectedClient.todayIndex) }}>{selectedClient.todayIndex}</div>
                 </div>
               )}
               {selectedClient.lastActiveDate && (
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 2 }}>Последняя активность</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{fmtDate(selectedClient.lastActiveDate)}</div>
+                <div style={{ flex: 1, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '12px 14px', textAlign: 'center' }}>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>Активность</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{fmtDate(selectedClient.lastActiveDate)}</div>
                 </div>
               )}
             </div>
 
             {/* Tasks */}
-            <SectionLabel mb={12}>Задания</SectionLabel>
-            {clientTasks.length === 0 ? (
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 14, marginBottom: 16 }}>
-                Нет заданий
-              </div>
-            ) : clientTasks.map(task => (
-              <div key={task.id} style={{
-                display: 'flex', alignItems: 'flex-start', gap: 10,
-                padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
-              }}>
-                <span style={{ fontSize: 16, flexShrink: 0 }}>
-                  {task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}
-                </span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, color: '#fff' }}>{task.text}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
-                    {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt)}
-                    {task.needId && ` · ${task.needId}`}
-                  </div>
-                  {task.progress !== undefined && task.targetDays && (
-                    <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 3 }} />
-                      </div>
-                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{task.progress}/{task.targetDays}</span>
-                    </div>
-                  )}
+            <SectionLabel mb={10}>Задания</SectionLabel>
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
+              {clientTasks.length === 0 ? (
+                <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+                  Нет заданий
                 </div>
-              </div>
-            ))}
+              ) : clientTasks.map((task, i) => (
+                <div key={task.id} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                  padding: '12px 16px',
+                  borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : undefined,
+                }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>
+                    {task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: '#fff', lineHeight: 1.4 }}>{task.text}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>
+                      {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt)}
+                      {task.needId && ` · ${task.needId}`}
+                    </div>
+                    {task.progress !== undefined && task.targetDays && (
+                      <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 4, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
+                        </div>
+                        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
 
             <button
               onClick={() => setShowAssign(true)}
               style={{
-                width: '100%', padding: '12px 0', borderRadius: 14, border: 'none',
+                width: '100%', padding: '13px 0', borderRadius: 14, border: 'none',
                 background: 'rgba(167,139,250,0.15)', color: '#a78bfa',
-                fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16,
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
               }}
             >
               + Назначить задание

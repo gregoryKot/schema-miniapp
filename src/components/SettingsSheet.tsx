@@ -178,7 +178,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Имя */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>КАК ТЕБЯ ЗОВУТ</SettingsLabel>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
                   <input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
@@ -219,7 +219,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                   <SettingsLabel>УВЕДОМЛЕНИЯ</SettingsLabel>
                   <span onClick={() => setShowNotifyInfo(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer', flexShrink: 0, marginBottom: 10 }}>?</span>
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden', marginBottom: 8 }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 8 }}>
                   <Row label="Итоги дня" sub="Ежедневный отчёт по потребностям" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
                   <Row label="Напоминание" sub="Заполнить трекер вечером" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
                   {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
@@ -241,7 +241,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {userRole !== 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
                   <SettingsLabel>МОЙ ТЕРАПЕВТ</SettingsLabel>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 16 }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 16 }}>
                     {therapyRelation === undefined ? (
                       <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
                     ) : therapyRelation?.status === 'active' ? (
@@ -306,7 +306,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       Я психолог — войти как специалист
                     </div>
                   ) : (
-                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 16 }}>
+                    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 16 }}>
                       <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
                         Введи код специалиста
                       </div>
@@ -348,7 +348,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {userRole === 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
                   <SettingsLabel>КАБИНЕТ ТЕРАПЕВТА</SettingsLabel>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={onOpenTherapistCabinet}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
@@ -385,7 +385,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Партнёр */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ПАРТНЁР</SettingsLabel>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, padding: 16 }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 16 }}>
                   {pairLoading && !pairData ? (
                     <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Загрузка...</div>
                   ) : pairData && pairData.partners.length > 0 ? (
@@ -453,7 +453,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Поделиться + Экспорт */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ПОДЕЛИТЬСЯ</SettingsLabel>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
                   <Row label="Пригласить друга" sub="Поделиться ссылкой на бота" emoji="🔗" onClick={async () => {
                     const text = 'Трекер потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
                     try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
@@ -470,7 +470,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Конфиденциальность */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ДАННЫЕ</SettingsLabel>
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 18, overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
                   <Row label="О данных и конфиденциальности" emoji="🔒" onClick={() => setShowPrivacy(true)} />
                   <Row label="Удалить все данные" emoji="🗑" divider color="#f87171" onClick={() => { setDeleteConfirm(false); setShowDeleteSheet(true); }} />
                 </div>
@@ -602,7 +602,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
 function SettingsLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 10, paddingTop: 4 }}>
+    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', marginBottom: 10, paddingTop: 6 }}>
       {children}
     </div>
   );
