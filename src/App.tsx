@@ -245,6 +245,7 @@ export default function App() {
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
   const [showTherapistCabinet, setShowTherapistCabinet] = useState(false);
+  const [cabinetView, setCabinetView] = useState<'list' | 'client'>('list');
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [helpTasks, setHelpTasks] = useState<UserTask[] | null>(null);
@@ -415,13 +416,14 @@ export default function App() {
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
-      showTherapistCabinet ? () => setShowTherapistCabinet(false) :
+      showTherapistCabinet && cabinetView === 'client' ? () => setCabinetView('list') :
+      showTherapistCabinet ? () => { setShowTherapistCabinet(false); setCabinetView('list'); } :
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
     const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || showTherapistCabinet;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, showTherapistCabinet]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, showTherapistCabinet, cabinetView]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -535,6 +537,8 @@ export default function App() {
           initialTasks={helpTasks}
           refreshKey={helpTasksKey}
           onTasksChanged={() => { api.getTasks().then(setHelpTasks).catch(() => {}); setHelpTasksKey(k => k + 1); }}
+          userRole={userRole}
+          onOpenTherapistCabinet={() => { setCabinetView('list'); setShowTherapistCabinet(true); }}
         />
       )}
 
@@ -856,7 +860,7 @@ export default function App() {
       )}
 
       {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setShowTherapistCabinet(true); }} />}
-      {showTherapistCabinet && <TherapistClientSheet onClose={() => setShowTherapistCabinet(false)} />}
+      {showTherapistCabinet && <TherapistClientSheet view={cabinetView} onViewChange={setCabinetView} onClose={() => { setShowTherapistCabinet(false); setCabinetView('list'); }} />}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
