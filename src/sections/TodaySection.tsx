@@ -4,6 +4,7 @@ import { api } from '../api';
 import { Section } from '../components/BottomNav';
 import { getTelegramSafeTop } from '../utils/safezone';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
+import { TaskCreateSheet } from '../components/TaskCreateSheet';
 
 export { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY };
 
@@ -43,6 +44,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
   const [diariesLoaded, setDiariesLoaded] = useState(false);
+  const [showDiaryTaskCreate, setShowDiaryTaskCreate] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -216,9 +218,26 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               Фиксируй моменты когда схемы активируются — это главная практика
             </div>
           )}
+          {diariesLoaded && (
+            <div style={{ marginTop: 10, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
+              <button
+                onClick={e => { e.stopPropagation(); setShowDiaryTaskCreate(true); }}
+                style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: 'rgba(167,139,250,0.6)', cursor: 'pointer', fontWeight: 500 }}
+              >
+                + Поставить цель на дневник
+              </button>
+            </div>
+          )}
         </div>
 
       </div>
+      {showDiaryTaskCreate && (
+        <TaskCreateSheet
+          defaultType="diary_streak"
+          onCreated={() => setShowDiaryTaskCreate(false)}
+          onClose={() => setShowDiaryTaskCreate(false)}
+        />
+      )}
     </div>
   );
 }

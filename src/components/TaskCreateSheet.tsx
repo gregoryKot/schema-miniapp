@@ -3,16 +3,17 @@ import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { api } from '../api';
 
+type TaskType = 'diary_streak' | 'tracker_streak' | 'belief_check' | 'letter_to_self' | 'safe_place' | 'flashcard' | 'custom';
+
 interface Props {
   clientId?: number;
   clientName?: string;
+  defaultType?: TaskType;
   onCreated: () => void;
   onClose: () => void;
 }
 
 const STREAK_OPTIONS = [3, 7, 14, 30];
-
-type TaskType = 'diary_streak' | 'tracker_streak' | 'belief_check' | 'letter_to_self' | 'safe_place' | 'flashcard' | 'custom';
 
 const TASK_OPTIONS: { type: TaskType; emoji: string; label: string; sub: string; hasStreak?: boolean }[] = [
   { type: 'diary_streak',   emoji: '📔', label: 'Дневник',              sub: 'Заполнять N дней подряд',      hasStreak: true },
@@ -24,8 +25,8 @@ const TASK_OPTIONS: { type: TaskType; emoji: string; label: string; sub: string;
   { type: 'custom',         emoji: '✏️', label: 'Своё задание',          sub: 'Любой текст' },
 ];
 
-export function TaskCreateSheet({ clientId, clientName, onCreated, onClose }: Props) {
-  const [type, setType] = useState<TaskType>('diary_streak');
+export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, onClose }: Props) {
+  const [type, setType] = useState<TaskType>(defaultType ?? 'diary_streak');
   const [targetDays, setTargetDays] = useState(7);
   const [text, setText] = useState('');
   const [dueDate, setDueDate] = useState('');

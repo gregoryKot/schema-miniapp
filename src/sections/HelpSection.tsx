@@ -251,7 +251,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       </div>
 
-      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} />}
+      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} onOpenTracker={onOpenTracker} />}
       {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} />}
       {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} />}
       {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} />}

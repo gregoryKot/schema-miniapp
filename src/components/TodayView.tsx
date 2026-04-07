@@ -8,6 +8,7 @@ import { IndexInfoSheet } from './IndexInfoSheet';
 import { SectionLabel } from './SectionLabel';
 import { NEED_DATA } from '../needData';
 import { shouldShowPracticesOnboarding, PRACTICES_ONBOARDING_KEY } from './PracticesOnboarding';
+import { TaskCreateSheet } from './TaskCreateSheet';
 
 interface Props {
   needs: Need[];
@@ -146,6 +147,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
   const [practicesCardVisible, setPracticesCardVisible] = useState(
     () => shouldShowPracticesOnboarding()
   );
+  const [showTrackerTaskCreate, setShowTrackerTaskCreate] = useState(false);
 
   const dismissTooltip = useCallback(() => {
     if (onboardingVisible) {
@@ -291,17 +293,30 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
         <div style={{ fontSize: 12, color: saveError ? '#f87171' : 'rgba(255,255,255,0.3)' }}>
           {saveError ? 'Ошибка сохранения — потяни слайдер ещё раз' : lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
         </div>
-        <button
-          onClick={onNote}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            background: 'rgba(255,255,255,0.06)', border: 'none',
-            borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
-            color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
-          }}
-        >
-          ✏️ Заметка
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={onNote}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              background: 'rgba(255,255,255,0.06)', border: 'none',
+              borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
+              color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
+            }}
+          >
+            ✏️ Заметка
+          </button>
+          <button
+            onClick={() => setShowTrackerTaskCreate(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              background: 'rgba(255,255,255,0.06)', border: 'none',
+              borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
+              color: 'rgba(167,139,250,0.6)', fontSize: 12, fontWeight: 500,
+            }}
+          >
+            🎯 Поставить цель
+          </button>
+        </div>
       </div>
 
       {practicesCardVisible && onOpenPractices && (
@@ -329,6 +344,13 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       )}
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
+      {showTrackerTaskCreate && (
+        <TaskCreateSheet
+          defaultType="tracker_streak"
+          onCreated={() => setShowTrackerTaskCreate(false)}
+          onClose={() => setShowTrackerTaskCreate(false)}
+        />
+      )}
 
       {activeNeed && (
         <NeedTodaySheet
