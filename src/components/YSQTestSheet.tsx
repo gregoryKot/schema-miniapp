@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
-import { SCHEMA_DOMAINS } from './SchemaInfoSheet';
+import { SCHEMA_DOMAINS } from '../diaryData';
 import { getTherapistContact } from '../utils/therapistContact';
 import { api } from '../api';
 
