@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
-import { EMOTIONS, INTENSITY_LABELS, SCHEMA_DOMAINS } from '../../diaryData';
+import { EMOTIONS, INTENSITY_LABELS, SCHEMA_DOMAINS } from '../../schemaTherapyData';
 import { EmotionEntry } from '../../types';
 import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
 

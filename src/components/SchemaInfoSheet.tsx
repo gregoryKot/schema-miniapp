@@ -3,7 +3,7 @@ import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { YSQTestSheet, YSQ_RESULT_KEY, YSQ_PROGRESS_KEY } from './YSQTestSheet';
 import { TherapyNote } from './TherapyNote';
-import { SCHEMA_DOMAINS } from '../diaryData';
+import { SCHEMA_DOMAINS } from '../schemaTherapyData';
 export { SCHEMA_DOMAINS };
 
 type Tab = 'needs' | 'schemas' | 'modes';

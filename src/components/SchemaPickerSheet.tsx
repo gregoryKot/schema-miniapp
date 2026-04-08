@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BottomSheet } from './BottomSheet';
-import { SCHEMA_DOMAINS } from '../diaryData';
+import { SCHEMA_DOMAINS } from '../schemaTherapyData';
 
 interface Props {
   selected: string[];

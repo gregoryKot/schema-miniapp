@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
-import { getModeById } from '../diaryData';
+import { getModeById } from '../schemaTherapyData';
 import { TherapyNote } from './TherapyNote';
 
 const STORAGE_KEY = (modeId: string) => `mode_intro_${modeId}`;

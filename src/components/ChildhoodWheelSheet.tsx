@@ -3,7 +3,7 @@ import { api } from '../api';
 import { COLORS } from '../types';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
-import { SCHEMA_DOMAINS } from '../diaryData';
+import { SCHEMA_DOMAINS } from '../schemaTherapyData';
 import { TherapyNote } from './TherapyNote';
 
 export const CHILDHOOD_DONE_KEY = 'childhood_wheel_done';

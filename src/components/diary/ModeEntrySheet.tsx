@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
-import { MODE_GROUPS } from '../../diaryData';
+import { MODE_GROUPS } from '../../schemaTherapyData';
 import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
 
 interface Props {

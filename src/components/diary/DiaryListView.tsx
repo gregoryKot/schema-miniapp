@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SchemaDiaryEntry, ModeDiaryEntry, GratitudeDiaryEntry, DiaryType } from '../../types';
-import { EMOTIONS, getModeById, getSchemaById } from '../../diaryData';
+import { EMOTIONS, getModeById, getSchemaById } from '../../schemaTherapyData';
 import { getTelegramSafeTop } from '../../utils/safezone';
 import { loadDraft, clearDraft, formatDraftAge } from '../../utils/drafts';
 

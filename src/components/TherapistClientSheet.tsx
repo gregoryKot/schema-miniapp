@@ -4,7 +4,7 @@ import { TaskCreateSheet } from './TaskCreateSheet';
 import { SectionLabel } from './SectionLabel';
 import { fmtDate, todayStr } from '../utils/format';
 import { getTelegramSafeTop } from '../utils/safezone';
-import { SCHEMA_DOMAINS, MODE_GROUPS } from '../diaryData';
+import { SCHEMA_DOMAINS, MODE_GROUPS } from '../schemaTherapyData';
 
 interface Props {
   view: 'list' | 'client';
