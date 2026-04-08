@@ -1,5 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { applyTheme, getTheme } from './utils/theme';
 import { Need, DayHistory, COLORS } from './types';
+
+// Apply saved theme immediately before first render
+applyTheme(getTheme());
 import { api } from './api';
 import { DiarySection } from './sections/DiarySection';
 import { TodaySection } from './sections/TodaySection';
@@ -554,7 +558,7 @@ export default function App() {
 
       {/* ── Tracker overlay ── */}
       {showTracker && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto' }}>
           {/* Sticky header */}
           <div style={{
             position: 'sticky',
@@ -707,7 +711,7 @@ export default function App() {
             />
           )}
           {trackerTab === 'today' && needs.length > 0 && needs.every(n => saved[n.id]) && (
-            <div style={{ position: 'sticky', bottom: 0, padding: '12px 20px 28px', background: 'linear-gradient(to top, #060a12 65%, transparent)', zIndex: 5 }}>
+            <div style={{ position: 'sticky', bottom: 0, padding: '12px 20px 28px', background: 'linear-gradient(to top, var(--bg) 65%, transparent)', zIndex: 5 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
                 style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'rgba(52,211,153,0.14)', color: '#34d399', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
@@ -773,7 +777,7 @@ export default function App() {
 
       {/* ── Diaries overlay ── */}
       {showDiaries && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto' }}>
           <DiarySection onClose={() => setShowDiaries(false)} />
         </div>
       )}

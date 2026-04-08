@@ -81,6 +81,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [showAssign, setShowAssign] = useState(false);
   const [inviteLoading, setInviteLoading] = useState(false);
   const inviteInputRef = useRef<HTMLInputElement>(null);
+  const [renamingAlias, setRenamingAlias] = useState(false);
+  const [aliasInput, setAliasInput] = useState('');
+  const [aliasSaving, setAliasSaving] = useState(false);
+  const [ysqRequested, setYsqRequested] = useState(false);
 
   useEffect(() => {
     api.getTherapyClients().then(setClients).catch(() => {}).finally(() => setLoading(false));
@@ -170,6 +174,27 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     patchConcept({ modeIds: next });
   }
 
+  async function saveAlias() {
+    if (!selectedClient) return;
+    setAliasSaving(true);
+    try {
+      await api.renameClient(selectedClient.telegramId, aliasInput);
+      const updated = { ...selectedClient, clientAlias: aliasInput.trim() || null };
+      setSelectedClient(updated);
+      setClients(prev => prev.map(c => c.telegramId === selectedClient.telegramId ? updated : c));
+      setRenamingAlias(false);
+    } catch { /* ignore */ } finally { setAliasSaving(false); }
+  }
+
+  async function handleRequestYsq() {
+    if (!selectedClient) return;
+    try {
+      await api.requestYsq(selectedClient.telegramId);
+      setYsqRequested(true);
+      setTimeout(() => setYsqRequested(false), 3000);
+    } catch { /* ignore */ }
+  }
+
   async function saveConcept() {
     if (!selectedClient || !conceptDirty) return;
     setConceptSaving(true);
@@ -196,20 +221,50 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const selfSchemaIds = clientData?.mySchemaIds ?? [];
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 90, background: '#060a12', overflowY: 'auto' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'var(--bg)', overflowY: 'auto' }}>
       <div style={{ padding: `${safeTop + 20}px 20px 120px` }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
           <div
-            onClick={view === 'list' ? onClose : () => onViewChange('list')}
+            onClick={view === 'list' ? onClose : () => { onViewChange('list'); setRenamingAlias(false); setYsqRequested(false); }}
             style={{ fontSize: 24, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}
           >
             ‹
           </div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>
-            {view === 'list' ? 'Кабинет терапевта' : selectedClient?.name ?? 'Клиент'}
-          </div>
+          {view === 'list' || !selectedClient ? (
+            <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Кабинет терапевта</div>
+          ) : renamingAlias ? (
+            <div style={{ flex: 1, display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input
+                autoFocus
+                value={aliasInput}
+                onChange={e => setAliasInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && saveAlias()}
+                placeholder={selectedClient.name ?? 'Имя клиента'}
+                maxLength={40}
+                style={{ flex: 1, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '7px 10px', outline: 'none', color: '#fff', fontSize: 15 }}
+              />
+              <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                {aliasSaving ? '...' : '✓'}
+              </button>
+              <button onClick={() => setRenamingAlias(false)} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.5)', fontSize: 13, cursor: 'pointer' }}>
+                ✕
+              </button>
+            </div>
+          ) : (
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>
+                {selectedClient.clientAlias ?? selectedClient.name ?? 'Клиент'}
+              </div>
+              <button
+                onClick={() => { setAliasInput(selectedClient.clientAlias ?? selectedClient.name ?? ''); setRenamingAlias(true); }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(255,255,255,0.3)', padding: '2px 4px' }}
+              >
+                ✎
+              </button>
+            </div>
+          )}
         </div>
 
         {/* ── LIST VIEW ── */}
@@ -256,7 +311,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
             ) : clients.map(c => (
               <div key={c.telegramId} onClick={() => openClient(c)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '14px 16px', marginBottom: 8, cursor: 'pointer' }}>
                 <div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{c.name ?? `ID ${c.telegramId}`}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 4 }}>{c.clientAlias ?? c.name ?? `ID ${c.telegramId}`}</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
                     {streakEmoji(c.streak)} {c.streak} дн.{c.lastActiveDate && ` · ${fmtDate(c.lastActiveDate)}`}
                   </div>
@@ -291,6 +346,16 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{fmtDate(selectedClient.lastActiveDate)}</div>
                 </div>
               )}
+            </div>
+
+            {/* Actions */}
+            <div style={{ marginBottom: 16 }}>
+              <button
+                onClick={handleRequestYsq}
+                style={{ width: '100%', padding: '11px 16px', borderRadius: 14, border: '1px solid rgba(96,165,250,0.2)', background: 'rgba(96,165,250,0.06)', color: ysqRequested ? '#06d6a0' : 'rgba(96,165,250,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+              >
+                {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
+              </button>
             </div>
 
             {/* Tabs */}

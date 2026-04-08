@@ -204,7 +204,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
             height: 20,
             borderRadius: '50%',
             background: hasValue ? color : 'rgba(255,255,255,0.25)',
-            border: '2px solid #060a12',
+            border: '2px solid var(--bg)',
             pointerEvents: 'none',
             zIndex: 1,
           }} />
@@ -219,7 +219,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
             height: 20,
             borderRadius: '50%',
             background: color,
-            border: '2px solid #060a12',
+            border: '2px solid var(--bg)',
             pointerEvents: 'none',
             zIndex: 1,
             opacity: 0.45,

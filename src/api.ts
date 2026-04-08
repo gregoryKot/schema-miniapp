@@ -127,6 +127,7 @@ export interface TherapyRelationInfo {
 export interface TherapyClientSummary {
   telegramId: number;
   name: string | null;
+  clientAlias: string | null;
   streak: number;
   lastActiveDate: string | null;
   todayIndex: number | null;
@@ -270,6 +271,8 @@ export const api = {
   joinTherapy: (code: string) => post('/api/therapy/join', { code }),
   leaveTherapy: () => del('/api/therapy/relation'),
   getTherapyClients: () => get<TherapyClientSummary[]>('/api/therapy/clients'),
+  renameClient: (clientId: number, alias: string) => post(`/api/therapy/rename-client/${clientId}`, { alias }),
+  requestYsq: (clientId: number) => post(`/api/therapy/request-ysq/${clientId}`, {}),
   becomeTherapist: (code: string) => postJson<{ ok: boolean }>('/api/therapy/become-therapist', { code }),
   createTask: (body: { type: string; text: string; targetDays?: number; needId?: string; dueDate?: string; clientId?: number }) =>
     postJson<UserTask>('/api/therapy/tasks', body),

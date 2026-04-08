@@ -9,11 +9,38 @@ html, body {
   overscroll-behavior: none;
 }
 
+/* ── Theme variables ─────────────────────────────────────────────────── */
+:root {
+  --bg:         #060a12;
+  --bg-card:    rgba(255,255,255,0.04);
+  --border:     rgba(255,255,255,0.07);
+  --border-sm:  rgba(255,255,255,0.06);
+  --text:       #ffffff;
+  --text-60:    rgba(255,255,255,0.6);
+  --text-40:    rgba(255,255,255,0.4);
+  --text-30:    rgba(255,255,255,0.3);
+  --text-20:    rgba(255,255,255,0.2);
+  --nav-bg:     rgba(6,10,18,0.92);
+}
+
+html[data-theme="light"] {
+  --bg:         #f0eeff;
+  --bg-card:    rgba(80,50,160,0.06);
+  --border:     rgba(80,50,160,0.12);
+  --border-sm:  rgba(80,50,160,0.1);
+  --text:       #1a1040;
+  --text-60:    rgba(26,16,64,0.65);
+  --text-40:    rgba(26,16,64,0.5);
+  --text-30:    rgba(26,16,64,0.35);
+  --text-20:    rgba(26,16,64,0.2);
+  --nav-bg:     rgba(235,228,255,0.95);
+}
+
 body {
-  background: #060a12;
+  background: var(--bg);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
-  color: #ffffff;
+  color: var(--text);
   min-height: 100vh;
 }
 

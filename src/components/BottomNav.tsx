@@ -70,7 +70,7 @@ export function BottomNav({ section, onSelect, userRole }: Props) {
     <div style={{
       position: 'fixed',
       bottom: 0, left: 0, right: 0,
-      background: 'rgba(6,10,18,0.92)',
+      background: 'var(--nav-bg)',
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
       borderTop: '1px solid rgba(255,255,255,0.06)',

@@ -4,6 +4,7 @@ import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { getTelegramSafeTop } from '../utils/safezone';
+import { getTheme, toggleTheme, Theme } from '../utils/theme';
 
 const TIMEZONES = [
   { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
@@ -62,6 +63,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
   const tgName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const [editName, setEditName] = useState(displayName ?? tgName ?? '');
   const [nameSaving, setNameSaving] = useState(false);
+  const [theme, setTheme] = useState<Theme>(getTheme);
 
   useEffect(() => {
     api.getSettings()
@@ -116,7 +118,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
   if (!settings) {
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Loader minHeight="40vh" />
       </div>
     );
@@ -128,7 +130,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
   return (
     <>
       <div style={{
-        position: 'fixed', inset: 0, zIndex: 80, background: '#060a12',
+        position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)',
         overflowY: 'auto', paddingTop: safeTop,
       }}>
         {/* Header */}
@@ -175,6 +177,37 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
           {/* ── MAIN VIEW ── */}
           {view === 'main' && (
             <>
+              {/* Оформление */}
+              <div style={{ marginBottom: 8 }}>
+                <SettingsLabel>ОФОРМЛЕНИЕ</SettingsLabel>
+                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
+                    <span style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>
+                      {theme === 'dark' ? 'Тёмная тема' : 'Светлая тема'}
+                    </span>
+                  </div>
+                  <div
+                    onClick={() => setTheme(toggleTheme())}
+                    style={{
+                      width: 46, height: 26, borderRadius: 13,
+                      background: theme === 'dark' ? 'rgba(167,139,250,0.3)' : '#a78bfa',
+                      position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div style={{
+                      position: 'absolute', top: 3,
+                      left: theme === 'light' ? 23 : 3,
+                      width: 20, height: 20, borderRadius: '50%',
+                      background: '#fff',
+                      transition: 'left 0.2s',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                    }} />
+                  </div>
+                </div>
+              </div>
+
               {/* Имя */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>КАК ТЕБЯ ЗОВУТ</SettingsLabel>

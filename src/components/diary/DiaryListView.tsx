@@ -198,7 +198,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
       <div style={{ display: 'flex', gap: 8 }}>
         <button
           onClick={onContinue}
-          style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: 'none', background: color, color: type === 'gratitude' ? '#060a12' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: 'none', background: color, color: type === 'gratitude' ? 'var(--bg)' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
         >
           Продолжить
         </button>
@@ -239,9 +239,9 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#060a12', animation: 'slide-in-right 250ms ease' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', animation: 'slide-in-right 250ms ease' }}>
       <div style={{
-        position: 'sticky', top: 0, background: '#060a12', zIndex: 10,
+        position: 'sticky', top: 0, background: 'var(--bg)', zIndex: 10,
         padding: `${safeTop + 12}px 16px 12px`,
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}>
@@ -282,7 +282,7 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
       <button onClick={onNewEntry} style={{
         position: 'fixed', bottom: 80, right: 20,
         background: meta.color, border: 'none', borderRadius: 20,
-        padding: '14px 20px', color: type === 'gratitude' ? '#060a12' : '#fff',
+        padding: '14px 20px', color: type === 'gratitude' ? 'var(--bg)' : '#fff',
         fontSize: 15, fontWeight: 700, cursor: 'pointer',
         boxShadow: `0 4px 24px ${meta.color}66`,
       }}>

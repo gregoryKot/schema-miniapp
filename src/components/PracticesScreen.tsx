@@ -65,7 +65,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
   const isMid = todayScore !== undefined && todayScore > 4 && todayScore <= 7;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: '#060a12', overflowY: 'auto', paddingTop: safeTop }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto', paddingTop: safeTop }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
         <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>

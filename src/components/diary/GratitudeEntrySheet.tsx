@@ -90,7 +90,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
         <button onClick={handleSave} disabled={!canSave || saving} style={{
           marginTop: 20, width: '100%', padding: '14px', borderRadius: 14,
           background: canSave ? '#34d399' : 'rgba(255,255,255,0.1)',
-          color: canSave ? '#060a12' : 'rgba(255,255,255,0.3)',
+          color: canSave ? 'var(--bg)' : 'rgba(255,255,255,0.3)',
           border: 'none', fontSize: 16, fontWeight: 700, cursor: canSave ? 'pointer' : 'default',
         }}>
           {saving ? 'Сохраняю...' : 'Сохранить'}

@@ -215,7 +215,7 @@ function Slider({ value, color, onChange }: { value: number; color: string; onCh
         position: 'absolute', left: `${pct}%`, top: '50%',
         transform: 'translate(-50%, -50%)',
         width: 20, height: 20, borderRadius: '50%',
-        background: color, border: '2px solid #060a12', pointerEvents: 'none',
+        background: color, border: '2px solid var(--bg)', pointerEvents: 'none',
       }} />
     </div>
   );

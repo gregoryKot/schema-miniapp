@@ -142,7 +142,7 @@ function SliderRow({ needId, label, value, color, saved, onChange }: {
           transform: 'translate(-50%, -50%)',
           width: 20, height: 20, borderRadius: '50%',
           background: value > 0 ? color : 'rgba(255,255,255,0.2)',
-          border: '2px solid #060a12', pointerEvents: 'none',
+          border: '2px solid var(--bg)', pointerEvents: 'none',
         }} />
       </div>
     </div>
