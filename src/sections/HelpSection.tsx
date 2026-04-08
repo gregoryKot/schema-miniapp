@@ -155,29 +155,6 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* Therapist cabinet — prominent card for THERAPIST role */}
-        {userRole === 'THERAPIST' && onOpenTherapistCabinet && (
-          <div
-            onClick={onOpenTherapistCabinet}
-            style={{
-              background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(79,163,247,0.1))',
-              border: '1px solid rgba(167,139,250,0.3)',
-              borderRadius: 16, padding: '16px 18px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#a78bfa', marginBottom: 3 }}>
-                👨‍⚕️ Кабинет терапевта
-              </div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
-                Клиенты, задания, приглашения
-              </div>
-            </div>
-            <span style={{ fontSize: 20, color: 'rgba(167,139,250,0.5)' }}>›</span>
-          </div>
-        )}
-
         {/* Tasks card — always shown once relation is loaded */}
         {relation !== undefined && (
           <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 16, overflow: 'hidden' }}>

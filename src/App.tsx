@@ -525,7 +525,7 @@ export default function App() {
               display: 'flex', alignItems: 'stretch', height: 64,
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}>
-              <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
                 <span style={{ fontSize: 18 }}>👨‍⚕️</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.03em' }}>Кабинет</span>
               </div>

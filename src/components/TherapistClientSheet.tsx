@@ -85,6 +85,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [aliasInput, setAliasInput] = useState('');
   const [aliasSaving, setAliasSaving] = useState(false);
   const [ysqRequested, setYsqRequested] = useState(false);
+  const [manualIdInput, setManualIdInput] = useState('');
+  const [manualIdLoading, setManualIdLoading] = useState(false);
+  const [manualIdError, setManualIdError] = useState('');
+  const [conceptError, setConceptError] = useState('');
 
   useEffect(() => {
     api.getTherapyClients().then(setClients).catch(() => {}).finally(() => setLoading(false));
@@ -200,6 +204,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   async function saveConcept() {
     if (!selectedClient || !conceptDirty) return;
     setConceptSaving(true);
+    setConceptError('');
     try {
       const saved = await api.saveConceptualization(selectedClient.telegramId, {
         schemaIds: (localConcept.schemaIds ?? []) as string[],
@@ -214,7 +219,24 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
       setConcept(saved);
       setLocalConcept(saved);
       setConceptDirty(false);
-    } catch { /* ignore */ } finally { setConceptSaving(false); }
+    } catch { setConceptError('Ошибка сохранения. Проверь соединение.'); } finally { setConceptSaving(false); }
+  }
+
+  async function addClientManually() {
+    const id = parseInt(manualIdInput.trim(), 10);
+    if (!id || isNaN(id)) { setManualIdError('Введи числовой Telegram ID'); return; }
+    setManualIdLoading(true);
+    setManualIdError('');
+    try {
+      const updated = await api.addClientManually(id);
+      setClients(updated);
+      setManualIdInput('');
+    } catch (e: any) {
+      const msg = e?.message ?? '';
+      if (msg.includes('not found') || msg.includes('Not found')) setManualIdError('Пользователь не найден в базе');
+      else if (msg.includes('Already') || msg.includes('already')) setManualIdError('Клиент уже подключён');
+      else setManualIdError('Ошибка. Проверь ID.');
+    } finally { setManualIdLoading(false); }
   }
 
   const activeSchemaIds = (localConcept.schemaIds ?? concept?.schemaIds ?? []) as string[];
@@ -303,12 +325,35 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               )}
             </div>
 
+            {/* Add by Telegram ID */}
+            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 16, padding: 14, marginBottom: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 10 }}>Добавить по Telegram ID</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  value={manualIdInput}
+                  onChange={e => { setManualIdInput(e.target.value); setManualIdError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && addClientManually()}
+                  placeholder="123456789"
+                  inputMode="numeric"
+                  style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${manualIdError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
+                />
+                <button
+                  onClick={addClientManually} disabled={manualIdLoading || !manualIdInput.trim()}
+                  style={{ padding: '9px 16px', borderRadius: 10, border: 'none', background: manualIdInput.trim() ? 'rgba(var(--fg-rgb),0.1)' : 'rgba(var(--fg-rgb),0.05)', color: manualIdInput.trim() ? 'var(--text)' : 'rgba(var(--fg-rgb),0.3)', fontSize: 13, fontWeight: 600, cursor: manualIdInput.trim() ? 'pointer' : 'default', flexShrink: 0 }}
+                >
+                  {manualIdLoading ? '...' : 'Добавить'}
+                </button>
+              </div>
+              {manualIdError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{manualIdError}</div>}
+              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', marginTop: 6 }}>Клиент должен хотя бы раз открыть приложение</div>
+            </div>
+
             <SectionLabel mb={10}>Клиенты</SectionLabel>
             {loading ? (
               <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>Загружаю...</div>
             ) : clients.length === 0 ? (
               <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.7 }}>
-                Нет подключённых клиентов.<br />Пригласи клиента по ссылке выше.
+                Нет подключённых клиентов.<br />Пригласи по ссылке или добавь по ID выше.
               </div>
             ) : clients.map(c => (
               <div key={c.telegramId} onClick={() => openClient(c)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', marginBottom: 8, cursor: 'pointer' }}>
@@ -561,21 +606,20 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 </div>
 
                 {/* Save button */}
-                {conceptDirty && (
-                  <button
-                    onClick={saveConcept} disabled={conceptSaving}
-                    style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, rgba(167,139,250,0.3), rgba(79,163,247,0.2))', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: conceptSaving ? 0.6 : 1 }}
-                  >
-                    {conceptSaving ? 'Сохраняю...' : 'Сохранить концептуализацию'}
-                  </button>
-                )}
-                {!conceptDirty && concept && (
-                  <div style={{ fontSize: 12, color: 'rgba(52,211,153,0.6)', textAlign: 'center', padding: '4px 0' }}>
-                    ✓ Сохранено {fmtDate(concept.updatedAt.slice(0, 10))}
-                  </div>
-                )}
+                <button
+                  onClick={saveConcept} disabled={conceptSaving || !conceptDirty}
+                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: conceptDirty ? 'linear-gradient(135deg, rgba(167,139,250,0.3), rgba(79,163,247,0.2))' : 'rgba(var(--fg-rgb),0.05)', color: conceptDirty ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 14, fontWeight: 600, cursor: conceptDirty ? 'pointer' : 'default', opacity: conceptSaving ? 0.6 : 1 }}
+                >
+                  {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
+                </button>
+                {conceptError && <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
 
                 {/* History */}
+                {concept && (!concept.history || (concept.history as unknown[]).length === 0) && (
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'center', marginTop: 12 }}>
+                    История появится после следующего сохранения
+                  </div>
+                )}
                 {concept && concept.history && (concept.history as unknown[]).length > 0 && (
                   <div style={{ marginTop: 24 }}>
                     <button
