@@ -36,8 +36,9 @@ function drawCard(
   ctx.scale(DPR, DPR);
 
   // Background
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#060a12';
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, 'var(--bg)');
+  bg.addColorStop(0, bgColor);
   bg.addColorStop(1, '#141720');
   ctx.fillStyle = bg;
   ctx.beginPath();

@@ -100,6 +100,8 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     setLocalConcept({});
     setConceptDirty(false);
     setShowHistory(false);
+    setYsqRequested(false);
+    setRenamingAlias(false);
     onViewChange('client');
 
     const [tasks, fetchedNotes, fetchedConcept, fetchedData] = await Promise.all([
