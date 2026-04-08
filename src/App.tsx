@@ -252,6 +252,7 @@ export default function App() {
   const [therapistMode, setTherapistMode] = useState(false);
   const [cabinetView, setCabinetView] = useState<'list' | 'client'>('list');
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
+  const safeTop = useSafeTop();
   const [displayName, setDisplayName] = useState<string | null>(null);
   const [helpTasks, setHelpTasks] = useState<UserTask[] | null>(null);
   const [helpTasksKey, setHelpTasksKey] = useState(0);
@@ -497,8 +498,6 @@ export default function App() {
       </div>
     );
   }
-
-  const safeTop = useSafeTop();
 
   return (
     <div style={{ minHeight: '100vh' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
