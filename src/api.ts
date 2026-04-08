@@ -141,16 +141,40 @@ export interface TherapistNote {
   createdAt: string;
 }
 
+export interface ConceptSnapshot {
+  savedAt: string;
+  schemaIds: string[];
+  modeIds: string[];
+  earlyExperience: string | null;
+  unmetNeeds: string | null;
+  triggers: string | null;
+  copingStyles: string | null;
+  goals: string | null;
+  currentProblems: string | null;
+}
+
 export interface ClientConceptualization {
   id: number;
   therapistId: number;
   clientId: number;
   schemaIds: string[];
   modeIds: string[];
+  earlyExperience: string | null;
+  unmetNeeds: string | null;
   triggers: string | null;
-  coreWounds: string | null;
+  copingStyles: string | null;
   goals: string | null;
+  currentProblems: string | null;
+  history: ConceptSnapshot[];
   updatedAt: string;
+}
+
+export interface ClientData {
+  name: string | null;
+  mySchemaIds: string[];
+  myModeIds: string[];
+  ysqCompletedAt: string | null;
+  ysqActiveSchemaIds: string[];
 }
 
 export const api = {
@@ -264,6 +288,10 @@ export const api = {
   getConceptualization: (clientId: number) => get<ClientConceptualization | null>(`/api/therapy/conceptualization/${clientId}`),
   saveConceptualization: (clientId: number, body: {
     schemaIds?: string[]; modeIds?: string[];
-    triggers?: string; coreWounds?: string; goals?: string;
+    earlyExperience?: string; unmetNeeds?: string;
+    triggers?: string; copingStyles?: string; goals?: string; currentProblems?: string;
   }) => postJson<ClientConceptualization>(`/api/therapy/conceptualization/${clientId}`, body),
+
+  // ─── Client YSQ / profile data ───────────────────────────────────────────────
+  getTherapyClientData: (clientId: number) => get<ClientData>(`/api/therapy/client-data/${clientId}`),
 };
