@@ -82,17 +82,17 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             onClick={() => setType(opt.type)}
             style={{
               padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
-              background: type === opt.type ? 'rgba(167,139,250,0.15)' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${type === opt.type ? 'rgba(167,139,250,0.4)' : 'rgba(255,255,255,0.07)'}`,
+              background: type === opt.type ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.03)',
+              border: `1px solid ${type === opt.type ? 'rgba(167,139,250,0.4)' : 'rgba(var(--fg-rgb),0.07)'}`,
               display: 'flex', alignItems: 'center', gap: 10,
             }}
           >
             <span style={{ fontSize: 16, flexShrink: 0 }}>{opt.emoji}</span>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? '#a78bfa' : 'rgba(255,255,255,0.8)' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? '#a78bfa' : 'rgba(var(--fg-rgb),0.8)' }}>
                 {opt.label}
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>{opt.sub}</div>
+              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{opt.sub}</div>
             </div>
           </div>
         ))}
@@ -109,9 +109,9 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
                 onClick={() => setTargetDays(d)}
                 style={{
                   flex: 1, textAlign: 'center', padding: '8px 0', borderRadius: 10, cursor: 'pointer',
-                  background: targetDays === d ? 'rgba(167,139,250,0.2)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${targetDays === d ? '#a78bfa' : 'rgba(255,255,255,0.1)'}`,
-                  fontSize: 14, fontWeight: 600, color: targetDays === d ? '#a78bfa' : 'rgba(255,255,255,0.5)',
+                  background: targetDays === d ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                  border: `1px solid ${targetDays === d ? '#a78bfa' : 'rgba(var(--fg-rgb),0.1)'}`,
+                  fontSize: 14, fontWeight: 600, color: targetDays === d ? '#a78bfa' : 'rgba(var(--fg-rgb),0.5)',
                 }}
               >
                 {d}
@@ -130,9 +130,9 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             onChange={e => setText(e.target.value)}
             placeholder="Например: позвонить другу раз в неделю"
             style={{
-              width: '100%', minHeight: 72, background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12,
-              padding: '10px 12px', color: '#fff', fontSize: 14, resize: 'none', boxSizing: 'border-box',
+              width: '100%', minHeight: 72, background: 'rgba(var(--fg-rgb),0.05)',
+              border: '1px solid rgba(var(--fg-rgb),0.12)', borderRadius: 12,
+              padding: '10px 12px', color: 'var(--text)', fontSize: 14, resize: 'none', boxSizing: 'border-box',
             }}
           />
         </div>
@@ -147,9 +147,9 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
             style={{
-              width: '100%', background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12,
-              padding: '10px 12px', color: '#fff', fontSize: 14, boxSizing: 'border-box',
+              width: '100%', background: 'rgba(var(--fg-rgb),0.05)',
+              border: '1px solid rgba(var(--fg-rgb),0.12)', borderRadius: 12,
+              padding: '10px 12px', color: 'var(--text)', fontSize: 14, boxSizing: 'border-box',
             }}
           />
         </div>
@@ -163,7 +163,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
         style={{
           width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
           background: saving ? 'rgba(167,139,250,0.3)' : '#a78bfa',
-          color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
+          color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
         }}
       >
         {saving ? 'Сохраняю...' : 'Создать задание'}

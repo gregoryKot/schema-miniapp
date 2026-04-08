@@ -57,7 +57,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             padding: '12px 14px',
             marginBottom: 16,
             fontSize: 15,
-            color: 'rgba(255,255,255,0.85)',
+            color: 'rgba(var(--fg-rgb),0.85)',
             lineHeight: 1.6,
           }}>
             {question}
@@ -71,15 +71,15 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
           maxLength={500}
           style={{
             width: '100%', minHeight: 120,
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(var(--fg-rgb),0.05)',
+            border: '1px solid rgba(var(--fg-rgb),0.1)',
             borderRadius: 12, padding: '12px 14px',
-            color: '#fff', fontSize: 15, lineHeight: 1.6,
+            color: 'var(--text)', fontSize: 15, lineHeight: 1.6,
             resize: 'none', outline: 'none', boxSizing: 'border-box',
             fontFamily: 'inherit',
           }}
         />
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
 
@@ -88,8 +88,8 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             onClick={onClose}
             style={{
               flex: 1, padding: '13px 0', border: 'none', borderRadius: 12,
-              background: 'rgba(255,255,255,0.08)',
-              color: 'rgba(255,255,255,0.4)',
+              background: 'rgba(var(--fg-rgb),0.08)',
+              color: 'rgba(var(--fg-rgb),0.4)',
               fontSize: 15, fontWeight: 500, cursor: 'pointer',
             }}
           >
@@ -101,7 +101,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             style={{
               flex: 2, padding: '13px 0', border: 'none', borderRadius: 12,
               background: text.trim() ? '#a78bfa' : 'rgba(167,139,250,0.4)',
-              color: '#fff',
+              color: 'var(--text)',
               fontSize: 15, fontWeight: 600, cursor: 'pointer',
             }}
           >

@@ -73,7 +73,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           {data.emoji}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2, marginBottom: 8 }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2, marginBottom: 8 }}>
             {need.chartLabel}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -87,14 +87,14 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             ))}
           </div>
         </div>
-        <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
+        <div style={{ fontSize: 20, color: 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
       {/* Section 5: Slider — at top for immediate access */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 10 }}>
           <span style={{ fontSize: 28, fontWeight: 700, color }}>{value}</span>
-          <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>/10</span>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>/10</span>
         </div>
         <div
           ref={trackRef}
@@ -105,7 +105,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             cursor: 'pointer', touchAction: 'none', userSelect: 'none',
           }}
         >
-          <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 6, background: 'rgba(var(--fg-rgb),0.07)', overflow: 'hidden' }}>
             <div style={{
               width: `${value * 10}%`, height: '100%', borderRadius: 6,
               background: `linear-gradient(to right, ${color}55, ${color})`,
@@ -140,7 +140,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
       {/* Section 1: Question */}
       <div style={{ marginBottom: 20 }}>
         <SectionLabel>Спроси себя</SectionLabel>
-        <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6 }}>
           {data.question}
         </div>
       </div>
@@ -152,7 +152,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showExamples ? 10 : 0 }}
         >
           <SectionLabel mb={0}>Как это выглядит в жизни</SectionLabel>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{showExamples ? '▴' : '▾'}</span>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>{showExamples ? '▴' : '▾'}</span>
         </div>
         {showExamples && (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -160,10 +160,10 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
               <div key={i} style={{
                 display: 'flex', alignItems: 'flex-start', gap: 10,
                 padding: '8px 0',
-                borderBottom: i < data.examples.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                borderBottom: i < data.examples.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
               }}>
                 <span style={{ color, fontSize: 14, flexShrink: 0, lineHeight: 1.5 }}>›</span>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{ex}</span>
+                <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>{ex}</span>
               </div>
             ))}
           </div>
@@ -177,7 +177,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showRanges ? 10 : 0 }}
         >
           <SectionLabel mb={0}>Как понять оценку</SectionLabel>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>{showRanges ? '▴' : '▾'}</span>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>{showRanges ? '▴' : '▾'}</span>
         </div>
         {showRanges && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -189,22 +189,22 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
                   onClick={() => onChange(RANGE_VALUES[i])}
                   style={{
                     display: 'flex', alignItems: 'flex-start', gap: 10,
-                    background: active ? color + '33' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${active ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+                    background: active ? color + '33' : 'rgba(var(--fg-rgb),0.04)',
+                    border: `1px solid ${active ? color + '55' : 'rgba(var(--fg-rgb),0.08)'}`,
                     borderRadius: 12, padding: '10px 12px',
                     cursor: 'pointer',
                   }}
                 >
                   <div style={{
                     width: 7, height: 7, borderRadius: '50%',
-                    background: active ? color : 'rgba(255,255,255,0.2)',
+                    background: active ? color : 'rgba(var(--fg-rgb),0.2)',
                     flexShrink: 0, marginTop: 4,
                   }} />
                   <div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: active ? color : 'rgba(255,255,255,0.35)', marginRight: 6 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: active ? color : 'rgba(var(--fg-rgb),0.35)', marginRight: 6 }}>
                       {range.label}
                     </span>
-                    <span style={{ fontSize: 13, color: active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+                    <span style={{ fontSize: 13, color: active ? 'rgba(var(--fg-rgb),0.85)' : 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>
                       {range.description}
                     </span>
                   </div>
@@ -229,7 +229,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           >
             <div>
               <div style={{ fontSize: 14, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
                 Один шаг — и напомним
               </div>
             </div>
@@ -247,7 +247,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             >
               <div>
                 <div style={{ fontSize: 14, fontWeight: 500, color: '#f87171' }}>Раздел Помощь</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
                   Инструменты прямо сейчас
                 </div>
               </div>
@@ -274,7 +274,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           <div style={{ paddingTop: 8 }}>
             <SectionLabel purple mb={16}>О советах</SectionLabel>
             {DISCLAIMER_CONTENT.map((p, i) => (
-              <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>
+              <p key={i} style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>
                 {p}
               </p>
             ))}

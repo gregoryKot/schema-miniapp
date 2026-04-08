@@ -22,8 +22,8 @@ const COLOR = '#60a5fa';
 function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (
     <div style={{ marginTop: 20, marginBottom: 8 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{hint}</div>}
+      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
+      {hint && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>{hint}</div>}
     </div>
   );
 }
@@ -31,8 +31,8 @@ function FieldLabel({ title, hint }: { title: string; hint?: string }) {
 function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onChange: (v: string) => void; placeholder: string; rows?: number }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} style={{
-      width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-      borderRadius: 12, padding: '12px 14px', color: '#fff', fontSize: 14, lineHeight: 1.5, outline: 'none',
+      width: '100%', background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)',
+      borderRadius: 12, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.5, outline: 'none',
     }} />
   );
 }
@@ -82,8 +82,8 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Дневник режимов</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
           {existing ? 'Черновик восстановлен' : 'Новая запись'}
         </div>
 
@@ -96,10 +96,10 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
                 const sel = modeId === m.id;
                 return (
                   <button key={m.id} onClick={() => setModeId(sel ? '' : m.id)} style={{
-                    background: sel ? `${group.color}33` : 'rgba(255,255,255,0.06)',
+                    background: sel ? `${group.color}33` : 'rgba(var(--fg-rgb),0.06)',
                     border: sel ? `1px solid ${group.color}` : '1px solid transparent',
                     borderRadius: 16, padding: '6px 11px',
-                    color: sel ? '#fff' : 'rgba(255,255,255,0.6)',
+                    color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
                     fontSize: 13, cursor: 'pointer',
                   }}>
                     {m.emoji} {m.name}
@@ -133,14 +133,14 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
 
         <button onClick={handleSave} disabled={!canSave || saving} style={{
           marginTop: 24, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? COLOR : 'rgba(255,255,255,0.1)',
-          color: canSave ? '#fff' : 'rgba(255,255,255,0.3)',
+          background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.1)',
+          color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
           border: 'none', fontSize: 16, fontWeight: 600, cursor: canSave ? 'pointer' : 'default',
         }}>
           {saving ? 'Сохраняю...' : 'Сохранить'}
         </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 8 }}>
             Обязательно: выбери режим и опиши ситуацию
           </div>
         )}

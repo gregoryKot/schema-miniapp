@@ -29,8 +29,8 @@ function formatDt(iso: string) {
 function Field({ label, text }: { label: string; text: string }) {
   return (
     <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>{label}</div>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5 }}>{text}</div>
+      <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>{label}</div>
+      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5 }}>{text}</div>
     </div>
   );
 }
@@ -49,7 +49,7 @@ function DeleteBtn({ color, onClick }: { color: string; onClick: () => void }) {
       <button onClick={onClick} style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
         Удалить навсегда
       </button>
-      <button onClick={() => setConfirm(false)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer' }}>
+      <button onClick={() => setConfirm(false)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 12, cursor: 'pointer' }}>
         Отмена
       </button>
     </div>
@@ -62,18 +62,18 @@ function SchemaCard({ entry, color, onDelete }: { entry: SchemaDiaryEntry; color
   const schemas = entry.schemaIds.map(id => getSchemaById(id)).filter(Boolean);
 
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDt(entry.createdAt)}</span>
-          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{formatDt(entry.createdAt)}</span>
+          <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 6, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 6, lineHeight: 1.4 }}>
           {entry.trigger.length > 80 && !open ? entry.trigger.slice(0, 80) + '…' : entry.trigger}
         </div>
         {!open && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {emotionMetas.slice(0, 3).map(e => <span key={e.id} style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{e.emoji}</span>)}
+            {emotionMetas.slice(0, 3).map(e => <span key={e.id} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{e.emoji}</span>)}
             {schemas.slice(0, 2).map(s => s && <span key={s.id} style={{ fontSize: 11, padding: '2px 7px', borderRadius: 8, background: `${color}22`, color }}>{s.name}</span>)}
           </div>
         )}
@@ -102,14 +102,14 @@ function ModeCard({ entry, color, onDelete }: { entry: ModeDiaryEntry; color: st
   const mode = getModeById(entry.modeId);
 
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDt(entry.createdAt)}</span>
-          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{formatDt(entry.createdAt)}</span>
+          <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
         {mode && <div style={{ fontSize: 13, color, marginBottom: 4 }}>{mode.emoji} {mode.name}</div>}
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4 }}>
           {entry.situation.length > 80 && !open ? entry.situation.slice(0, 80) + '…' : entry.situation}
         </div>
       </div>
@@ -132,30 +132,30 @@ function GratitudeCard({ entry, color, onDelete }: { entry: GratitudeDiaryEntry;
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(255,255,255,0.06)' }}>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>
             {new Date(entry.date + 'T12:00:00').toLocaleDateString('ru', { day: 'numeric', month: 'long' })}
           </span>
-          <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.25)' }}>{open ? '▲' : '▼'}</span>
+          <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.25)' }}>{open ? '▲' : '▼'}</span>
         </div>
         {!open && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
             {entry.items.slice(0, 2).map((item, i) => (
-              <span key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+              <span key={i} style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)' }}>
                 {i > 0 && '· '}{item.length > 40 ? item.slice(0, 40) + '…' : item}
               </span>
             ))}
-            {entry.items.length > 2 && <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>+{entry.items.length - 2}</span>}
+            {entry.items.length > 2 && <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)' }}>+{entry.items.length - 2}</span>}
           </div>
         )}
-        {open && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>{entry.items.length} записи</div>}
+        {open && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>{entry.items.length} записи</div>}
       </div>
       {open && (
         <div style={{ marginTop: 10 }}>
           {entry.items.map((item, i) => (
-            <div key={i} style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', marginBottom: 6, paddingLeft: 4, borderLeft: `2px solid ${color}44`, lineHeight: 1.5 }}>
+            <div key={i} style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', marginBottom: 6, paddingLeft: 4, borderLeft: `2px solid ${color}44`, lineHeight: 1.5 }}>
               {item}
             </div>
           ))}
@@ -187,11 +187,11 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
             fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
             padding: '3px 7px', borderRadius: 6, background: `${color}22`, color,
           }}>Черновик</span>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>{formatDraftAge(draft.startedAt)}</span>
+          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{formatDraftAge(draft.startedAt)}</span>
         </div>
       </div>
       {preview && (
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', marginBottom: 10, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', marginBottom: 10, lineHeight: 1.4 }}>
           {preview.length > 80 ? preview.slice(0, 80) + '…' : preview}
         </div>
       )}
@@ -205,7 +205,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
         {!confirm ? (
           <button
             onClick={() => setConfirm(true)}
-            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer' }}
+            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 13, cursor: 'pointer' }}
           >
             Удалить
           </button>
@@ -223,7 +223,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
 }
 
 function Empty({ text }: { text: string }) {
-  return <div style={{ textAlign: 'center', padding: '60px 24px', color: 'rgba(255,255,255,0.35)', fontSize: 14, lineHeight: 1.6 }}>{text}</div>;
+  return <div style={{ textAlign: 'center', padding: '60px 24px', color: 'rgba(var(--fg-rgb),0.35)', fontSize: 14, lineHeight: 1.6 }}>{text}</div>;
 }
 
 export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntries, onBack, onNewEntry, onDelete }: Props) {
@@ -243,14 +243,14 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
       <div style={{
         position: 'sticky', top: 0, background: 'var(--bg)', zIndex: 10,
         padding: `${safeTop + 12}px 16px 12px`,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid rgba(var(--fg-rgb),0.06)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={onBack} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', borderRadius: 10, width: 36, height: 36, cursor: 'pointer', color: '#fff', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={onBack} style={{ background: 'rgba(var(--fg-rgb),0.08)', border: 'none', borderRadius: 10, width: 36, height: 36, cursor: 'pointer', color: 'var(--text)', fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             ‹
           </button>
           <span style={{ fontSize: 22 }}>{meta.emoji}</span>
-          <span style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>{meta.title}</span>
+          <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>{meta.title}</span>
         </div>
       </div>
 

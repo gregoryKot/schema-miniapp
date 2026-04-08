@@ -82,12 +82,12 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
         <div>
           <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🗂</div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.3, marginBottom: 10 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3, marginBottom: 10 }}>
               Что тебя вытаскивает?
             </div>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.7 }}>
               Когда потребность низкая — сложно вспомнить что помогает.{' '}
-              <span style={{ color: 'rgba(255,255,255,0.8)' }}>Добавь заранее</span> — и они будут под рукой в нужный момент.
+              <span style={{ color: 'rgba(var(--fg-rgb),0.8)' }}>Добавь заранее</span> — и они будут под рукой в нужный момент.
             </div>
           </div>
 
@@ -96,7 +96,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             border: '1px solid rgba(167,139,250,0.15)',
             borderRadius: 14, padding: '14px 16px', marginBottom: 24,
           }}>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.7 }}>
               В схема-терапии это называют <span style={{ color: '#a78bfa', fontWeight: 500 }}>копинг-карточками</span> — маленькими напоминаниями себе о том, что реально работает. Не воля, а конкретный шаг.
             </div>
           </div>
@@ -106,7 +106,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             style={{
               width: '100%', padding: '15px 0', borderRadius: 14, border: 'none',
               background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
-              color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10,
+              color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10,
             }}
           >
             Заполнить — займёт 2 минуты
@@ -115,7 +115,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             onClick={finish}
             style={{
               width: '100%', padding: '12px 0', borderRadius: 14, border: 'none',
-              background: 'transparent', color: 'rgba(255,255,255,0.3)', fontSize: 14, cursor: 'pointer',
+              background: 'transparent', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, cursor: 'pointer',
             }}
           >
             Пропустить, сделаю позже
@@ -124,7 +124,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
       ) : currentNeed && (
         <div>
           {/* Progress */}
-          <div style={{ height: 2, background: 'rgba(255,255,255,0.07)', borderRadius: 2, marginBottom: 24 }}>
+          <div style={{ height: 2, background: 'rgba(var(--fg-rgb),0.07)', borderRadius: 2, marginBottom: 24 }}>
             <div style={{
               height: '100%', borderRadius: 2,
               width: `${progress * 100}%`,
@@ -143,16 +143,16 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               {emoji}
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
                 {(step as number) + 1} из {total}
               </div>
-              <div style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>
+              <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>
                 {currentNeed.chartLabel}
               </div>
             </div>
           </div>
 
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 14 }}>
+          <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 14 }}>
             Выбери готовые или добавь своё:
           </div>
 
@@ -166,22 +166,22 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
                   onClick={() => toggleSuggestion(text)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    background: on ? color + '20' : 'rgba(255,255,255,0.04)',
-                    border: `1px solid ${on ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+                    background: on ? color + '20' : 'rgba(var(--fg-rgb),0.04)',
+                    border: `1px solid ${on ? color + '55' : 'rgba(var(--fg-rgb),0.08)'}`,
                     borderRadius: 12, padding: '11px 14px', cursor: 'pointer',
                     transition: 'background 0.15s, border-color 0.15s',
                   }}
                 >
                   <div style={{
                     width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                    border: `2px solid ${on ? color : 'rgba(255,255,255,0.2)'}`,
+                    border: `2px solid ${on ? color : 'rgba(var(--fg-rgb),0.2)'}`,
                     background: on ? color : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.15s',
                   }}>
                     {on && <span style={{ fontSize: 11, color: '#000', fontWeight: 700 }}>✓</span>}
                   </div>
-                  <span style={{ fontSize: 14, color: on ? '#fff' : 'rgba(255,255,255,0.7)', lineHeight: 1.4 }}>{text}</span>
+                  <span style={{ fontSize: 14, color: on ? '#fff' : 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.4 }}>{text}</span>
                 </div>
               );
             })}
@@ -196,10 +196,10 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             rows={2}
             style={{
               width: '100%', boxSizing: 'border-box',
-              background: 'rgba(255,255,255,0.05)',
-              border: `1px solid ${input.trim() ? color + '55' : 'rgba(255,255,255,0.1)'}`,
+              background: 'rgba(var(--fg-rgb),0.05)',
+              border: `1px solid ${input.trim() ? color + '55' : 'rgba(var(--fg-rgb),0.1)'}`,
               borderRadius: 12, padding: '12px 14px',
-              color: '#fff', fontSize: 15, lineHeight: 1.5,
+              color: 'var(--text)', fontSize: 15, lineHeight: 1.5,
               resize: 'none', outline: 'none', fontFamily: 'inherit',
               transition: 'border-color 0.15s',
               marginBottom: 12,
@@ -216,8 +216,8 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               onClick={next}
               style={{
                 flex: 1, padding: '14px 0', borderRadius: 14,
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'transparent', color: 'rgba(255,255,255,0.4)',
+                border: '1px solid rgba(var(--fg-rgb),0.1)',
+                background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)',
                 fontSize: 14, cursor: 'pointer',
               }}
             >
@@ -228,8 +228,8 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               disabled={saving || (selected.size === 0 && !input.trim())}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-                background: (selected.size > 0 || input.trim()) ? color : 'rgba(255,255,255,0.07)',
-                color: '#fff', fontSize: 15, fontWeight: 600,
+                background: (selected.size > 0 || input.trim()) ? color : 'rgba(var(--fg-rgb),0.07)',
+                color: 'var(--text)', fontSize: 15, fontWeight: 600,
                 cursor: (selected.size > 0 || input.trim()) ? 'pointer' : 'default',
                 transition: 'background 0.15s',
               }}

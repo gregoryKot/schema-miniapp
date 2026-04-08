@@ -24,7 +24,7 @@ export function Loader({ minHeight = '60vh' }: { minHeight?: string }) {
         {cat}
       </div>
       <div style={{
-        fontSize: 13, color: 'rgba(255,255,255,0.3)',
+        fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)',
         display: 'flex', gap: 3, alignItems: 'center',
       }}>
         {phrase}

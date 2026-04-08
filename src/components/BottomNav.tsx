@@ -16,7 +16,7 @@ const TABS: { id: Section; label: string; activeColor: string }[] = [
 function TabIcon({ id, active, color, isTherapist }: { id: Section; active: boolean; color: string; isTherapist?: boolean }) {
   const style = {
     width: 22, height: 22,
-    color: active ? color : 'rgba(255,255,255,0.3)',
+    color: active ? color : 'rgba(var(--fg-rgb),0.3)',
     transition: 'color 0.2s',
     filter: active ? `drop-shadow(0 0 5px ${color}88)` : 'none',
   };
@@ -69,12 +69,12 @@ export function BottomNav({ section, onSelect, userRole }: Props) {
       background: 'var(--nav-bg)',
       backdropFilter: 'blur(24px)',
       WebkitBackdropFilter: 'blur(24px)',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
+      borderTop: '1px solid rgba(var(--fg-rgb),0.06)',
       zIndex: 50,
     }}>
       {/* Beta badge */}
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 1 }}>
-        <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.1em' }}>
+        <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.2)', letterSpacing: '0.1em' }}>
           β бета
         </div>
       </div>
@@ -113,7 +113,7 @@ export function BottomNav({ section, onSelect, userRole }: Props) {
             <span style={{
               fontSize: 10,
               fontWeight: active ? 600 : 400,
-              color: active ? tab.activeColor : 'rgba(255,255,255,0.3)',
+              color: active ? tab.activeColor : 'rgba(var(--fg-rgb),0.3)',
               letterSpacing: '0.03em',
               transition: 'color 0.2s',
             }}>

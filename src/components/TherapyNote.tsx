@@ -13,7 +13,7 @@ export function TherapyNote({ compact }: { compact?: boolean }) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0' }}>
         <span style={{ fontSize: 12 }}>💬</span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', lineHeight: 1.4 }}>
+        <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', lineHeight: 1.4 }}>
           {contact.isTherapist
             ? 'Ты работаешь как терапевт — поддержка рядом.'
             : 'Инструмент самоисследования, не замена психологу.'
@@ -38,7 +38,7 @@ export function TherapyNote({ compact }: { compact?: boolean }) {
     }}>
       <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>💬</span>
       <div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.55 }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.55 }}>
           {contact.isTherapist
             ? 'Ты работаешь как терапевт. Клиенты обращаются к тебе — ты уже рядом.'
             : 'Это инструмент самоисследования — не клиническая диагностика и не замена работе с психологом. Если чувствуешь, что нужно разобраться глубже — терапия это место где безопасно.'

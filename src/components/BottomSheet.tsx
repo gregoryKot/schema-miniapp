@@ -52,7 +52,7 @@ export function BottomSheet({ onClose, children, zIndex = 200, scrollRef }: Prop
         ref={sheetRef}
         style={{
           position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: zIndex + 1,
-          background: '#161821',
+          background: 'var(--sheet-bg)',
           borderRadius: '24px 24px 0 0',
           maxHeight: '88vh',
           display: 'flex',
@@ -72,7 +72,7 @@ export function BottomSheet({ onClose, children, zIndex = 200, scrollRef }: Prop
             touchAction: 'none',
           }}
         >
-          <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.15)' }} />
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.15)' }} />
         </div>
 
         {/* One-time close hint */}
@@ -80,7 +80,7 @@ export function BottomSheet({ onClose, children, zIndex = 200, scrollRef }: Prop
           <div style={{
             textAlign: 'center',
             fontSize: 12,
-            color: 'rgba(255,255,255,0.35)',
+            color: 'rgba(var(--fg-rgb),0.35)',
             padding: '0 0 10px',
             animation: 'fade-in 300ms ease',
             flexShrink: 0,

@@ -9,7 +9,7 @@ export function SectionLabel({ children, purple = false, mb = 10 }: Props) {
     <div style={{
       fontSize: 11,
       fontWeight: purple ? 600 : 500,
-      color: purple ? '#a78bfa' : 'rgba(255,255,255,0.3)',
+      color: purple ? '#a78bfa' : 'rgba(var(--fg-rgb),0.3)',
       textTransform: 'uppercase',
       letterSpacing: '0.06em',
       marginBottom: mb,

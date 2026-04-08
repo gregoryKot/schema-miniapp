@@ -78,9 +78,9 @@ export function NoteSheet({ date, onClose }: Props) {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   padding: '6px 12px', borderRadius: 20, cursor: 'pointer',
-                  background: on ? 'rgba(167,139,250,0.2)' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${on ? 'rgba(167,139,250,0.5)' : 'rgba(255,255,255,0.07)'}`,
-                  color: on ? '#a78bfa' : 'rgba(255,255,255,0.5)',
+                  background: on ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                  border: `1px solid ${on ? 'rgba(167,139,250,0.5)' : 'rgba(var(--fg-rgb),0.07)'}`,
+                  color: on ? '#a78bfa' : 'rgba(var(--fg-rgb),0.5)',
                   fontSize: 12, fontWeight: on ? 600 : 400,
                   transition: 'all 0.15s',
                 }}
@@ -99,15 +99,15 @@ export function NoteSheet({ date, onClose }: Props) {
           maxLength={500}
           style={{
             width: '100%', minHeight: 100,
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'rgba(var(--fg-rgb),0.05)',
+            border: '1px solid rgba(var(--fg-rgb),0.1)',
             borderRadius: 12, padding: '12px 14px',
-            color: '#fff', fontSize: 15, lineHeight: 1.6,
+            color: 'var(--text)', fontSize: 15, lineHeight: 1.6,
             resize: 'none', outline: 'none', boxSizing: 'border-box',
             fontFamily: 'inherit',
           }}
         />
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
 
@@ -121,8 +121,8 @@ export function NoteSheet({ date, onClose }: Props) {
           disabled={!hasContent || saving}
           style={{
             width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: hasContent ? '#a78bfa' : 'rgba(255,255,255,0.08)',
-            color: hasContent ? '#fff' : 'rgba(255,255,255,0.3)',
+            background: hasContent ? '#a78bfa' : 'rgba(var(--fg-rgb),0.08)',
+            color: hasContent ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
             fontSize: 15, fontWeight: 600, cursor: hasContent ? 'pointer' : 'default',
           }}
         >

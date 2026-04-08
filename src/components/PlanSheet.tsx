@@ -142,10 +142,10 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
           {needEmoji}
         </div>
         <div>
-          <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
+          <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>
             Что сделаешь завтра?
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>
             {needLabel}
           </div>
         </div>
@@ -163,20 +163,20 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                       onClick={() => selectText(text)}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 10, flex: 1,
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        background: 'rgba(var(--fg-rgb),0.05)',
+                        border: '1px solid rgba(var(--fg-rgb),0.08)',
                         borderRadius: 12, padding: '11px 14px',
                         cursor: 'pointer',
                       }}
                     >
                       <div style={{
                         width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
-                        background: isUser ? color : 'rgba(255,255,255,0.2)',
+                        background: isUser ? color : 'rgba(var(--fg-rgb),0.2)',
                       }} />
-                      <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', flex: 1, lineHeight: 1.45 }}>
+                      <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', flex: 1, lineHeight: 1.45 }}>
                         {text}
                       </div>
-                      <div style={{ fontSize: 18, color: 'rgba(255,255,255,0.15)', flexShrink: 0 }}>›</div>
+                      <div style={{ fontSize: 18, color: 'rgba(var(--fg-rgb),0.15)', flexShrink: 0 }}>›</div>
                     </div>
                     {isUser && id !== undefined && (
                       <div
@@ -212,10 +212,10 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               rows={2}
               style={{
                 width: '100%', boxSizing: 'border-box',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(var(--fg-rgb),0.05)',
+                border: '1px solid rgba(var(--fg-rgb),0.1)',
                 borderRadius: 12, padding: '12px 14px',
-                color: '#fff', fontSize: 15, lineHeight: 1.5,
+                color: 'var(--text)', fontSize: 15, lineHeight: 1.5,
                 resize: 'none', outline: 'none', fontFamily: 'inherit',
               }}
             />
@@ -225,7 +225,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               onClick={handleCustomSubmit}
               style={{
                 width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
-                background: color, color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer',
+                background: color, color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer',
               }}
             >
               Продолжить →
@@ -245,7 +245,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             <div style={{ fontSize: 12, color, fontWeight: 500, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Практика
             </div>
-            <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.9)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.9)', lineHeight: 1.5 }}>
               {selectedText}
             </div>
           </div>
@@ -260,24 +260,24 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                   onClick={() => setReminderIdx(i)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 10,
-                    background: reminderIdx === i ? color + '22' : 'rgba(255,255,255,0.04)',
+                    background: reminderIdx === i ? color + '22' : 'rgba(var(--fg-rgb),0.04)',
                     border: `1px solid ${reminderIdx === i ? color + '44' : 'transparent'}`,
                     borderRadius: 12, padding: '11px 14px', cursor: 'pointer',
                   }}
                 >
                   <div style={{
                     width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
-                    border: `2px solid ${reminderIdx === i ? color : 'rgba(255,255,255,0.2)'}`,
+                    border: `2px solid ${reminderIdx === i ? color : 'rgba(var(--fg-rgb),0.2)'}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
                     {reminderIdx === i && (
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
                     )}
                   </div>
-                  <span style={{ fontSize: 15, color: reminderIdx === i ? '#fff' : 'rgba(255,255,255,0.6)' }}>
+                  <span style={{ fontSize: 15, color: reminderIdx === i ? '#fff' : 'rgba(var(--fg-rgb),0.6)' }}>
                     {opt.label}
                     {opt.localHour !== null && (
-                      <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', marginLeft: 6 }}>
+                      <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginLeft: 6 }}>
                         {String(opt.localHour).padStart(2, '0')}:00
                       </span>
                     )}
@@ -325,13 +325,13 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               }}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(var(--fg-rgb),0.04)',
+                border: '1px solid rgba(var(--fg-rgb),0.08)',
                 borderRadius: 12, padding: '10px 14px', cursor: 'pointer',
               }}
             >
               <span style={{ fontSize: 16 }}>📅</span>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Добавить в календарь (.ics)</span>
+              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)' }}>Добавить в календарь (.ics)</span>
             </div>
           </div>
 
@@ -344,8 +344,8 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
             <button
               onClick={() => setPhase('pick')}
               style={{
-                flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)',
-                background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: 15, cursor: 'pointer',
+                flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)',
+                background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 15, cursor: 'pointer',
               }}
             >
               ← Назад
@@ -355,7 +355,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               disabled={saving || savedOk}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-                background: savedOk ? 'rgba(52,211,153,0.2)' : saving ? 'rgba(255,255,255,0.1)' : color,
+                background: savedOk ? 'rgba(52,211,153,0.2)' : saving ? 'rgba(var(--fg-rgb),0.1)' : color,
                 color: savedOk ? '#34d399' : '#fff', fontSize: 15, fontWeight: 600, cursor: (saving || savedOk) ? 'default' : 'pointer',
                 transition: 'all 0.3s',
               }}

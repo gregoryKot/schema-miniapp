@@ -29,7 +29,7 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
     <div
       onClick={onOpen}
       style={{
-        background: 'rgba(255,255,255,0.04)',
+        background: 'rgba(var(--fg-rgb),0.04)',
         borderRadius: 20,
         padding: '18px 18px',
         marginBottom: 12,
@@ -37,7 +37,7 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
         display: 'flex',
         alignItems: 'center',
         gap: 16,
-        border: `1px solid rgba(255,255,255,0.06)`,
+        border: `1px solid rgba(var(--fg-rgb),0.06)`,
         transition: 'background 150ms',
       }}
     >
@@ -50,10 +50,10 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
         {meta.emoji}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>
           {meta.title}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.4 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.4 }}>
           {meta.subtitle}
         </div>
         {meta.count > 0 && (
@@ -63,7 +63,7 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
           </div>
         )}
       </div>
-      <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 20, flexShrink: 0 }}>›</div>
+      <div style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 20, flexShrink: 0 }}>›</div>
     </div>
   );
 }
@@ -104,11 +104,11 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
   return (
     <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        {onClose && <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>}
-        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff' }}>Дневники</span>
+        {onClose && <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>}
+        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>Дневники</span>
       </div>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>
           Инструменты схема-терапии для самонаблюдения. Веди один или все три — как удобно.
         </div>
       </div>

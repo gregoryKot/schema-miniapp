@@ -44,11 +44,11 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Дневник благодарности</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 24 }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Дневник благодарности</div>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 24 }}>
           {dateLabel}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 16, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 16, lineHeight: 1.5 }}>
           Три вещи, за которые ты благодарен. Даже маленькие — они тоже считаются.
         </div>
 
@@ -56,8 +56,8 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
           <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 12 }}>
             <div style={{
               width: 32, height: 32, borderRadius: 10, flexShrink: 0, marginTop: 2,
-              background: item.trim() ? '#34d39944' : 'rgba(255,255,255,0.06)',
-              border: item.trim() ? '1px solid #34d399' : '1px solid rgba(255,255,255,0.1)',
+              background: item.trim() ? '#34d39944' : 'rgba(var(--fg-rgb),0.06)',
+              border: item.trim() ? '1px solid #34d399' : '1px solid rgba(var(--fg-rgb),0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 14, color: '#34d399', fontWeight: 700,
             }}>
@@ -69,8 +69,8 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
               placeholder={['Что-то хорошее, что случилось...', 'Кто-то или что-то, что помогло...', 'Момент, который запомнился...'][i]}
               rows={2}
               style={{
-                flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: 12, padding: '10px 12px', color: '#fff', fontSize: 14, lineHeight: 1.5,
+                flex: 1, background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)',
+                borderRadius: 12, padding: '10px 12px', color: 'var(--text)', fontSize: 14, lineHeight: 1.5,
                 outline: 'none',
               }}
             />
@@ -79,8 +79,8 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
 
         {items.length < 5 && (
           <button onClick={() => setItems(prev => [...prev, ''])} style={{
-            background: 'rgba(255,255,255,0.05)', border: '1px dashed rgba(255,255,255,0.15)',
-            borderRadius: 12, padding: '10px', width: '100%', color: 'rgba(255,255,255,0.4)',
+            background: 'rgba(var(--fg-rgb),0.05)', border: '1px dashed rgba(var(--fg-rgb),0.15)',
+            borderRadius: 12, padding: '10px', width: '100%', color: 'rgba(var(--fg-rgb),0.4)',
             fontSize: 13, cursor: 'pointer', marginBottom: 4,
           }}>
             + ещё одна вещь
@@ -89,8 +89,8 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
 
         <button onClick={handleSave} disabled={!canSave || saving} style={{
           marginTop: 20, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? '#34d399' : 'rgba(255,255,255,0.1)',
-          color: canSave ? 'var(--bg)' : 'rgba(255,255,255,0.3)',
+          background: canSave ? '#34d399' : 'rgba(var(--fg-rgb),0.1)',
+          color: canSave ? 'var(--bg)' : 'rgba(var(--fg-rgb),0.3)',
           border: 'none', fontSize: 16, fontWeight: 700, cursor: canSave ? 'pointer' : 'default',
         }}>
           {saving ? 'Сохраняю...' : 'Сохранить'}

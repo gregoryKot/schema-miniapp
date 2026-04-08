@@ -38,7 +38,7 @@ function NeedIcon({ id, color }: { id: string; color: string }) {
 
 const BADGE_NEUTRAL: React.CSSProperties = {
   fontSize: 11, fontWeight: 500, padding: '2px 6px', borderRadius: 20,
-  background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.4)',
+  background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.4)',
 };
 const BADGE_POSITIVE: React.CSSProperties = {
   fontSize: 11, fontWeight: 500, padding: '2px 6px', borderRadius: 20,
@@ -104,8 +104,8 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
 
         {/* Name + hint */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 500, color: '#fff', lineHeight: 1.2 }}>{label}</div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+          <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', lineHeight: 1.2 }}>{label}</div>
+          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 3 }}>
             {HINTS[id] ?? ''}
           </div>
         </div>
@@ -114,8 +114,8 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
         <div style={{ flexShrink: 0 }}>
           <div style={{
             width: 18, height: 18, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.08)',
-            color: 'rgba(255,255,255,0.35)',
+            background: 'rgba(var(--fg-rgb),0.08)',
+            color: 'rgba(var(--fg-rgb),0.35)',
             fontSize: 11, fontWeight: 600,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>?</div>
@@ -135,19 +135,19 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
               }}
             >
               <span style={{ fontSize: 15, fontWeight: 600, color }}>{value}</span>
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)' }}>/10</span>
+              <span style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.3)' }}>/10</span>
               <span style={{ fontSize: 11, color: color + 'aa', marginLeft: 2 }}>✎</span>
             </div>
           ) : hasValue ? (
             <>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <span style={{ fontSize: 17, fontWeight: 600, color }}>{value}</span>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>/10</span>
+                <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>/10</span>
               </div>
               {delta !== null && <DeltaBadge delta={delta} />}
             </>
           ) : (
-            <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.2)' }}>—</span>
+            <span style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.2)' }}>—</span>
           )}
         </div>
       </div>
@@ -166,7 +166,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
         }}
       >
         {/* Track */}
-        <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+        <div style={{ height: 6, borderRadius: 6, background: 'rgba(var(--fg-rgb),0.07)', overflow: 'hidden' }}>
           <div style={{
             width: `${pct}%`,
             height: '100%',
@@ -203,7 +203,7 @@ export function NeedSlider({ id, label, value, onChange, onTap, locked, onUnlock
             width: 20,
             height: 20,
             borderRadius: '50%',
-            background: hasValue ? color : 'rgba(255,255,255,0.25)',
+            background: hasValue ? color : 'rgba(var(--fg-rgb),0.25)',
             border: '2px solid var(--bg)',
             pointerEvents: 'none',
             zIndex: 1,

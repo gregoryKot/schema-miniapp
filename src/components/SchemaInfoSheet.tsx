@@ -157,19 +157,19 @@ const MODE_CHECKIN = [
 function NeedsTab() {
   return (
     <div>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+      <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
         Схема-терапия строится на идее, что у каждого есть пять базовых эмоциональных потребностей. Когда они систематически не удовлетворялись в детстве — формируются схемы: устойчивые паттерны мышления и поведения.
       </p>
       {NEEDS_DATA.map((n) => (
-        <div key={n.title} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
+        <div key={n.title} style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <span style={{ fontSize: 24 }}>{n.emoji}</span>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{n.title}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{n.subtitle}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{n.title}</div>
+              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>{n.subtitle}</div>
             </div>
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{n.desc}</div>
+          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.6 }}>{n.desc}</div>
         </div>
       ))}
     </div>
@@ -184,7 +184,7 @@ function SchemasTab({ highlight }: { highlight?: string }) {
 
   return (
     <div>
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+      <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
         18 ранних дезадаптивных схем (Young, 1990) сгруппированы в 5 доменов. Схема — не диагноз, а паттерн, который когда-то помогал выжить и приспособиться.
       </p>
       {SCHEMA_DOMAINS.map((d) => (
@@ -194,15 +194,15 @@ function SchemasTab({ highlight }: { highlight?: string }) {
             style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               padding: '12px 16px',
-              background: 'rgba(255,255,255,0.05)', borderRadius: open === d.domain ? '14px 14px 0 0' : 14,
+              background: 'rgba(var(--fg-rgb),0.05)', borderRadius: open === d.domain ? '14px 14px 0 0' : 14,
               cursor: 'pointer',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.color, flexShrink: 0 }} />
-              <span style={{ fontSize: 14, fontWeight: 500, color: '#fff' }}>{d.domain}</span>
+              <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{d.domain}</span>
             </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', display: 'flex', alignItems: 'center', gap: 6 }}>
               {d.schemas.length}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
                 style={{ transform: open === d.domain ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
@@ -211,13 +211,13 @@ function SchemasTab({ highlight }: { highlight?: string }) {
             </div>
           </div>
           {open === d.domain && (
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '0 0 14px 14px', overflow: 'hidden' }}>
+            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', borderRadius: '0 0 14px 14px', overflow: 'hidden' }}>
               {d.schemas.map((s, i) => {
                 const isHighlighted = s.name === highlight;
                 return (
-                  <div key={s.name} style={{ padding: '11px 16px', borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none', background: isHighlighted ? `rgba(${hexToRgbStr(d.color)},0.12)` : 'transparent' }}>
+                  <div key={s.name} style={{ padding: '11px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none', background: isHighlighted ? `rgba(${hexToRgbStr(d.color)},0.12)` : 'transparent' }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: d.color, marginBottom: 3 }}>{s.name}{isHighlighted && ' ◀'}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>{(s as { libraryDesc?: string; desc: string }).libraryDesc ?? s.desc}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.5 }}>{(s as { libraryDesc?: string; desc: string }).libraryDesc ?? s.desc}</div>
                   </div>
                 );
               })}
@@ -254,10 +254,10 @@ function ModesTab() {
         <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
           Режим прямо сейчас
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>Как ты себя чувствуешь? →</div>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)' }}>Как ты себя чувствуешь? →</div>
       </div>
 
-      <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+      <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
         Режим — это актуальное состояние психики прямо сейчас. В отличие от схем (устойчивых паттернов), режимы меняются в течение дня. Цель — расширить доступ к Здоровому взрослому.
       </p>
 
@@ -265,15 +265,15 @@ function ModesTab() {
         <div key={g.group} style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: g.color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>{g.group}</div>
           {g.items.map((m) => (
-            <div key={m.name} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
+            <div key={m.name} style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 20 }}>{m.emoji}</span>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{m.name}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 1 }}>Чувствуется как: {m.feel}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{m.name}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 1 }}>Чувствуется как: {m.feel}</div>
                 </div>
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>{m.desc}</div>
+              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6 }}>{m.desc}</div>
             </div>
           ))}
         </div>
@@ -290,19 +290,19 @@ function ModesTab() {
             style={{ background: '#161821', borderRadius: '24px 24px 0 0', padding: '20px 20px 48px', animation: 'sheet-up 300ms cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             <div style={{ textAlign: 'center', marginBottom: 4 }}>
-              <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(255,255,255,0.12)', margin: '0 auto 16px' }} />
+              <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.12)', margin: '0 auto 16px' }} />
             </div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 4, textAlign: 'center' }}>Как ты сейчас?</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20, textAlign: 'center' }}>Выбери самое близкое ощущение</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 4, textAlign: 'center' }}>Как ты сейчас?</div>
+            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, textAlign: 'center' }}>Выбери самое близкое ощущение</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
               {MODE_CHECKIN.map((item) => (
                 <div
                   key={item.label}
                   onClick={() => setCheckinMode(item)}
-                  style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 14, padding: '12px 8px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(255,255,255,0.06)' }}
+                  style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 14, padding: '12px 8px', textAlign: 'center', cursor: 'pointer', border: '1px solid rgba(var(--fg-rgb),0.06)' }}
                 >
                   <div style={{ fontSize: 26, marginBottom: 6 }}>{item.emoji}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.4 }}>{item.label}</div>
                 </div>
               ))}
             </div>
@@ -322,10 +322,10 @@ function ModesTab() {
           >
             <div style={{ fontSize: 56, marginBottom: 12 }}>{checkinMode.emoji}</div>
             <SectionLabel purple mb={8}>Режим</SectionLabel>
-            <div style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 16 }}>{checkinMode.mode}</div>
-            <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '14px 16px', marginBottom: 24, textAlign: 'left' }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>{checkinMode.mode}</div>
+            <div style={{ background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '14px 16px', marginBottom: 24, textAlign: 'left' }}>
               <div style={{ fontSize: 12, color: '#a78bfa', marginBottom: 6 }}>Что помогает</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6 }}>{checkinMode.tip}</div>
+              <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6 }}>{checkinMode.tip}</div>
             </div>
             <button
               onClick={() => { setCheckinMode(null); setShowCheckin(false); }}
@@ -354,14 +354,14 @@ export function SchemaInfoContent({ initialTab, highlight }: { initialTab?: Tab;
     <div>
       <div style={{ marginBottom: 16 }}>
         <SectionLabel purple mb={6}>Схема-терапия</SectionLabel>
-        <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Как это работает</div>
+        <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)' }}>Как это работает</div>
       </div>
-      <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3, marginBottom: 20 }}>
+      <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 12, padding: 3, marginBottom: 20 }}>
         {SCHEMA_TABS.map((t) => {
           const active = tab === t.key;
           return (
             <button key={t.key} onClick={() => setTab(t.key)}
-              style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
+              style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
             >{t.label}</button>
           );
         })}
@@ -397,7 +397,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
       <BottomSheet onClose={onClose}>
         <div style={{ paddingTop: 4 }}>
           <SchemaInfoContent key={contentKey} initialTab={contentInitialTab} highlight={highlightSchema} />
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid rgba(var(--fg-rgb),0.06)' }}>
             {hasProgress && !hasResult && (
               <div
                 onClick={() => setShowTest(true)}
@@ -409,7 +409,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
                 <span style={{ fontSize: 18 }}>⏸</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
+                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
                 <span style={{ fontSize: 16, color: 'rgba(251,191,36,0.3)' }}>›</span>
               </div>
@@ -426,7 +426,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
                 <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>
                   {hasResult ? 'Мои результаты YSQ-R' : hasProgress ? 'Продолжить тест' : 'Пройти тест на схемы'}
                 </div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>
+                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
                   {hasResult ? 'Посмотреть или пройти заново' : '116 вопросов · ~10 минут · YSQ-R'}
                 </div>
               </div>

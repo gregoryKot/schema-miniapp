@@ -35,8 +35,12 @@ function drawCard(
   const ctx = canvas.getContext('2d')!;
   ctx.scale(DPR, DPR);
 
-  // Background
-  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#060a12';
+  // Resolve CSS vars — Canvas doesn't support var() in fillStyle/strokeStyle
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#060a12';
+  // fg-rgb is "255, 255, 255" in dark or "26, 14, 64" in light
+  const fgRgb = cs.getPropertyValue('--fg-rgb').trim() || '255, 255, 255';
+  const fg = (alpha: number) => `rgba(${fgRgb},${alpha})`;
   const bg = ctx.createLinearGradient(0, 0, W, H);
   bg.addColorStop(0, bgColor);
   bg.addColorStop(1, '#141720');
@@ -68,11 +72,11 @@ function drawCard(
     ? `${fmtDate(sorted[0])} — ${fmtDate(sorted[sorted.length - 1])}`
     : sorted.length === 1 ? fmtDate(sorted[0]) : '';
   ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.fillStyle = fg(0.38);
   ctx.fillText(weekRange, 28, 76);
 
   // Divider
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.strokeStyle = fg(0.07);
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(28, 96);
@@ -97,7 +101,7 @@ function drawCard(
 
     // Label
     ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillStyle = fg(0.7);
     ctx.fillText(need.chartLabel, 52, rowY + 20);
 
     // Value
@@ -109,7 +113,7 @@ function drawCard(
     ctx.textAlign = 'left';
 
     // Bar background
-    ctx.fillStyle = 'rgba(255,255,255,0.07)';
+    ctx.fillStyle = fg(0.07);
     ctx.beginPath();
     (ctx as any).roundRect(BAR_X, rowY + 12, BAR_MAX_W, BAR_H, 3.5);
     ctx.fill();
@@ -129,7 +133,7 @@ function drawCard(
 
   // Divider after needs
   const statsDivY = 112 + needs.length * ROW_H + 8;
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.strokeStyle = fg(0.07);
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(28, statsDivY);
@@ -144,7 +148,7 @@ function drawCard(
     : 0;
 
   ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.fillStyle = fg(0.35);
   ctx.textAlign = 'left';
   ctx.fillText('Индекс недели', 28, statsY);
 
@@ -153,14 +157,14 @@ function drawCard(
   ctx.fillText(weekIndex.toFixed(1), 28, statsY + 30);
 
   ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.fillStyle = fg(0.28);
   const idxW = ctx.measureText(weekIndex.toFixed(1)).width;
   ctx.fillText('/10', 28 + idxW + 2, statsY + 24);
 
   if (streak > 0) {
     ctx.textAlign = 'right';
     ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.fillStyle = fg(0.35);
     ctx.fillText('Серия дней', W - 28, statsY);
 
     ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, sans-serif';
@@ -171,7 +175,7 @@ function drawCard(
 
   // Footer divider
   const footerDivY = H - 52;
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = fg(0.05);
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(28, footerDivY);
@@ -180,7 +184,7 @@ function drawCard(
 
   // Footer
   ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.fillStyle = fg(0.25);
   ctx.textAlign = 'left';
   ctx.fillText('@SchemeHappens · Трекер потребностей', 28, footerDivY + 22);
 }
@@ -258,12 +262,12 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
     <>
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', marginBottom: 20 }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', marginBottom: 20 }}>
           Карточка недели
         </div>
 
         {history.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: '32px 0' }}>
+          <div style={{ textAlign: 'center', color: 'rgba(var(--fg-rgb),0.3)', padding: '32px 0' }}>
             Нет данных за неделю
           </div>
         ) : (
@@ -271,7 +275,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
             {/* Card preview */}
             <div style={{
               borderRadius: 16, overflow: 'hidden',
-              border: '1px solid rgba(255,255,255,0.06)',
+              border: '1px solid rgba(var(--fg-rgb),0.06)',
               marginBottom: 20,
             }}>
               <canvas
@@ -306,10 +310,10 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
     {fallbackText && (
       <BottomSheet onClose={() => { setFallbackText(null); setFallbackCopied(false); }} zIndex={300}>
         <div style={{ paddingTop: 4 }}>
-          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 12 }}>Поделиться текстом</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Поделиться текстом</div>
           <pre style={{
-            fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6,
-            background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px',
+            fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.6,
+            background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px',
             overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
             marginBottom: 14, userSelect: 'all', fontFamily: 'inherit',
           }}>
@@ -321,8 +325,8 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
             }}
             style={{
               width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-              background: fallbackCopied ? 'rgba(6,214,160,0.2)' : 'rgba(255,255,255,0.08)',
-              color: fallbackCopied ? '#06d6a0' : 'rgba(255,255,255,0.7)',
+              background: fallbackCopied ? 'rgba(6,214,160,0.2)' : 'rgba(var(--fg-rgb),0.08)',
+              color: fallbackCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.7)',
               fontSize: 14, fontWeight: 600, cursor: 'pointer',
             }}
           >

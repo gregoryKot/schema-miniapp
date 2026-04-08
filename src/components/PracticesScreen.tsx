@@ -68,8 +68,8 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto', paddingTop: safeTop }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
-        <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(255,255,255,0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
-        <span style={{ fontSize: 18, fontWeight: 600, color: '#fff', flex: 1 }}>Мои практики</span>
+        <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', flex: 1 }}>Мои практики</span>
         {errorToast
           ? <span style={{ fontSize: 12, color: '#f87171', fontWeight: 600, opacity: 1, transition: 'opacity 0.3s ease' }}>Ошибка сохранения</span>
           : <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
@@ -78,7 +78,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
 
       {/* Context banner */}
       <div style={{ padding: '4px 16px 0', marginBottom: 4 }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.55 }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', lineHeight: 1.55 }}>
           Практики — конкретные действия, которые наполняют потребность.
           {onOpenTracker && (
             <> Видишь что что-то просело?{' '}
@@ -98,7 +98,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
             const score = ratings[id];
             return (
               <div key={id} onClick={() => { setNeedIdx(i); setInput(''); }}
-                style={{ flexShrink: 0, padding: '7px 12px', borderRadius: 20, background: active ? color + '28' : 'rgba(255,255,255,0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: 5 }}>
+                style={{ flexShrink: 0, padding: '7px 12px', borderRadius: 20, background: active ? color + '28' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(var(--fg-rgb),0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: 5 }}>
                 {emoji} {NEED_NAMES[id]}
                 {score !== undefined && (
                   <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.7, color: score <= 4 ? '#f87171' : score <= 7 ? '#fbbf24' : '#34d399' }}>
@@ -114,7 +114,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
         {isLow && (
           <div style={{ background: `${needColor}12`, border: `1px solid ${needColor}25`, borderRadius: 14, padding: '11px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 18 }}>📍</span>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.5 }}>
               Сегодня <span style={{ color: needColor, fontWeight: 600 }}>{NEED_NAMES[needId]}</span> на {todayScore}/10 — хороший момент чтобы что-то сделать для этой потребности.
             </div>
           </div>
@@ -122,7 +122,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
         {isMid && (
           <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '11px 14px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 18 }}>💛</span>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5 }}>
               Сегодня {NEED_NAMES[needId]} — {todayScore}/10. Есть куда расти.
             </div>
           </div>
@@ -134,13 +134,13 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
             {practices.length === 0 && (
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', padding: '20px 0', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', padding: '20px 0', textAlign: 'center' }}>
                 Пока пусто — добавь первую практику ниже
               </div>
             )}
             {practices.map(p => (
-              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '13px 14px' }}>
-                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', flex: 1, lineHeight: 1.5 }}>{p.text}</div>
+              <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '13px 14px' }}>
+                <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', flex: 1, lineHeight: 1.5 }}>{p.text}</div>
                 <div onClick={() => handleDelete(p.id as number)}
                   style={{ width: 30, height: 30, borderRadius: 9, flexShrink: 0, background: 'rgba(255,100,100,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 16, color: 'rgba(255,100,100,0.5)' }}>×</div>
               </div>
@@ -149,7 +149,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
         )}
 
         {/* Add input */}
-        <div style={{ marginBottom: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', lineHeight: 1.6 }}>
+        <div style={{ marginBottom: 10, fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', lineHeight: 1.6 }}>
           Небольшое конкретное действие — например «позвонить другу» или «прогулка 20 минут»
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -159,12 +159,12 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
             onKeyDown={e => { if (e.key === 'Enter') handleAdd(); }}
             placeholder="Добавить практику..."
             maxLength={200}
-            style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '12px 14px', color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
+            style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 12, padding: '12px 14px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
           />
           <button
             onClick={handleAdd}
             disabled={!input.trim() || saving}
-            style={{ padding: '12px 18px', borderRadius: 12, border: 'none', background: input.trim() ? needColor : 'rgba(255,255,255,0.07)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: input.trim() ? 'pointer' : 'default', flexShrink: 0 }}
+            style={{ padding: '12px 18px', borderRadius: 12, border: 'none', background: input.trim() ? needColor : 'rgba(var(--fg-rgb),0.07)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: input.trim() ? 'pointer' : 'default', flexShrink: 0 }}
           >+</button>
         </div>
       </div>

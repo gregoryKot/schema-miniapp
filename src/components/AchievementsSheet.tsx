@@ -41,8 +41,8 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff' }}>Достижения</div>
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{earned} / {achievements.length}</div>
+          <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)' }}>Достижения</div>
+          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)' }}>{earned} / {achievements.length}</div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -54,8 +54,8 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
                 key={a.id}
                 onClick={() => a.earned && setSelected(a.id)}
                 style={{
-                  background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.06)'}`,
+                  background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(var(--fg-rgb),0.03)',
+                  border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)'}`,
                   borderRadius: 16, padding: '14px 12px',
                   cursor: a.earned ? 'pointer' : 'default',
                 }}
@@ -63,10 +63,10 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
                 <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>
                   {m.emoji}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>
                   {m.title}
                 </div>
-                <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 11, color: a.earned ? 'rgba(var(--fg-rgb),0.45)' : 'rgba(var(--fg-rgb),0.18)', lineHeight: 1.4 }}>
                   {m.desc}
                 </div>
               </div>
@@ -101,13 +101,13 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
             }}
           >
             <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{meta.emoji}</div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{meta.title}</div>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 28 }}>{meta.desc}</div>
+            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{meta.title}</div>
+            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 28 }}>{meta.desc}</div>
             <button
               onClick={shareOne}
               style={{
                 width: '100%', padding: '14px 0', border: 'none', borderRadius: 14,
-                background: '#a78bfa', color: '#fff',
+                background: '#a78bfa', color: 'var(--text)',
                 fontSize: 15, fontWeight: 600, cursor: 'pointer',
               }}
             >

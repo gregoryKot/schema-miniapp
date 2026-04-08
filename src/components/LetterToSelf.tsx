@@ -46,8 +46,8 @@ export function LetterToSelf({ onClose }: Props) {
     return (
       <BottomSheet onClose={() => setViewing(null)} zIndex={300}>
         <div style={{ paddingTop: 4 }}>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginBottom: 12 }}>{viewing.date}</div>
-          <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{viewing.text}</div>
+          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 12 }}>{viewing.date}</div>
+          <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{viewing.text}</div>
         </div>
       </BottomSheet>
     );
@@ -62,15 +62,15 @@ export function LetterToSelf({ onClose }: Props) {
             ✉️
           </div>
           <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Письмо Уязвимому Ребёнку</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Написать себе из прошлого</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Письмо Уязвимому Ребёнку</div>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Написать себе из прошлого</div>
           </div>
         </div>
 
         {/* Prompts */}
         <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
           {PROMPTS.map((p, i) => (
-            <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
+            <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
               {p}
             </div>
           ))}
@@ -81,13 +81,13 @@ export function LetterToSelf({ onClose }: Props) {
           onChange={e => setText(e.target.value)}
           placeholder="Дорогой маленький я..."
           rows={8}
-          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)', border: `1px solid ${text.trim() ? 'rgba(251,191,36,0.25)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 14, padding: '13px 14px', color: '#fff', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
+          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${text.trim() ? 'rgba(251,191,36,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
         />
 
         <button
           onClick={handleSave}
           disabled={!text.trim() || saved}
-          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: saved ? 'rgba(52,211,153,0.15)' : text.trim() ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.06)', color: saved ? '#34d399' : text.trim() ? '#fbbf24' : 'rgba(255,255,255,0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() && !saved ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 20 }}
+          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: saved ? 'rgba(52,211,153,0.15)' : text.trim() ? 'rgba(251,191,36,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: saved ? '#34d399' : text.trim() ? '#fbbf24' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() && !saved ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 20 }}
         >
           {saved ? '✓ Сохранено' : 'Сохранить письмо'}
         </button>
@@ -95,13 +95,13 @@ export function LetterToSelf({ onClose }: Props) {
         {/* Past letters */}
         {letters.length > 0 && (
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)', marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.2)', marginBottom: 10 }}>
               Прошлые письма
             </div>
             {letters.slice(0, 5).map(l => (
-              <div key={l.id} onClick={() => setViewing(l)} style={{ padding: '11px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, marginBottom: 7, cursor: 'pointer' }}>
-                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginBottom: 4 }}>{l.date}</div>
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+              <div key={l.id} onClick={() => setViewing(l)} style={{ padding: '11px 14px', background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 12, marginBottom: 7, cursor: 'pointer' }}>
+                <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>{l.date}</div>
+                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {l.text}
                 </div>
               </div>

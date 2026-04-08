@@ -69,7 +69,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
           {data.emoji}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.2, marginBottom: 8 }}>
+          <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2, marginBottom: 8 }}>
             {need.chartLabel}
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
@@ -83,14 +83,14 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
             ))}
           </div>
         </div>
-        <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
+        <div style={{ fontSize: 20, color: 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
       {/* Section 1: 7-day sparkline */}
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>За 7 дней</SectionLabel>
         <div style={{
-          background: 'rgba(255,255,255,0.04)',
+          background: 'rgba(var(--fg-rgb),0.04)',
           borderRadius: 14, padding: '14px 16px',
           display: 'flex', alignItems: 'center', gap: 16,
         }}>
@@ -121,7 +121,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
           </svg>
           <div style={{ flexShrink: 0, textAlign: 'right' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color }}>{trendLabel}</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
               {trendSign}{trendDiff.toFixed(1)} за неделю
             </div>
           </div>
@@ -142,12 +142,12 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
               <div style={{ fontSize: 12, color: childhoodValue <= 4 ? '#f87171' : '#34d399', fontWeight: 500, marginBottom: 3 }}>
                 Детство: {childhoodValue}/10
                 {recentAvg > 0 && childhoodValue > 0 && (
-                  <span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 400, marginLeft: 8 }}>
+                  <span style={{ color: 'rgba(var(--fg-rgb),0.3)', fontWeight: 400, marginLeft: 8 }}>
                     → сейчас {recentAvg.toFixed(1)} {recentAvg > childhoodValue ? '↑' : recentAvg < childhoodValue ? '↓' : ''}
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.5 }}>
                 {childhoodValue <= 4
                   ? 'Эта потребность давно чувствительна — вероятно, это не просто плохой период, а паттерн. Схема-терапия работает именно с этим.'
                   : 'В детстве эта зона была достаточно удовлетворена. Если сейчас низко — скорее всего ситуативное истощение.'}
@@ -160,15 +160,15 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
       {/* Section 2: Random tip */}
       <div style={{ marginBottom: 24 }}>
         <SectionLabel>Попробуй сегодня</SectionLabel>
-        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '14px 16px' }}>
-          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+        <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6 }}>
             {tip}
             <span
               onClick={(e) => { e.stopPropagation(); setShowDisclaimer(true); }}
               style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 16, height: 16, borderRadius: '50%',
-                background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)',
+                background: 'rgba(var(--fg-rgb),0.1)', color: 'rgba(var(--fg-rgb),0.35)',
                 fontSize: 10, fontWeight: 600, cursor: 'pointer',
                 marginLeft: 6, verticalAlign: 'middle',
               }}
@@ -182,7 +182,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
           <div style={{ paddingTop: 8 }}>
             <SectionLabel purple mb={16}>О советах</SectionLabel>
             {DISCLAIMER_CONTENT.map((p, i) => (
-              <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>{p}</p>
+              <p key={i} style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>{p}</p>
             ))}
             <a href={getTherapistContact().url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>
               → {getTherapistContact().name === 'автору' ? 'Поговорить с психологом' : `Написать ${getTherapistContact().name}`}
@@ -194,7 +194,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
       {/* Section 3: Explanation */}
       <div>
         <SectionLabel>Об этой потребности</SectionLabel>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6 }}>
           {data.explanation}
         </div>
       </div>

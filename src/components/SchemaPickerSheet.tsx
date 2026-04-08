@@ -40,8 +40,8 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 4 }}>Мои схемы</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Мои схемы</div>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, lineHeight: 1.5 }}>
           Выбери схемы, которые тебе близки. Можно без теста — если ты уже знаешь свои.
         </div>
 
@@ -63,16 +63,16 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
                     style={{
                       display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', borderRadius: 12, cursor: 'pointer',
-                      background: active ? `${domain.color}12` : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${active ? `${domain.color}30` : 'rgba(255,255,255,0.06)'}`,
+                      background: active ? `${domain.color}12` : 'rgba(var(--fg-rgb),0.03)',
+                      border: `1px solid ${active ? `${domain.color}30` : 'rgba(var(--fg-rgb),0.06)'}`,
                       transition: 'all 0.15s',
                     }}
                   >
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: active ? domain.color : 'rgba(255,255,255,0.2)', flexShrink: 0, marginTop: 2 }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: active ? domain.color : 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, marginTop: 2 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(255,255,255,0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
+                      <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
                       {SCHEMA_DESC[s.id] && (
-                        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
+                        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
                       )}
                     </div>
                     {active && <span style={{ color: domain.color, fontSize: 14, flexShrink: 0 }}>✓</span>}
@@ -88,7 +88,7 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
           style={{
             marginTop: 8, width: '100%', padding: '14px', borderRadius: 14, border: 'none',
             background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-            color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer',
           }}
         >
           Сохранить{ids.length > 0 ? ` (${ids.length})` : ''}

@@ -109,15 +109,15 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         onClick={onToggle}
         style={{
           width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-          border: `2px solid ${checked ? '#a78bfa' : 'rgba(255,255,255,0.2)'}`,
+          border: `2px solid ${checked ? '#a78bfa' : 'rgba(var(--fg-rgb),0.2)'}`,
           background: checked ? '#a78bfa' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.15s',
         }}
       >
-        {checked && <span style={{ fontSize: 11, color: '#fff', fontWeight: 700 }}>✓</span>}
+        {checked && <span style={{ fontSize: 11, color: 'var(--text)', fontWeight: 700 }}>✓</span>}
       </div>
-      <span onClick={onToggle} style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>{label}</span>
+      <span onClick={onToggle} style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>{label}</span>
     </label>
   );
 
@@ -128,27 +128,27 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: '#fbbf24', letterSpacing: '0.1em' }}>
           БЕТА-ВЕРСИЯ
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 6, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 6, lineHeight: 1.4 }}>
           Приложение в стадии тестирования — функции могут меняться,<br />данные могут быть сброшены
         </div>
       </div>
 
-      <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Прежде чем начать
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
           <br /><br />
           Дневник помогает видеть паттерны и чуть лучше понимать себя. Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
         </div>
       </div>
 
-      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Данные и конфиденциальность
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 14 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: 14 }}>
           Все данные хранятся на защищённом сервере, привязаны к Telegram-аккаунту и не передаются третьим лицам. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
         </div>
         <Checkbox
@@ -158,11 +158,11 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         />
       </div>
 
-      <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(255,255,255,0.07)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Это не терапия
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: 14 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: 14 }}>
           Приложение — инструмент самоисследования. Оценки, тесты и советы внутри не являются клинической диагностикой, медицинскими рекомендациями или заменой работы с психологом.
         </div>
         <Checkbox
@@ -176,11 +176,11 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Автор дневника
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6, marginBottom: 8 }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6, marginBottom: 8 }}>
           Канал о схема-терапии —{' '}
           <a href="https://t.me/SchemeHappens" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6 }}>
           Записаться на сессию —{' '}
           <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
         </div>
@@ -191,8 +191,8 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         disabled={!ready}
         style={{
           width: '100%', padding: '15px 0', borderRadius: 14, border: 'none',
-          background: ready ? 'linear-gradient(135deg, #a78bfa, #4fa3f7)' : 'rgba(255,255,255,0.08)',
-          color: ready ? '#fff' : 'rgba(255,255,255,0.25)',
+          background: ready ? 'linear-gradient(135deg, #a78bfa, #4fa3f7)' : 'rgba(var(--fg-rgb),0.08)',
+          color: ready ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
           fontSize: 16, fontWeight: 600,
           cursor: ready ? 'pointer' : 'default',
           transition: 'all 0.2s',
@@ -486,13 +486,13 @@ export default function App() {
     return (
       <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: 16, textAlign: 'center' }}>
         <div style={{ fontSize: 40 }}>😔</div>
-        <div style={{ fontSize: 17, fontWeight: 600, color: '#fff' }}>Не удалось загрузить</div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>Не удалось загрузить</div>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.6 }}>
           Проверь подключение и попробуй ещё раз
         </div>
         <button
           onClick={() => window.location.reload()}
-          style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+          style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
         >
           Повторить
         </button>
@@ -505,19 +505,51 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
       {isOffline && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: '#fff' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
           Нет подключения — данные не сохраняются
         </div>
       )}
 
-      {/* ── Therapist cabinet (standalone mode — replaces entire app UI) ── */}
+      {/* ── Therapist app mode — full app replacement ── */}
       {therapistMode && (
-        <TherapistClientSheet
-          view={cabinetView}
-          onViewChange={setCabinetView}
-          onClose={() => { setTherapistMode(false); setCabinetView('list'); }}
-          standalone
-        />
+        <>
+          <TherapistClientSheet
+            view={cabinetView}
+            onViewChange={setCabinetView}
+            onClose={() => { setTherapistMode(false); setCabinetView('list'); }}
+          />
+          {/* Therapist bottom nav — replaces regular BottomNav */}
+          {!showSettings && (
+            <div style={{
+              position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+              background: 'var(--nav-bg)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+              borderTop: '1px solid rgba(var(--fg-rgb),0.08)',
+              display: 'flex', alignItems: 'stretch', height: 64,
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+            }}>
+              <button
+                onClick={() => { setTherapistMode(false); setCabinetView('list'); }}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 10, fontWeight: 500, letterSpacing: '0.03em' }}
+              >
+                <span style={{ fontSize: 18 }}>‹</span>
+                Дневник
+              </button>
+              <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
+                <span style={{ fontSize: 18 }}>👨‍⚕️</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.03em' }}>Кабинет</span>
+              </div>
+              <button
+                onClick={() => setShowSettings(true)}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 10, fontWeight: 500, letterSpacing: '0.03em' }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
+                Настройки
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Main sections (hidden when therapistMode) ── */}
@@ -581,17 +613,17 @@ export default function App() {
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             padding: `${safeTop + 16}px 20px 14px`,
-            borderBottom: '1px solid rgba(255,255,255,0.04)',
+            borderBottom: '1px solid rgba(var(--fg-rgb),0.04)',
           }}>
             {/* Back + date row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
-                style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
+                style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
               >
                 ‹ Назад
               </button>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)' }}>
                 {formatHeaderDate()}
               </span>
             </div>
@@ -599,19 +631,19 @@ export default function App() {
             <h1
               style={{
                 fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
-                color: '#fff', marginBottom: 3, lineHeight: 1.1,
+                color: 'var(--text)', marginBottom: 3, lineHeight: 1.1,
                 display: 'flex', alignItems: 'center', gap: 8,
               }}
             >
               Трекер потребностей
-              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'rgba(255,255,255,0.35)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
+              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'rgba(var(--fg-rgb),0.35)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
             </h1>
-            <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 14 }}>
+            <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 14 }}>
               {trackerTab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
             </p>
 
             {/* Pill tabs */}
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 12, padding: 3 }}>
+            <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 12, padding: 3 }}>
               {(['today', 'history'] as TrackerTab[]).map((t) => {
                 const active = trackerTab === t;
                 return (
@@ -624,8 +656,8 @@ export default function App() {
                     }}
                     style={{
                       flex: 1, padding: '8px 0', border: 'none', borderRadius: 10,
-                      background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                      color: active ? '#fff' : 'rgba(255,255,255,0.4)',
+                      background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent',
+                      color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)',
                       fontSize: 14, fontWeight: active ? 500 : 400,
                       cursor: 'pointer', transition: 'all 0.15s ease',
                     }}
@@ -646,11 +678,11 @@ export default function App() {
                 <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить вчера</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
+                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-                  style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+                  style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
                 >×</button>
               </div>
             </div>
@@ -661,9 +693,9 @@ export default function App() {
                 <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
                 <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
+                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
-                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
+                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
               </div>
             </div>
           )}
@@ -699,7 +731,7 @@ export default function App() {
                       <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
                       <div>
                         <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{isToday ? 'Твой план на сегодня' : 'Твой план на завтра'}</div>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
+                        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
                       </div>
                     </div>
                   );
@@ -839,7 +871,7 @@ export default function App() {
           <div style={{ paddingTop: 8 }}>
             <SectionLabel purple mb={16}>Зачем это всё</SectionLabel>
             {ABOUT_TEXT.map((p, i) => (
-              <p key={i} style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 16 }}>
+              <p key={i} style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 16 }}>
                 {p}
               </p>
             ))}
@@ -847,12 +879,12 @@ export default function App() {
             <SectionLabel mb={12}>Пять потребностей</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
               {NEEDS_EXPLAINER.map(n => (
-                <div key={n.name} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: '12px 14px' }}>
+                <div key={n.name} style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '12px 14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                     <span style={{ fontSize: 18 }}>{n.emoji}</span>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{n.name}</span>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{n.name}</span>
                   </div>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, margin: 0 }}>{n.text}</p>
+                  <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.6, margin: 0 }}>{n.text}</p>
                 </div>
               ))}
             </div>
@@ -867,7 +899,7 @@ export default function App() {
             >
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Схема-терапия</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Схемы, режимы, потребности</div>
+                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Схемы, режимы, потребности</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.7)" strokeWidth="2" strokeLinecap="round">
                 <polyline points="9 18 15 12 9 6" />

@@ -136,14 +136,14 @@ function ChildhoodWheel({ ratings }: { ratings: Record<NeedId, number> }) {
       {[0.25, 0.5, 0.75, 1].map(pct => (
         <polygon key={pct}
           points={angles.map(a => `${(cx + maxR * pct * Math.cos(a)).toFixed(1)},${(cy + maxR * pct * Math.sin(a)).toFixed(1)}`).join(' ')}
-          fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={1}
+          fill="none" stroke="rgba(var(--fg-rgb),0.06)" strokeWidth={1}
         />
       ))}
       {/* Axis lines */}
       {angles.map((a, i) => (
         <line key={i} x1={cx} y1={cy}
           x2={(cx + maxR * Math.cos(a)).toFixed(1)} y2={(cy + maxR * Math.sin(a)).toFixed(1)}
-          stroke="rgba(255,255,255,0.07)" strokeWidth={1}
+          stroke="rgba(var(--fg-rgb),0.07)" strokeWidth={1}
         />
       ))}
       {/* Value polygon */}
@@ -208,7 +208,7 @@ function Slider({ value, color, onChange }: { value: number; color: string; onCh
   return (
     <div ref={trackRef} onPointerDown={onPtrDown} onPointerMove={onPtrMove}
       style={{ position: 'relative', padding: '12px 0', cursor: 'pointer', touchAction: 'none', userSelect: 'none' }}>
-      <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+      <div style={{ height: 6, borderRadius: 6, background: 'rgba(var(--fg-rgb),0.07)', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', borderRadius: 6, background: `linear-gradient(to right, ${color}55, ${color})` }} />
       </div>
       <div style={{
@@ -276,35 +276,35 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
         <div>
           <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
             <div style={{ fontSize: 44, marginBottom: 12 }}>🌱</div>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.3, marginBottom: 10 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3, marginBottom: 10 }}>
               Колесо детства
             </div>
-            <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.7 }}>
               Те же пять потребностей — но про детство.
             </div>
           </div>
 
           <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.75 }}>
+            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.75 }}>
               В схема-терапии считается, что схемы формируются когда базовые потребности{' '}
               <span style={{ color: '#a78bfa', fontWeight: 500 }}>систематически не удовлетворялись в детстве</span>.
               Это упражнение поможет увидеть, какие области могут быть особенно чувствительными — и почему дневник сегодня показывает то, что показывает.
             </div>
           </div>
 
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
+          <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.6 }}>
               Это не диагностика. Оценки приблизительны и субъективны. Результаты — для твоего понимания, не для выводов.
             </div>
           </div>
 
           <button
             onClick={() => setPhase('fill')}
-            style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+            style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
           >
             Оценить детство — 2 минуты
           </button>
-          <button onClick={finish} style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'transparent', color: 'rgba(255,255,255,0.3)', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={finish} style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'transparent', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, cursor: 'pointer' }}>
             Пропустить
           </button>
         </div>
@@ -316,14 +316,14 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {/* Idealization warning */}
           <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>⚠️ Осторожно: защитная идеализация</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.65 }}>
               Психика защищает нас от боли — поэтому мы склонны помнить хорошее и не замечать систематические паттерны.
               Оценивай <em>не отдельные моменты</em>, а то <em>как было в целом, большую часть времени</em>.
-              Под каждым ползунком — описания крайностей, а по кнопке <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(255,255,255,0.12)', fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.5)', verticalAlign: 'middle' }}>?</span> — реальные примеры из жизни. Сравни с ними.
+              Под каждым ползунком — описания крайностей, а по кнопке <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.12)', fontSize: 10, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.5)', verticalAlign: 'middle' }}>?</span> — реальные примеры из жизни. Сравни с ними.
             </div>
           </div>
 
-          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 20, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, lineHeight: 1.5 }}>
             0 — совсем нет, 10 — в полной мере
           </div>
 
@@ -340,22 +340,22 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                     {meta.emoji}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>{meta.label}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{meta.label}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     <button
                       onClick={() => { setOpenExampleId(openExampleId === id ? null : id); setOpenExampleIdx(null); }}
                       style={{
                         width: 24, height: 24, borderRadius: '50%', border: 'none', cursor: 'pointer',
-                        background: openExampleId === id ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.08)',
-                        color: openExampleId === id ? '#a78bfa' : 'rgba(255,255,255,0.35)',
+                        background: openExampleId === id ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.08)',
+                        color: openExampleId === id ? '#a78bfa' : 'rgba(var(--fg-rgb),0.35)',
                         fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s',
                       }}
                     >?</button>
                     <div style={{ fontSize: 16, fontWeight: 700, color, minWidth: 28, textAlign: 'right' }}>
-                      {value}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>/10</span>
+                      {value}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>/10</span>
                     </div>
                   </div>
                 </div>
@@ -364,8 +364,8 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}>
                   <div style={{
                     fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
-                    background: showLow && value <= 4 ? 'rgba(248,113,113,0.1)' : 'rgba(255,255,255,0.03)',
-                    color: showLow && value <= 4 ? 'rgba(248,113,113,0.75)' : 'rgba(255,255,255,0.25)',
+                    background: showLow && value <= 4 ? 'rgba(248,113,113,0.1)' : 'rgba(var(--fg-rgb),0.03)',
+                    color: showLow && value <= 4 ? 'rgba(248,113,113,0.75)' : 'rgba(var(--fg-rgb),0.25)',
                     border: showLow && value <= 4 ? '1px solid rgba(248,113,113,0.2)' : '1px solid transparent',
                     transition: 'all 0.2s',
                   }}>
@@ -374,8 +374,8 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                   </div>
                   <div style={{
                     fontSize: 11, lineHeight: 1.55, padding: '7px 9px', borderRadius: 10,
-                    background: showHigh && value >= 8 ? 'rgba(52,211,153,0.1)' : 'rgba(255,255,255,0.03)',
-                    color: showHigh && value >= 8 ? 'rgba(52,211,153,0.75)' : 'rgba(255,255,255,0.25)',
+                    background: showHigh && value >= 8 ? 'rgba(52,211,153,0.1)' : 'rgba(var(--fg-rgb),0.03)',
+                    color: showHigh && value >= 8 ? 'rgba(52,211,153,0.75)' : 'rgba(var(--fg-rgb),0.25)',
                     border: showHigh && value >= 8 ? '1px solid rgba(52,211,153,0.2)' : '1px solid transparent',
                     transition: 'all 0.2s',
                   }}>
@@ -386,7 +386,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                 {/* Examples panel */}
                 {openExampleId === id && (
                   <div style={{ marginTop: 10, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(167,139,250,0.15)' }}>
-                    <div style={{ padding: '8px 12px', background: 'rgba(167,139,250,0.08)', fontSize: 11, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>
+                    <div style={{ padding: '8px 12px', background: 'rgba(167,139,250,0.08)', fontSize: 11, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500 }}>
                       Примеры — как это выглядит в жизни
                     </div>
                     {meta.examples.map((ex, i) => {
@@ -398,8 +398,8 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                           onClick={() => setOpenExampleIdx(isOpen ? null : i)}
                           style={{
                             padding: '10px 12px', cursor: 'pointer',
-                            borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.05)',
-                            background: isOpen ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+                            borderTop: i === 0 ? 'none' : '1px solid rgba(var(--fg-rgb),0.05)',
+                            background: isOpen ? 'rgba(var(--fg-rgb),0.04)' : 'rgba(var(--fg-rgb),0.02)',
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -407,12 +407,12 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                               fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
                               background: badgeColor + '22', color: badgeColor, flexShrink: 0,
                             }}>≈{ex.score}/10</span>
-                            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginLeft: 'auto' }}>
+                            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginLeft: 'auto' }}>
                               {isOpen ? '▴' : '▾'}
                             </span>
                           </div>
                           {isOpen && (
-                            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, marginTop: 8 }}>
+                            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.6, marginTop: 8 }}>
                               {ex.text}
                             </div>
                           )}
@@ -428,7 +428,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: saving ? 'rgba(255,255,255,0.1)' : 'linear-gradient(135deg, #a78bfa, #4fa3f7)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: saving ? 'default' : 'pointer' }}
+            style={{ width: '100%', padding: '15px 0', borderRadius: 14, border: 'none', background: saving ? 'rgba(var(--fg-rgb),0.1)' : 'linear-gradient(135deg, #a78bfa, #4fa3f7)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: saving ? 'default' : 'pointer' }}
           >
             {saving ? '...' : 'Посмотреть результат'}
           </button>
@@ -439,8 +439,8 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
       {phase === 'result' && (
         <div>
           <div style={{ textAlign: 'center', marginBottom: 24, paddingTop: 4 }}>
-            <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 6 }}>Твоё колесо детства</div>
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Твоё колесо детства</div>
+            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>
               Сравнение отобразится в разделе История поверх дневника
             </div>
           </div>
@@ -458,7 +458,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
               return (
                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 13 }}>{NEED_META[id].emoji}</span>
-                  <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_META[id].label.split(' ')[0]}</span>
+                  <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{NEED_META[id].label.split(' ')[0]}</span>
                   <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? '#f87171' : value <= 6 ? '#fbbf24' : color }}>{value}</span>
                 </div>
               );
@@ -469,20 +469,20 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {lowNeeds.length > 0 && (
             <div style={{ marginBottom: 24 }}>
               <SectionLabel>Возможные активные схемы</SectionLabel>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 12, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 12, lineHeight: 1.6 }}>
                 Когда потребность хронически не удовлетворялась в детстве, психика вырабатывает стратегии выживания. Это и есть схемы — не диагноз, а паттерн, который когда-то помогал.
               </div>
               {lowNeeds.map(id => {
                 const meta = NEED_META[id];
                 const hint = SCHEMA_HINTS[id];
                 return (
-                  <div key={id} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
+                  <div key={id} style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                       <span style={{ fontSize: 14 }}>{meta.emoji}</span>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{meta.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{meta.label}</span>
                       <span style={{ fontSize: 12, color: hint.color, marginLeft: 'auto' }}>{ratings[id]}/10 в детстве</span>
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Домен: {hint.domain}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 6 }}>Домен: {hint.domain}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                       {hint.schemas.map(s => {
                         const schemaData = SCHEMA_DOMAINS.flatMap(d => d.schemas.map(sc => ({ ...sc, color: d.color }))).find(sc => sc.name === s);
@@ -513,7 +513,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
               >
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>Подробнее о схемах</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Что они значат и как с ними работать</div>
+                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Что они значат и как с ними работать</div>
                 </div>
                 <span style={{ fontSize: 18, color: 'rgba(167,139,250,0.6)' }}>›</span>
               </div>
@@ -523,7 +523,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {lowNeeds.length === 0 && (
             <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 14, padding: '14px 16px', marginBottom: 24 }}>
               <div style={{ fontSize: 14, color: '#34d399', fontWeight: 500, marginBottom: 6 }}>Хорошее детство по всем зонам</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.6 }}>
                 Все потребности выше 4/10 — это редкость и ресурс. Если сейчас что-то низкое, скорее всего это ситуативное, а не схема.
               </div>
             </div>
@@ -536,13 +536,13 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={() => setPhase('fill')}
-              style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.5)', fontSize: 14, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 14, cursor: 'pointer' }}
             >
               ✎ Изменить
             </button>
             <button
               onClick={finish}
-              style={{ flex: 2, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ flex: 2, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.7)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >
               Готово
             </button>
@@ -557,9 +557,9 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
         <div style={{ paddingTop: 4 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: activeSchema.color, flexShrink: 0 }} />
-            <div style={{ fontSize: 18, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>{activeSchema.name}</div>
+            <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{activeSchema.name}</div>
           </div>
-          <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7 }}>{activeSchema.desc}</div>
+          <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7 }}>{activeSchema.desc}</div>
         </div>
       </BottomSheet>
     )}

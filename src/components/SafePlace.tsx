@@ -50,21 +50,21 @@ export function SafePlace({ onClose }: Props) {
               🏡
             </div>
             <div>
-              <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Моё безопасное место</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Прочти — и почувствуй</div>
+              <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Моё безопасное место</div>
+              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Прочти — и почувствуй</div>
             </div>
           </div>
 
           <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
-            <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{saved.text}</div>
+            <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{saved.text}</div>
           </div>
 
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', textAlign: 'center', marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'center', marginBottom: 16 }}>
             {justSaved ? '✓ Сохранено' : `Обновлено ${saved.savedAt}`}
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-            <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: 'rgba(255,255,255,0.4)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Изменить
             </button>
             <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -87,15 +87,15 @@ export function SafePlace({ onClose }: Props) {
             🏡
           </div>
           <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Безопасное место</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 2 }}>Напиши — чтобы возвращаться в трудный момент</div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Безопасное место</div>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Напиши — чтобы возвращаться в трудный момент</div>
           </div>
         </div>
 
         {/* Prompts */}
         <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
           {PROMPTS.map((p, i) => (
-            <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
+            <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
               {p}
             </div>
           ))}
@@ -106,13 +106,13 @@ export function SafePlace({ onClose }: Props) {
           onChange={e => setText(e.target.value)}
           placeholder="Это небольшой уютный лес недалеко от дома. Я слышу птиц..."
           rows={8}
-          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.04)', border: `1px solid ${text.trim() ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 14, padding: '13px 14px', color: '#fff', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
+          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${text.trim() ? 'rgba(52,211,153,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
         />
 
         <button
           onClick={handleSave}
           disabled={!text.trim()}
-          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'rgba(52,211,153,0.15)' : 'rgba(255,255,255,0.06)', color: text.trim() ? '#34d399' : 'rgba(255,255,255,0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
+          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'rgba(52,211,153,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: text.trim() ? '#34d399' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
         >
           Сохранить
         </button>

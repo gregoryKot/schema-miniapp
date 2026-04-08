@@ -62,7 +62,7 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
       borderRadius: 16, padding: '16px 18px', marginBottom: 20,
     }}>
       <SectionLabel purple>Вопрос недели</SectionLabel>
-      <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', lineHeight: 1.5, marginBottom: 14 }}>
+      <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.5, marginBottom: 14 }}>
         {question}
       </div>
       <textarea
@@ -72,9 +72,9 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
         maxLength={500}
         rows={3}
         style={{
-          width: '100%', background: 'rgba(255,255,255,0.06)',
-          border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10,
-          padding: '10px 12px', color: '#fff', fontSize: 13, lineHeight: 1.5,
+          width: '100%', background: 'rgba(var(--fg-rgb),0.06)',
+          border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10,
+          padding: '10px 12px', color: 'var(--text)', fontSize: 13, lineHeight: 1.5,
           resize: 'none', outline: 'none', boxSizing: 'border-box', fontFamily: 'inherit',
           marginBottom: 10,
         }}
@@ -82,13 +82,13 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={handleSkip} style={{
           flex: 1, padding: '9px 0', border: 'none', borderRadius: 10,
-          background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)',
+          background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.35)',
           fontSize: 12, cursor: 'pointer',
         }}>Пропустить</button>
         <button onClick={handleSave} disabled={!text.trim() || saving} style={{
           flex: 2, padding: '9px 0', border: 'none', borderRadius: 10,
-          background: text.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(255,255,255,0.06)',
-          color: text.trim() ? '#a78bfa' : 'rgba(255,255,255,0.2)',
+          background: text.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.06)',
+          color: text.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.2)',
           fontSize: 12, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
         }}>Сохранить</button>
       </div>

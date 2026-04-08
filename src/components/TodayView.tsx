@@ -42,7 +42,7 @@ function DonutRing({ percent }: { percent: number }) {
           <stop offset="100%" stopColor="#06d6a0" />
         </linearGradient>
       </defs>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={5} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(var(--fg-rgb),0.07)" strokeWidth={5} />
       <circle
         cx={cx} cy={cy} r={r}
         fill="none"
@@ -83,26 +83,26 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Оценивай <b style={{ color: '#fff' }}>конкретные действия</b>, не фоновое ощущение. Не «я вроде чувствую близость», а «кто-то обнял» или «я сказал, что думаю». Потяни ползунок от <b style={{ color: '#fff' }}>1 до 10</b>
+          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
+            Оценивай <b style={{ color: 'var(--text)' }}>конкретные действия</b>, не фоновое ощущение. Не «я вроде чувствую близость», а «кто-то обнял» или «я сказал, что думаю». Потяни ползунок от <b style={{ color: 'var(--text)' }}>1 до 10</b>
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Нажми на <b style={{ color: '#fff' }}>название потребности</b> — там объяснение и советы
+          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
+            Нажми на <b style={{ color: 'var(--text)' }}>название потребности</b> — там объяснение и советы
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>📊</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Всё сохраняется автоматически. <b style={{ color: '#fff' }}>Через 3–5 дней</b> паттерн начнёт проявляться во вкладке <b style={{ color: '#fff' }}>История</b>
+          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
+            Всё сохраняется автоматически. <b style={{ color: 'var(--text)' }}>Через 3–5 дней</b> паттерн начнёт проявляться во вкладке <b style={{ color: 'var(--text)' }}>История</b>
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
           <span style={{ fontSize: 16, flexShrink: 0 }}>ⓘ</span>
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-            Нажми на <b style={{ color: '#fff' }}>«Трекер потребностей»</b> в заголовке — там про то, зачем это вообще
+          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
+            Нажми на <b style={{ color: 'var(--text)' }}>«Трекер потребностей»</b> в заголовке — там про то, зачем это вообще
           </span>
         </div>
       </div>
@@ -193,7 +193,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
     : diff < 0
       ? `${diff.toFixed(1)} к вчера`
       : 'как вчера';
-  const diffColor = 'rgba(255,255,255,0.35)';
+  const diffColor = 'rgba(var(--fg-rgb),0.35)';
 
   return (
     <div style={{ padding: '20px 20px 40px' }}>
@@ -201,7 +201,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       {!onboardingVisible && needs.length > 0 && needs.every(n => (ratings[n.id] ?? 0) === 0) && (
         <div style={{
           textAlign: 'center', fontSize: 12,
-          color: 'rgba(255,255,255,0.25)',
+          color: 'rgba(var(--fg-rgb),0.25)',
           marginBottom: 16, lineHeight: 1.5,
         }}>
           Потяни ползунок → оценка сохранится автоматически
@@ -241,7 +241,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
                 <span style={{ fontSize: 16, flexShrink: 0 }}>🎯</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 2, lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2, lineHeight: 1.4 }}>
                     Один маленький шаг — пока помнишь
                   </div>
                 </div>
@@ -255,7 +255,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       {/* Divider */}
       <div style={{
         height: 0.5,
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(var(--fg-rgb),0.06)',
         margin: '24px 0',
       }} />
 
@@ -263,7 +263,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       <div
         onClick={() => setShowIndexInfo(true)}
         style={{
-          background: 'rgba(255,255,255,0.05)',
+          background: 'rgba(var(--fg-rgb),0.05)',
           borderRadius: 16,
           padding: '16px 18px',
           display: 'flex',
@@ -274,11 +274,11 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
         }}
       >
         <div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
             Индекс дня
           </div>
           <div style={{ fontSize: 24, fontWeight: 600, lineHeight: 1, marginBottom: 5 }}>
-            {avg.toFixed(1)}<span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>/10</span>
+            {avg.toFixed(1)}<span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.35)' }}>/10</span>
           </div>
           <div style={{ fontSize: 12, color: diffColor }}>
             {diffText}
@@ -290,7 +290,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
 
       {/* Note button + auto-save status */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 18 }}>
-        <div style={{ fontSize: 12, color: saveError ? '#f87171' : 'rgba(255,255,255,0.3)' }}>
+        <div style={{ fontSize: 12, color: saveError ? '#f87171' : 'rgba(var(--fg-rgb),0.3)' }}>
           {saveError ? 'Ошибка сохранения — потяни слайдер ещё раз' : lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -298,9 +298,9 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
             onClick={onNote}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
-              background: 'rgba(255,255,255,0.06)', border: 'none',
+              background: 'rgba(var(--fg-rgb),0.06)', border: 'none',
               borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
-              color: 'rgba(255,255,255,0.45)', fontSize: 12, fontWeight: 500,
+              color: 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: 500,
             }}
           >
             ✏️ Заметка
@@ -309,7 +309,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
             onClick={() => setShowTrackerTaskCreate(true)}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
-              background: 'rgba(255,255,255,0.06)', border: 'none',
+              background: 'rgba(var(--fg-rgb),0.06)', border: 'none',
               borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
               color: 'rgba(167,139,250,0.6)', fontSize: 12, fontWeight: 500,
             }}
@@ -332,11 +332,11 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
           <span style={{ fontSize: 20, flexShrink: 0 }}>🗂</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Что тебе помогает?</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
+            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
           </div>
           <button
             onClick={e => { e.stopPropagation(); localStorage.setItem(PRACTICES_ONBOARDING_KEY, '1'); setPracticesCardVisible(false); }}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+            style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
           >
             ×
           </button>

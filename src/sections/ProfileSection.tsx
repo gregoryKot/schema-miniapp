@@ -89,10 +89,10 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
       {/* ── Хедер ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 0' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, color: '#fff', letterSpacing: '-0.5px' }}>
+        <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
           {firstName || 'Я'}
         </div>
-        <button onClick={onOpenSettings} style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button onClick={onOpenSettings} style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ⚙️
         </button>
       </div>
@@ -103,27 +103,27 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         {!ready && (
           <>
             {[120, 72, 80, 90].map((h, i) => (
-              <div key={i} style={{ height: h, borderRadius: 16, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+              <div key={i} style={{ height: h, borderRadius: 16, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
             ))}
           </>
         )}
 
         {/* ── Стрик ── */}
-        {ready && <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '20px' }}>
+        {ready && <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '20px' }}>
           {streak === null ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ width: '40%', height: 36, borderRadius: 8, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  <div style={{ width: '55%', height: 12, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '40%', height: 36, borderRadius: 8, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '55%', height: 12, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
                 </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 {[0,1,2,3,4,5,6].map(i => (
                   <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
-                    <div style={{ width: 14, height: 8, borderRadius: 3, background: 'rgba(255,255,255,0.04)' }} />
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.05)' }} />
+                    <div style={{ width: 14, height: 8, borderRadius: 3, background: 'rgba(var(--fg-rgb),0.04)' }} />
                   </div>
                 ))}
               </div>
@@ -137,17 +137,17 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 <div style={{ flex: 1 }}>
                   {currentStreak > 0 ? (
                     <>
-                      <div style={{ fontSize: 40, fontWeight: 800, color: '#fff', lineHeight: 1 }}>{currentStreak}</div>
-                      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>
+                      <div style={{ fontSize: 40, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>{currentStreak}</div>
+                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>
                         {currentStreak === 1 ? 'день подряд' : currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
                       </div>
                     </>
                   ) : (
                     <>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(255,255,255,0.7)', lineHeight: 1.2 }}>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.2 }}>
                         {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
                       </div>
-                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+                      <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 4 }}>
                         {totalDays === 0
                           ? 'Первая запись — самая важная'
                           : 'Заполни сегодня — серия начнётся снова'}
@@ -156,8 +156,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
-                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{longestStreak}</span></div>}
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{totalDays}</span></div>
+                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{longestStreak}</span></div>}
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{totalDays}</span></div>
                 </div>
               </div>
 
@@ -169,7 +169,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
-                          background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(255,255,255,0.07)',
+                          background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(var(--fg-rgb),0.07)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: done ? 13 : 0,
                           outline: isToday ? '2px solid rgba(167,139,250,0.5)' : 'none',
@@ -177,7 +177,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                         }}>
                           {done && '✓'}
                         </div>
-                        <div style={{ fontSize: 10, color: isToday ? '#a78bfa' : 'rgba(255,255,255,0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
+                        <div style={{ fontSize: 10, color: isToday ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
                       </div>
                     );
                   })}
@@ -205,28 +205,28 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Паттерны (инсайты) ── */}
         {ready && hasInsights && (
-          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden' }}>
+          <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
             <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
               <div>
                 <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
-                <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.7)' }}>{insightSummary}</span>
+                <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)' }}>{insightSummary}</span>
               </div>
-              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
+              <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
             </div>
             {insightsOpen && (
-              <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.05)' }}>
                 {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
                   <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                     {insights?.bestDayOfWeek && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                        <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
                           Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
                         </span>
-                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
+                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
                       </div>
                     )}
                     {insights?.worstDayOfWeek && (
-                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+                      <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
                         Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
                       </span>
                     )}
@@ -234,15 +234,15 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
                   {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(255,255,255,0.25)';
+                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(var(--fg-rgb),0.25)';
                     const barW = Math.round(((s.avg ?? 0) / 10) * 100);
                     return (
                       <div key={s.needId}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{NEED_NAMES[s.needId]}</span>
+                          <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{NEED_NAMES[s.needId]}</span>
                           <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
                         </div>
-                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(255,255,255,0.07)' }}>
+                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.07)' }}>
                           <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
                         </div>
                       </div>
@@ -256,7 +256,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Достижения ── */}
         {ready && achievements && (
-          <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
               {achievements.length > 0 ? (
@@ -268,14 +268,14 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2 }}>
                   Первое — за первую запись в дневник
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 12 }}>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>{earnedList.length}/{achievements.length}</span>
-              <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.2)' }}>›</span>
+              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)' }}>{earnedList.length}/{achievements.length}</span>
+              <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)' }}>›</span>
             </div>
           </div>
         )}
@@ -291,8 +291,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         <BottomSheet onClose={() => { setShowAchievements(false); setSelectedAchievement(null); }}>
           <div style={{ paddingTop: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <span style={{ fontSize: 17, fontWeight: 600, color: '#fff' }}>Достижения</span>
-              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>{earnedList.length}/{achievements.length}</span>
+              <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>Достижения</span>
+              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)' }}>{earnedList.length}/{achievements.length}</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {achievements.map(a => {
@@ -312,10 +312,10 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 })() : null;
                 return (
                   <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
-                    style={{ background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(255,255,255,0.03)', border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
+                    style={{ background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
                     <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(255,255,255,0.25)', marginBottom: 4 }}>{m.title}</div>
-                    <div style={{ fontSize: 11, color: a.earned ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.18)', lineHeight: 1.4 }}>{m.desc}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>{m.title}</div>
+                    <div style={{ fontSize: 11, color: a.earned ? 'rgba(var(--fg-rgb),0.45)' : 'rgba(var(--fg-rgb),0.18)', lineHeight: 1.4 }}>{m.desc}</div>
                     {progress && <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
                   </div>
                 );
@@ -333,12 +333,12 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           <div onClick={() => setSelectedAchievement(null)} style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, animation: 'fade-in 0.18s ease' }}>
             <div onClick={e => e.stopPropagation()} style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.2), rgba(79,163,247,0.1))', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
               <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{m.emoji}</div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 8 }}>{m.title}</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{m.title}</div>
+              <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>
               <button onClick={async () => {
                 const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/Emotional_Needs_bot`;
                 try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch {}
-              }} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+              }} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
                 Поделиться
               </button>
             </div>
@@ -351,8 +351,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
           <div style={{ paddingTop: 8 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)', marginBottom: 16 }}>Лучший день</div>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, marginBottom: 14 }}>День недели, в который твои оценки в среднем выше всего.</p>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>Становится точнее с каждой неделей.</p>
+            <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>День недели, в который твои оценки в среднем выше всего.</p>
+            <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7 }}>Становится точнее с каждой неделей.</p>
           </div>
         </BottomSheet>
       )}
@@ -362,7 +362,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
 function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: 8, ...style }}>
+    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 8, ...style }}>
       {children}
     </div>
   );

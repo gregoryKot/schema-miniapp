@@ -48,7 +48,7 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
       {showPicker && (
         <BottomSheet onClose={() => setShowPicker(false)} zIndex={200}>
           <div style={{ paddingTop: 4, paddingBottom: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
               Записать момент
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
@@ -74,8 +74,8 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
                 onClick={() => { setShowPicker(false); onOpenGratitude(); }}
               />
             </div>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 12 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
+            <div style={{ borderTop: '1px solid rgba(var(--fg-rgb),0.07)', paddingTop: 12 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.3)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
                 Оценить день
               </div>
               <DiaryTypeButton
@@ -106,8 +106,8 @@ function DiaryTypeButton({ emoji, label, sub, color, onClick }: { emoji: string;
     >
       <span style={{ fontSize: 26 }}>{emoji}</span>
       <div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{label}</div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{sub}</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)' }}>{label}</div>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>{sub}</div>
       </div>
     </button>
   );

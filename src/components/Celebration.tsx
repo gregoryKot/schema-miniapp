@@ -93,19 +93,19 @@ export function Celebration({ streak, onDone }: Props) {
         position: 'relative', zIndex: 1, textAlign: 'center',
         background: 'rgba(22,24,33,0.92)', borderRadius: 24,
         padding: '32px 36px', margin: '0 32px',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid rgba(var(--fg-rgb),0.08)',
         animation: 'sheet-up 400ms cubic-bezier(0.34,1.56,0.64,1)',
       }}>
         <div style={{ fontSize: 56, lineHeight: 1, marginBottom: 12 }}>
           {isMilestone ? '🏆' : '🔥'}
         </div>
-        <div style={{ fontSize: 52, fontWeight: 800, color: '#fff', lineHeight: 1, marginBottom: 6 }}>
+        <div style={{ fontSize: 52, fontWeight: 800, color: 'var(--text)', lineHeight: 1, marginBottom: 6 }}>
           {streak}
         </div>
-        <div style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', marginBottom: 16 }}>
+        <div style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 16 }}>
           {pluralDays(streak)} подряд
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, maxWidth: 220 }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5, maxWidth: 220 }}>
           {getMilestoneText(streak)}
         </div>
         <button
@@ -122,13 +122,13 @@ export function Celebration({ streak, onDone }: Props) {
           style={{
             marginTop: 16,
             padding: '10px 24px', border: 'none', borderRadius: 20,
-            background: 'rgba(255,255,255,0.15)', color: '#fff',
+            background: 'rgba(var(--fg-rgb),0.15)', color: 'var(--text)',
             fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
           {copied ? 'Скопировано!' : 'Поделиться'}
         </button>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 12 }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 12 }}>
           нажми в другом месте, чтобы закрыть
         </div>
       </div>

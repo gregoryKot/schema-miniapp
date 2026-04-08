@@ -32,10 +32,10 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
     <BottomSheet onClose={() => {}} zIndex={250}>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 36, marginBottom: 8 }}>🎯</div>
-        <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', lineHeight: 1.3 }}>
+        <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>
           Вчера ты планировал
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 4 }}>
           {needEmoji} {needLabel}
         </div>
       </div>
@@ -45,13 +45,13 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         border: `1px solid ${color}33`,
         borderRadius: 14, padding: '16px 18px',
         marginBottom: 28,
-        fontSize: 16, color: 'rgba(255,255,255,0.9)', lineHeight: 1.55,
+        fontSize: 16, color: 'rgba(var(--fg-rgb),0.9)', lineHeight: 1.55,
         textAlign: 'center',
       }}>
         {plan.practiceText}
       </div>
 
-      <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginBottom: 16 }}>
+      <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', textAlign: 'center', marginBottom: 16 }}>
         Получилось?
       </div>
 
@@ -61,9 +61,9 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
           disabled={saving}
           style={{
             flex: 1, padding: '15px 0', borderRadius: 14,
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'rgba(255,255,255,0.05)',
-            color: 'rgba(255,255,255,0.6)', fontSize: 15, cursor: 'pointer',
+            border: '1px solid rgba(var(--fg-rgb),0.1)',
+            background: 'rgba(var(--fg-rgb),0.05)',
+            color: 'rgba(var(--fg-rgb),0.6)', fontSize: 15, cursor: 'pointer',
           }}
         >
           Не вышло
@@ -73,8 +73,8 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
           disabled={saving}
           style={{
             flex: 2, padding: '15px 0', borderRadius: 14, border: 'none',
-            background: saving ? 'rgba(255,255,255,0.1)' : color,
-            color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
+            background: saving ? 'rgba(var(--fg-rgb),0.1)' : color,
+            color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
           }}
         >
           {saving ? 'Сохранение...' : 'Да, сделал ✓'}
@@ -89,7 +89,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         <button
           onClick={onDone}
           disabled={saving}
-          style={{ background: 'none', border: 'none', fontSize: 13, color: 'rgba(255,255,255,0.25)', cursor: 'pointer', padding: '4px 12px' }}
+          style={{ background: 'none', border: 'none', fontSize: 13, color: 'rgba(var(--fg-rgb),0.25)', cursor: 'pointer', padding: '4px 12px' }}
         >
           Пропустить
         </button>

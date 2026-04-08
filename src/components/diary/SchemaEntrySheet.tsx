@@ -27,8 +27,8 @@ const COLOR = '#f87171';
 function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (
     <div style={{ marginTop: 20, marginBottom: 8 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>{hint}</div>}
+      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
+      {hint && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>{hint}</div>}
     </div>
   );
 }
@@ -36,8 +36,8 @@ function FieldLabel({ title, hint }: { title: string; hint?: string }) {
 function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onChange: (v: string) => void; placeholder: string; rows?: number }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} style={{
-      width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-      borderRadius: 12, padding: '12px 14px', color: '#fff', fontSize: 14, lineHeight: 1.5, outline: 'none',
+      width: '100%', background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)',
+      borderRadius: 12, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.5, outline: 'none',
     }} />
   );
 }
@@ -130,8 +130,8 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: '#fff' }}>Дневник проявления схем</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник проявления схем</div>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
           Новая запись{hasDraft ? ' · черновик восстановлен' : ''}
         </div>
 
@@ -144,9 +144,9 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
             const sel = emotions.find(e => e.id === em.id);
             return (
               <button key={em.id} onClick={() => toggleEmotion(em.id)} style={{
-                background: sel ? '#f8717133' : 'rgba(255,255,255,0.06)',
+                background: sel ? '#f8717133' : 'rgba(var(--fg-rgb),0.06)',
                 border: sel ? '1px solid #f87171' : '1px solid transparent',
-                borderRadius: 20, padding: '6px 12px', color: sel ? '#fff' : 'rgba(255,255,255,0.6)',
+                borderRadius: 20, padding: '6px 12px', color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
                 fontSize: 13, cursor: 'pointer',
               }}>
                 {em.emoji} {em.label}
@@ -157,14 +157,14 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         {emotions.map(em => {
           const meta = EMOTIONS.find(e => e.id === em.id)!;
           return (
-            <div key={em.id} style={{ marginBottom: 8, background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 12px' }}>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 7 }}>{meta.emoji} {meta.label}</div>
+            <div key={em.id} style={{ marginBottom: 8, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '10px 12px' }}>
+              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', marginBottom: 7 }}>{meta.emoji} {meta.label}</div>
               <div style={{ display: 'flex', gap: 5 }}>
                 {INTENSITY_LABELS.map((lbl, i) => (
                   <button key={i} onClick={() => setIntensity(em.id, i + 1)} style={{
-                    flex: 1, background: em.intensity === i + 1 ? COLOR : 'rgba(255,255,255,0.08)',
+                    flex: 1, background: em.intensity === i + 1 ? COLOR : 'rgba(var(--fg-rgb),0.08)',
                     border: 'none', borderRadius: 8, padding: '5px 2px',
-                    color: em.intensity === i + 1 ? '#fff' : 'rgba(255,255,255,0.4)',
+                    color: em.intensity === i + 1 ? '#fff' : 'rgba(var(--fg-rgb),0.4)',
                     fontSize: 10, cursor: 'pointer',
                   }}>{lbl}</button>
                 ))}
@@ -196,10 +196,10 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
                   const sel = schemaIds.includes(s.id);
                   return (
                     <button key={s.id} onClick={() => toggleSchema(s.id)} style={{
-                      background: sel ? `${domain.color}33` : 'rgba(255,255,255,0.06)',
+                      background: sel ? `${domain.color}33` : 'rgba(var(--fg-rgb),0.06)',
                       border: sel ? `1px solid ${domain.color}` : '1px solid transparent',
                       borderRadius: 16, padding: '5px 10px',
-                      color: sel ? '#fff' : 'rgba(255,255,255,0.6)',
+                      color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
                       fontSize: 12, cursor: 'pointer',
                     }}>{s.name}</button>
                   );
@@ -210,7 +210,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         })}
         {hasPersonalSchemas && (
           <button onClick={() => setShowAllSchemas(v => !v)} style={{
-            background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)',
+            background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.35)',
             fontSize: 12, cursor: 'pointer', padding: '4px 0', marginBottom: 8,
           }}>
             {showAllSchemas ? '↑ Показать только мои схемы' : '↓ Показать все схемы'}
@@ -232,14 +232,14 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
 
         <button onClick={handleSave} disabled={!canSave || saving} style={{
           marginTop: 24, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? COLOR : 'rgba(255,255,255,0.1)',
-          color: canSave ? '#fff' : 'rgba(255,255,255,0.3)',
+          background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.1)',
+          color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
           border: 'none', fontSize: 16, fontWeight: 600, cursor: canSave ? 'pointer' : 'default',
         }}>
           {saving ? 'Сохраняю...' : 'Сохранить'}
         </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 8 }}>
             Нужно заполнить хотя бы спусковой механизм
           </div>
         )}

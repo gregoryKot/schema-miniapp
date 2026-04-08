@@ -93,10 +93,10 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
 
       {/* Header */}
       <div style={{ padding: '24px 20px 0' }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
+        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
           {formatGreetingDate()}
         </div>
-        <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
           {firstName ? `Привет, ${firstName}` : 'Добро пожаловать'}
         </div>
       </div>
@@ -145,25 +145,25 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           <div
             style={{
               width: 110, flexShrink: 0,
-              background: profile === null ? 'rgba(255,255,255,0.03)' : streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(255,255,255,0.03)',
-              border: `1px solid ${profile !== null && streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(255,255,255,0.07)'}`,
+              background: profile === null ? 'rgba(var(--fg-rgb),0.03)' : streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(var(--fg-rgb),0.03)',
+              border: `1px solid ${profile !== null && streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(var(--fg-rgb),0.07)'}`,
               borderRadius: 16, padding: '16px 14px',
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             }}>
             {profile === null ? (
               <>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ width: '70%', height: 28, borderRadius: 6, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  <div style={{ width: '50%', height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '70%', height: 28, borderRadius: 6, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  <div style={{ width: '50%', height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
                 </div>
               </>
             ) : (
               <>
                 <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
                 <div>
-                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(255,255,255,0.3)' }}>{streak}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 3, fontWeight: 500 }}>
+                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(var(--fg-rgb),0.3)' }}>{streak}</div>
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 3, fontWeight: 500 }}>
                     {plural(streak, 'день', 'дня', 'дней')}
                   </div>
                 </div>
@@ -172,8 +172,8 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           </div>
 
           {/* Tracker button */}
-          <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '16px 14px', cursor: 'pointer' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
+          <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 14px', cursor: 'pointer' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
               {allRated ? 'Готово сегодня ✓' : `${ratedCount} из ${needs.length}`}
             </div>
             <div style={{ display: 'flex', gap: 5 }}>
@@ -183,11 +183,11 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
                 const filled = val !== undefined;
                 return (
                   <div key={need.id} style={{ flex: 1, animation: `slide-up 0.3s ease ${0.08 + idx * 0.04}s both` }}>
-                    <div style={{ width: '100%', height: 44, borderRadius: 8, position: 'relative', overflow: 'hidden', background: 'rgba(255,255,255,0.05)', border: `1px solid ${filled ? `${color}40` : 'rgba(255,255,255,0.08)'}` }}>
+                    <div style={{ width: '100%', height: 44, borderRadius: 8, position: 'relative', overflow: 'hidden', background: 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${filled ? `${color}40` : 'rgba(var(--fg-rgb),0.08)'}` }}>
                       {filled && (
                         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${(val / 10) * 100}%`, background: `linear-gradient(to top, ${color}66, ${color}22)`, transition: 'height 0.4s ease' }} />
                       )}
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: filled ? 13 : 16, fontWeight: 700, color: filled ? '#fff' : 'rgba(255,255,255,0.2)' }}>
+                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: filled ? 13 : 16, fontWeight: 700, color: filled ? '#fff' : 'rgba(var(--fg-rgb),0.2)' }}>
                         {filled ? val : need.emoji}
                       </div>
                     </div>
@@ -202,15 +202,15 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         <div
           onClick={onOpenDiaries}
           style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(var(--fg-rgb),0.03)',
+            border: '1px solid rgba(var(--fg-rgb),0.07)',
             borderRadius: 16, padding: '16px 18px',
             animation: 'pop-in 0.3s ease 0.12s both',
             cursor: 'pointer',
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 || !diariesLoaded ? 12 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.35)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
               Дневник
             </div>
             {diariesLoaded && (
@@ -223,7 +223,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           {!diariesLoaded ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[80, 65, 90].map((w, i) => (
-                <div key={i} style={{ height: 12, borderRadius: 6, width: `${w}%`, background: 'linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                <div key={i} style={{ height: 12, borderRadius: 6, width: `${w}%`, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
               ))}
             </div>
           ) : recentDiaries.length > 0 ? (
@@ -232,7 +232,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
                   <span style={{ fontSize: 15, flexShrink: 0 }}>{entry.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.label}
                     </div>
                   </div>
@@ -240,12 +240,12 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.5 }}>
               Фиксируй моменты когда схемы активируются — это главная практика
             </div>
           )}
           {diariesLoaded && (
-            <div style={{ marginTop: 10, borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 10 }}>
+            <div style={{ marginTop: 10, borderTop: '1px solid rgba(var(--fg-rgb),0.05)', paddingTop: 10 }}>
               <button
                 onClick={e => { e.stopPropagation(); setShowDiaryTaskCreate(true); }}
                 style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: 'rgba(167,139,250,0.6)', cursor: 'pointer', fontWeight: 500 }}
@@ -284,8 +284,8 @@ function OnboardingComplete({ onDone }: { onDone: () => void }) {
       textAlign: 'center',
     }}>
       <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-      <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Отличный старт!</div>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Отличный старт!</div>
+      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6 }}>
         Теперь просто заполняй трекер каждый день — через неделю начнут проявляться паттерны
       </div>
     </div>
@@ -379,15 +379,15 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
     return (
       <div style={{ borderRadius: 16, padding: '16px 18px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', animation: 'pop-in 0.3s ease both' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ width: 80, height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+          <div style={{ width: 80, height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
           <div style={{ display: 'flex', gap: 5 }}>
             {[0,1,2,3,4].map(i => <div key={i} style={{ width: i === 0 ? 18 : 8, height: 8, borderRadius: 4, background: 'rgba(167,139,250,0.2)' }} />)}
           </div>
         </div>
-        <div style={{ width: 32, height: 28, borderRadius: 6, marginBottom: 10, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '70%', height: 17, borderRadius: 6, marginBottom: 8, background: 'linear-gradient(90deg,rgba(255,255,255,0.05) 25%,rgba(255,255,255,0.1) 50%,rgba(255,255,255,0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '90%', height: 11, borderRadius: 4, marginBottom: 4, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '60%', height: 11, borderRadius: 4, marginBottom: 18, background: 'linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.07) 50%,rgba(255,255,255,0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: 32, height: 28, borderRadius: 6, marginBottom: 10, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '70%', height: 17, borderRadius: 6, marginBottom: 8, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '90%', height: 11, borderRadius: 4, marginBottom: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+        <div style={{ width: '60%', height: 11, borderRadius: 4, marginBottom: 18, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
         <div style={{ height: 42, borderRadius: 14, background: 'linear-gradient(90deg,rgba(167,139,250,0.1) 25%,rgba(167,139,250,0.18) 50%,rgba(167,139,250,0.1) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
       </div>
     );
@@ -451,7 +451,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
             return (
               <div key={s.id} style={{
                 width: isCurrent ? 18 : 8, height: 8, borderRadius: 4,
-                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? '#a78bfa' : 'rgba(255,255,255,0.12)',
+                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? '#a78bfa' : 'rgba(var(--fg-rgb),0.12)',
                 transition: 'all 0.3s ease',
               }} />
             );
@@ -460,10 +460,10 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
       </div>
 
       <div style={{ fontSize: 28, marginBottom: 6 }}>{current.emoji}</div>
-      <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', lineHeight: 1.3, marginBottom: 6 }}>
+      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 6 }}>
         {current.title}
       </div>
-      <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.55, marginBottom: 16 }}>
+      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.55, marginBottom: 16 }}>
         {current.description}
       </div>
 
@@ -473,7 +473,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
           style={{
             flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
             background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-            color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
           {current.actionLabel} →
@@ -483,8 +483,8 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
             onClick={handleSkip}
             style={{
               padding: '11px 14px', borderRadius: 12, border: 'none',
-              background: 'rgba(255,255,255,0.06)',
-              color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer',
+              background: 'rgba(var(--fg-rgb),0.06)',
+              color: 'rgba(var(--fg-rgb),0.4)', fontSize: 13, cursor: 'pointer',
             }}
           >
             Не сейчас
@@ -492,7 +492,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
         )}
       </div>
       {!current.canSkip && resolved > 0 && (
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(255,255,255,0.2)', marginTop: 10 }}>
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', marginTop: 10 }}>
           {resolved} из {total} шагов выполнено
         </div>
       )}

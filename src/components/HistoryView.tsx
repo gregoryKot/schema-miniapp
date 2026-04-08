@@ -101,7 +101,7 @@ function NeedsWheel({
           cx={cx} cy={cy}
           r={R * ring / 10}
           fill="none"
-          stroke="rgba(255,255,255,0.04)"
+          stroke="rgba(var(--fg-rgb),0.04)"
           strokeWidth={ring === 10 ? 1.5 : 1}
         />
       ))}
@@ -113,7 +113,7 @@ function NeedsWheel({
         if (!d) return null;
         return (
           <path key={`ghost-${need.id}`} d={d}
-            fill="rgba(255,255,255,0.08)"
+            fill="rgba(var(--fg-rgb),0.08)"
           />
         );
       })}
@@ -146,7 +146,7 @@ function NeedsWheel({
             key={`arc-${need.id}-${frac}`}
             d={arcPath(cx, cy, R * frac, angle, SPREAD)}
             fill="none"
-            stroke="rgba(255,255,255,0.15)"
+            stroke="rgba(var(--fg-rgb),0.15)"
             strokeWidth={1}
           />
         ));
@@ -162,7 +162,7 @@ function NeedsWheel({
         return (
           <path key={`childhood-${need.id}`} d={d}
             fill="none"
-            stroke="rgba(255,255,255,0.55)"
+            stroke="rgba(var(--fg-rgb),0.55)"
             strokeWidth={2}
             strokeDasharray="4 3"
             strokeLinejoin="round"
@@ -171,17 +171,17 @@ function NeedsWheel({
       })}
 
       {/* Center cutout */}
-      <circle cx={cx} cy={cy} r={CENTER_R} fill="#1a1d27" stroke="rgba(255,255,255,0.06)" strokeWidth={1} />
+      <circle cx={cx} cy={cy} r={CENTER_R} fill="#1a1d27" stroke="rgba(var(--fg-rgb),0.06)" strokeWidth={1} />
 
       {/* Center text */}
-      <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.5)">
+      <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.5)">
         индекс
       </text>
       <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="#ffffff">
         {avg.toFixed(1)}
       </text>
       {prevAvg !== null && prevAvg > 0 && (
-        <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(255,255,255,0.4)">
+        <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.4)">
           {avg >= prevAvg ? '↑' : '↓'} вчера {prevAvg.toFixed(1)}
         </text>
       )}
@@ -219,7 +219,7 @@ function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Rec
             key={need.id}
             onClick={() => onTapNeed?.(need)}
             style={{
-              background: 'rgba(255,255,255,0.04)',
+              background: 'rgba(var(--fg-rgb),0.04)',
               borderRadius: 12,
               padding: '8px 10px',
               display: 'flex',
@@ -233,14 +233,14 @@ function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Rec
               background: color, flexShrink: 0,
             }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.45)', fontWeight: 400, lineHeight: 1.2 }}>
+              <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.45)', fontWeight: 400, lineHeight: 1.2 }}>
                 {need.chartLabel}
               </div>
               <div style={{ fontSize: 14, fontWeight: 700, color, lineHeight: 1.2 }}>
                 {value}
               </div>
             </div>
-            <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>›</span>
+            <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.25)', flexShrink: 0 }}>›</span>
           </div>
         );
       })}
@@ -278,7 +278,7 @@ function SparklineRow({
   const score = selectedRatings[need.id] ?? 0;
   const prevScore = history[selectedIdx + 1]?.ratings[need.id] ?? score;
   const trend = score > prevScore ? '↑' : score < prevScore ? '↓' : '—';
-  const trendColor = score > prevScore ? '#06d6a0' : 'rgba(255,255,255,0.3)';
+  const trendColor = score > prevScore ? '#06d6a0' : 'rgba(var(--fg-rgb),0.3)';
 
   const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   const areaPath = `${linePath} L ${pts[n - 1].x.toFixed(1)} ${H} L 0 ${H} Z`;
@@ -295,7 +295,7 @@ function SparklineRow({
         {need.emoji}
       </div>
       <div style={{
-        fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.7)',
+        fontSize: 13, fontWeight: 500, color: 'rgba(var(--fg-rgb),0.7)',
         width: 100, flexShrink: 0, lineHeight: 1.2,
       }}>
         {need.chartLabel}
@@ -339,7 +339,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
     <div
       onClick={() => onTap?.(lowest)}
       style={{
-        background: 'rgba(255,255,255,0.05)',
+        background: 'rgba(var(--fg-rgb),0.05)',
         borderRadius: 16,
         padding: '12px 14px',
         display: 'flex',
@@ -349,16 +349,16 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
       }}
     >
       <div>
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 3 }}>
+        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 3 }}>
           Стоит уделить внимание
         </div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
           {lowest.chartLabel}
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontSize: 16, fontWeight: 700, color }}>{ratings[lowest.id] ?? 0}</span>
-        {onTap && <span style={{ fontSize: 16, color: 'rgba(255,255,255,0.25)' }}>›</span>}
+        {onTap && <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.25)' }}>›</span>}
       </div>
     </div>
   );
@@ -411,10 +411,10 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
     return (
       <div style={{ padding: '48px 32px', textAlign: 'center' }}>
         <div style={{ fontSize: 40, marginBottom: 16 }}>🌱</div>
-        <div style={{ fontSize: 17, fontWeight: 600, color: '#fff', marginBottom: 10 }}>
+        <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)', marginBottom: 10 }}>
           История пока пуста
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, marginBottom: 24 }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.7, marginBottom: 24 }}>
           Заполни дневник сегодня — и через 3–5 дней здесь начнёт проявляться твой паттерн: что тебя питает, что истощает
         </div>
         {onGoToToday && (
@@ -423,7 +423,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
             style={{
               padding: '12px 28px', border: 'none', borderRadius: 12,
               background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
-              color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
             }}
           >
             Заполнить сегодня
@@ -469,7 +469,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
             >
               <span style={{
                 fontSize: 11, fontWeight: 500,
-                color: active ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.4)',
+                color: active ? 'rgba(0,0,0,0.5)' : 'rgba(var(--fg-rgb),0.4)',
               }}>
                 {getDayAbbr(day.date)}
               </span>
@@ -482,7 +482,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               </span>
               <div style={{
                 width: 4, height: 4, borderRadius: '50%',
-                background: active ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)',
+                background: active ? 'rgba(0,0,0,0.2)' : 'rgba(var(--fg-rgb),0.2)',
               }} />
             </button>
           );
@@ -491,11 +491,11 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
 
       {/* View toggle + days selector */}
       <div style={{ padding: '0 24px 4px', display: 'flex', gap: 8 }}>
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3, flex: 1 }}>
+        <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 10, padding: 3, flex: 1 }}>
           {(['day', 'week'] as const).map((v) => {
             const active = subView === v;
             return (
-              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
+              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
                 {v === 'day' ? 'День' : 'Неделя'}
               </button>
             );
@@ -503,12 +503,12 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         </div>
         {onChangeDays && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>глубина</span>
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: 3 }}>
+            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', whiteSpace: 'nowrap' }}>глубина</span>
+            <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 10, padding: 3 }}>
             {DAYS_OPTIONS.map(d => {
               const active = days === d;
               return (
-                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(255,255,255,0.12)' : 'transparent', color: active ? '#fff' : 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
+                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
                   {d}д
                 </button>
               );
@@ -520,7 +520,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
 
       {/* Early-days nudge */}
       {history.length < 3 && (
-        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
+        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>
           Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
         </div>
       )}
@@ -548,8 +548,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 onClick={onOpenChildhoodWheel}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6, cursor: onOpenChildhoodWheel ? 'pointer' : 'default' }}
               >
-                <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(255,255,255,0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>детство</span>
+                <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(var(--fg-rgb),0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
+                <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>детство</span>
                 {onOpenChildhoodWheel && <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)' }}>→</span>}
               </div>
             ) : onOpenChildhoodWheel ? (
@@ -581,7 +581,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               <div style={{
                 textAlign: 'center',
                 fontSize: 11,
-                color: 'rgba(255,255,255,0.25)',
+                color: 'rgba(var(--fg-rgb),0.25)',
                 marginBottom: 10,
               }}>
                 Нажми на категорию чтобы узнать что делать
@@ -599,7 +599,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить этот день</div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
+                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
                   </div>
                 </div>
               </div>
@@ -631,7 +631,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                     border: '1px solid rgba(167,139,250,0.2)',
                     borderRadius: 16, padding: '14px 16px', marginBottom: 16,
                   }}>
-                    <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 10 }}>
+                    <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>
                       {label} несколько дней невысокая. Иногда за этим стоит что-то важное. Терапевт поможет разобраться — и сводка из приложения сэкономит вам обоим час разговора.
                     </div>
                     <a
@@ -656,16 +656,16 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 onClick={() => setShowNote(true)}
                 style={{
                   padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
-                  background: noteText ? 'rgba(255,255,255,0.04)' : 'transparent',
-                  border: `1px dashed ${noteText ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.12)'}`,
+                  background: noteText ? 'rgba(var(--fg-rgb),0.04)' : 'transparent',
+                  border: `1px dashed ${noteText ? 'rgba(var(--fg-rgb),0.08)' : 'rgba(var(--fg-rgb),0.12)'}`,
                   display: 'flex', alignItems: 'center', gap: 10,
                 }}
               >
                 <span style={{ fontSize: 16 }}>📝</span>
-                <span style={{ fontSize: 13, color: noteText ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 13, color: noteText ? 'rgba(var(--fg-rgb),0.7)' : 'rgba(var(--fg-rgb),0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {noteText || 'Добавить заметку к этому дню'}
                 </span>
-                {noteText && <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.2)' }}>›</span>}
+                {noteText && <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.2)' }}>›</span>}
               </div>
               {noteTags.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
@@ -686,7 +686,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           <div style={{ padding: '0 24px' }}>
             <div style={{
               fontSize: 11, fontWeight: 500,
-              color: 'rgba(255,255,255,0.3)',
+              color: 'rgba(var(--fg-rgb),0.3)',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               marginBottom: 14,
@@ -724,7 +724,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   border: '1px solid rgba(167,139,250,0.2)',
                   borderRadius: 16, padding: '14px 16px', marginTop: 16,
                 }}>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, marginBottom: 10 }}>
+                  <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>
                     {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
                   </div>
                   <a
@@ -747,8 +747,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               onClick={() => setShowWeekCard(true)}
               style={{
                 width: '100%', marginTop: 20, padding: '13px 0',
-                border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14,
-                background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.6)',
+                border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 14,
+                background: 'rgba(var(--fg-rgb),0.04)', color: 'rgba(var(--fg-rgb),0.6)',
                 fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}

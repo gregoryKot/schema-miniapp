@@ -57,11 +57,11 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
-        <div style={{ fontSize: 20, fontWeight: 600, color: '#fff', marginBottom: 4 }}>Заполнить вчера</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{date}</div>
+        <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Заполнить вчера</div>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 24 }}>{date}</div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.3)', padding: '40px 0' }}>Загрузка...</div>
+          <div style={{ textAlign: 'center', color: 'rgba(var(--fg-rgb),0.3)', padding: '40px 0' }}>Загрузка...</div>
         ) : loadError ? (
           <div style={{ textAlign: 'center', color: '#f87171', padding: '40px 0', fontSize: 14 }}>
             Не удалось загрузить — попробуй позже
@@ -92,8 +92,8 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
           onClick={onClose}
           style={{
             marginTop: 8, width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: allDone ? '#a78bfa' : 'rgba(255,255,255,0.08)',
-            color: allDone ? '#fff' : 'rgba(255,255,255,0.5)',
+            background: allDone ? '#a78bfa' : 'rgba(var(--fg-rgb),0.08)',
+            color: allDone ? '#fff' : 'rgba(var(--fg-rgb),0.5)',
             fontSize: 15, fontWeight: 600, cursor: 'pointer',
           }}
         >
@@ -120,11 +120,11 @@ function SliderRow({ needId, label, value, color, saved, onChange }: {
   return (
     <div style={{ marginBottom: 20 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <span style={{ fontSize: 14, color: '#fff' }}>{label}</span>
+        <span style={{ fontSize: 14, color: 'var(--text)' }}>{label}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {saved && value > 0 && <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>✓</span>}
-          <span style={{ fontSize: 15, fontWeight: 600, color: value > 0 ? color : 'rgba(255,255,255,0.2)' }}>
-            {value > 0 ? value : '—'}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.3)' }}>{value > 0 ? '/10' : ''}</span>
+          {saved && value > 0 && <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>✓</span>}
+          <span style={{ fontSize: 15, fontWeight: 600, color: value > 0 ? color : 'rgba(var(--fg-rgb),0.2)' }}>
+            {value > 0 ? value : '—'}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>{value > 0 ? '/10' : ''}</span>
           </span>
         </div>
       </div>
@@ -134,14 +134,14 @@ function SliderRow({ needId, label, value, color, saved, onChange }: {
         onPointerMove={e => { if (e.buttons === 0) return; calc(e.clientX); }}
         style={{ position: 'relative', padding: '10px 0', cursor: 'pointer', touchAction: 'none', userSelect: 'none' }}
       >
-        <div style={{ height: 6, borderRadius: 6, background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+        <div style={{ height: 6, borderRadius: 6, background: 'rgba(var(--fg-rgb),0.07)', overflow: 'hidden' }}>
           <div style={{ width: `${pct}%`, height: '100%', borderRadius: 6, background: `linear-gradient(to right, ${color}55, ${color})` }} />
         </div>
         <div style={{
           position: 'absolute', left: `${pct}%`, top: '50%',
           transform: 'translate(-50%, -50%)',
           width: 20, height: 20, borderRadius: '50%',
-          background: value > 0 ? color : 'rgba(255,255,255,0.2)',
+          background: value > 0 ? color : 'rgba(var(--fg-rgb),0.2)',
           border: '2px solid var(--bg)', pointerEvents: 'none',
         }} />
       </div>
