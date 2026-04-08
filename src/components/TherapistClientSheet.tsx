@@ -10,6 +10,8 @@ interface Props {
   view: 'list' | 'client';
   onViewChange: (v: 'list' | 'client') => void;
   onClose: () => void;
+  /** When true, renders as standalone page (no fixed overlay, own bottom nav) */
+  standalone?: boolean;
 }
 
 function streakEmoji(s: number) {
@@ -60,7 +62,7 @@ const CONCEPT_FIELDS: { key: keyof ClientConceptualization; label: string; place
 
 type ClientTab = 'tasks' | 'notes' | 'concept';
 
-export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
+export function TherapistClientSheet({ view, onViewChange, onClose, standalone }: Props) {
   const safeTop = getTelegramSafeTop();
   const [clients, setClients] = useState<TherapyClientSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -223,7 +225,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const selfSchemaIds = clientData?.mySchemaIds ?? [];
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 90, background: 'var(--bg)', overflowY: 'auto' }}>
+    <div style={standalone
+      ? { minHeight: '100vh', background: 'var(--bg)', overflowY: 'auto' }
+      : { position: 'fixed', inset: 0, zIndex: 90, background: 'var(--bg)', overflowY: 'auto' }
+    }>
       <div style={{ padding: `${safeTop + 20}px 20px 120px` }}>
 
         {/* Header */}
@@ -633,6 +638,28 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
           }}
           onClose={() => setShowAssign(false)}
         />
+      )}
+
+      {/* Standalone bottom nav */}
+      {standalone && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
+          background: 'var(--nav-bg)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+          borderTop: '1px solid rgba(167,139,250,0.12)',
+          display: 'flex', alignItems: 'center',
+          padding: '10px 20px 24px', gap: 12,
+        }}>
+          <button
+            onClick={onClose}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(167,139,250,0.6)', fontSize: 14, fontWeight: 500, padding: '6px 0' }}
+          >
+            <span style={{ fontSize: 18 }}>‹</span> Дневник
+          </button>
+          <div style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(167,139,250,0.5)', textTransform: 'uppercase' }}>
+            👨‍⚕️ Кабинет
+          </div>
+          <div style={{ width: 80 }} />
+        </div>
       )}
     </div>
   );

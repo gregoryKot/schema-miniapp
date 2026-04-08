@@ -61,11 +61,7 @@ function TabIcon({ id, active, color, isTherapist }: { id: Section; active: bool
 }
 
 export function BottomNav({ section, onSelect, userRole }: Props) {
-  const tabs = TABS.map(t =>
-    t.id === 'help' && userRole === 'THERAPIST'
-      ? { ...t, label: 'Кабинет' }
-      : t,
-  );
+  const tabs = TABS;
   return (
     <div style={{
       position: 'fixed',

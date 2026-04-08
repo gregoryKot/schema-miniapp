@@ -18,6 +18,8 @@ interface Props {
   onOpenDiaries: () => void;
   onOpenChildhoodWheel: () => void;
   refreshKey?: number;
+  userRole?: 'CLIENT' | 'THERAPIST';
+  onOpenTherapistCabinet?: () => void;
 }
 
 function formatGreetingDate(): string {
@@ -39,7 +41,7 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel, refreshKey }: Props) {
+export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel, refreshKey, userRole, onOpenTherapistCabinet }: Props) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
@@ -100,6 +102,30 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
       </div>
 
       <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+        {/* ── Therapist cabinet banner ── */}
+        {userRole === 'THERAPIST' && onOpenTherapistCabinet && (
+          <div
+            onClick={onOpenTherapistCabinet}
+            style={{
+              background: 'linear-gradient(135deg, #1a0f3d, #0d1a3a)',
+              border: '1px solid rgba(167,139,250,0.35)',
+              borderRadius: 18, padding: '16px 18px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              animation: 'slide-up 0.25s ease both',
+            }}
+          >
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, color: '#a78bfa', marginBottom: 2 }}>
+                👨‍⚕️ Кабинет терапевта
+              </div>
+              <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.5)' }}>
+                Клиенты · Задания · Концептуализация
+              </div>
+            </div>
+            <div style={{ fontSize: 22, color: 'rgba(167,139,250,0.5)', fontWeight: 300 }}>›</div>
+          </div>
+        )}
 
         {/* ── Онбординг ── */}
         <OnboardingWidget

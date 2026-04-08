@@ -249,7 +249,7 @@ export default function App() {
   const [helpPlanCount, setHelpPlanCount] = useState<number | null>(null);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
-  const [showTherapistCabinet, setShowTherapistCabinet] = useState(false);
+  const [therapistMode, setTherapistMode] = useState(false);
   const [cabinetView, setCabinetView] = useState<'list' | 'client'>('list');
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -421,14 +421,15 @@ export default function App() {
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
-      showTherapistCabinet && cabinetView === 'client' ? () => setCabinetView('list') :
-      showTherapistCabinet ? () => { setShowTherapistCabinet(false); setCabinetView('list'); } :
+      therapistMode && cabinetView === 'client' ? () => setCabinetView('list') :
+      therapistMode ? () => { setTherapistMode(false); setCabinetView('list'); } :
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || showTherapistCabinet;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, showTherapistCabinet, cabinetView]);
+  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, therapistMode, cabinetView]);
+  // therapistMode kept in dep array for cabinetView back-button handling
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -438,7 +439,7 @@ export default function App() {
     return () => bb.offClick(handler);
   }, []);
 
-  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || showTherapistCabinet);
+  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote);
 
   const handleSwipeStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -509,8 +510,18 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Main sections ── */}
-      {section === 'today' && (
+      {/* ── Therapist cabinet (standalone mode — replaces entire app UI) ── */}
+      {therapistMode && (
+        <TherapistClientSheet
+          view={cabinetView}
+          onViewChange={setCabinetView}
+          onClose={() => { setTherapistMode(false); setCabinetView('list'); }}
+          standalone
+        />
+      )}
+
+      {/* ── Main sections (hidden when therapistMode) ── */}
+      {!therapistMode && section === 'today' && (
         <TodaySection
           needs={needs}
           ratings={ratings}
@@ -521,16 +532,18 @@ export default function App() {
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           refreshKey={todayRefreshKey}
+          userRole={userRole}
+          onOpenTherapistCabinet={() => { setCabinetView('list'); setTherapistMode(true); }}
         />
       )}
 
-      {section === 'schemas' && (
+      {!therapistMode && section === 'schemas' && (
         <SchemasSection
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
         />
       )}
 
-      {section === 'help' && (
+      {!therapistMode && section === 'help' && (
         <HelpSection
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           onOpenPractices={() => setShowPractices(true)}
@@ -543,11 +556,11 @@ export default function App() {
           refreshKey={helpTasksKey}
           onTasksChanged={() => { api.getTasks().then(setHelpTasks).catch(() => {}); setHelpTasksKey(k => k + 1); }}
           userRole={userRole}
-          onOpenTherapistCabinet={() => { setCabinetView('list'); setShowTherapistCabinet(true); }}
+          onOpenTherapistCabinet={() => { setCabinetView('list'); setTherapistMode(true); }}
         />
       )}
 
-      {section === 'profile' && (
+      {!therapistMode && section === 'profile' && (
         <ProfileSection
           onOpenSettings={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
@@ -864,8 +877,8 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setShowTherapistCabinet(true); }} />}
-      {showTherapistCabinet && <TherapistClientSheet view={cabinetView} onViewChange={setCabinetView} onClose={() => { setShowTherapistCabinet(false); setCabinetView('list'); }} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} />}
+      {/* therapistMode renders inline in main flow, not as overlay — see below */}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
@@ -893,7 +906,7 @@ export default function App() {
       )}
 
       {/* ── Floating pill (always above bottom bar) ── */}
-      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
+      {!therapistMode && !showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
         <FloatingPill
           onOpenTracker={() => setShowTracker(true)}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
@@ -902,17 +915,10 @@ export default function App() {
         />
       )}
 
-      {!showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
+      {!therapistMode && !showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
         <BottomNav
           section={section}
-          onSelect={(s) => {
-            if (s === 'help' && userRole === 'THERAPIST') {
-              setCabinetView('list');
-              setShowTherapistCabinet(true);
-            } else {
-              setSection(s);
-            }
-          }}
+          onSelect={setSection}
           userRole={userRole}
         />
       )}
