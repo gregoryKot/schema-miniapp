@@ -132,6 +132,27 @@ export interface TherapyClientSummary {
   todayIndex: number | null;
 }
 
+export interface TherapistNote {
+  id: number;
+  therapistId: number;
+  clientId: number;
+  date: string;
+  text: string;
+  createdAt: string;
+}
+
+export interface ClientConceptualization {
+  id: number;
+  therapistId: number;
+  clientId: number;
+  schemaIds: string[];
+  modeIds: string[];
+  triggers: string | null;
+  coreWounds: string | null;
+  goals: string | null;
+  updatedAt: string;
+}
+
 export const api = {
   init:           (tzOffset?: number) => post('/api/init', { tzOffset }),
   getDisclaimer:  () => get<{ accepted: boolean }>('/api/disclaimer'),
@@ -232,4 +253,17 @@ export const api = {
   getTaskHistory: () => get<UserTask[]>('/api/therapy/tasks/history'),
   completeTask: (id: number, done: boolean) => post(`/api/therapy/tasks/${id}/complete`, { done }),
   getTherapyTasksForClient: (clientId: number) => get<UserTask[]>(`/api/therapy/tasks/client/${clientId}`),
+
+  // ─── Therapist Notes ─────────────────────────────────────────────────────────
+  getTherapistNotes: (clientId: number) => get<TherapistNote[]>(`/api/therapy/notes/${clientId}`),
+  createTherapistNote: (clientId: number, date: string, text: string) =>
+    postJson<TherapistNote>(`/api/therapy/notes/${clientId}`, { date, text }),
+  deleteTherapistNote: (noteId: number) => del(`/api/therapy/notes/${noteId}`),
+
+  // ─── Case Conceptualization ──────────────────────────────────────────────────
+  getConceptualization: (clientId: number) => get<ClientConceptualization | null>(`/api/therapy/conceptualization/${clientId}`),
+  saveConceptualization: (clientId: number, body: {
+    schemaIds?: string[]; modeIds?: string[];
+    triggers?: string; coreWounds?: string; goals?: string;
+  }) => postJson<ClientConceptualization>(`/api/therapy/conceptualization/${clientId}`, body),
 };

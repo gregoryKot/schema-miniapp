@@ -299,12 +299,18 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {userRole !== 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
                   {!showBecomeTherapist ? (
-                    <div
+                    <button
                       onClick={() => setShowBecomeTherapist(true)}
-                      style={{ textAlign: 'center', padding: '8px 0', fontSize: 12, color: 'rgba(255,255,255,0.2)', cursor: 'pointer' }}
+                      style={{
+                        width: '100%', padding: '11px 16px', borderRadius: 14,
+                        border: '1px solid rgba(167,139,250,0.2)',
+                        background: 'rgba(167,139,250,0.06)',
+                        color: 'rgba(167,139,250,0.7)', fontSize: 13, fontWeight: 500,
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      }}
                     >
-                      Я психолог — войти как специалист
-                    </div>
+                      <span>👨‍⚕️</span> Я психолог — войти как специалист
+                    </button>
                   ) : (
                     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: 16 }}>
                       <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
