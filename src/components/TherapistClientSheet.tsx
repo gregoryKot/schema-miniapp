@@ -89,6 +89,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [manualIdLoading, setManualIdLoading] = useState(false);
   const [manualIdError, setManualIdError] = useState('');
   const [conceptError, setConceptError] = useState('');
+  const [exportCopied, setExportCopied] = useState(false);
 
   useEffect(() => {
     api.getTherapyClients().then(setClients).catch(() => {}).finally(() => setLoading(false));
@@ -199,6 +200,69 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
       setYsqRequested(true);
       setTimeout(() => setYsqRequested(false), 3000);
     } catch { /* ignore */ }
+  }
+
+  function buildExportText(): string {
+    if (!selectedClient || !concept) return '';
+    const therapistName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? 'Терапевт';
+    const clientName = selectedClient.clientAlias ?? selectedClient.name ?? `ID ${selectedClient.telegramId}`;
+    const date = concept.updatedAt ? fmtDate(concept.updatedAt.slice(0, 10)) : todayStr();
+    const c = { ...concept, ...localConcept };
+
+    const schemaNames = (activeSchemaIds as string[]).map(id => {
+      const s = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(x => x.id === id);
+      return s ? `${s.emoji} ${s.name}` : id;
+    });
+    const modeNames = (activeModeIds as string[]).map(id => {
+      const m = MODE_GROUPS.flatMap(g => g.items).find(x => x.id === id);
+      return m ? `${m.emoji} ${m.name}` : id;
+    });
+
+    const row = (label: string, value: string | null | undefined) =>
+      `${label}\n${value?.trim() || '—'}\n`;
+    const div = '─'.repeat(44);
+
+    return [
+      `Терапевт: ${therapistName}   Клиент: ${clientName}   Дата: ${date}`,
+      '',
+      '══════ КРАТКАЯ КОНЦЕПТУАЛИЗАЦИЯ ══════',
+      '',
+      div,
+      row('АКТУАЛЬНЫЕ СХЕМЫ (ЭДС)', schemaNames.join(' · ') || null),
+      div,
+      row('КАРТА РЕЖИМОВ', modeNames.join(' · ') || null),
+      div,
+      row('РАННИЙ ДИСФУНКЦИОНАЛЬНЫЙ ОПЫТ', c.earlyExperience as string),
+      div,
+      row('НЕУДОВЛЕТВОРЁННЫЕ БАЗОВЫЕ ПОТРЕБНОСТИ', c.unmetNeeds as string),
+      div,
+      row('СХЕМНЫЕ ТРИГГЕРЫ', c.triggers as string),
+      div,
+      row('ДЕЗАДАПТИВНЫЕ КОПИНГИ', c.copingStyles as string),
+      div,
+      row('АКТУАЛЬНЫЕ ПРОБЛЕМЫ И СИМПТОМЫ', c.currentProblems as string),
+      div,
+      row('ЦЕЛИ СХЕМА-ТЕРАПИИ', c.goals as string),
+      div,
+      '',
+      '@SchemeHappens · Схема-лаб',
+    ].join('\n');
+  }
+
+  async function handleExport() {
+    const text = buildExportText();
+    if (!text) return;
+    try {
+      if (navigator.share) {
+        await navigator.share({ text });
+      } else {
+        await navigator.clipboard.writeText(text);
+        setExportCopied(true);
+        setTimeout(() => setExportCopied(false), 2500);
+      }
+    } catch {
+      try { await navigator.clipboard.writeText(text); setExportCopied(true); setTimeout(() => setExportCopied(false), 2500); } catch { /* ignore */ }
+    }
   }
 
   async function saveConcept() {
@@ -613,6 +677,16 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
                 </button>
                 {conceptError && <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
+
+                {/* Export */}
+                {concept && (
+                  <button
+                    onClick={handleExport}
+                    style={{ width: '100%', marginTop: 8, padding: '11px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: exportCopied ? 'rgba(6,214,160,0.1)' : 'transparent', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                  >
+                    {exportCopied ? '✓ Скопировано' : '↗ Экспорт / Поделиться'}
+                  </button>
+                )}
 
                 {/* History */}
                 {concept && (!concept.history || (concept.history as unknown[]).length === 0) && (
