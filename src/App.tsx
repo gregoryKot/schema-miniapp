@@ -422,14 +422,12 @@ export default function App() {
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
       therapistMode && cabinetView === 'client' ? () => setCabinetView('list') :
-      therapistMode ? () => { setTherapistMode(false); setCabinetView('list'); } :
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote;
+    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || (therapistMode && cabinetView === 'client');
     if (anyOpen) bb.show(); else bb.hide();
   }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, therapistMode, cabinetView]);
-  // therapistMode kept in dep array for cabinetView back-button handling
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -527,13 +525,6 @@ export default function App() {
               display: 'flex', alignItems: 'stretch', height: 64,
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}>
-              <button
-                onClick={() => { setTherapistMode(false); setCabinetView('list'); }}
-                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 10, fontWeight: 500, letterSpacing: '0.03em' }}
-              >
-                <span style={{ fontSize: 18 }}>‹</span>
-                Дневник
-              </button>
               <div style={{ flex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
                 <span style={{ fontSize: 18 }}>👨‍⚕️</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.03em' }}>Кабинет</span>
@@ -609,7 +600,7 @@ export default function App() {
             position: 'sticky',
             top: 0,
             zIndex: 10,
-            background: 'rgba(6,10,18,0.94)',
+            background: 'var(--nav-bg)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
             padding: `${safeTop + 16}px 20px 14px`,
@@ -657,7 +648,7 @@ export default function App() {
                     style={{
                       flex: 1, padding: '8px 0', border: 'none', borderRadius: 10,
                       background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent',
-                      color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)',
+                      color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)',
                       fontSize: 14, fontWeight: active ? 500 : 400,
                       cursor: 'pointer', transition: 'all 0.15s ease',
                     }}
@@ -909,7 +900,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} therapistMode={therapistMode} onToggleTherapistMode={() => setTherapistMode(m => !m)} />}
       {/* therapistMode renders inline in main flow, not as overlay — see below */}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}

@@ -31,9 +31,11 @@ interface Props {
   displayName?: string | null;
   onNameChanged?: (name: string) => void;
   onOpenTherapistCabinet?: () => void;
+  therapistMode?: boolean;
+  onToggleTherapistMode?: () => void;
 }
 
-export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, onOpenTherapistCabinet }: Props) {
+export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, onOpenTherapistCabinet, therapistMode, onToggleTherapistMode }: Props) {
   const safeTop = getTelegramSafeTop();
   const [view, setView]             = useState<View>('main');
   const [settings, setSettings]     = useState<UserSettings | null>(null);
@@ -180,31 +182,64 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Оформление */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ОФОРМЛЕНИЕ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
-                    <span style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>
-                      {theme === 'dark' ? 'Тёмная тема' : 'Светлая тема'}
-                    </span>
+                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
+                      <span style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>
+                        {theme === 'dark' ? 'Тёмная тема' : 'Светлая тема'}
+                      </span>
+                    </div>
+                    <div
+                      onClick={() => setTheme(toggleTheme())}
+                      style={{
+                        width: 46, height: 26, borderRadius: 13,
+                        background: theme === 'light' ? '#a78bfa' : 'rgba(167,139,250,0.3)',
+                        position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <div style={{
+                        position: 'absolute', top: 3,
+                        left: theme === 'light' ? 23 : 3,
+                        width: 20, height: 20, borderRadius: '50%',
+                        background: 'var(--bg)',
+                        transition: 'left 0.2s',
+                        boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                      }} />
+                    </div>
                   </div>
-                  <div
-                    onClick={() => setTheme(toggleTheme())}
-                    style={{
-                      width: 46, height: 26, borderRadius: 13,
-                      background: theme === 'dark' ? 'rgba(167,139,250,0.3)' : '#a78bfa',
-                      position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <div style={{
-                      position: 'absolute', top: 3,
-                      left: theme === 'light' ? 23 : 3,
-                      width: 20, height: 20, borderRadius: '50%',
-                      background: '#fff',
-                      transition: 'left 0.2s',
-                      boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
-                    }} />
-                  </div>
+                  {userRole === 'THERAPIST' && onToggleTherapistMode && (
+                    <div style={{ borderTop: '1px solid rgba(var(--fg-rgb),0.06)', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span style={{ fontSize: 18 }}>👨‍⚕️</span>
+                        <div>
+                          <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>Режим специалиста</div>
+                          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>
+                            {therapistMode ? 'Кабинет терапевта' : 'Режим клиента'}
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        onClick={onToggleTherapistMode}
+                        style={{
+                          width: 46, height: 26, borderRadius: 13,
+                          background: therapistMode ? '#a78bfa' : 'rgba(167,139,250,0.3)',
+                          position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <div style={{
+                          position: 'absolute', top: 3,
+                          left: therapistMode ? 23 : 3,
+                          width: 20, height: 20, borderRadius: '50%',
+                          background: 'var(--bg)',
+                          transition: 'left 0.2s',
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.3)',
+                        }} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -650,7 +685,7 @@ function SettingsLabel({ children }: { children: React.ReactNode }) {
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
     <div onClick={onClick} style={{ width: 44, height: 26, borderRadius: 13, flexShrink: 0, background: on ? '#a78bfa' : 'rgba(var(--fg-rgb),0.12)', position: 'relative', transition: 'background 0.2s', cursor: 'pointer' }}>
-      <div style={{ position: 'absolute', top: 3, left: on ? 21 : 3, width: 20, height: 20, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+      <div style={{ position: 'absolute', top: 3, left: on ? 21 : 3, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg)', transition: 'left 0.2s' }} />
     </div>
   );
 }

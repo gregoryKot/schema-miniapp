@@ -287,7 +287,7 @@ function ModesTab() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#161821', borderRadius: '24px 24px 0 0', padding: '20px 20px 48px', animation: 'sheet-up 300ms cubic-bezier(0.34,1.56,0.64,1)' }}
+            style={{ background: 'var(--sheet-bg)', borderRadius: '24px 24px 0 0', padding: '20px 20px 48px', animation: 'sheet-up 300ms cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             <div style={{ textAlign: 'center', marginBottom: 4 }}>
               <div style={{ width: 36, height: 4, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.12)', margin: '0 auto 16px' }} />

@@ -171,13 +171,13 @@ function NeedsWheel({
       })}
 
       {/* Center cutout */}
-      <circle cx={cx} cy={cy} r={CENTER_R} fill="#1a1d27" stroke="rgba(var(--fg-rgb),0.06)" strokeWidth={1} />
+      <circle cx={cx} cy={cy} r={CENTER_R} fill="var(--bg)" stroke="rgba(var(--fg-rgb),0.06)" strokeWidth={1} />
 
       {/* Center text */}
       <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.5)">
         индекс
       </text>
-      <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="#ffffff">
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="var(--text)">
         {avg.toFixed(1)}
       </text>
       {prevAvg !== null && prevAvg > 0 && (

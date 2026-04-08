@@ -32,7 +32,7 @@ function ToolRow({ emoji, label, sub, divider, onClick, accent }: { emoji: strin
     <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', borderTop: divider ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
       <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: accent ?? '#fff' }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 500, color: accent ?? 'var(--text)' }}>{label}</div>
         {sub && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{sub}</div>}
       </div>
       <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 16 }}>›</span>

@@ -26,10 +26,10 @@ html, body {
 
 html[data-theme="light"] {
   --fg-rgb:   26, 14, 64;
-  --bg:       #f4f0ff;
-  --sheet-bg: #ffffff;
+  --bg:       #ece7fb;
+  --sheet-bg: #f7f4ff;
   --text:     #1a0e40;
-  --nav-bg:   rgba(235,228,255,0.96);
+  --nav-bg:   rgba(236,231,251,0.97);
 }
 
 body {

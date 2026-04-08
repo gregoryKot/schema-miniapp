@@ -108,7 +108,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           <div
             onClick={onOpenTherapistCabinet}
             style={{
-              background: 'linear-gradient(135deg, #1a0f3d, #0d1a3a)',
+              background: 'linear-gradient(135deg, rgba(var(--fg-rgb),0.08), rgba(var(--fg-rgb),0.04))',
               border: '1px solid rgba(167,139,250,0.35)',
               borderRadius: 18, padding: '16px 18px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',

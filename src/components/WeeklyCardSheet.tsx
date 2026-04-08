@@ -43,7 +43,7 @@ function drawCard(
   const fg = (alpha: number) => `rgba(${fgRgb},${alpha})`;
   const bg = ctx.createLinearGradient(0, 0, W, H);
   bg.addColorStop(0, bgColor);
-  bg.addColorStop(1, '#141720');
+  bg.addColorStop(1, cs.getPropertyValue('--sheet-bg').trim() || '#141720');
   ctx.fillStyle = bg;
   ctx.beginPath();
   (ctx as any).roundRect(0, 0, W, H, 20);
@@ -62,7 +62,7 @@ function drawCard(
 
   // Title
   ctx.font = 'bold 17px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = fg(0.95);
   ctx.textAlign = 'left';
   ctx.fillText('Трекер потребностей', 28, 56);
 
@@ -95,7 +95,7 @@ function drawCard(
 
     // Emoji
     ctx.font = '17px serif';
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = fg(0.95);
     ctx.textAlign = 'left';
     ctx.fillText(need.emoji, 28, rowY + 20);
 
@@ -153,7 +153,7 @@ function drawCard(
   ctx.fillText('Индекс недели', 28, statsY);
 
   ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = fg(0.95);
   ctx.fillText(weekIndex.toFixed(1), 28, statsY + 30);
 
   ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
@@ -168,7 +168,7 @@ function drawCard(
     ctx.fillText('Серия дней', W - 28, statsY);
 
     ctx.font = 'bold 26px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = fg(0.95);
     ctx.fillText(`${streak} 🔥`, W - 28, statsY + 30);
     ctx.textAlign = 'left';
   }
