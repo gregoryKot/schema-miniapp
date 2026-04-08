@@ -249,7 +249,8 @@ export default function App() {
   const [helpPlanCount, setHelpPlanCount] = useState<number | null>(null);
   const [childhoodWheelPending, setChildhoodWheelPending] = useState(false);
   const [childhoodRatings, setChildhoodRatings] = useState<Record<string, number>>({});
-  const [therapistMode, setTherapistMode] = useState(false);
+  const [therapistMode, setTherapistMode] = useState(() => localStorage.getItem('therapist_mode') === '1');
+  const switchTherapistMode = (on: boolean) => { localStorage.setItem('therapist_mode', on ? '1' : '0'); setTherapistMode(on); };
   const [cabinetView, setCabinetView] = useState<'list' | 'client'>('list');
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
   const safeTop = useSafeTop();
@@ -344,6 +345,10 @@ export default function App() {
     api.getProfile().then(p => {
       setDiaryActiveSchemaIds(p.ysq.activeSchemaIds);
       setUserRole(p.role);
+      // First launch as therapist: auto-enable therapist mode if not saved yet
+      if (p.role === 'THERAPIST' && localStorage.getItem('therapist_mode') === null) {
+        switchTherapistMode(true);
+      }
       if (p.name) setDisplayName(p.name);
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
       if (p.role === 'THERAPIST') {
@@ -513,7 +518,7 @@ export default function App() {
           <TherapistClientSheet
             view={cabinetView}
             onViewChange={setCabinetView}
-            onClose={() => { setTherapistMode(false); setCabinetView('list'); }}
+            onClose={() => { switchTherapistMode(false); setCabinetView('list'); }}
           />
           {/* Therapist bottom nav — replaces regular BottomNav */}
           {!showSettings && (
@@ -555,7 +560,7 @@ export default function App() {
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           refreshKey={todayRefreshKey}
           userRole={userRole}
-          onOpenTherapistCabinet={() => { setCabinetView('list'); setTherapistMode(true); }}
+          onOpenTherapistCabinet={() => { setCabinetView('list'); switchTherapistMode(true); }}
         />
       )}
 
@@ -578,7 +583,7 @@ export default function App() {
           refreshKey={helpTasksKey}
           onTasksChanged={() => { api.getTasks().then(setHelpTasks).catch(() => {}); setHelpTasksKey(k => k + 1); }}
           userRole={userRole}
-          onOpenTherapistCabinet={() => { setCabinetView('list'); setTherapistMode(true); }}
+          onOpenTherapistCabinet={() => { setCabinetView('list'); switchTherapistMode(true); }}
         />
       )}
 
@@ -899,7 +904,7 @@ export default function App() {
         </BottomSheet>
       )}
 
-      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} therapistMode={therapistMode} onToggleTherapistMode={() => setTherapistMode(m => !m)} />}
+      {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} therapistMode={therapistMode} onToggleTherapistMode={() => switchTherapistMode(!therapistMode)} />}
       {/* therapistMode renders inline in main flow, not as overlay — see below */}
       {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
       {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}

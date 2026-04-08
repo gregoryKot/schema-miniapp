@@ -329,12 +329,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-          <div
-            onClick={view === 'list' ? onClose : () => { onViewChange('list'); setRenamingAlias(false); setYsqRequested(false); }}
-            style={{ fontSize: 24, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}
-          >
-            ‹
-          </div>
+          {view === 'client' && (
+            <div
+              onClick={() => { onViewChange('list'); setRenamingAlias(false); setYsqRequested(false); }}
+              style={{ fontSize: 24, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1, padding: '0 4px', flexShrink: 0 }}
+            >
+              ‹
+            </div>
+          )}
           {view === 'list' || !selectedClient ? (
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Кабинет терапевта</div>
           ) : renamingAlias ? (
