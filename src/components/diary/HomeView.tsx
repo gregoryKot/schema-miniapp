@@ -1,5 +1,5 @@
 import { DiaryType } from '../../types';
-import { getTelegramSafeTop } from '../../utils/safezone';
+import { useSafeTop } from '../../utils/safezone';
 import { fmtDateLong } from '../../utils/format';
 
 interface DiaryMeta {
@@ -99,7 +99,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
     },
   ];
 
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
 
   return (
     <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>

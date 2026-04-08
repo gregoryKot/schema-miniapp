@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { SchemaFlashcard } from '../components/SchemaFlashcard';
 import { LetterToSelf } from '../components/LetterToSelf';
 import { BeliefCheck } from '../components/BeliefCheck';
@@ -102,7 +102,7 @@ function TaskProgressBar({ task }: { task: UserTask }) {
 }
 
 export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans, onOpenTracker, onOpenDiaries, practiceCount, planCount, refreshKey, initialTasks, onTasksChanged, userRole, onOpenTherapistCabinet }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const childhoodDone = !!localStorage.getItem(CHILDHOOD_DONE_KEY);
 
   const [showFlashcard, setShowFlashcard] = useState(false);

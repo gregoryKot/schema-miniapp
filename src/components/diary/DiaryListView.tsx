@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SchemaDiaryEntry, ModeDiaryEntry, GratitudeDiaryEntry, DiaryType } from '../../types';
 import { EMOTIONS, getModeById, getSchemaById } from '../../schemaTherapyData';
-import { getTelegramSafeTop } from '../../utils/safezone';
+import { useSafeTop } from '../../utils/safezone';
 import { loadDraft, clearDraft, formatDraftAge } from '../../utils/drafts';
 
 interface Props {
@@ -228,7 +228,7 @@ function Empty({ text }: { text: string }) {
 
 export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntries, onBack, onNewEntry, onDelete }: Props) {
   const meta = DIARY_META[type];
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const [draftKey, setDraftKey] = useState(0); // force re-render after draft delete
 
   const hasDraftEntry = !!loadDraft(type);

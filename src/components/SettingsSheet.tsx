@@ -3,7 +3,7 @@ import { api, UserSettings, PairsData, TherapyRelationInfo } from '../api';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { getTheme, toggleTheme, Theme } from '../utils/theme';
 
 const TIMEZONES = [
@@ -36,7 +36,7 @@ interface Props {
 }
 
 export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, onOpenTherapistCabinet, therapistMode, onToggleTherapistMode }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const [view, setView]             = useState<View>('main');
   const [settings, setSettings]     = useState<UserSettings | null>(null);
   const [pairData, setPairData]     = useState<PairsData | null>(null);

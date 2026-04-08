@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, Achievement } from '../api';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { TherapyNote } from '../components/TherapyNote';
 
@@ -42,7 +42,7 @@ interface Props {
 }
 
 export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, displayName }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const tgName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const firstName = displayName || tgName;
 

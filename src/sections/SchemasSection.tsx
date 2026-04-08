@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../schemaTherapyData';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
@@ -24,7 +24,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
   const [showSchemaPicker, setShowSchemaPicker] = useState(false);
   const [showModePicker, setShowModePicker] = useState(false);
   const [introModeId, setIntroModeId] = useState<string | null>(null);
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
 
   useEffect(() => {
     api.getProfile().then(p => {

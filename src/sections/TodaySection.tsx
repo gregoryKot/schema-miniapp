@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
 import { api } from '../api';
 import { Section } from '../components/BottomNav';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 import { TaskCreateSheet } from '../components/TaskCreateSheet';
 
@@ -86,7 +86,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
   const ratedCount = needs.filter(n => ratings[n.id] !== undefined).length;
   const allRated = needs.length > 0 && ratedCount === needs.length;
   const hasSchemas = [...new Set([...(profile?.ysq.activeSchemaIds ?? []), ...manualSchemaIds])].length > 0;
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>

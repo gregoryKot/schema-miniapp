@@ -33,7 +33,7 @@ import { CheckInSheet } from './components/CheckInSheet';
 import { PracticesOnboarding } from './components/PracticesOnboarding';
 import { ChildhoodWheelSheet, shouldShowChildhoodWheel, CHILDHOOD_DONE_KEY } from './components/ChildhoodWheelSheet';
 import { PracticePlan, PairsData, StreakData, UserTask } from './api';
-import { getTelegramSafeTop } from './utils/safezone';
+import { useSafeTop } from './utils/safezone';
 import { cacheTherapistContact } from './utils/therapistContact';
 import { SchemaEntrySheet } from './components/diary/SchemaEntrySheet';
 import { ModeEntrySheet } from './components/diary/ModeEntrySheet';
@@ -498,7 +498,7 @@ export default function App() {
     );
   }
 
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
 
   return (
     <div style={{ minHeight: '100vh' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>

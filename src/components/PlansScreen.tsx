@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api, PracticePlan } from '../api';
 import { Loader } from './Loader';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 
 interface Props {
   onClose: () => void;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function PlansScreen({ onClose, onOpenTracker }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const [plans, setPlans] = useState<PracticePlan[] | null>(null);
 
   useEffect(() => {

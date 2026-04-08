@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api, UserPractice } from '../api';
 import { Loader } from './Loader';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function PracticesScreen({ onClose, onOpenTracker }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const [needIdx, setNeedIdx] = useState(0);
   const [practices, setPractices] = useState<UserPractice[] | null>(null);
   const [input, setInput] = useState('');

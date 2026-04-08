@@ -3,7 +3,7 @@ import { api, TherapyClientSummary, UserTask, TherapistNote, ClientConceptualiza
 import { TaskCreateSheet } from './TaskCreateSheet';
 import { SectionLabel } from './SectionLabel';
 import { fmtDate, todayStr } from '../utils/format';
-import { getTelegramSafeTop } from '../utils/safezone';
+import { useSafeTop } from '../utils/safezone';
 import { SCHEMA_DOMAINS, MODE_GROUPS } from '../schemaTherapyData';
 
 interface Props {
@@ -61,7 +61,7 @@ const CONCEPT_FIELDS: { key: keyof ClientConceptualization; label: string; place
 type ClientTab = 'tasks' | 'notes' | 'concept';
 
 export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
-  const safeTop = getTelegramSafeTop();
+  const safeTop = useSafeTop();
   const [clients, setClients] = useState<TherapyClientSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState<TherapyClientSummary | null>(null);
