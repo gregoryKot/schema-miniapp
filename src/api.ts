@@ -272,6 +272,7 @@ export const api = {
   leaveTherapy: () => del('/api/therapy/relation'),
   getTherapyClients: () => get<TherapyClientSummary[]>('/api/therapy/clients'),
   addClientManually: (clientTelegramId: number) => postJson<TherapyClientSummary[]>('/api/therapy/clients/add', { clientTelegramId }),
+  addVirtualClient: (name: string) => postJson<TherapyClientSummary[]>('/api/therapy/clients/virtual', { name }),
   renameClient: (clientId: number, alias: string) => post(`/api/therapy/rename-client/${clientId}`, { alias }),
   requestYsq: (clientId: number) => post(`/api/therapy/request-ysq/${clientId}`, {}),
   becomeTherapist: (code: string) => postJson<{ ok: boolean }>('/api/therapy/become-therapist', { code }),

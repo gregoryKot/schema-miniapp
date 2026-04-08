@@ -88,6 +88,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [manualIdInput, setManualIdInput] = useState('');
   const [manualIdLoading, setManualIdLoading] = useState(false);
   const [manualIdError, setManualIdError] = useState('');
+  const [virtualNameInput, setVirtualNameInput] = useState('');
+  const [virtualNameLoading, setVirtualNameLoading] = useState(false);
+  const [virtualNameError, setVirtualNameError] = useState('');
   const [conceptError, setConceptError] = useState('');
   const [exportCopied, setExportCopied] = useState(false);
 
@@ -286,6 +289,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     } catch { setConceptError('Ошибка сохранения. Проверь соединение.'); } finally { setConceptSaving(false); }
   }
 
+  async function addVirtualClient() {
+    const name = virtualNameInput.trim();
+    if (!name) { setVirtualNameError('Введи имя клиента'); return; }
+    setVirtualNameLoading(true);
+    setVirtualNameError('');
+    try {
+      const updated = await api.addVirtualClient(name);
+      setClients(updated);
+      setVirtualNameInput('');
+    } catch { setVirtualNameError('Ошибка. Попробуй ещё раз.'); } finally { setVirtualNameLoading(false); }
+  }
+
   async function addClientManually() {
     const id = parseInt(manualIdInput.trim(), 10);
     if (!id || isNaN(id)) { setManualIdError('Введи числовой Telegram ID'); return; }
@@ -387,6 +402,27 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                   </button>
                 </>
               )}
+            </div>
+
+            {/* Add offline/virtual client */}
+            <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 16, padding: 14, marginBottom: 10 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(167,139,250,0.7)', textTransform: 'uppercase', marginBottom: 10 }}>Добавить клиента (без Telegram)</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  value={virtualNameInput}
+                  onChange={e => { setVirtualNameInput(e.target.value); setVirtualNameError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && addVirtualClient()}
+                  placeholder="Имя клиента"
+                  style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${virtualNameError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
+                />
+                <button
+                  onClick={addVirtualClient} disabled={virtualNameLoading || !virtualNameInput.trim()}
+                  style={{ padding: '9px 16px', borderRadius: 10, border: 'none', background: virtualNameInput.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.05)', color: virtualNameInput.trim() ? '#fff' : 'rgba(var(--fg-rgb),0.3)', fontSize: 13, fontWeight: 600, cursor: virtualNameInput.trim() ? 'pointer' : 'default', flexShrink: 0 }}
+                >
+                  {virtualNameLoading ? '...' : '+ Добавить'}
+                </button>
+              </div>
+              {virtualNameError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{virtualNameError}</div>}
             </div>
 
             {/* Add by Telegram ID */}
