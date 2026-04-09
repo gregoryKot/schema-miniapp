@@ -378,10 +378,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      <div style={{ padding: `${safeTop + 20}px 20px 100px` }}>
 
-        {/* ── LIST VIEW ─────────────────────────────────────────────── */}
-        {view === 'list' && (
+      {/* ── LIST VIEW ─────────────────────────────────────────────── */}
+      {view === 'list' && (
+        <div style={{ padding: `${safeTop + 20}px 20px 100px` }}>
           <div key={`list-${animKey}`} style={slideStyle}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
@@ -552,13 +552,17 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               );
             })}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* ── CLIENT VIEW ───────────────────────────────────────────── */}
-        {view === 'client' && selectedClient && (
-          <div key={`client-${animKey}`} style={slideStyle}>
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
+      {/* ── CLIENT VIEW ───────────────────────────────────────────── */}
+      {view === 'client' && selectedClient && (
+        <div key={`client-${animKey}`} style={{ position: 'fixed', inset: 0, background: 'var(--bg)', display: 'flex', flexDirection: 'column', animation: 'fade-in 0.22s ease' }}>
+
+          {/* ── STICKY HEADER ── */}
+          <div style={{ flexShrink: 0, paddingTop: safeTop + 8, padding: `${safeTop + 8}px 20px 0`, background: 'var(--bg)' }}>
+            {/* Header row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               {/* Back button — large touch target */}
               <div
                 onClick={() => { switchView('list'); setRenamingAlias(false); setYsqRequested(false); }}
@@ -604,8 +608,27 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               )}
             </div>
 
-            {/* Delete error */}
-            {deleteError && <div style={{ fontSize: 12, color: '#f87171', marginBottom: 8, textAlign: 'center' }}>{deleteError}</div>}
+              {/* Delete error */}
+              {deleteError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 4, textAlign: 'center' }}>{deleteError}</div>}
+
+              {/* Tabs */}
+              <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 12, padding: 3, marginTop: 12, gap: 2 }}>
+                {([['tasks', '📋 Задания'], ['notes', '📝 Заметки'], ['concept', '🗂 Концептуал.']] as [ClientTab, string][]).map(([tab, label]) => (
+                  <button
+                    key={tab} onClick={() => setClientTab(tab)}
+                    style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: clientTab === tab ? 'rgba(167,139,250,0.25)' : 'transparent', color: clientTab === tab ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: clientTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Thin separator */}
+              <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.06)', margin: '10px -20px 0' }} />
+            </div>
+
+            {/* ── SCROLLABLE CONTENT ── */}
+            <div style={{ flex: 1, overflowY: 'auto' as const, padding: '12px 20px 100px' }}>
 
             {/* Stats row */}
             {(selectedClient.streak > 0 || selectedClient.todayIndex !== null || selectedClient.lastActiveDate) && (
@@ -645,18 +668,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
               </div>
             )}
-
-            {/* Tabs */}
-            <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 12, padding: 3, marginBottom: 18, gap: 2 }}>
-              {([['tasks', '📋 Задания'], ['notes', '📝 Заметки'], ['concept', '🗂 Концептуал.']] as [ClientTab, string][]).map(([tab, label]) => (
-                <button
-                  key={tab} onClick={() => setClientTab(tab)}
-                  style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: clientTab === tab ? 'rgba(167,139,250,0.25)' : 'transparent', color: clientTab === tab ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: clientTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
 
             {/* ── TASKS TAB ── */}
             {clientTab === 'tasks' && (
@@ -858,9 +869,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 ) : null}
               </>
             )}
+            </div>
           </div>
         )}
-      </div>
 
       {showAssign && selectedClient && (
         <TaskCreateSheet
