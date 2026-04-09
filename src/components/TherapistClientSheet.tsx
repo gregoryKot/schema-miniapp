@@ -11,6 +11,7 @@ interface Props {
   view: 'list' | 'client';
   onViewChange: (v: 'list' | 'client') => void;
   onClose: () => void;
+  backHandlerRef?: React.MutableRefObject<() => void>;
 }
 
 type AddMode = null | 'invite' | 'telegram' | 'virtual';
@@ -63,7 +64,7 @@ const CONCEPT_FIELDS: { key: keyof ClientConceptualization; label: string; place
   { key: 'goals', label: 'Цели схема-терапии', placeholder: 'Что должно измениться? Конкретные результаты, на которые направлена работа...' },
 ];
 
-export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
+export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerRef }: Props) {
   const safeTop = useSafeTop();
 
   // Client list
@@ -110,6 +111,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [editingDays, setEditingDays] = useState(false);
   const [localMeetingDays, setLocalMeetingDays] = useState<number[]>([]);
   const [sessionInfoSaving, setSessionInfoSaving] = useState(false);
+  const [sessionInfoError, setSessionInfoError] = useState('');
 
   // Rename alias
   const [renamingAlias, setRenamingAlias] = useState(false);
@@ -141,6 +143,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     setAnimKey(k => k + 1);
     onViewChange(v);
   }
+
+  // ─── Back button handler (keeps Telegram back button working for sheets) ─────
+  useEffect(() => {
+    if (!backHandlerRef || view !== 'client') return;
+    backHandlerRef.current = () => {
+      if (showAssign)       { setShowAssign(false);       return; }
+      if (showConceptSheet) { setShowConceptSheet(false); return; }
+      if (showTasksSheet)   { setShowTasksSheet(false);   return; }
+      if (showNotesSheet)   { setShowNotesSheet(false);   return; }
+      switchView('list');
+    };
+  }, [view, showAssign, showConceptSheet, showTasksSheet, showNotesSheet, backHandlerRef]);
 
   // ─── Open client ────────────────────────────────────────────────────────────
 
@@ -353,13 +367,17 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   async function saveSessionInfo(patch: { therapyStartDate?: string | null; nextSession?: string | null; meetingDays?: number[] }) {
     if (!selectedClient) return;
     setSessionInfoSaving(true);
+    setSessionInfoError('');
     try {
       await api.updateSessionInfo(selectedClient.telegramId, patch);
       const updated = { ...selectedClient, ...patch };
       if (patch.meetingDays !== undefined) updated.meetingDays = patch.meetingDays;
       setSelectedClient(updated);
       setClients(prev => prev.map(c => c.telegramId === selectedClient.telegramId ? updated : c));
-    } catch { /* ignore */ } finally { setSessionInfoSaving(false); }
+    } catch {
+      setSessionInfoError('Не удалось сохранить');
+      setTimeout(() => setSessionInfoError(''), 3000);
+    } finally { setSessionInfoSaving(false); }
   }
 
   async function handleRequestYsq() {
@@ -770,6 +788,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                       )
                     )}
                   </div>
+                  {sessionInfoError && <div style={{ fontSize: 11, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{sessionInfoError}</div>}
                 </div>
               );
             })()}
@@ -957,7 +976,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
       {/* ── CONCEPT SHEET (outside fixed div for correct z-index) ── */}
       {showConceptSheet && selectedClient && (
-        <BottomSheet onClose={() => setShowConceptSheet(false)}>
+        <BottomSheet onClose={() => { if (conceptDirty) saveConcept(); setShowConceptSheet(false); }}>
           <div style={{ paddingTop: 4 }}>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>🗂 Концептуализация</div>
             {selectedClient.telegramId > 0 && (

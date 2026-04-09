@@ -57,6 +57,7 @@ const TASK_EMOJI: Record<string, string> = {
 
 function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
   const isStreakTask = task.type === 'diary_streak' || task.type === 'tracker_streak';
+  const [completing, setCompleting] = useState(false);
   return (
     <div
       onClick={task.doneToday ? undefined : onOpen}
@@ -73,10 +74,11 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
       </div>
       {!task.doneToday && task.done === null && task.type === 'custom' && onComplete ? (
         <button
-          onClick={e => { e.stopPropagation(); onComplete(); }}
-          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
+          disabled={completing}
+          onClick={e => { e.stopPropagation(); setCompleting(true); onComplete(); }}
+          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
         >
-          Сделал
+          {completing ? '...' : 'Сделал'}
         </button>
       ) : !task.doneToday && task.type !== 'custom' ? (
         <span style={{ color: 'rgba(167,139,250,0.5)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
