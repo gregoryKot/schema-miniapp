@@ -30,7 +30,11 @@ async function post(path: string, body: unknown): Promise<void> {
     headers: authHeaders(),
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  if (!res.ok) {
+    let msg = `API error: ${res.status}`;
+    try { const j = await res.json(); if (j?.message) msg = typeof j.message === 'string' ? j.message : JSON.stringify(j.message); } catch {}
+    throw new Error(msg);
+  }
 }
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
@@ -39,7 +43,11 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
     headers: authHeaders(),
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  if (!res.ok) {
+    let msg = `API error: ${res.status}`;
+    try { const j = await res.json(); if (j?.message) msg = typeof j.message === 'string' ? j.message : JSON.stringify(j.message); } catch {}
+    throw new Error(msg);
+  }
   return res.json();
 }
 
@@ -273,6 +281,7 @@ export const api = {
   getTherapyClients: () => get<TherapyClientSummary[]>('/api/therapy/clients'),
   addClientManually: (clientTelegramId: number) => postJson<TherapyClientSummary[]>('/api/therapy/clients/add', { clientTelegramId }),
   addVirtualClient: (name: string) => postJson<TherapyClientSummary[]>('/api/therapy/clients/virtual', { name }),
+  removeClient: (clientId: number) => del(`/api/therapy/clients/${clientId}`),
   renameClient: (clientId: number, alias: string) => post(`/api/therapy/rename-client/${clientId}`, { alias }),
   requestYsq: (clientId: number) => post(`/api/therapy/request-ysq/${clientId}`, {}),
   becomeTherapist: (code: string) => postJson<{ ok: boolean }>('/api/therapy/become-therapist', { code }),
