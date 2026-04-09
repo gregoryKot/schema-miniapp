@@ -876,277 +876,258 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               </div>
             </div>
 
-            {/* ── TASKS SHEET ── */}
-            {showTasksSheet && (
-              <BottomSheet onClose={() => setShowTasksSheet(false)}>
-                <div style={{ paddingTop: 4 }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📋 Задания</div>
-                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
-                    {clientTasks.length === 0 ? (
-                      <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>Нет назначенных заданий</div>
-                    ) : clientTasks.map((task, i) => (
-                      <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
-                        <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}</span>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.4 }}>{task.text}</div>
-                          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
-                            {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt.slice(0, 10))}
-                          </div>
-                          {task.progress !== undefined && task.targetDays && (
-                            <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                              <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
-                                <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
-                              </div>
-                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => setShowAssign(true)}
-                    style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                  >
-                    + Назначить задание
-                  </button>
-                </div>
-              </BottomSheet>
-            )}
-
-            {/* ── NOTES SHEET ── */}
-            {showNotesSheet && (
-              <BottomSheet onClose={() => setShowNotesSheet(false)}>
-                <div style={{ paddingTop: 4 }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📝 Заметки сессий</div>
-                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
-                    <textarea
-                      value={newNoteText} onChange={e => { setNewNoteText(e.target.value); setNoteError(''); }}
-                      placeholder="Заметка сессии: наблюдения, гипотезы, динамика, план следующей встречи..."
-                      rows={3}
-                      style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                      {noteError ? <div style={{ fontSize: 12, color: '#f87171' }}>{noteError}</div> : <div />}
-                      <button
-                        onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
-                        style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
-                      >
-                        {noteSaving ? 'Сохраняю...' : 'Сохранить'}
-                      </button>
-                    </div>
-                  </div>
-                  {notes.length === 0 ? (
-                    <div style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
-                  ) : notes.map(note => (
-                    <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                        <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{fmtDate(note.date)}</span>
-                        <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.35)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
-                      </div>
-                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
-                    </div>
-                  ))}
-                </div>
-              </BottomSheet>
-            )}
-
-            {/* ── CONCEPT SHEET ── */}
-            {showConceptSheet && (
-              <BottomSheet onClose={() => setShowConceptSheet(false)}>
-                <div style={{ paddingTop: 4 }}>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>🗂 Концептуализация</div>
-                {/* YSQ request button — only for real clients */}
-                {selectedClient.telegramId > 0 && (
-                  <div style={{ marginBottom: 12 }}>
-                    <button
-                      onClick={handleRequestYsq}
-                      style={{ width: '100%', padding: '10px 16px', borderRadius: 12, border: '1px solid rgba(96,165,250,0.2)', background: 'rgba(96,165,250,0.06)', color: ysqRequested ? '#06d6a0' : 'rgba(96,165,250,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-                    >
-                      {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
-                    </button>
-                    {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
-                  </div>
-                )}
-                {/* YSQ hint */}
-                {ysqSchemaIds.length > 0 && (
-                  <div style={{ background: 'rgba(79,163,247,0.07)', border: '1px solid rgba(79,163,247,0.2)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(79,163,247,0.8)', textTransform: 'uppercase', marginBottom: 8 }}>
-                      📊 YSQ — результаты теста
-                    </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {ysqSchemaIds.map(id => {
-                        const schema = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(s => s.id === id);
-                        return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(79,163,247,0.15)', color: 'rgba(79,163,247,0.9)' }}>{schema.emoji} {schema.name}</span> : null;
-                      })}
-                    </div>
-                    {clientData?.ysqCompletedAt && <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 6 }}>Пройден: {fmtDate(clientData.ysqCompletedAt.slice(0, 10))}</div>}
-                  </div>
-                )}
-                {selfSchemaIds.length > 0 && (
-                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 8 }}>Схемы клиента (самооценка)</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {selfSchemaIds.map(id => {
-                        const schema = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(s => s.id === id);
-                        return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)' }}>{schema.emoji} {schema.name}</span> : null;
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Schema selector */}
-                <SectionLabel mb={8}>Актуальные схемы (ЭДС)</SectionLabel>
-                {SCHEMA_DOMAINS.map(domain => (
-                  <div key={domain.id} style={{ marginBottom: 10 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: domain.color + 'aa', textTransform: 'uppercase', marginBottom: 5, paddingLeft: 2 }}>{domain.domain}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {domain.schemas.map(schema => {
-                        const active = activeSchemaIds.includes(schema.id);
-                        const fromYsq = ysqSchemaIds.includes(schema.id);
-                        return (
-                          <button key={schema.id} onClick={() => toggleSchemaId(schema.id)}
-                            style={{ padding: '5px 10px', borderRadius: 20, cursor: 'pointer', border: fromYsq ? `1px solid ${domain.color}55` : '1px solid transparent', background: active ? domain.color + '30' : 'rgba(var(--fg-rgb),0.05)', color: active ? domain.color : 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s ease' }}
-                            title={schema.desc}
-                          >{schema.emoji} {schema.name}</button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Mode map */}
-                <div style={{ marginTop: 6 }}><SectionLabel mb={8}>Карта режимов</SectionLabel></div>
-                {MODE_GROUPS.map(group => (
-                  <div key={group.id} style={{ marginBottom: 8 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: group.color + 'aa', textTransform: 'uppercase', marginBottom: 5, paddingLeft: 2 }}>{group.group}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                      {group.items.map(mode => {
-                        const active = activeModeIds.includes(mode.id);
-                        return (
-                          <button key={mode.id} onClick={() => toggleModeId(mode.id)}
-                            style={{ padding: '5px 10px', borderRadius: 20, border: 'none', cursor: 'pointer', background: active ? group.color + '30' : 'rgba(var(--fg-rgb),0.05)', color: active ? group.color : 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s ease' }}
-                          >{mode.emoji} {mode.name}</button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Text fields */}
-                <div style={{ marginTop: 8 }}>
-                  {CONCEPT_FIELDS.map(({ key, label, placeholder }) => (
-                    <div key={key} style={{ marginBottom: 12 }}>
-                      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
-                      <textarea
-                        value={(localConcept[key] as string) ?? ''}
-                        onChange={e => patchConcept({ [key]: e.target.value })}
-                        placeholder={placeholder}
-                        rows={3}
-                        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 12, padding: '10px 12px', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Save */}
-                <button
-                  onClick={saveConcept} disabled={conceptSaving || !conceptDirty}
-                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: conceptDirty ? 'linear-gradient(135deg, rgba(167,139,250,0.3), rgba(79,163,247,0.2))' : 'rgba(var(--fg-rgb),0.05)', color: conceptDirty ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 14, fontWeight: 600, cursor: conceptDirty ? 'pointer' : 'default', opacity: conceptSaving ? 0.6 : 1 }}
-                >
-                  {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
-                </button>
-                {conceptError && <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
-
-                {/* Export */}
-                {concept && (
-                  <button
-                    onClick={handleExport}
-                    style={{ width: '100%', marginTop: 8, padding: '11px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: exportCopied ? 'rgba(6,214,160,0.1)' : 'transparent', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-                  >
-                    {exportCopied ? '✓ Скопировано' : '↗ Экспорт / Поделиться'}
-                  </button>
-                )}
-
-                {/* History */}
-                {concept && (concept.history as unknown[])?.length > 0 && (
-                  <div style={{ marginTop: 20 }}>
-                    <button
-                      onClick={() => setShowHistory(h => !h)}
-                      style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
-                    >
-                      <span>{showHistory ? '▲' : '▼'}</span>
-                      История изменений ({(concept.history as unknown[]).length})
-                    </button>
-                    {showHistory && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {(concept.history as import('../api').ConceptSnapshot[]).map((snap, i) => {
-                          const snapSchemas = (snap.schemaIds ?? []).map(id => {
-                            const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
-                            const schema = domain?.schemas.find(s => s.id === id);
-                            return schema ? { schema, color: domain!.color } : null;
-                          }).filter(Boolean) as { schema: { id: string; name: string; emoji: string }; color: string }[];
-                          const textFields = [
-                            { label: 'Цель', val: snap.goals },
-                            { label: 'Опыт', val: snap.earlyExperience },
-                            { label: 'Потребности', val: snap.unmetNeeds },
-                            { label: 'Триггеры', val: snap.triggers },
-                            { label: 'Копинг', val: snap.copingStyles },
-                            { label: 'Переходы', val: snap.modeTransitions },
-                            { label: 'Проблемы', val: snap.currentProblems },
-                          ].filter(f => f.val);
-                          return (
-                            <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.4)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
-                                <button
-                                  onClick={() => {
-                                    setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' });
-                                    setConceptDirty(true);
-                                    setShowHistory(false);
-                                  }}
-                                  style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
-                                >Восстановить</button>
-                              </div>
-                              {snapSchemas.length > 0 && (
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
-                                  {snapSchemas.map(({ schema, color }) => (
-                                    <span key={schema.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: color + '20', color }}>{schema.emoji} {schema.name}</span>
-                                  ))}
-                                </div>
-                              )}
-                              {(snap.modeIds ?? []).length > 0 && (
-                                <div style={{ marginBottom: 6 }}>
-                                  {MODE_GROUPS.map(group => {
-                                    const gm = group.items.filter(m => (snap.modeIds ?? []).includes(m.id));
-                                    if (gm.length === 0) return null;
-                                    return (
-                                      <div key={group.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
-                                        {gm.map(m => <span key={m.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: group.color + '20', color: group.color }}>{m.emoji} {m.name}</span>)}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                              {textFields.map(({ label, val }) => (
-                                <div key={label} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 3 }}>
-                                  <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontWeight: 600 }}>{label}: </span>
-                                  {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
-                                </div>
-                              ))}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                )}
-                </div>
-              </BottomSheet>
-            )}
             </div>
           </div>
         )}
+
+      {/* ── TASKS SHEET (outside fixed div for correct z-index) ── */}
+      {showTasksSheet && selectedClient && (
+        <BottomSheet onClose={() => setShowTasksSheet(false)}>
+          <div style={{ paddingTop: 4 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📋 Задания</div>
+            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
+              {clientTasks.length === 0 ? (
+                <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>Нет назначенных заданий</div>
+              ) : clientTasks.map((task, i) => (
+                <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.4 }}>{task.text}</div>
+                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
+                      {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt.slice(0, 10))}
+                    </div>
+                    {task.progress !== undefined && task.targetDays && (
+                      <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
+                        </div>
+                        <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => setShowAssign(true)}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+            >
+              + Назначить задание
+            </button>
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* ── NOTES SHEET (outside fixed div for correct z-index) ── */}
+      {showNotesSheet && selectedClient && (
+        <BottomSheet onClose={() => setShowNotesSheet(false)}>
+          <div style={{ paddingTop: 4 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📝 Заметки сессий</div>
+            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
+              <textarea
+                value={newNoteText} onChange={e => { setNewNoteText(e.target.value); setNoteError(''); }}
+                placeholder="Заметка сессии: наблюдения, гипотезы, динамика, план следующей встречи..."
+                rows={3}
+                style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                {noteError ? <div style={{ fontSize: 12, color: '#f87171' }}>{noteError}</div> : <div />}
+                <button
+                  onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
+                  style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
+                >
+                  {noteSaving ? 'Сохраняю...' : 'Сохранить'}
+                </button>
+              </div>
+            </div>
+            {notes.length === 0 ? (
+              <div style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
+            ) : notes.map(note => (
+              <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{fmtDate(note.date)}</span>
+                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.35)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+                </div>
+                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
+              </div>
+            ))}
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* ── CONCEPT SHEET (outside fixed div for correct z-index) ── */}
+      {showConceptSheet && selectedClient && (
+        <BottomSheet onClose={() => setShowConceptSheet(false)}>
+          <div style={{ paddingTop: 4 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>🗂 Концептуализация</div>
+            {selectedClient.telegramId > 0 && (
+              <div style={{ marginBottom: 12 }}>
+                <button
+                  onClick={handleRequestYsq}
+                  style={{ width: '100%', padding: '10px 16px', borderRadius: 12, border: '1px solid rgba(96,165,250,0.2)', background: 'rgba(96,165,250,0.06)', color: ysqRequested ? '#06d6a0' : 'rgba(96,165,250,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                >
+                  {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
+                </button>
+                {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
+              </div>
+            )}
+            {ysqSchemaIds.length > 0 && (
+              <div style={{ background: 'rgba(79,163,247,0.07)', border: '1px solid rgba(79,163,247,0.2)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(79,163,247,0.8)', textTransform: 'uppercase', marginBottom: 8 }}>📊 YSQ — результаты теста</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {ysqSchemaIds.map(id => {
+                    const schema = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(s => s.id === id);
+                    return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(79,163,247,0.15)', color: 'rgba(79,163,247,0.9)' }}>{schema.emoji} {schema.name}</span> : null;
+                  })}
+                </div>
+                {clientData?.ysqCompletedAt && <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 6 }}>Пройден: {fmtDate(clientData.ysqCompletedAt.slice(0, 10))}</div>}
+              </div>
+            )}
+            {selfSchemaIds.length > 0 && (
+              <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 8 }}>Схемы клиента (самооценка)</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {selfSchemaIds.map(id => {
+                    const schema = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(s => s.id === id);
+                    return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)' }}>{schema.emoji} {schema.name}</span> : null;
+                  })}
+                </div>
+              </div>
+            )}
+            <SectionLabel mb={8}>Актуальные схемы (ЭДС)</SectionLabel>
+            {SCHEMA_DOMAINS.map(domain => (
+              <div key={domain.id} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: domain.color + 'aa', textTransform: 'uppercase', marginBottom: 5, paddingLeft: 2 }}>{domain.domain}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {domain.schemas.map(schema => {
+                    const active = activeSchemaIds.includes(schema.id);
+                    const fromYsq = ysqSchemaIds.includes(schema.id);
+                    return (
+                      <button key={schema.id} onClick={() => toggleSchemaId(schema.id)}
+                        style={{ padding: '5px 10px', borderRadius: 20, cursor: 'pointer', border: fromYsq ? `1px solid ${domain.color}55` : '1px solid transparent', background: active ? domain.color + '30' : 'rgba(var(--fg-rgb),0.05)', color: active ? domain.color : 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s ease' }}
+                        title={schema.desc}
+                      >{schema.emoji} {schema.name}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: 6 }}><SectionLabel mb={8}>Карта режимов</SectionLabel></div>
+            {MODE_GROUPS.map(group => (
+              <div key={group.id} style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: group.color + 'aa', textTransform: 'uppercase', marginBottom: 5, paddingLeft: 2 }}>{group.group}</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {group.items.map(mode => {
+                    const active = activeModeIds.includes(mode.id);
+                    return (
+                      <button key={mode.id} onClick={() => toggleModeId(mode.id)}
+                        style={{ padding: '5px 10px', borderRadius: 20, border: 'none', cursor: 'pointer', background: active ? group.color + '30' : 'rgba(var(--fg-rgb),0.05)', color: active ? group.color : 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: active ? 600 : 400, transition: 'all 0.15s ease' }}
+                      >{mode.emoji} {mode.name}</button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            <div style={{ marginTop: 8 }}>
+              {CONCEPT_FIELDS.map(({ key, label, placeholder }) => (
+                <div key={key} style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
+                  <textarea
+                    value={(localConcept[key] as string) ?? ''}
+                    onChange={e => patchConcept({ [key]: e.target.value })}
+                    placeholder={placeholder}
+                    rows={3}
+                    style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 12, padding: '10px 12px', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
+                  />
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={saveConcept} disabled={conceptSaving || !conceptDirty}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: conceptDirty ? 'linear-gradient(135deg, rgba(167,139,250,0.3), rgba(79,163,247,0.2))' : 'rgba(var(--fg-rgb),0.05)', color: conceptDirty ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 14, fontWeight: 600, cursor: conceptDirty ? 'pointer' : 'default', opacity: conceptSaving ? 0.6 : 1 }}
+            >
+              {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
+            </button>
+            {conceptError && <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
+            {concept && (
+              <button
+                onClick={handleExport}
+                style={{ width: '100%', marginTop: 8, padding: '11px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: exportCopied ? 'rgba(6,214,160,0.1)' : 'transparent', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+              >
+                {exportCopied ? '✓ Скопировано' : '↗ Экспорт / Поделиться'}
+              </button>
+            )}
+            {concept && (concept.history as unknown[])?.length > 0 && (
+              <div style={{ marginTop: 20 }}>
+                <button
+                  onClick={() => setShowHistory(h => !h)}
+                  style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
+                >
+                  <span>{showHistory ? '▲' : '▼'}</span>
+                  История изменений ({(concept.history as unknown[]).length})
+                </button>
+                {showHistory && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {(concept.history as import('../api').ConceptSnapshot[]).map((snap, i) => {
+                      const snapSchemas = (snap.schemaIds ?? []).map(id => {
+                        const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
+                        const schema = domain?.schemas.find(s => s.id === id);
+                        return schema ? { schema, color: domain!.color } : null;
+                      }).filter(Boolean) as { schema: { id: string; name: string; emoji: string }; color: string }[];
+                      const textFields = [
+                        { label: 'Цель', val: snap.goals },
+                        { label: 'Опыт', val: snap.earlyExperience },
+                        { label: 'Потребности', val: snap.unmetNeeds },
+                        { label: 'Триггеры', val: snap.triggers },
+                        { label: 'Копинг', val: snap.copingStyles },
+                        { label: 'Переходы', val: snap.modeTransitions },
+                        { label: 'Проблемы', val: snap.currentProblems },
+                      ].filter(f => f.val);
+                      return (
+                        <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.4)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
+                            <button
+                              onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
+                              style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
+                            >Восстановить</button>
+                          </div>
+                          {snapSchemas.length > 0 && (
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                              {snapSchemas.map(({ schema, color }) => (
+                                <span key={schema.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: color + '20', color }}>{schema.emoji} {schema.name}</span>
+                              ))}
+                            </div>
+                          )}
+                          {(snap.modeIds ?? []).length > 0 && (
+                            <div style={{ marginBottom: 6 }}>
+                              {MODE_GROUPS.map(group => {
+                                const gm = group.items.filter(m => (snap.modeIds ?? []).includes(m.id));
+                                if (gm.length === 0) return null;
+                                return (
+                                  <div key={group.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
+                                    {gm.map(m => <span key={m.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: group.color + '20', color: group.color }}>{m.emoji} {m.name}</span>)}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {textFields.map(({ label, val }) => (
+                            <div key={label} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 3 }}>
+                              <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontWeight: 600 }}>{label}: </span>
+                              {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </BottomSheet>
+      )}
 
       {showAssign && selectedClient && (
         <TaskCreateSheet
