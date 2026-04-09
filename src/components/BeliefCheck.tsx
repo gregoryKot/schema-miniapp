@@ -19,9 +19,9 @@ function loadEntries(): BeliefEntry[] {
 
 type Step = 'belief' | 'for' | 'against' | 'reframe' | 'done';
 
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; onComplete?: () => void; }
 
-export function BeliefCheck({ onClose }: Props) {
+export function BeliefCheck({ onClose, onComplete }: Props) {
   const [step, setStep] = useState<Step>('belief');
   const [belief, setBelief] = useState('');
   const [forInput, setForInput] = useState('');
@@ -57,6 +57,7 @@ export function BeliefCheck({ onClose }: Props) {
     const all = [entry, ...loadEntries()].slice(0, 20);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
     setStep('done');
+    onComplete?.();
   }
 
   if (step === 'done') {

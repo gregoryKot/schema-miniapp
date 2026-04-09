@@ -71,14 +71,14 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
         <TaskProgressBar task={task} />
         {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
       </div>
-      {!task.doneToday && onComplete && task.done === null ? (
+      {!task.doneToday && task.done === null && task.type === 'custom' && onComplete ? (
         <button
           onClick={e => { e.stopPropagation(); onComplete(); }}
           style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: 'pointer', flexShrink: 0 }}
         >
           Сделал
         </button>
-      ) : !task.doneToday ? (
+      ) : !task.doneToday && task.type !== 'custom' ? (
         <span style={{ color: 'rgba(167,139,250,0.5)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
       ) : null}
     </div>
@@ -109,6 +109,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const [showBeliefCheck, setShowBeliefCheck] = useState(false);
   const [showLetterToSelf, setShowLetterToSelf] = useState(false);
   const [showSafePlace, setShowSafePlace] = useState(false);
+  const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
   const [showTaskCreate, setShowTaskCreate] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
   const [tasks, setTasks] = useState<UserTask[]>(initialTasks ?? []);
@@ -132,6 +133,9 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const therapistTasks = tasks.filter(t => t.assignedBy !== null);
 
   function openTask(task: UserTask) {
+    if (task.assignedBy !== null && task.type !== 'custom') {
+      setActiveTaskId(task.id);
+    }
     switch (task.type) {
       case 'diary_streak':    onOpenDiaries(); break;
       case 'tracker_streak':  onOpenTracker(); break;
@@ -142,6 +146,16 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       case 'flashcard':       setShowFlashcard(true); break;
       default: break;
     }
+  }
+
+  function handleTaskComplete() {
+    if (activeTaskId === null) return;
+    const taskId = activeTaskId;
+    setActiveTaskId(null);
+    api.completeTask(taskId, true)
+      .then(() => Promise.all([api.getTasks(), api.getTaskHistory()]))
+      .then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })
+      .catch(() => {});
   }
 
   return (
@@ -252,10 +266,10 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       </div>
 
-      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} onOpenTracker={onOpenTracker} />}
-      {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} />}
-      {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} />}
-      {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} />}
+      {showFlashcard && <SchemaFlashcard onClose={() => setShowFlashcard(false)} onOpenTracker={onOpenTracker} onComplete={handleTaskComplete} />}
+      {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} onComplete={handleTaskComplete} />}
+      {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} onComplete={handleTaskComplete} />}
+      {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} onComplete={handleTaskComplete} />}
       {showTaskCreate && (
         <TaskCreateSheet
           onCreated={() => {
@@ -283,7 +297,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
                 <TaskProgressBar task={task} />
                 {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
               </div>
-              {task.done === null && task.assignedBy !== null && (
+              {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
                 <button
                   onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
                   style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}

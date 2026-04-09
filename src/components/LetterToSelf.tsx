@@ -14,7 +14,7 @@ function loadLetters(): Letter[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'); } catch { return []; }
 }
 
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; onComplete?: () => void; }
 
 const PROMPTS = [
   'Вспомни момент из детства или юности, когда тебе было по-настоящему тяжело.',
@@ -22,7 +22,7 @@ const PROMPTS = [
   'Напиши этому ребёнку письмо — от себя сегодняшнего. Что ты хочешь ему сказать? Что ему нужно было услышать?',
 ];
 
-export function LetterToSelf({ onClose }: Props) {
+export function LetterToSelf({ onClose, onComplete }: Props) {
   const [text, setText] = useState('');
   const [saved, setSaved] = useState(false);
   const [letters, setLetters] = useState<Letter[]>(() => loadLetters());
@@ -39,6 +39,7 @@ export function LetterToSelf({ onClose }: Props) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     setLetters(updated);
     setSaved(true);
+    onComplete?.();
     setTimeout(() => { setSaved(false); setText(''); }, 1800);
   }
 

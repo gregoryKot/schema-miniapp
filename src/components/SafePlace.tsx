@@ -19,9 +19,9 @@ const PROMPTS = [
   'Почему именно здесь ты чувствуешь себя в безопасности?',
 ];
 
-interface Props { onClose: () => void }
+interface Props { onClose: () => void; onComplete?: () => void; }
 
-export function SafePlace({ onClose }: Props) {
+export function SafePlace({ onClose, onComplete }: Props) {
   const [saved, setSaved] = useState<SafePlaceData | null>(() => load());
   const [editing, setEditing] = useState(!load());
   const [text, setText] = useState(() => load()?.text ?? '');
@@ -37,6 +37,7 @@ export function SafePlace({ onClose }: Props) {
     setSaved(data);
     setJustSaved(true);
     setEditing(false);
+    onComplete?.();
     setTimeout(() => setJustSaved(false), 1800);
   }
 

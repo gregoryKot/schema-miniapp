@@ -59,9 +59,9 @@ function loadCards(): FlashcardEntry[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'); } catch { return []; }
 }
 
-interface Props { onClose: () => void; onOpenTracker?: () => void; }
+interface Props { onClose: () => void; onOpenTracker?: () => void; onComplete?: () => void; }
 
-export function SchemaFlashcard({ onClose, onOpenTracker }: Props) {
+export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
   const [grounded, setGrounded] = useState(false);
   const [step, setStep] = useState<Step>('mode');
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
@@ -89,6 +89,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker }: Props) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
     setAllCards(cards);
     setDone(true);
+    onComplete?.();
   }
 
   function handleNew() {
