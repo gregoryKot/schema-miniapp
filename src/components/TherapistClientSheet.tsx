@@ -76,15 +76,23 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [renamingAlias, setRenamingAlias] = useState(false);
   const [aliasInput, setAliasInput] = useState('');
   const [aliasSaving, setAliasSaving] = useState(false);
+  const [aliasError, setAliasError] = useState('');
 
   // YSQ request
   const [ysqRequested, setYsqRequested] = useState(false);
+  const [ysqError, setYsqError] = useState('');
+
+  // Delete client error
+  const [deleteError, setDeleteError] = useState('');
 
   // Export
   const [exportCopied, setExportCopied] = useState(false);
 
   // Animation key — changes when view transitions to trigger CSS animation
   const [animKey, setAnimKey] = useState(0);
+
+  // Race condition guard: ignore stale state updates when client changes quickly
+  const openClientIdRef = useRef<number | null>(null);
 
   useEffect(() => {
     api.getTherapyClients().then(setClients).catch(() => {}).finally(() => setLoading(false));
@@ -98,6 +106,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   // ─── Open client ────────────────────────────────────────────────────────────
 
   async function openClient(client: TherapyClientSummary) {
+    const clientId = client.telegramId;
+    openClientIdRef.current = clientId;
+
     setSelectedClient(client);
     setClientTab('tasks');
     setClientTasks([]);
@@ -110,15 +121,22 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     setConceptError('');
     setShowHistory(false);
     setYsqRequested(false);
+    setYsqError('');
     setRenamingAlias(false);
+    setAliasError('');
+    setDeleteError('');
     switchView('client');
 
     const [tasks, fetchedNotes, fetchedConcept, fetchedData] = await Promise.all([
-      api.getTherapyTasksForClient(client.telegramId).catch(() => []),
-      api.getTherapistNotes(client.telegramId).catch(() => []),
-      api.getConceptualization(client.telegramId).catch(() => null),
-      api.getTherapyClientData(client.telegramId).catch(() => null),
+      api.getTherapyTasksForClient(clientId).catch(() => []),
+      api.getTherapistNotes(clientId).catch(() => []),
+      api.getConceptualization(clientId).catch(() => null),
+      api.getTherapyClientData(clientId).catch(() => null),
     ]);
+
+    // Discard stale results if user switched to a different client
+    if (openClientIdRef.current !== clientId) return;
+
     setClientTasks(tasks);
     setNotes(fetchedNotes);
     setConcept(fetchedConcept);
@@ -133,11 +151,12 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     const name = selectedClient.clientAlias ?? selectedClient.name ?? 'этого клиента';
     if (!window.confirm(`Удалить ${name}? Связь будет разорвана, данные сохранятся.`)) return;
     setDeleteLoading(true);
+    setDeleteError('');
     try {
       await api.removeClient(selectedClient.telegramId);
       setClients(prev => prev.filter(c => c.telegramId !== selectedClient.telegramId));
       switchView('list');
-    } catch { /* ignore */ } finally { setDeleteLoading(false); }
+    } catch { setDeleteError('Не удалось удалить клиента'); } finally { setDeleteLoading(false); }
   }
 
   // ─── Add client flows ────────────────────────────────────────────────────────
@@ -220,8 +239,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   }
 
   async function removeNote(noteId: number) {
-    await api.deleteTherapistNote(noteId).catch(() => {});
-    setNotes(prev => prev.filter(n => n.id !== noteId));
+    try {
+      await api.deleteTherapistNote(noteId);
+      setNotes(prev => prev.filter(n => n.id !== noteId));
+    } catch { setNoteError('Не удалось удалить заметку'); }
   }
 
   // ─── Conceptualization ───────────────────────────────────────────────────────
@@ -271,22 +292,24 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   async function saveAlias() {
     if (!selectedClient) return;
     setAliasSaving(true);
+    setAliasError('');
     try {
       await api.renameClient(selectedClient.telegramId, aliasInput);
       const updated = { ...selectedClient, clientAlias: aliasInput.trim() || null };
       setSelectedClient(updated);
       setClients(prev => prev.map(c => c.telegramId === selectedClient.telegramId ? updated : c));
       setRenamingAlias(false);
-    } catch { /* ignore */ } finally { setAliasSaving(false); }
+    } catch { setAliasError('Не удалось сохранить имя'); } finally { setAliasSaving(false); }
   }
 
   async function handleRequestYsq() {
     if (!selectedClient) return;
+    setYsqError('');
     try {
       await api.requestYsq(selectedClient.telegramId);
       setYsqRequested(true);
       setTimeout(() => setYsqRequested(false), 3000);
-    } catch { /* ignore */ }
+    } catch { setYsqError('Не удалось отправить запрос'); }
   }
 
   // ─── Export ──────────────────────────────────────────────────────────────────
@@ -546,19 +569,22 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
               {/* Name / rename */}
               {renamingAlias ? (
-                <div style={{ flex: 1, display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input
-                    autoFocus value={aliasInput}
-                    onChange={e => setAliasInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && saveAlias()}
-                    placeholder={selectedClient.name ?? 'Имя'}
-                    maxLength={40}
-                    style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 10, padding: '7px 10px', outline: 'none', color: 'var(--text)', fontSize: 15 }}
-                  />
-                  <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                    {aliasSaving ? '...' : '✓'}
-                  </button>
-                  <button onClick={() => setRenamingAlias(false)} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 13, cursor: 'pointer' }}>✕</button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <input
+                      autoFocus value={aliasInput}
+                      onChange={e => setAliasInput(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && saveAlias()}
+                      placeholder={selectedClient.name ?? 'Имя'}
+                      maxLength={100}
+                      style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 10, padding: '7px 10px', outline: 'none', color: 'var(--text)', fontSize: 15 }}
+                    />
+                    <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      {aliasSaving ? '...' : '✓'}
+                    </button>
+                    <button onClick={() => { setRenamingAlias(false); setAliasError(''); }} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 13, cursor: 'pointer' }}>✕</button>
+                  </div>
+                  {aliasError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 4 }}>{aliasError}</div>}
                 </div>
               ) : (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -577,6 +603,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 </div>
               )}
             </div>
+
+            {/* Delete error */}
+            {deleteError && <div style={{ fontSize: 12, color: '#f87171', marginBottom: 8, textAlign: 'center' }}>{deleteError}</div>}
 
             {/* Stats row */}
             {(selectedClient.streak > 0 || selectedClient.todayIndex !== null || selectedClient.lastActiveDate) && (
@@ -613,6 +642,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 >
                   {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
                 </button>
+                {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
               </div>
             )}
 
