@@ -854,7 +854,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 <span style={{ fontSize: 18 }}>📋</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Задания</div>
-                  {clientTasks.length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{clientTasks.length} активных</div>}
+                  {clientTasks.filter(t => t.done === null && !t.doneToday).length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{clientTasks.filter(t => t.done === null && !t.doneToday).length} активных</div>}
                 </div>
                 <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
               </div>
