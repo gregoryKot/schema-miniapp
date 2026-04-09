@@ -167,6 +167,25 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 4, lineHeight: 1.5 }}>
           Инструменты схема-терапии и твои задания
         </div>
+        {/* Next session banner for clients */}
+        {relation?.role === 'client' && relation.nextSession && (() => {
+          const [datePart, timePart] = relation.nextSession.includes('T') ? relation.nextSession.split('T') : [relation.nextSession, null];
+          const [y, m, d] = datePart.split('-').map(Number);
+          const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+          const DAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+          const date = new Date(y, m - 1, d);
+          const label = `${DAYS[date.getDay()]}, ${d} ${MONTHS[m - 1]}${timePart ? ` · ${timePart}` : ''}`;
+          const isToday = datePart === new Date().toISOString().slice(0, 10);
+          return (
+            <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 7, background: isToday ? 'rgba(52,211,153,0.1)' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${isToday ? 'rgba(52,211,153,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 20, padding: '5px 12px' }}>
+              <span style={{ fontSize: 13 }}>📅</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: isToday ? '#34d399' : 'rgba(var(--fg-rgb),0.6)' }}>
+                {isToday ? 'Сегодня встреча' : `Встреча: ${label}`}
+              </span>
+              {relation.partnerName && <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>с {relation.partnerName}</span>}
+            </div>
+          );
+        })()}
       </div>
 
       <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>

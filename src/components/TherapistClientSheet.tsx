@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api, TherapyClientSummary, UserTask, TherapistNote, ClientConceptualization, ClientData } from '../api';
 import { TaskCreateSheet } from './TaskCreateSheet';
+import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { fmtDate, todayStr } from '../utils/format';
 import { useSafeTop } from '../utils/safezone';
@@ -13,7 +14,6 @@ interface Props {
 }
 
 type AddMode = null | 'invite' | 'telegram' | 'virtual';
-type ClientTab = 'tasks' | 'notes' | 'concept';
 
 const DAY_NAMES = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
@@ -34,10 +34,12 @@ function calcTherapyDuration(startDateStr: string): string {
 }
 
 function nextSessionLabel(dateStr: string): string {
-  const [, m, d] = dateStr.split('-');
+  const [datePart, timePart] = dateStr.includes('T') ? dateStr.split('T') : [dateStr, null];
+  const [, m, d] = datePart.split('-');
   const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-  const date = new Date(dateStr + 'T00:00:00');
-  return `${DAY_NAMES[date.getDay()]}, ${parseInt(d)} ${MONTHS[parseInt(m) - 1]}`;
+  const date = new Date(datePart + 'T00:00:00');
+  const base = `${DAY_NAMES[date.getDay()]}, ${parseInt(d)} ${MONTHS[parseInt(m) - 1]}`;
+  return timePart ? `${base} · ${timePart}` : base;
 }
 
 function streakEmoji(s: number) {
@@ -83,7 +85,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
 
   // Client detail
   const [selectedClient, setSelectedClient] = useState<TherapyClientSummary | null>(null);
-  const [clientTab, setClientTab] = useState<ClientTab>('tasks');
+  const [showTasksSheet, setShowTasksSheet] = useState(false);
+  const [showNotesSheet, setShowNotesSheet] = useState(false);
+  const [showConceptSheet, setShowConceptSheet] = useState(false);
   const [clientTasks, setClientTasks] = useState<UserTask[]>([]);
   const [notes, setNotes] = useState<TherapistNote[]>([]);
   const [noteError, setNoteError] = useState('');
@@ -145,7 +149,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     openClientIdRef.current = clientId;
 
     setSelectedClient(client);
-    setClientTab('tasks');
+    setShowTasksSheet(false);
+    setShowNotesSheet(false);
+    setShowConceptSheet(false);
     setClientTasks([]);
     setNotes([]);
     setNoteError('');
@@ -665,18 +671,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               {/* Delete error */}
               {deleteError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 4, textAlign: 'center' }}>{deleteError}</div>}
 
-              {/* Tabs */}
-              <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 12, padding: 3, marginTop: 12, gap: 2 }}>
-                {([['tasks', '📋 Задания'], ['notes', '📝 Заметки'], ['concept', '🗂 Концептуал.']] as [ClientTab, string][]).map(([tab, label]) => (
-                  <button
-                    key={tab} onClick={() => setClientTab(tab)}
-                    style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: clientTab === tab ? 'rgba(167,139,250,0.25)' : 'transparent', color: clientTab === tab ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: clientTab === tab ? 600 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-
               {/* Thin separator */}
               <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.06)', margin: '10px -20px 0' }} />
             </div>
@@ -755,7 +749,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                       editingNextSession ? (
                         <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
                           <input
-                            type="date" value={localNextSession} onChange={e => setLocalNextSession(e.target.value)} autoFocus
+                            type="datetime-local" value={localNextSession} onChange={e => setLocalNextSession(e.target.value)} autoFocus
                             style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
                           />
                           <button onClick={async () => { await saveSessionInfo({ nextSession: localNextSession || null }); setEditingNextSession(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
@@ -838,14 +832,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                           </div>
                         </div>
                       )}
-                      <button onClick={() => setClientTab('concept')} style={{ marginTop: 12, background: 'none', border: 'none', color: '#a78bfa', fontSize: 12, cursor: 'pointer', padding: 0, fontWeight: 500 }}>
+                      <button onClick={() => setShowConceptSheet(true)} style={{ marginTop: 12, background: 'none', border: 'none', color: '#a78bfa', fontSize: 12, cursor: 'pointer', padding: 0, fontWeight: 500 }}>
                         Редактировать концептуализацию →
                       </button>
                     </>
                   ) : (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 10 }}>Концептуализация не заполнена</div>
-                      <button onClick={() => setClientTab('concept')} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      <button onClick={() => setShowConceptSheet(true)} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                         Заполнить концептуализацию
                       </button>
                     </div>
@@ -854,78 +848,114 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
               );
             })()}
 
-            {/* ── TASKS TAB ── */}
-            {clientTab === 'tasks' && (
-              <>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
-                  {clientTasks.length === 0 ? (
-                    <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>Нет назначенных заданий</div>
-                  ) : clientTasks.map((task, i) => (
-                    <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
-                      <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.4 }}>{task.text}</div>
-                        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
-                          {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt.slice(0, 10))}
-                        </div>
-                        {task.progress !== undefined && task.targetDays && (
-                          <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
-                              <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
-                            </div>
-                            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
+            {/* ── ACTION BUTTONS ── */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div onClick={() => setShowTasksSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+                <span style={{ fontSize: 18 }}>📋</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Задания</div>
+                  {clientTasks.length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{clientTasks.length} активных</div>}
+                </div>
+                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+              </div>
+              <div onClick={() => setShowNotesSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+                <span style={{ fontSize: 18 }}>📝</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Заметки сессий</div>
+                  {notes.length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{notes.length} заметок</div>}
+                </div>
+                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+              </div>
+              <div onClick={() => setShowConceptSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+                <span style={{ fontSize: 18 }}>🗂</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Концептуализация</div>
+                  {concept?.updatedAt && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>Обновлено {fmtDate(concept.updatedAt.slice(0, 10))}</div>}
+                </div>
+                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+              </div>
+            </div>
+
+            {/* ── TASKS SHEET ── */}
+            {showTasksSheet && (
+              <BottomSheet onClose={() => setShowTasksSheet(false)}>
+                <div style={{ paddingTop: 4 }}>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📋 Задания</div>
+                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
+                    {clientTasks.length === 0 ? (
+                      <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>Нет назначенных заданий</div>
+                    ) : clientTasks.map((task, i) => (
+                      <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
+                        <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.4 }}>{task.text}</div>
+                          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
+                            {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt.slice(0, 10))}
                           </div>
-                        )}
+                          {task.progress !== undefined && task.targetDays && (
+                            <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
+                                <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
+                              </div>
+                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setShowAssign(true)}
+                    style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    + Назначить задание
+                  </button>
+                </div>
+              </BottomSheet>
+            )}
+
+            {/* ── NOTES SHEET ── */}
+            {showNotesSheet && (
+              <BottomSheet onClose={() => setShowNotesSheet(false)}>
+                <div style={{ paddingTop: 4 }}>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📝 Заметки сессий</div>
+                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
+                    <textarea
+                      value={newNoteText} onChange={e => { setNewNoteText(e.target.value); setNoteError(''); }}
+                      placeholder="Заметка сессии: наблюдения, гипотезы, динамика, план следующей встречи..."
+                      rows={3}
+                      style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                      {noteError ? <div style={{ fontSize: 12, color: '#f87171' }}>{noteError}</div> : <div />}
+                      <button
+                        onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
+                        style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
+                      >
+                        {noteSaving ? 'Сохраняю...' : 'Сохранить'}
+                      </button>
+                    </div>
+                  </div>
+                  {notes.length === 0 ? (
+                    <div style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
+                  ) : notes.map(note => (
+                    <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                        <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{fmtDate(note.date)}</span>
+                        <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.35)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+                      </div>
+                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
                     </div>
                   ))}
                 </div>
-                <button
-                  onClick={() => setShowAssign(true)}
-                  style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-                >
-                  + Назначить задание
-                </button>
-              </>
+              </BottomSheet>
             )}
 
-            {/* ── NOTES TAB ── */}
-            {clientTab === 'notes' && (
-              <>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
-                  <textarea
-                    value={newNoteText} onChange={e => { setNewNoteText(e.target.value); setNoteError(''); }}
-                    placeholder="Заметка сессии: наблюдения, гипотезы, динамика, план следующей встречи..."
-                    rows={3}
-                    style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                    {noteError ? <div style={{ fontSize: 12, color: '#f87171' }}>{noteError}</div> : <div />}
-                    <button
-                      onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
-                      style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
-                    >
-                      {noteSaving ? 'Сохраняю...' : 'Сохранить'}
-                    </button>
-                  </div>
-                </div>
-                {notes.length === 0 ? (
-                  <div style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
-                ) : notes.map(note => (
-                  <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                      <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{fmtDate(note.date)}</span>
-                      <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.35)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
-                    </div>
-                    <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {/* ── CONCEPT TAB ── */}
-            {clientTab === 'concept' && (
-              <>
+            {/* ── CONCEPT SHEET ── */}
+            {showConceptSheet && (
+              <BottomSheet onClose={() => setShowConceptSheet(false)}>
+                <div style={{ paddingTop: 4 }}>
+                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>🗂 Концептуализация</div>
                 {/* YSQ request button — only for real clients */}
                 {selectedClient.telegramId > 0 && (
                   <div style={{ marginBottom: 12 }}>
@@ -1074,7 +1104,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                                     setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' });
                                     setConceptDirty(true);
                                     setShowHistory(false);
-                                    window.scrollTo({ top: 0, behavior: 'smooth' });
                                   }}
                                   style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
                                 >Восстановить</button>
@@ -1112,7 +1141,8 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                     )}
                   </div>
                 )}
-              </>
+                </div>
+              </BottomSheet>
             )}
             </div>
           </div>

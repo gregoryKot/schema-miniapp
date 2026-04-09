@@ -130,6 +130,7 @@ export interface TherapyRelationInfo {
   partnerName: string | null;
   partnerId: number | null;
   code: string;
+  nextSession: string | null;
 }
 
 export interface TherapyClientSummary {
