@@ -139,6 +139,10 @@ export interface TherapyClientSummary {
   streak: number;
   lastActiveDate: string | null;
   todayIndex: number | null;
+  relationCreatedAt: string;
+  therapyStartDate: string | null;
+  nextSession: string | null;
+  meetingDays: number[];
 }
 
 export interface TherapistNote {
@@ -160,6 +164,7 @@ export interface ConceptSnapshot {
   copingStyles: string | null;
   goals: string | null;
   currentProblems: string | null;
+  modeTransitions?: string | null;
 }
 
 export interface ClientConceptualization {
@@ -174,6 +179,7 @@ export interface ClientConceptualization {
   copingStyles: string | null;
   goals: string | null;
   currentProblems: string | null;
+  modeTransitions: string | null;
   history: ConceptSnapshot[];
   updatedAt: string;
 }
@@ -304,7 +310,10 @@ export const api = {
     schemaIds?: string[]; modeIds?: string[];
     earlyExperience?: string; unmetNeeds?: string;
     triggers?: string; copingStyles?: string; goals?: string; currentProblems?: string;
+    modeTransitions?: string;
   }) => postJson<ClientConceptualization>(`/api/therapy/conceptualization/${clientId}`, body),
+  updateSessionInfo: (clientId: number, body: { therapyStartDate?: string | null; nextSession?: string | null; meetingDays?: number[] }) =>
+    post(`/api/therapy/session-info/${clientId}`, body),
 
   // ─── Client YSQ / profile data ───────────────────────────────────────────────
   getTherapyClientData: (clientId: number) => get<ClientData>(`/api/therapy/client-data/${clientId}`),

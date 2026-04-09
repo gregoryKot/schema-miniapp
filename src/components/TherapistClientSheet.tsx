@@ -15,6 +15,31 @@ interface Props {
 type AddMode = null | 'invite' | 'telegram' | 'virtual';
 type ClientTab = 'tasks' | 'notes' | 'concept';
 
+const DAY_NAMES = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+
+function calcTherapyDuration(startDateStr: string): string {
+  const start = new Date(startDateStr);
+  const now = new Date();
+  const months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+  if (months < 1) {
+    const days = Math.floor((now.getTime() - start.getTime()) / 86400000);
+    if (days < 1) return 'сегодня';
+    const m10 = days % 10, m100 = days % 100;
+    const w = (m100 >= 11 && m100 <= 19) ? 'дней' : m10 === 1 ? 'день' : (m10 >= 2 && m10 <= 4) ? 'дня' : 'дней';
+    return `${days} ${w}`;
+  }
+  const m10 = months % 10, m100 = months % 100;
+  const w = (m100 >= 11 && m100 <= 19) ? 'месяцев' : m10 === 1 ? 'месяц' : (m10 >= 2 && m10 <= 4) ? 'месяца' : 'месяцев';
+  return `${months} ${w}`;
+}
+
+function nextSessionLabel(dateStr: string): string {
+  const [, m, d] = dateStr.split('-');
+  const MONTHS = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+  const date = new Date(dateStr + 'T00:00:00');
+  return `${DAY_NAMES[date.getDay()]}, ${parseInt(d)} ${MONTHS[parseInt(m) - 1]}`;
+}
+
 function streakEmoji(s: number) {
   if (s >= 7) return '🔥';
   if (s >= 1) return '🌱';
@@ -31,6 +56,7 @@ const CONCEPT_FIELDS: { key: keyof ClientConceptualization; label: string; place
   { key: 'unmetNeeds', label: 'Неудовлетворённые базовые потребности', placeholder: 'Привязанность, автономия, свобода выражения, игра/спонтанность, реалистичные границы...' },
   { key: 'triggers', label: 'Схемные триггеры', placeholder: 'Ситуации, слова, интонации, отношения — что запускает схемные реакции...' },
   { key: 'copingStyles', label: 'Стили совладания', placeholder: 'Капитуляция, избегание, гиперкомпенсация — типичные паттерны для каждой схемы...' },
+  { key: 'modeTransitions', label: 'Переключение режимов', placeholder: 'Что запускает переход в уязвимого ребёнка? Как активируется карающий критик? Когда появляется здоровый взрослый?...' },
   { key: 'currentProblems', label: 'Актуальные проблемы и симптомы', placeholder: 'С чем обратился клиент, текущие жалобы, симптоматика...' },
   { key: 'goals', label: 'Цели схема-терапии', placeholder: 'Что должно измениться? Конкретные результаты, на которые направлена работа...' },
 ];
@@ -71,6 +97,15 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
   const [newNoteText, setNewNoteText] = useState('');
   const [noteSaving, setNoteSaving] = useState(false);
   const [showAssign, setShowAssign] = useState(false);
+
+  // Session info editing
+  const [editingStartDate, setEditingStartDate] = useState(false);
+  const [localStartDate, setLocalStartDate] = useState('');
+  const [editingNextSession, setEditingNextSession] = useState(false);
+  const [localNextSession, setLocalNextSession] = useState('');
+  const [editingDays, setEditingDays] = useState(false);
+  const [localMeetingDays, setLocalMeetingDays] = useState<number[]>([]);
+  const [sessionInfoSaving, setSessionInfoSaving] = useState(false);
 
   // Rename alias
   const [renamingAlias, setRenamingAlias] = useState(false);
@@ -125,6 +160,12 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
     setRenamingAlias(false);
     setAliasError('');
     setDeleteError('');
+    setEditingStartDate(false);
+    setEditingNextSession(false);
+    setEditingDays(false);
+    setLocalMeetingDays(client.meetingDays ?? []);
+    setLocalNextSession(client.nextSession ?? '');
+    setLocalStartDate(client.therapyStartDate ?? '');
     switchView('client');
 
     const [tasks, fetchedNotes, fetchedConcept, fetchedData] = await Promise.all([
@@ -278,6 +319,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
         copingStyles: (localConcept.copingStyles as string) ?? '',
         goals: (localConcept.goals as string) ?? '',
         currentProblems: (localConcept.currentProblems as string) ?? '',
+        modeTransitions: (localConcept.modeTransitions as string) ?? '',
       });
       setConcept(saved);
       setLocalConcept(saved);
@@ -300,6 +342,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
       setClients(prev => prev.map(c => c.telegramId === selectedClient.telegramId ? updated : c));
       setRenamingAlias(false);
     } catch { setAliasError('Не удалось сохранить имя'); } finally { setAliasSaving(false); }
+  }
+
+  async function saveSessionInfo(patch: { therapyStartDate?: string | null; nextSession?: string | null; meetingDays?: number[] }) {
+    if (!selectedClient) return;
+    setSessionInfoSaving(true);
+    try {
+      await api.updateSessionInfo(selectedClient.telegramId, patch);
+      const updated = { ...selectedClient, ...patch };
+      if (patch.meetingDays !== undefined) updated.meetingDays = patch.meetingDays;
+      setSelectedClient(updated);
+      setClients(prev => prev.map(c => c.telegramId === selectedClient.telegramId ? updated : c));
+    } catch { /* ignore */ } finally { setSessionInfoSaving(false); }
   }
 
   async function handleRequestYsq() {
@@ -630,44 +684,175 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
             {/* ── SCROLLABLE CONTENT ── */}
             <div style={{ flex: 1, overflowY: 'auto' as const, padding: '12px 20px 100px' }}>
 
-            {/* Stats row */}
-            {(selectedClient.streak > 0 || selectedClient.todayIndex !== null || selectedClient.lastActiveDate) && (
-              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-                {selectedClient.streak > 0 && (
-                  <div style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 3 }}>Серия</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#fb923c' }}>{streakEmoji(selectedClient.streak)} {selectedClient.streak}</div>
-                  </div>
-                )}
-                {selectedClient.todayIndex !== null && (
-                  <div style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 3 }}>Индекс</div>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: indexColor(selectedClient.todayIndex) }}>{selectedClient.todayIndex}</div>
-                  </div>
-                )}
-                {selectedClient.lastActiveDate && (
-                  <div style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 12px', textAlign: 'center' }}>
-                    <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 3 }}>Активность</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: selectedClient.lastActiveDate === today ? '#06d6a0' : 'rgba(var(--fg-rgb),0.6)' }}>
-                      {selectedClient.lastActiveDate === today ? 'Сегодня' : fmtDate(selectedClient.lastActiveDate)}
+            {/* ── SESSION CARD ── */}
+            {(() => {
+              const effectiveStart = selectedClient.therapyStartDate ?? selectedClient.relationCreatedAt;
+              const duration = effectiveStart ? calcTherapyDuration(effectiveStart) : null;
+              const displayDays = editingDays ? localMeetingDays : (selectedClient.meetingDays ?? []);
+              return (
+                <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 18, padding: '14px 16px', marginBottom: 12 }}>
+                  {/* Row 1: Start date + duration */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                    <div>
+                      {editingStartDate ? (
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <input
+                            type="date" value={localStartDate} onChange={e => setLocalStartDate(e.target.value)} autoFocus
+                            style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
+                          />
+                          <button onClick={async () => { await saveSessionInfo({ therapyStartDate: localStartDate || null }); setEditingStartDate(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
+                          <button onClick={() => setEditingStartDate(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => { setLocalStartDate(selectedClient.therapyStartDate ?? selectedClient.relationCreatedAt?.slice(0, 10) ?? ''); setEditingStartDate(true); }}>
+                          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)' }}>
+                            {effectiveStart ? `С ${fmtDate(effectiveStart.slice(0, 10))}` : 'Начало не указано'}
+                          </span>
+                          {duration && <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)' }}>· {duration}</span>}
+                          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                        </div>
+                      )}
                     </div>
+                    {/* Activity badge */}
+                    {selectedClient.telegramId > 0 && selectedClient.lastActiveDate && (
+                      <span style={{ fontSize: 11, color: selectedClient.lastActiveDate === today ? '#06d6a0' : 'rgba(var(--fg-rgb),0.3)', background: selectedClient.lastActiveDate === today ? 'rgba(6,214,160,0.1)' : 'rgba(var(--fg-rgb),0.05)', padding: '3px 8px', borderRadius: 20 }}>
+                        {selectedClient.lastActiveDate === today ? '● сегодня' : fmtDate(selectedClient.lastActiveDate)}
+                      </span>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* YSQ request — only for real clients */}
-            {selectedClient.telegramId > 0 && (
-              <div style={{ marginBottom: 14 }}>
-                <button
-                  onClick={handleRequestYsq}
-                  style={{ width: '100%', padding: '10px 16px', borderRadius: 12, border: '1px solid rgba(96,165,250,0.2)', background: 'rgba(96,165,250,0.06)', color: ysqRequested ? '#06d6a0' : 'rgba(96,165,250,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
-                >
-                  {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
-                </button>
-                {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
-              </div>
-            )}
+                  {/* Row 2: Meeting days + next session */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    {/* Days */}
+                    {editingDays ? (
+                      <div style={{ display: 'flex', gap: 4, alignItems: 'center', flexWrap: 'wrap' }}>
+                        {[1,2,3,4,5,6,0].map(d => (
+                          <button key={d}
+                            onClick={() => setLocalMeetingDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])}
+                            style={{ padding: '4px 9px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, background: localMeetingDays.includes(d) ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.07)', color: localMeetingDays.includes(d) ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)' }}
+                          >{DAY_NAMES[d]}</button>
+                        ))}
+                        <button onClick={async () => { await saveSessionInfo({ meetingDays: localMeetingDays }); setEditingDays(false); }} disabled={sessionInfoSaving} style={{ padding: '4px 10px', borderRadius: 20, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✓</button>
+                        <button onClick={() => setEditingDays(false)} style={{ padding: '4px 8px', borderRadius: 20, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', gap: 4, alignItems: 'center', cursor: 'pointer' }} onClick={() => { setLocalMeetingDays(selectedClient.meetingDays ?? []); setEditingDays(true); }}>
+                        {displayDays.length === 0 ? (
+                          <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.25)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>дни встреч +</span>
+                        ) : (
+                          <>
+                            {[1,2,3,4,5,6,0].filter(d => displayDays.includes(d)).map(d => (
+                              <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'rgba(167,139,250,0.15)', color: '#a78bfa' }}>{DAY_NAMES[d]}</span>
+                            ))}
+                            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                          </>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Next session */}
+                    {!editingDays && (
+                      editingNextSession ? (
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
+                          <input
+                            type="date" value={localNextSession} onChange={e => setLocalNextSession(e.target.value)} autoFocus
+                            style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
+                          />
+                          <button onClick={async () => { await saveSessionInfo({ nextSession: localNextSession || null }); setEditingNextSession(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
+                          <button onClick={() => setEditingNextSession(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                        </div>
+                      ) : (
+                        <div style={{ marginLeft: 'auto', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }} onClick={() => { setLocalNextSession(selectedClient.nextSession ?? ''); setEditingNextSession(true); }}>
+                          {selectedClient.nextSession ? (
+                            <>
+                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>след.</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.7)' }}>{nextSessionLabel(selectedClient.nextSession)}</span>
+                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                            </>
+                          ) : (
+                            <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.25)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>следующая +</span>
+                          )}
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* ── CLINICAL SNAPSHOT ── */}
+            {(() => {
+              const hasSchemas = activeSchemaIds.length > 0;
+              const hasModes = activeModeIds.length > 0;
+              const hasGoals = !!(concept?.goals || (localConcept.goals as string));
+              const hasTransitions = !!(concept?.modeTransitions || (localConcept.modeTransitions as string));
+              const hasAnything = hasSchemas || hasModes || hasGoals || hasTransitions;
+              return (
+                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 18, padding: '14px 16px', marginBottom: 12 }}>
+                  {hasAnything ? (
+                    <>
+                      {hasGoals && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 5 }}>Цель терапии</div>
+                          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5 }}>
+                            {((concept?.goals || (localConcept.goals as string)) ?? '').slice(0, 160)}
+                            {((concept?.goals || (localConcept.goals as string)) ?? '').length > 160 ? '...' : ''}
+                          </div>
+                        </div>
+                      )}
+                      {hasSchemas && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 6 }}>Схемы ({activeSchemaIds.length})</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                            {activeSchemaIds.map(id => {
+                              const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
+                              const schema = domain?.schemas.find(s => s.id === id);
+                              return schema ? <span key={id} style={{ fontSize: 12, padding: '3px 9px', borderRadius: 20, background: (domain?.color ?? '#888') + '25', color: domain?.color ?? 'rgba(var(--fg-rgb),0.6)' }}>{schema.emoji} {schema.name}</span> : null;
+                            })}
+                          </div>
+                        </div>
+                      )}
+                      {hasModes && (
+                        <div style={{ marginBottom: hasTransitions ? 12 : 0 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 6 }}>Карта режимов</div>
+                          {MODE_GROUPS.map(group => {
+                            const groupModes = group.items.filter(m => activeModeIds.includes(m.id));
+                            if (groupModes.length === 0) return null;
+                            return (
+                              <div key={group.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 5 }}>
+                                <span style={{ fontSize: 10, fontWeight: 700, color: group.color + 'aa', textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0, minWidth: 68, paddingTop: 4 }}>{group.group.split(':').pop()?.trim() ?? group.group}</span>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                  {groupModes.map(m => <span key={m.id} style={{ fontSize: 12, padding: '3px 9px', borderRadius: 20, background: group.color + '25', color: group.color }}>{m.emoji} {m.name}</span>)}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {hasTransitions && (
+                        <div>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 5 }}>Переходы режимов</div>
+                          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>
+                            {((concept?.modeTransitions || (localConcept.modeTransitions as string)) ?? '').slice(0, 200)}
+                            {((concept?.modeTransitions || (localConcept.modeTransitions as string)) ?? '').length > 200 ? '...' : ''}
+                          </div>
+                        </div>
+                      )}
+                      <button onClick={() => setClientTab('concept')} style={{ marginTop: 12, background: 'none', border: 'none', color: '#a78bfa', fontSize: 12, cursor: 'pointer', padding: 0, fontWeight: 500 }}>
+                        Редактировать концептуализацию →
+                      </button>
+                    </>
+                  ) : (
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 10 }}>Концептуализация не заполнена</div>
+                      <button onClick={() => setClientTab('concept')} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                        Заполнить концептуализацию
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* ── TASKS TAB ── */}
             {clientTab === 'tasks' && (
@@ -741,6 +926,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
             {/* ── CONCEPT TAB ── */}
             {clientTab === 'concept' && (
               <>
+                {/* YSQ request button — only for real clients */}
+                {selectedClient.telegramId > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <button
+                      onClick={handleRequestYsq}
+                      style={{ width: '100%', padding: '10px 16px', borderRadius: 12, border: '1px solid rgba(96,165,250,0.2)', background: 'rgba(96,165,250,0.06)', color: ysqRequested ? '#06d6a0' : 'rgba(96,165,250,0.8)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                    >
+                      {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
+                    </button>
+                    {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
+                  </div>
+                )}
                 {/* YSQ hint */}
                 {ysqSchemaIds.length > 0 && (
                   <div style={{ background: 'rgba(79,163,247,0.07)', border: '1px solid rgba(79,163,247,0.2)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
@@ -842,31 +1039,79 @@ export function TherapistClientSheet({ view, onViewChange, onClose }: Props) {
                 )}
 
                 {/* History */}
-                {concept && (concept.history as unknown[])?.length > 0 ? (
+                {concept && (concept.history as unknown[])?.length > 0 && (
                   <div style={{ marginTop: 20 }}>
                     <button
                       onClick={() => setShowHistory(h => !h)}
-                      style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4 }}
+                      style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
                     >
                       <span>{showHistory ? '▲' : '▼'}</span>
                       История изменений ({(concept.history as unknown[]).length})
                     </button>
                     {showHistory && (
-                      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {(concept.history as Array<{ savedAt: string; goals?: string | null; earlyExperience?: string | null; schemaIds?: string[]; modeIds?: string[] }>).map((snap, i) => (
-                          <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.05)', borderRadius: 12, padding: '10px 14px' }}>
-                            <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 6 }}>{fmtDate(snap.savedAt.slice(0, 10))}</div>
-                            {snap.goals && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 4 }}><span style={{ color: 'rgba(var(--fg-rgb),0.2)' }}>Цели: </span>{snap.goals.slice(0, 120)}{snap.goals.length > 120 ? '...' : ''}</div>}
-                            {snap.earlyExperience && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}><span style={{ color: 'rgba(var(--fg-rgb),0.2)' }}>Опыт: </span>{snap.earlyExperience.slice(0, 120)}{snap.earlyExperience.length > 120 ? '...' : ''}</div>}
-                            {(snap.schemaIds?.length ?? 0) > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 4 }}>Схемы: {snap.schemaIds!.length} · Режимы: {snap.modeIds?.length ?? 0}</div>}
-                          </div>
-                        ))}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {(concept.history as import('../api').ConceptSnapshot[]).map((snap, i) => {
+                          const snapSchemas = (snap.schemaIds ?? []).map(id => {
+                            const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
+                            const schema = domain?.schemas.find(s => s.id === id);
+                            return schema ? { schema, color: domain!.color } : null;
+                          }).filter(Boolean) as { schema: { id: string; name: string; emoji: string }; color: string }[];
+                          const textFields = [
+                            { label: 'Цель', val: snap.goals },
+                            { label: 'Опыт', val: snap.earlyExperience },
+                            { label: 'Потребности', val: snap.unmetNeeds },
+                            { label: 'Триггеры', val: snap.triggers },
+                            { label: 'Копинг', val: snap.copingStyles },
+                            { label: 'Переходы', val: snap.modeTransitions },
+                            { label: 'Проблемы', val: snap.currentProblems },
+                          ].filter(f => f.val);
+                          return (
+                            <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                                <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.4)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
+                                <button
+                                  onClick={() => {
+                                    setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' });
+                                    setConceptDirty(true);
+                                    setShowHistory(false);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }}
+                                  style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
+                                >Восстановить</button>
+                              </div>
+                              {snapSchemas.length > 0 && (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                                  {snapSchemas.map(({ schema, color }) => (
+                                    <span key={schema.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: color + '20', color }}>{schema.emoji} {schema.name}</span>
+                                  ))}
+                                </div>
+                              )}
+                              {(snap.modeIds ?? []).length > 0 && (
+                                <div style={{ marginBottom: 6 }}>
+                                  {MODE_GROUPS.map(group => {
+                                    const gm = group.items.filter(m => (snap.modeIds ?? []).includes(m.id));
+                                    if (gm.length === 0) return null;
+                                    return (
+                                      <div key={group.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
+                                        {gm.map(m => <span key={m.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: group.color + '20', color: group.color }}>{m.emoji} {m.name}</span>)}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                              {textFields.map(({ label, val }) => (
+                                <div key={label} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 3 }}>
+                                  <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontWeight: 600 }}>{label}: </span>
+                                  {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
-                ) : concept ? (
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'center', marginTop: 12 }}>История появится после следующего сохранения</div>
-                ) : null}
+                )}
               </>
             )}
             </div>

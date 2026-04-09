@@ -112,6 +112,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const [showTaskCreate, setShowTaskCreate] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
   const [tasks, setTasks] = useState<UserTask[]>(initialTasks ?? []);
+  const [taskHistory, setTaskHistory] = useState<UserTask[]>([]);
   const [relation, setRelation] = useState<TherapyRelationInfo | null | undefined>(initialTasks !== undefined ? null : undefined);
 
   useEffect(() => {
@@ -120,8 +121,9 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
   useEffect(() => {
     let ignore = false;
-    // Background refresh (initialTasks already shown so no delay)
-    api.getTasks().then(t => { if (!ignore) setTasks(t); }).catch(() => {});
+    Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => {
+      if (!ignore) { setTasks(t); setTaskHistory(h); }
+    }).catch(() => {});
     api.getTherapyRelation().then(r => { if (!ignore) setRelation(r); }).catch(() => { if (!ignore) setRelation(null); });
     return () => { ignore = true; };
   }, [refreshKey]);
@@ -184,7 +186,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
                   <TaskRow
                     key={task.id} task={task}
                     onOpen={() => openTask(task)}
-                    onComplete={() => api.completeTask(task.id, true).then(() => api.getTasks().then(setTasks).catch(() => {})).catch(() => {})}
+                    onComplete={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
                   />
                 ))}
               </>
@@ -258,7 +260,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         <TaskCreateSheet
           onCreated={() => {
             setShowTaskCreate(false);
-            api.getTasks().then(t => { setTasks(t); onTasksChanged?.(); }).catch(() => {});
+            Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); }).catch(() => {});
           }}
           onClose={() => setShowTaskCreate(false)}
         />
@@ -283,7 +285,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               </div>
               {task.done === null && task.assignedBy !== null && (
                 <button
-                  onClick={() => api.completeTask(task.id, true).then(() => api.getTasks().then(setTasks).catch(() => {})).catch(() => {})}
+                  onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
                   style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
                 >
                   Сделал
@@ -291,6 +293,23 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               )}
             </div>
           ))}
+          {taskHistory.length > 0 && (
+            <>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.25)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
+              {taskHistory.map(task => (
+                <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.55 }}>
+                  <span style={{ fontSize: 14, flexShrink: 0 }}>{task.done === true ? '✅' : '❌'}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.4 }}>
+                      {task.assignedBy !== null && <span style={{ color: 'rgba(255,200,100,0.8)', marginRight: 4 }}>👨‍⚕️</span>}
+                      {task.text}
+                    </div>
+                    {task.completedAt && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
           <button
             onClick={() => { setShowAllTasks(false); setShowTaskCreate(true); }}
             style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
