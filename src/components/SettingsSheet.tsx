@@ -610,26 +610,12 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.8)', marginBottom: 6 }}>Удалить все мои данные</div>
               <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.5, marginBottom: 10 }}>
-                Дневник, оценки, практики, колесо детства — всё удалится с сервера. Действие необратимо.
+                Полное удаление: дневники, оценки, практики, заметки, задания, связи с терапевтом — всё безвозвратно удалится с сервера.
               </div>
-              {!deleteConfirm ? (
-                <button onClick={() => setDeleteConfirm(true)} style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.1)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-                  Удалить все данные
-                </button>
-              ) : (
-                <div>
-                  <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 12, fontWeight: 500 }}>Уверен(а)? Это нельзя отменить.</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => setDeleteConfirm(false)} style={{ flex: 1, padding: '13px 0', borderRadius: 12, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 14, cursor: 'pointer' }}>
-                      Отмена
-                    </button>
-                    <button disabled={deleting} onClick={async () => { setDeleting(true); try { await api.deleteAllUserData(); localStorage.clear(); sessionStorage.clear(); window.location.reload(); } catch { setDeleting(false); setDeleteConfirm(false); } }}
-                      style={{ flex: 2, padding: '13px 0', borderRadius: 12, border: 'none', background: '#ef4444', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: deleting ? 'default' : 'pointer' }}>
-                      {deleting ? 'Удаляем...' : 'Да, удалить всё'}
-                    </button>
-                  </div>
-                </div>
-              )}
+              <button onClick={() => { setShowPrivacy(false); setDeleteConfirm(false); setTimeout(() => setShowDeleteSheet(true), 200); }}
+                style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                Удалить все данные →
+              </button>
             </div>
 
             <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', lineHeight: 1.6, textAlign: 'center' }}>
@@ -645,7 +631,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
           <div style={{ paddingTop: 4 }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: '#f87171', marginBottom: 8 }}>Удалить все данные</div>
             <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
-              Дневник, оценки, практики, колесо детства, результаты тестов — всё удалится с сервера. Это действие необратимо.
+              Дневники, оценки, практики, колесо детства, результаты тестов, заметки, задания, связи с терапевтом — всё удалится с сервера. Это действие необратимо.
             </div>
             {!deleteConfirm ? (
               <div style={{ display: 'flex', gap: 8 }}>
