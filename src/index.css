@@ -11,25 +11,31 @@ html, body {
 
 /* ── Theme variables ─────────────────────────────────────────────────── */
 /*
-  --fg-rgb is the base RGB for ALL rgba(255,255,255,X) values.
-  In dark mode: white (255,255,255). In light mode: dark purple (26,14,64).
-  Components use rgba(var(--fg-rgb),X) so opacity stays the same
-  but the base color adapts — surfaces, borders, and text all become readable.
+  --fg-rgb: base RGB for rgba(var(--fg-rgb),X) — backgrounds and borders.
+  --text-sub / --text-faint: semantic vars for secondary/hint text with
+  opacity compensated per theme (low opacity on dark ≠ low opacity on light).
+  --chip-sel-text: text color for selected chips on semi-transparent backgrounds.
 */
 :root {
-  --fg-rgb:   255, 255, 255;
-  --bg:       #060a12;
-  --sheet-bg: #161821;
-  --text:     #ffffff;
-  --nav-bg:   rgba(6,10,18,0.92);
+  --fg-rgb:        255, 255, 255;
+  --bg:            #060a12;
+  --sheet-bg:      #161821;
+  --text:          #ffffff;
+  --nav-bg:        rgba(6,10,18,0.92);
+  --text-sub:      rgba(255,255,255,0.5);
+  --text-faint:    rgba(255,255,255,0.35);
+  --chip-sel-text: #ffffff;
 }
 
 html[data-theme="light"] {
-  --fg-rgb:   0, 0, 0;
-  --bg:       #ece7fb;
-  --sheet-bg: #f7f4ff;
-  --text:     #1a0e40;
-  --nav-bg:   rgba(236,231,251,0.97);
+  --fg-rgb:        0, 0, 0;
+  --bg:            #ece7fb;
+  --sheet-bg:      #f7f4ff;
+  --text:          #1a0e40;
+  --nav-bg:        rgba(236,231,251,0.97);
+  --text-sub:      rgba(0,0,0,0.65);
+  --text-faint:    rgba(0,0,0,0.5);
+  --chip-sel-text: #1a0e40;
 }
 
 body {

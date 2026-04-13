@@ -146,7 +146,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
               <button key={em.id} onClick={() => toggleEmotion(em.id)} style={{
                 background: sel ? '#f8717133' : 'rgba(var(--fg-rgb),0.06)',
                 border: sel ? '1px solid #f87171' : '1px solid transparent',
-                borderRadius: 20, padding: '6px 12px', color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
+                borderRadius: 20, padding: '6px 12px', color: sel ? 'var(--chip-sel-text)' : 'rgba(var(--fg-rgb),0.6)',
                 fontSize: 13, cursor: 'pointer',
               }}>
                 {em.emoji} {em.label}
@@ -199,7 +199,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
                       background: sel ? `${domain.color}33` : 'rgba(var(--fg-rgb),0.06)',
                       border: sel ? `1px solid ${domain.color}` : '1px solid transparent',
                       borderRadius: 16, padding: '5px 10px',
-                      color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
+                      color: sel ? 'var(--chip-sel-text)' : 'rgba(var(--fg-rgb),0.6)',
                       fontSize: 12, cursor: 'pointer',
                     }}>{s.name}</button>
                   );

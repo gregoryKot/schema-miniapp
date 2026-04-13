@@ -99,7 +99,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
                     background: sel ? `${group.color}33` : 'rgba(var(--fg-rgb),0.06)',
                     border: sel ? `1px solid ${group.color}` : '1px solid transparent',
                     borderRadius: 16, padding: '6px 11px',
-                    color: sel ? '#fff' : 'rgba(var(--fg-rgb),0.6)',
+                    color: sel ? 'var(--chip-sel-text)' : 'rgba(var(--fg-rgb),0.6)',
                     fontSize: 13, cursor: 'pointer',
                   }}>
                     {m.emoji} {m.name}

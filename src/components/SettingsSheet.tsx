@@ -275,7 +275,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                   )}
                 </div>
                 {tgName && editName !== tgName && (
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 4, padding: '0 4px' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4, padding: '0 4px' }}>
                     В Telegram: {tgName}
                   </div>
                 )}
@@ -429,9 +429,9 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                     >
                       <div>
                         <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>Открыть кабинет</div>
-                        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Клиенты, задания, приглашения</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>Клиенты, задания, приглашения</div>
                       </div>
-                      <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 18 }}>›</span>
+                      <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
                     </div>
                     <div style={{ borderTop: '1px solid rgba(var(--fg-rgb),0.05)', padding: '12px 16px' }}>
                       <button
@@ -607,7 +607,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               </div>
             )}
 
-            <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', lineHeight: 1.6, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.6, textAlign: 'center' }}>
               Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
             </div>
           </div>
@@ -668,8 +668,8 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
 function RowRight({ text, small }: { text: string; small?: boolean }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: small ? 13 : 15, color: 'rgba(var(--fg-rgb),0.5)', textAlign: 'right', maxWidth: 160 }}>{text}</span>
-      <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 16 }}>›</span>
+      <span style={{ fontSize: small ? 13 : 15, color: 'var(--text-sub)', textAlign: 'right', maxWidth: 160 }}>{text}</span>
+      <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>›</span>
     </div>
   );
 }
@@ -679,10 +679,10 @@ function Row({ label, sub, emoji, right, onClick, divider, color }: { label: str
     <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: onClick ? 'pointer' : 'default', borderTop: divider ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
       {emoji && <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>}
       <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: color ?? '#fff' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{sub}</div>}
+        <div style={{ fontSize: 14, fontWeight: 500, color: color ?? 'var(--text)' }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 1 }}>{sub}</div>}
       </div>
-      {right ?? (onClick && <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 16 }}>›</span>)}
+      {right ?? (onClick && <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>›</span>)}
     </div>
   );
 }
