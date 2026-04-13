@@ -607,17 +607,6 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               </div>
             )}
 
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.8)', marginBottom: 6 }}>Удалить все мои данные</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.5, marginBottom: 10 }}>
-                Полное удаление: дневники, оценки, практики, заметки, задания, связи с терапевтом — всё безвозвратно удалится с сервера.
-              </div>
-              <button onClick={() => { setShowPrivacy(false); setDeleteConfirm(false); setTimeout(() => setShowDeleteSheet(true), 200); }}
-                style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-                Удалить все данные →
-              </button>
-            </div>
-
             <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', lineHeight: 1.6, textAlign: 'center' }}>
               Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
             </div>
