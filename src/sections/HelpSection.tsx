@@ -67,7 +67,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 13, color: 'var(--text)' }}>{task.text}</div>
         {task.doneToday && isStreakTask && (
-          <div style={{ fontSize: 11, color: 'rgba(52,211,153,0.7)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
+          <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
         <TaskProgressBar task={task} />
         {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
@@ -196,7 +196,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         {relation !== undefined && (
           <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 16, overflow: 'hidden' }}>
             <div style={{ padding: '14px 16px 4px' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)' }}>🎯 Задания</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>🎯 Задания</div>
             </div>
 
             {tasks.length === 0 && (
@@ -215,7 +215,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
             {therapistTasks.length > 0 && (
               <>
                 <div style={{ padding: '10px 16px 4px', borderTop: '1px solid rgba(var(--fg-rgb),0.04)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(255,200,100,0.7)' }}>👨‍⚕️ ОТ ТЕРАПЕВТА</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent-yellow)' }}>👨‍⚕️ ОТ ТЕРАПЕВТА</div>
                 </div>
                 {therapistTasks.slice(0, 2).map(task => (
                   <TaskRow
@@ -249,7 +249,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         {/* Emergency */}
         <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.18)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(248,113,113,0.7)' }}>🚨 Прямо сейчас</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-red)' }}>🚨 Прямо сейчас</div>
           </div>
           <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит — 5 шагов" onClick={() => setShowFlashcard(true)} accent="rgba(255,200,200,0.9)" />
         </div>
@@ -257,7 +257,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         {/* Работа с мыслями */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.6)' }}>💭 Работа с мыслями</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>💭 Работа с мыслями</div>
           </div>
           <ToolRow emoji="🔍" label="Проверить убеждение" sub="Правда ли это? Собрать доказательства за и против" onClick={() => setShowBeliefCheck(true)} />
           <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
@@ -266,7 +266,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         {/* Ресурс */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.6)' }}>🌿 Ресурс</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-green)' }}>🌿 Ресурс</div>
           </div>
           <ToolRow emoji="🏡" label="Безопасное место" sub="Описать и перечитывать в тревожный момент" onClick={() => setShowSafePlace(true)} />
           <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
@@ -275,7 +275,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         {/* Отслеживание */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(251,191,36,0.6)' }}>📊 Отслеживание</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-yellow)' }}>📊 Отслеживание</div>
           </div>
           <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} onClick={onOpenPractices} />
           <ToolRow emoji="🗓" label="История планов" sub={planCount == null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />

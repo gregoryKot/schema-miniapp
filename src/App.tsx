@@ -99,8 +99,10 @@ function fillHistoryGaps(h: DayHistory[]): DayHistory[] {
 }
 
 function Disclaimer({ onAccept }: { onAccept: () => void }) {
+  const [step, setStep] = useState(0);
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
+  const TOTAL = 4;
   const ready = c1 && c2;
 
   const Checkbox = ({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) => (
@@ -121,49 +123,53 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     </label>
   );
 
-  return (
-    <BottomSheet onClose={() => {}} zIndex={300}>
-      <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
-        <div style={{ fontSize: 36, marginBottom: 8 }}>🧠</div>
+  const steps = [
+    // Step 0: Welcome
+    <div key={0}>
+      <div style={{ textAlign: 'center', marginBottom: 24, paddingTop: 4 }}>
+        <div style={{ fontSize: 44, marginBottom: 10 }}>🧠</div>
+        <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>СхемаЛаб</div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: 'var(--accent-yellow)', letterSpacing: '0.1em' }}>
           БЕТА-ВЕРСИЯ
         </div>
-        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 6, lineHeight: 1.4 }}>
-          Приложение в стадии тестирования — функции могут меняться,<br />данные могут быть сброшены
-        </div>
       </div>
-
-      <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
-        <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Прежде чем начать
-        </div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7 }}>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 12 }}>
+        <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
-          <br /><br />
-          СхемаЛаб — инструмент самопознания: дневник, тесты, трекер потребностей и пространство для работы с терапевтом. Помогает видеть паттерны и глубже понимать себя. Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
         </div>
       </div>
-
-      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Данные и конфиденциальность
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.7 }}>
+          СхемаЛаб — инструмент самопознания: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
+          <br /><br />
+          Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: 14 }}>
-          Все данные хранятся на защищённом сервере, зашифрованы и привязаны к Telegram-аккаунту. Не передаются третьим лицам. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@kotlarewski</a>.
+      </div>
+    </div>,
+
+    // Step 1: Data & Privacy
+    <div key={1}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Данные и конфиденциальность</div>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
+          Все данные хранятся на защищённом сервере, <strong style={{ color: 'var(--text)' }}>зашифрованы</strong> и привязаны к Telegram-аккаунту. Не передаются третьим лицам.
+          <br /><br />
+          Удалить все данные можно прямо в приложении — Настройки → «Удалить все данные».
         </div>
         <Checkbox
           checked={c2}
           onToggle={() => setC2(p => !p)}
-          label="Я согласен(на) на хранение данных дневника согласно описанным условиям"
+          label="Я согласен(на) на хранение данных согласно описанным условиям"
         />
       </div>
+    </div>,
 
+    // Step 2: Not therapy
+    <div key={2}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Важно знать</div>
       <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Это не терапия
-        </div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: 14 }}>
-          Приложение — инструмент самоисследования. Оценки, тесты и советы внутри не являются клинической диагностикой, медицинскими рекомендациями или заменой работы с психологом.
+        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
+          СхемаЛаб — инструмент самоисследования. Оценки, тесты и упражнения внутри <strong style={{ color: 'var(--text)' }}>не являются клинической диагностикой</strong> и не заменяют работу с психологом.
         </div>
         <Checkbox
           checked={c1}
@@ -171,35 +177,86 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           label="Я понимаю, что это инструмент самоисследования, а не клиническая диагностика"
         />
       </div>
+    </div>,
 
-      <div style={{ background: 'rgba(167,139,250,0.08)', borderRadius: 16, padding: '16px 18px', marginBottom: 20, border: '1px solid rgba(167,139,250,0.15)' }}>
-        <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.7)', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Автор дневника
-        </div>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6, marginBottom: 8 }}>
+    // Step 3: Author + Start
+    <div key={3}>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Об авторе</div>
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 10 }}>
           Канал о схема-терапии —{' '}
           <a href="https://t.me/SchemeHappens" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7 }}>
           Записаться на сессию —{' '}
           <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
         </div>
       </div>
+      {!ready && (
+        <div style={{ fontSize: 12, color: 'var(--accent-orange)', textAlign: 'center', marginBottom: 12, lineHeight: 1.5 }}>
+          {!c2 && !c1 ? 'Вернись к шагам 2 и 3 и подтверди согласие' : !c2 ? 'Вернись к шагу 2 и подтверди согласие' : 'Вернись к шагу 3 и подтверди согласие'}
+        </div>
+      )}
+    </div>,
+  ];
 
-      <button
-        onClick={onAccept}
-        disabled={!ready}
-        style={{
-          width: '100%', padding: '15px 0', borderRadius: 14, border: 'none',
-          background: ready ? 'linear-gradient(135deg, #a78bfa, #4fa3f7)' : 'rgba(var(--fg-rgb),0.08)',
-          color: ready ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
-          fontSize: 16, fontWeight: 600,
-          cursor: ready ? 'pointer' : 'default',
-          transition: 'all 0.2s',
-        }}
-      >
-        Понятно, начать
-      </button>
+  return (
+    <BottomSheet onClose={() => {}} zIndex={300}>
+      {/* Step dots */}
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
+        {Array.from({ length: TOTAL }).map((_, i) => (
+          <div
+            key={i}
+            onClick={() => setStep(i)}
+            style={{
+              width: i === step ? 20 : 8, height: 8, borderRadius: 4,
+              background: i === step ? 'var(--accent)' : i < step ? 'rgba(var(--fg-rgb),0.3)' : 'rgba(var(--fg-rgb),0.12)',
+              cursor: 'pointer',
+              transition: 'all 0.25s ease',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{ minHeight: 260 }}>
+        {steps[step]}
+      </div>
+
+      {/* Navigation */}
+      <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+        {step > 0 && (
+          <button
+            onClick={() => setStep(s => s - 1)}
+            style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 15, cursor: 'pointer' }}
+          >
+            ← Назад
+          </button>
+        )}
+        {step < TOTAL - 1 ? (
+          <button
+            onClick={() => setStep(s => s + 1)}
+            style={{ flex: 2, padding: '14px 0', borderRadius: 14, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Далее →
+          </button>
+        ) : (
+          <button
+            onClick={onAccept}
+            disabled={!ready}
+            style={{
+              flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
+              background: ready ? 'linear-gradient(135deg, var(--accent), #4fa3f7)' : 'rgba(var(--fg-rgb),0.08)',
+              color: ready ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
+              fontSize: 15, fontWeight: 600,
+              cursor: ready ? 'pointer' : 'default',
+              transition: 'all 0.2s',
+            }}
+          >
+            Начать
+          </button>
+        )}
+      </div>
     </BottomSheet>
   );
 }
