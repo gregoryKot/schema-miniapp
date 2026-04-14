@@ -9,6 +9,18 @@ import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { TherapyNote } from '../components/TherapyNote';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
+// CSS-переменные не резолвятся в template literals — маппинг для hex-фонов карточек
+const VAR_HEX: Record<string, string> = {
+  'var(--accent-red)':    '#f87171',
+  'var(--accent-orange)': '#fb923c',
+  'var(--accent-yellow)': '#facc15',
+  'var(--accent-green)':  '#34d399',
+  'var(--accent-indigo)': '#818cf8',
+  'var(--accent-blue)':   '#60a5fa',
+  'var(--accent)':        '#a78bfa',
+};
+function hex(color: string) { return VAR_HEX[color] ?? color; }
+
 const NEED_IDS: { id: string; color: string; name: string }[] = [
   { id: 'attachment', color: '#ff6b9d', name: 'Привязанность' },
   { id: 'autonomy',   color: '#4fa3f7', name: 'Автономия' },
@@ -235,12 +247,12 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                               style={{
                                 display: 'flex', alignItems: 'center', gap: 12,
                                 padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                                background: `${domain.color}0d`, border: `1px solid ${domain.color}22`,
+                                background: `${hex(domain.color)}0d`, border: `1px solid ${hex(domain.color)}22`,
                               }}
                             >
                               <div style={{
                                 width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                                background: `${domain.color}18`, border: `1px solid ${domain.color}30`,
+                                background: `${hex(domain.color)}18`, border: `1px solid ${hex(domain.color)}30`,
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
                               }}>
                                 {(s as any).emoji ?? '●'}
@@ -327,12 +339,12 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                         style={{
                           display: 'flex', alignItems: 'center', gap: 12,
                           padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                          background: `${m.groupColor}0d`, border: `1px solid ${m.groupColor}20`,
+                          background: `${hex(m.groupColor)}0d`, border: `1px solid ${hex(m.groupColor)}20`,
                         }}
                       >
                         <div style={{
                           width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                          background: `${m.groupColor}18`, border: `1px solid ${m.groupColor}30`,
+                          background: `${hex(m.groupColor)}18`, border: `1px solid ${hex(m.groupColor)}30`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
                         }}>
                           {m.emoji}

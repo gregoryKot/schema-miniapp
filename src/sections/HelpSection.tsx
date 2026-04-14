@@ -251,7 +251,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           <div style={{ padding: '14px 16px 4px' }}>
             <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-red)' }}>🚨 Прямо сейчас</div>
           </div>
-          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит — 5 шагов" onClick={() => setShowFlashcard(true)} accent="rgba(255,200,200,0.9)" />
+          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит — 5 шагов" onClick={() => setShowFlashcard(true)} accent="var(--accent-red)" />
         </div>
 
         {/* Работа с мыслями */}
