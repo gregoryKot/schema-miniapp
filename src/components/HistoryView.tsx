@@ -475,7 +475,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               </span>
               <span style={{
                 fontSize: 15, fontWeight: 600,
-                color: active ? '#000' : '#fff',
+                color: active ? '#000' : 'var(--text-faint)',
                 lineHeight: 1,
               }}>
                 {getDayNum(day.date)}
@@ -495,7 +495,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           {(['day', 'week'] as const).map((v) => {
             const active = subView === v;
             return (
-              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
+              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
                 {v === 'day' ? 'День' : 'Неделя'}
               </button>
             );
@@ -508,7 +508,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
             {DAYS_OPTIONS.map(d => {
               const active = days === d;
               return (
-                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
+                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
                   {d}д
                 </button>
               );

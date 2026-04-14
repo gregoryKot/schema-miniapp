@@ -70,7 +70,7 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
                   >
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: active ? domain.color : 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, marginTop: 2 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
+                      <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
                       {SCHEMA_DESC[s.id] && (
                         <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
                       )}

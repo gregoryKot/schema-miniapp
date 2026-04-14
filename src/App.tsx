@@ -252,6 +252,7 @@ export default function App() {
   const [therapistMode, setTherapistMode] = useState(() => localStorage.getItem('therapist_mode') === '1');
   const switchTherapistMode = (on: boolean) => { localStorage.setItem('therapist_mode', on ? '1' : '0'); setTherapistMode(on); };
   const [cabinetView, setCabinetView] = useState<'list' | 'client'>('list');
+  const therapistBackHandlerRef = useRef<() => void>(() => setCabinetView('list'));
   const [userRole, setUserRole] = useState<'CLIENT' | 'THERAPIST'>('CLIENT');
   const safeTop = useSafeTop();
   const [displayName, setDisplayName] = useState<string | null>(null);
@@ -427,7 +428,7 @@ export default function App() {
       showChildhoodWheel ? () => setShowChildhoodWheel(false) :
       showPracticesOnboarding ? () => setShowPracticesOnboarding(false) :
       showTodayNote ? () => setShowTodayNote(false) :
-      therapistMode && cabinetView === 'client' ? () => setCabinetView('list') :
+      therapistMode && cabinetView === 'client' ? () => therapistBackHandlerRef.current() :
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
@@ -519,6 +520,7 @@ export default function App() {
             view={cabinetView}
             onViewChange={setCabinetView}
             onClose={() => { switchTherapistMode(false); setCabinetView('list'); }}
+            backHandlerRef={therapistBackHandlerRef}
           />
           {/* Therapist bottom nav — replaces regular BottomNav */}
           {!showSettings && (

@@ -274,7 +274,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
                     )}
                   </div>
-                  <span style={{ fontSize: 15, color: reminderIdx === i ? '#fff' : 'rgba(var(--fg-rgb),0.6)' }}>
+                  <span style={{ fontSize: 15, color: reminderIdx === i ? 'var(--text)' : 'rgba(var(--fg-rgb),0.6)' }}>
                     {opt.label}
                     {opt.localHour !== null && (
                       <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginLeft: 6 }}>

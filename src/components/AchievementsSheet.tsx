@@ -63,7 +63,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
                 <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>
                   {m.emoji}
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>
                   {m.title}
                 </div>
                 <div style={{ fontSize: 11, color: a.earned ? 'rgba(var(--fg-rgb),0.45)' : 'rgba(var(--fg-rgb),0.18)', lineHeight: 1.4 }}>
