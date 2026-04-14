@@ -162,7 +162,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                 return (
                   <div
                     key={id}
-                    onClick={() => onOpenChildhoodWheel?.()}
+                    onClick={() => onOpenSchema({ tab: 'needs' })}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
@@ -191,6 +191,14 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                   </div>
                 );
               })}
+              {hasChildhood && (
+                <div
+                  onClick={() => onOpenChildhoodWheel?.()}
+                  style={{ textAlign: 'center', paddingTop: 4, cursor: 'pointer' }}
+                >
+                  <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>Изменить ответы детства →</span>
+                </div>
+              )}
             </div>
           )}
         </div>
