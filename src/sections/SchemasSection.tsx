@@ -21,12 +21,12 @@ const VAR_HEX: Record<string, string> = {
 };
 function hex(color: string) { return VAR_HEX[color] ?? color; }
 
-const NEED_IDS: { id: string; color: string; name: string }[] = [
-  { id: 'attachment', color: '#ff6b9d', name: 'Привязанность' },
-  { id: 'autonomy',   color: '#4fa3f7', name: 'Автономия' },
-  { id: 'expression', color: '#facc15', name: 'Выражение чувств' },
-  { id: 'play',       color: '#06d6a0', name: 'Спонтанность' },
-  { id: 'limits',     color: '#a78bfa', name: 'Границы' },
+const NEED_IDS: { id: string; color: string }[] = [
+  { id: 'attachment', color: '#ff6b9d' },
+  { id: 'autonomy',   color: '#4fa3f7' },
+  { id: 'expression', color: '#facc15' },
+  { id: 'play',       color: '#06d6a0' },
+  { id: 'limits',     color: '#a78bfa' },
 ];
 
 function readLocalIds(key: string): string[] {
@@ -155,7 +155,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                   <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 3 }}>Заполнить колесо детства →</div>
                 </div>
               )}
-              {NEED_IDS.map(({ id, color, name }) => {
+              {NEED_IDS.map(({ id, color }) => {
                 const d = NEED_DATA[id];
                 if (!d) return null;
                 const childScore = childhoodRatings[id];
@@ -177,7 +177,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                       {d.emoji}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{name}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{d.name}</div>
                       <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{d.hint}</div>
                     </div>
                     {childScore !== undefined ? (
@@ -465,7 +465,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
                 <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${groupColor}12` : 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${active ? `${groupColor}30` : 'rgba(var(--fg-rgb),0.08)'}`, transition: 'all 0.15s' }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{mode.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
+                    <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
                     {MODE_DESC[id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[id]}</div>}
                   </div>
                   {active && <span style={{ color: groupColor, fontSize: 14, flexShrink: 0 }}>✓</span>}
@@ -490,7 +490,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
                   <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${group.color}12` : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${active ? `${group.color}30` : 'rgba(var(--fg-rgb),0.06)'}`, transition: 'all 0.15s' }}>
                     <span style={{ fontSize: 18, flexShrink: 0 }}>{m.emoji}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
+                      <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
                       {MODE_DESC[m.id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[m.id]}</div>}
                     </div>
                     {active && <span style={{ color: group.color, fontSize: 14, flexShrink: 0 }}>✓</span>}

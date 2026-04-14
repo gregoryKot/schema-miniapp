@@ -541,6 +541,35 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 </div>
               </div>
 
+              {/* О приложении */}
+              <div style={{ marginBottom: 8 }}>
+                <SettingsLabel>О ПРИЛОЖЕНИИ</SettingsLabel>
+                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>СхемаЛаб</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
+                    Дневник потребностей и инструменты схема-терапии. Помогает отслеживать состояние, понимать паттерны и работать с ранними дезадаптивными схемами.
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {[
+                      { label: 'Дневник потребностей', desc: '5 базовых потребностей, ежедневная оценка' },
+                      { label: 'Схемы и режимы', desc: '20 ранних дезадаптивных схем, YSQ-тест' },
+                      { label: 'Аналитика', desc: 'Тренды, инсайты, достижения' },
+                    ].map(item => (
+                      <div key={item.label} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+                        <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--accent)', marginTop: 6, flexShrink: 0 }} />
+                        <div>
+                          <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{item.label}</span>
+                          <span style={{ fontSize: 13, color: 'var(--text-sub)' }}> — {item.desc}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 14, lineHeight: 1.5 }}>
+                    Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
+                  </div>
+                </div>
+              </div>
+
               {/* Конфиденциальность */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ДАННЫЕ</SettingsLabel>

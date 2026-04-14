@@ -55,6 +55,14 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const [homeScreenStatus, setHomeScreenStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.checkHomeScreenStatus) {
+      tg.checkHomeScreenStatus((status: string) => setHomeScreenStatus(status));
+    }
+  }, []);
 
   useEffect(() => {
     setReady(false);
@@ -190,14 +198,21 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 </button>
               )}
               {currentStreak >= 3 && (
-                <button onClick={async () => {
-                  const n = currentStreak;
-                  const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
-                  const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
-                  try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
-                }} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                  Поделиться серией
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={async () => {
+                    const n = currentStreak;
+                    const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
+                    const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
+                    try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
+                  }} style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    Поделиться серией
+                  </button>
+                  {homeScreenStatus !== 'added' && (window as any).Telegram?.WebApp?.addToHomeScreen && (
+                    <button onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()} style={{ padding: '9px 14px', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                      На экран 📲
+                    </button>
+                  )}
+                </div>
               )}
             </>
           )}
@@ -234,7 +249,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
                   {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.25)';
+                    const trendColor = s.trend === '↑' ? 'var(--accent-green)' : s.trend === '↓' ? 'var(--accent-red)' : 'var(--text-faint)';
                     const barW = Math.round(((s.avg ?? 0) / 10) * 100);
                     return (
                       <div key={s.needId}>
@@ -314,8 +329,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
                     style={{ background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
                     <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>{m.title}</div>
-                    <div style={{ fontSize: 11, color: a.earned ? 'rgba(var(--fg-rgb),0.45)' : 'rgba(var(--fg-rgb),0.18)', lineHeight: 1.4 }}>{m.desc}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? 'var(--text)' : 'var(--text-faint)', marginBottom: 4 }}>{m.title}</div>
+                    <div style={{ fontSize: 11, color: a.earned ? 'var(--text-sub)' : 'var(--text-faint)', lineHeight: 1.4, opacity: a.earned ? 1 : 0.5 }}>{m.desc}</div>
                     {progress && <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
                   </div>
                 );

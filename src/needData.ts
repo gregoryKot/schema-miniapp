@@ -1,4 +1,9 @@
+export const NEED_ORDER = ['attachment', 'autonomy', 'expression', 'play', 'limits'] as const;
+export type NeedId = typeof NEED_ORDER[number];
+
 export interface NeedExtra {
+  name: string;
+  subtitle: string;
   emoji: string;
   hint: string;
   tags: string[];
@@ -20,6 +25,8 @@ export interface NeedExtra {
 
 export const NEED_DATA: Record<string, NeedExtra> = {
   attachment: {
+    name: 'Привязанность',
+    subtitle: 'Безопасность и связь',
     emoji: '🤝',
     hint: 'безопасность · принятие · стабильность',
     tags: ['безопасность', 'принятие', 'стабильность', 'забота'],
@@ -127,6 +134,8 @@ export const NEED_DATA: Record<string, NeedExtra> = {
   },
 
   autonomy: {
+    name: 'Автономия',
+    subtitle: 'Контроль и компетентность',
     emoji: '🚀',
     hint: 'свобода выбора · компетентность · идентичность',
     tags: ['свобода выбора', 'компетентность', 'идентичность'],
@@ -234,6 +243,8 @@ export const NEED_DATA: Record<string, NeedExtra> = {
   },
 
   expression: {
+    name: 'Выражение чувств',
+    subtitle: 'Свобода самовыражения',
     emoji: '💬',
     hint: 'эмоции · потребности · мнение',
     tags: ['эмоции', 'потребности', 'мнение'],
@@ -341,6 +352,8 @@ export const NEED_DATA: Record<string, NeedExtra> = {
   },
 
   play: {
+    name: 'Спонтанность',
+    subtitle: 'Игра и радость',
     emoji: '🎉',
     hint: 'игра · радость · творчество',
     tags: ['игра', 'радость', 'творчество'],
@@ -448,6 +461,8 @@ export const NEED_DATA: Record<string, NeedExtra> = {
   },
 
   limits: {
+    name: 'Границы',
+    subtitle: 'Самодисциплина и уважение',
     emoji: '⚖️',
     hint: 'самоуважение · самоконтроль · уважение других',
     tags: ['самоуважение', 'самоконтроль', 'уважение других'],
