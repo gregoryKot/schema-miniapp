@@ -1,12 +1,29 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../schemaTherapyData';
+import { NEED_DATA } from '../needData';
 import { useSafeTop } from '../utils/safezone';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { TherapyNote } from '../components/TherapyNote';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
+
+const NEED_IDS: { id: string; color: string }[] = [
+  { id: 'attachment', color: 'var(--accent)' },
+  { id: 'autonomy',   color: 'var(--accent-orange)' },
+  { id: 'expression', color: 'var(--accent-blue)' },
+  { id: 'play',       color: 'var(--accent-green)' },
+  { id: 'limits',     color: 'var(--accent-yellow)' },
+];
+
+const NEED_NAMES: Record<string, string> = {
+  attachment: 'Привязанность',
+  autonomy:   'Автономия',
+  expression: 'Выражение чувств',
+  play:       'Спонтанность',
+  limits:     'Границы',
+};
 
 function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
@@ -56,25 +73,63 @@ export function SchemasSection({ onOpenSchema }: Props) {
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '24px 20px 16px' }}>
-        <div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-            Мои схемы и режимы
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4 }}>
-            Личная карта паттернов
-          </div>
+      <div style={{ padding: '24px 20px 16px' }}>
+        <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+          Мои паттерны
         </div>
-        <button
-          onClick={() => onOpenSchema({ tab: 'needs' })}
-          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.1)', color: 'var(--accent)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
-          title="Библиотека схемотерапии"
-        >
-          📚
-        </button>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4 }}>
+          Потребности, схемы и режимы
+        </div>
       </div>
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+        {/* ── Потребности ── */}
+        <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 18px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
+              Потребности
+            </div>
+            <div onClick={() => onOpenSchema({ tab: 'needs' })} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
+              Подробнее →
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {NEED_IDS.map(({ id, color }) => {
+              const d = NEED_DATA[id];
+              if (!d) return null;
+              return (
+                <div
+                  key={id}
+                  onClick={() => onOpenSchema({ tab: 'needs' })}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
+                    background: `${color}0d`, border: `1px solid ${color}22`,
+                  }}
+                >
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                    background: `${color}18`, border: `1px solid ${color}30`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 20,
+                  }}>
+                    {d.emoji}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>
+                      {NEED_NAMES[id]}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>
+                      {d.hint}
+                    </div>
+                  </div>
+                  <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* ── Схемы ── */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 18px' }}>

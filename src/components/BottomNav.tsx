@@ -9,8 +9,8 @@ interface Props {
 const TABS: { id: Section; label: string; activeColor: string }[] = [
   { id: 'today',   label: 'Сегодня', activeColor: 'var(--accent)' },
   { id: 'help',    label: 'Помощь',  activeColor: 'var(--accent-red)' },
-  { id: 'schemas', label: 'Схемы',   activeColor: 'var(--accent-blue)' },
-  { id: 'profile', label: 'Я',       activeColor: '#f472b6' },
+  { id: 'schemas', label: 'Паттерны', activeColor: 'var(--accent-blue)' },
+  { id: 'profile', label: 'Прогресс', activeColor: '#f472b6' },
 ];
 
 function TabIcon({ id, active, color, isTherapist }: { id: Section; active: boolean; color: string; isTherapist?: boolean }) {
