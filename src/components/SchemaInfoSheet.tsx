@@ -185,7 +185,7 @@ function SchemasTab({ highlight }: { highlight?: string }) {
   return (
     <div>
       <p style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
-        20 ранних дезадаптивных схем (Young, 1990) сгруппированы в 5 доменов. Схема — не диагноз, а паттерн, который когда-то помогал выжить и приспособиться.
+        20 ранних дезадаптивных схем (Young et al., 2003; расширено в 2022) сгруппированы в 5 доменов. Схема — не диагноз, а паттерн, который когда-то помогал выжить и приспособиться.
       </p>
       {SCHEMA_DOMAINS.map((d) => (
         <div key={d.domain} style={{ marginBottom: 12 }}>
