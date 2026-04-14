@@ -145,7 +145,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
           <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>
             Что сделаешь завтра?
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>
             {needLabel}
           </div>
         </div>
@@ -176,7 +176,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                       <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', flex: 1, lineHeight: 1.45 }}>
                         {text}
                       </div>
-                      <div style={{ fontSize: 18, color: 'rgba(var(--fg-rgb),0.15)', flexShrink: 0 }}>›</div>
+                      <div style={{ fontSize: 18, color: 'var(--text-faint)', flexShrink: 0 }}>›</div>
                     </div>
                     {isUser && id !== undefined && (
                       <div
@@ -277,7 +277,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
                   <span style={{ fontSize: 15, color: reminderIdx === i ? 'var(--text)' : 'rgba(var(--fg-rgb),0.6)' }}>
                     {opt.label}
                     {opt.localHour !== null && (
-                      <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginLeft: 6 }}>
+                      <span style={{ fontSize: 13, color: 'var(--text-sub)', marginLeft: 6 }}>
                         {String(opt.localHour).padStart(2, '0')}:00
                       </span>
                     )}
@@ -331,7 +331,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               }}
             >
               <span style={{ fontSize: 16 }}>📅</span>
-              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)' }}>Добавить в календарь (.ics)</span>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>Добавить в календарь (.ics)</span>
             </div>
           </div>
 
@@ -345,7 +345,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               onClick={() => setPhase('pick')}
               style={{
                 flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)',
-                background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 15, cursor: 'pointer',
+                background: 'transparent', color: 'var(--text-sub)', fontSize: 15, cursor: 'pointer',
               }}
             >
               ← Назад

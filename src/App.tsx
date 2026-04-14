@@ -119,7 +119,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
       >
         {checked && <span style={{ fontSize: 11, color: 'var(--text)', fontWeight: 700 }}>✓</span>}
       </div>
-      <span onClick={onToggle} style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>{label}</span>
+      <span onClick={onToggle} style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>{label}</span>
     </label>
   );
 
@@ -139,7 +139,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         </div>
       </div>
       <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.7 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
           СхемаЛаб — инструмент самопознания: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
           <br /><br />
           Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
@@ -228,7 +228,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         {step > 0 && (
           <button
             onClick={() => setStep(s => s - 1)}
-            style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 15, cursor: 'pointer' }}
+            style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, cursor: 'pointer' }}
           >
             ← Назад
           </button>
@@ -549,7 +549,7 @@ export default function App() {
       <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: 16, textAlign: 'center' }}>
         <div style={{ fontSize: 40 }}>😔</div>
         <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>Не удалось загрузить</div>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6 }}>
           Проверь подключение и попробуй ещё раз
         </div>
         <button
@@ -594,7 +594,7 @@ export default function App() {
               </div>
               <button
                 onClick={() => setShowSettings(true)}
-                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 10, fontWeight: 500, letterSpacing: '0.03em' }}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-sub)', fontSize: 10, fontWeight: 500, letterSpacing: '0.03em' }}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -673,11 +673,11 @@ export default function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
-                style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
+                style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
               >
                 ‹ Назад
               </button>
-              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)' }}>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>
                 {formatHeaderDate()}
               </span>
             </div>
@@ -690,9 +690,9 @@ export default function App() {
               }}
             >
               Трекер потребностей
-              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'rgba(var(--fg-rgb),0.35)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
+              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'var(--text-sub)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
             </h1>
-            <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 14 }}>
+            <p style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 14 }}>
               {trackerTab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
             </p>
 
@@ -732,11 +732,11 @@ export default function App() {
                 <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить вчера</div>
-                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
                 </div>
                 <button
                   onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-                  style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
                 >×</button>
               </div>
             </div>
@@ -747,9 +747,9 @@ export default function App() {
                 <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
                 <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-yellow)' }}>Незаконченный тест схем</div>
-                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
-                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
+                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
               </div>
             </div>
           )}
@@ -938,7 +938,7 @@ export default function App() {
                     <span style={{ fontSize: 18 }}>{n.emoji}</span>
                     <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{n.name}</span>
                   </div>
-                  <p style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.6, margin: 0 }}>{n.text}</p>
+                  <p style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, margin: 0 }}>{n.text}</p>
                 </div>
               ))}
             </div>
@@ -953,7 +953,7 @@ export default function App() {
             >
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)' }}>Схема-терапия</div>
-                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Схемы, режимы, потребности</div>
+                <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Схемы, режимы, потребности</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.7)" strokeWidth="2" strokeLinecap="round">
                 <polyline points="9 18 15 12 9 6" />

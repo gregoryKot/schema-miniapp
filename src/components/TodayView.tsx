@@ -201,7 +201,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       {!onboardingVisible && needs.length > 0 && needs.every(n => (ratings[n.id] ?? 0) === 0) && (
         <div style={{
           textAlign: 'center', fontSize: 12,
-          color: 'rgba(var(--fg-rgb),0.25)',
+          color: 'var(--text-faint)',
           marginBottom: 16, lineHeight: 1.5,
         }}>
           Потяни ползунок → оценка сохранится автоматически
@@ -241,7 +241,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
                 <span style={{ fontSize: 16, flexShrink: 0 }}>🎯</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2, lineHeight: 1.4 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>
                     Один маленький шаг — пока помнишь
                   </div>
                 </div>
@@ -274,11 +274,11 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
         }}
       >
         <div>
-          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 4 }}>
             Индекс дня
           </div>
           <div style={{ fontSize: 24, fontWeight: 600, lineHeight: 1, marginBottom: 5 }}>
-            {avg.toFixed(1)}<span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.35)' }}>/10</span>
+            {avg.toFixed(1)}<span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-sub)' }}>/10</span>
           </div>
           <div style={{ fontSize: 12, color: diffColor }}>
             {diffText}
@@ -300,7 +300,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
               display: 'flex', alignItems: 'center', gap: 5,
               background: 'rgba(var(--fg-rgb),0.06)', border: 'none',
               borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
-              color: 'rgba(var(--fg-rgb),0.45)', fontSize: 12, fontWeight: 500,
+              color: 'var(--text-sub)', fontSize: 12, fontWeight: 500,
             }}
           >
             ✏️ Заметка
@@ -311,7 +311,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
               display: 'flex', alignItems: 'center', gap: 5,
               background: 'rgba(var(--fg-rgb),0.06)', border: 'none',
               borderRadius: 20, padding: '6px 12px', cursor: 'pointer',
-              color: 'rgba(167,139,250,0.6)', fontSize: 12, fontWeight: 500,
+              color: 'var(--accent)', fontSize: 12, fontWeight: 500,
             }}
           >
             🎯 Поставить цель
@@ -332,11 +332,11 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
           <span style={{ fontSize: 20, flexShrink: 0 }}>🗂</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Что тебе помогает?</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
           </div>
           <button
             onClick={e => { e.stopPropagation(); localStorage.setItem(PRACTICES_ONBOARDING_KEY, '1'); setPracticesCardVisible(false); }}
-            style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
+            style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
           >
             ×
           </button>

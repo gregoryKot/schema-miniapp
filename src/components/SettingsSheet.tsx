@@ -137,7 +137,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
-          <span onClick={() => view !== 'main' ? setView('main') : onClose()} style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
+          <span onClick={() => view !== 'main' ? setView('main') : onClose()} style={{ fontSize: 26, color: 'var(--text-sub)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
           <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', flex: 1 }}>
             {view === 'time' ? 'Время уведомления' : view === 'tz' ? 'Часовой пояс' : 'Настройки'}
           </span>
@@ -215,7 +215,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         <span style={{ fontSize: 18 }}>👨‍⚕️</span>
                         <div>
                           <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>Режим специалиста</div>
-                          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>
+                          <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>
                             {therapistMode ? 'Кабинет терапевта' : 'Режим клиента'}
                           </div>
                         </div>
@@ -285,7 +285,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               <div style={{ marginBottom: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
                   <SettingsLabel>УВЕДОМЛЕНИЯ</SettingsLabel>
-                  <span onClick={() => setShowNotifyInfo(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer', flexShrink: 0, marginBottom: 10 }}>?</span>
+                  <span onClick={() => setShowNotifyInfo(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 8, fontWeight: 600, cursor: 'pointer', flexShrink: 0, marginBottom: 10 }}>?</span>
                 </div>
                 <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 8 }}>
                   <Row label="Итоги дня" sub="Ежедневный отчёт по потребностям" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
@@ -298,9 +298,9 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                   )}
                 </div>
                 {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
-                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', lineHeight: 1.5, marginBottom: 8, padding: '0 4px' }}>
+                  <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8, padding: '0 4px' }}>
                     Приходят через{' '}
-                    <a href="https://t.me/Emotional_Needs_bot" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.7)', textDecoration: 'none' }}>@Emotional_Needs_bot</a>
+                    <a href="https://t.me/Emotional_Needs_bot" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@Emotional_Needs_bot</a>
                   </div>
                 )}
               </div>
@@ -311,13 +311,13 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                   <SettingsLabel>МОЙ ТЕРАПЕВТ</SettingsLabel>
                   <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
                     {therapyRelation === undefined ? (
-                      <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
+                      <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
                     ) : therapyRelation?.status === 'active' ? (
                       <div>
                         <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 4 }}>
                           👨‍⚕️ {therapyRelation.partnerName ?? 'Терапевт'} подключён
                         </div>
-                        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 12 }}>
+                        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 12 }}>
                           Терапевт видит: трекер, задания
                         </div>
                         <button
@@ -329,7 +329,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       </div>
                     ) : (
                       <div>
-                        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 10 }}>
+                        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>
                           Если терапевт дал код — введи его здесь
                         </div>
                         <div style={{ display: 'flex', gap: 8 }}>
@@ -373,7 +373,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         width: '100%', padding: '11px 16px', borderRadius: 14,
                         border: '1px solid rgba(167,139,250,0.2)',
                         background: 'rgba(167,139,250,0.06)',
-                        color: 'rgba(167,139,250,0.7)', fontSize: 13, fontWeight: 500,
+                        color: 'var(--accent)', fontSize: 13, fontWeight: 500,
                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       }}
                     >
@@ -381,7 +381,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                     </button>
                   ) : (
                     <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
-                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 10 }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>
                         Введи код специалиста
                       </div>
                       <div style={{ display: 'flex', gap: 8 }}>
@@ -447,7 +447,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         + Создать приглашение клиенту
                       </button>
                       {therapyInviteUrl && (
-                        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 8, wordBreak: 'break-all' }}>
+                        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 8, wordBreak: 'break-all' }}>
                           Скопировано: {therapyInviteUrl.slice(0, 50)}...
                         </div>
                       )}
@@ -461,18 +461,18 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 <SettingsLabel>ПАРТНЁР</SettingsLabel>
                 <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
                   {pairLoading && !pairData ? (
-                    <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Загрузка...</div>
+                    <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Загрузка...</div>
                   ) : pairData && pairData.partners.length > 0 ? (
                     <div>
                       {pairData.partners.map(p => (
                         <div key={p.code} style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 6 }}>{p.partnerName ?? 'Друг'} сегодня</div>
+                          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 6 }}>{p.partnerName ?? 'Друг'} сегодня</div>
                           {p.partnerTodayDone && p.partnerIndex !== null ? (
                             <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--text)', marginBottom: 10 }}>
-                              {(p.partnerIndex ?? 0).toFixed(1)}<span style={{ fontSize: 16, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.4)' }}>/10</span>
+                              {(p.partnerIndex ?? 0).toFixed(1)}<span style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-sub)' }}>/10</span>
                             </div>
                           ) : (
-                            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 10 }}>Ещё не заполнил дневник</div>
+                            <div style={{ fontSize: 14, color: 'var(--text-sub)', marginBottom: 10 }}>Ещё не заполнил дневник</div>
                           )}
                           <button onClick={() => handleLeave(p.code)} style={{ width: '100%', padding: 12, border: 'none', borderRadius: 12, background: 'rgba(255,100,100,0.1)', color: 'rgba(255,100,100,0.7)', fontSize: 14, cursor: 'pointer' }}>
                             Выйти из пары
@@ -482,7 +482,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                     </div>
                   ) : joinView === 'main' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.6, marginBottom: 4 }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 4 }}>
                         Приглашай друга — видите индексы дня друг друга
                       </div>
                       <button onClick={handleCreateInvite} disabled={pairLoading} style={{ padding: 14, border: 'none', borderRadius: 12, background: 'var(--accent)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: pairLoading ? 'default' : 'pointer' }}>
@@ -490,21 +490,21 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       </button>
                       {pairInviteUrl && (
                         <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px' }}>
-                          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                           <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{pairInviteUrl}</div>
                           <button onClick={handleCopyPairInvite} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: pairInviteCopied ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             {pairInviteCopied ? '✓ Скопировано' : 'Скопировать ссылку'}
                           </button>
                         </div>
                       )}
-                      <button onClick={() => setJoinView('join')} style={{ padding: 14, border: 'none', borderRadius: 12, background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 14, cursor: 'pointer' }}>
+                      <button onClick={() => setJoinView('join')} style={{ padding: 14, border: 'none', borderRadius: 12, background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}>
                         Есть код приглашения
                       </button>
                     </div>
                   ) : (
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                        <span onClick={() => setJoinView('main')} style={{ fontSize: 22, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer' }}>‹</span>
+                        <span onClick={() => setJoinView('main')} style={{ fontSize: 22, color: 'var(--text-sub)', cursor: 'pointer' }}>‹</span>
                         <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>Ввести код</span>
                       </div>
                       <input value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())} placeholder="Код из приглашения"
@@ -559,7 +559,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
         <BottomSheet onClose={() => { setExportText(null); setExportCopied(false); }} zIndex={300}>
           <div style={{ paddingTop: 4 }}>
             <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Сводка для терапевта</div>
-            <pre style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.6, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', marginBottom: 14, userSelect: 'all', fontFamily: 'monospace' }}>
+            <pre style={{ fontSize: 11, color: 'var(--text-sub)', lineHeight: 1.6, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', marginBottom: 14, userSelect: 'all', fontFamily: 'monospace' }}>
               {exportText}
             </pre>
             <button onClick={async () => { try { await navigator.clipboard.writeText(exportText); setExportCopied(true); setTimeout(() => setExportCopied(false), 2000); } catch {} }}
@@ -574,7 +574,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
       {showNotifyInfo && (
         <BottomSheet onClose={() => setShowNotifyInfo(false)} zIndex={300}>
           <div style={{ paddingTop: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)', marginBottom: 16 }}>Зачем уведомления</div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16 }}>Зачем уведомления</div>
             <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>Регулярность — это всё. Один раз в день, в одно и то же время, формирует привычку наблюдать за собой.</p>
             <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7 }}><b style={{ color: 'var(--text)' }}>Итоги дня</b> — приходят в это же время, если дневник заполнен.</p>
           </div>
@@ -593,7 +593,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
             ].map(block => (
               <div key={block.title} style={{ marginBottom: 12, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '14px 16px' }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.8)', marginBottom: 6 }}>{block.title}</div>
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6 }}>{block.text}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>{block.text}</div>
               </div>
             ))}
 
@@ -619,12 +619,12 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
         <BottomSheet onClose={() => { setShowDeleteSheet(false); setDeleteConfirm(false); }} zIndex={300}>
           <div style={{ paddingTop: 4 }}>
             <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-red)', marginBottom: 8 }}>Удалить все данные</div>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
               Дневники, оценки, практики, колесо детства, результаты тестов, заметки, задания, связи с терапевтом — всё удалится с сервера. Это действие необратимо.
             </div>
             {!deleteConfirm ? (
               <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setShowDeleteSheet(false)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 14, cursor: 'pointer' }}>
+                <button onClick={() => setShowDeleteSheet(false)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}>
                   Отмена
                 </button>
                 <button onClick={() => setDeleteConfirm(true)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -651,7 +651,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
 function SettingsLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 10, paddingTop: 6 }}>
+    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--text-sub)', marginBottom: 10, paddingTop: 6 }}>
       {children}
     </div>
   );

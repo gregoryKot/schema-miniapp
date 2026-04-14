@@ -83,7 +83,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
             ))}
           </div>
         </div>
-        <div style={{ fontSize: 20, color: 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
+        <div style={{ fontSize: 20, color: 'var(--text-faint)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
       {/* Section 1: 7-day sparkline */}
@@ -121,7 +121,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
           </svg>
           <div style={{ flexShrink: 0, textAlign: 'right' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color }}>{trendLabel}</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>
               {trendSign}{trendDiff.toFixed(1)} за неделю
             </div>
           </div>
@@ -142,12 +142,12 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
               <div style={{ fontSize: 12, color: childhoodValue <= 4 ? 'var(--accent-red)' : 'var(--accent-green)', fontWeight: 500, marginBottom: 3 }}>
                 Детство: {childhoodValue}/10
                 {recentAvg > 0 && childhoodValue > 0 && (
-                  <span style={{ color: 'rgba(var(--fg-rgb),0.3)', fontWeight: 400, marginLeft: 8 }}>
+                  <span style={{ color: 'var(--text-sub)', fontWeight: 400, marginLeft: 8 }}>
                     → сейчас {recentAvg.toFixed(1)} {recentAvg > childhoodValue ? '↑' : recentAvg < childhoodValue ? '↓' : ''}
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>
                 {childhoodValue <= 4
                   ? 'Эта потребность давно чувствительна — вероятно, это не просто плохой период, а паттерн. Схема-терапия работает именно с этим.'
                   : 'В детстве эта зона была достаточно удовлетворена. Если сейчас низко — скорее всего ситуативное истощение.'}
@@ -168,7 +168,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
               style={{
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                 width: 16, height: 16, borderRadius: '50%',
-                background: 'rgba(var(--fg-rgb),0.1)', color: 'rgba(var(--fg-rgb),0.35)',
+                background: 'rgba(var(--fg-rgb),0.1)', color: 'var(--text-sub)',
                 fontSize: 10, fontWeight: 600, cursor: 'pointer',
                 marginLeft: 6, verticalAlign: 'middle',
               }}
@@ -194,7 +194,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
       {/* Section 3: Explanation */}
       <div>
         <SectionLabel>Об этой потребности</SectionLabel>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
           {data.explanation}
         </div>
       </div>

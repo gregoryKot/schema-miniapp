@@ -45,10 +45,10 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Дневник благодарности</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 24 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 24 }}>
           {dateLabel}
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 16, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 16, lineHeight: 1.5 }}>
           Три вещи, за которые ты благодарен. Даже маленькие — они тоже считаются.
         </div>
 
@@ -80,7 +80,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
         {items.length < 5 && (
           <button onClick={() => setItems(prev => [...prev, ''])} style={{
             background: 'rgba(var(--fg-rgb),0.05)', border: '1px dashed rgba(var(--fg-rgb),0.15)',
-            borderRadius: 12, padding: '10px', width: '100%', color: 'rgba(var(--fg-rgb),0.4)',
+            borderRadius: 12, padding: '10px', width: '100%', color: 'var(--text-sub)',
             fontSize: 13, cursor: 'pointer', marginBottom: 4,
           }}>
             + ещё одна вещь

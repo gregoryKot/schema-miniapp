@@ -23,7 +23,7 @@ function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (
     <div style={{ marginTop: 20, marginBottom: 8 }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
     </div>
   );
 }
@@ -83,7 +83,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 4 }}>
           {existing ? 'Черновик восстановлен' : 'Новая запись'}
         </div>
 
@@ -140,7 +140,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
           {saving ? 'Сохраняю...' : 'Сохранить'}
         </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 8 }}>
             Обязательно: выбери режим и опиши ситуацию
           </div>
         )}

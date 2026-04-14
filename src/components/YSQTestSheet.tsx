@@ -500,19 +500,19 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>
             Опросник схем YSQ-R
           </div>
-          <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.6, marginBottom: 12 }}>
+          <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 12 }}>
             116 утверждений. Оцени каждое от 1 до 6 — насколько это про тебя. Занимает ~10 минут.
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.6, marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
             Можно остановиться в любой момент и вернуться позже — прогресс сохраняется автоматически.
           </div>
           <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 8 }}>Шкала оценок:</div>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 8 }}>Шкала оценок:</div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               {[1,2,3,4,5,6].map(n => (
                 <div key={n} style={{ textAlign: 'center' }}>
                   <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(var(--fg-rgb),0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{n}</div>
-                  <div style={{ fontSize: 9, color: 'rgba(var(--fg-rgb),0.35)', maxWidth: 36 }}>
+                  <div style={{ fontSize: 9, color: 'var(--text-sub)', maxWidth: 36 }}>
                     {n === 1 ? 'Совсем не про меня' : n === 6 ? 'Полностью про меня' : ''}
                   </div>
                 </div>
@@ -520,7 +520,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             </div>
           </div>
 
-          <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.25)', lineHeight: 1.5, marginBottom: 20, textAlign: 'center' }}>
+          <div style={{ fontSize: 12, color: 'var(--text-faint)', lineHeight: 1.5, marginBottom: 20, textAlign: 'center' }}>
             Ответы привязаны к аккаунту Telegram и не передаются третьим лицам.
           </div>
 
@@ -534,7 +534,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               </button>
               <button
                 onClick={handleStartFresh}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer', marginBottom: 10 }}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer', marginBottom: 10 }}
               >
                 Начать заново
               </button>
@@ -550,16 +550,16 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
           <button
             onClick={onClose}
-            style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
+            style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
           >
             Отмена
           </button>
 
-          <div style={{ marginTop: 20, fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', lineHeight: 1.7, textAlign: 'center' }}>
+          <div style={{ marginTop: 20, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, textAlign: 'center' }}>
             Основан на опроснике YSQ-R (Young Schema Questionnaire, пересмотренная версия).{' '}
             © Jeffrey Young, Schema Therapy Institute.{' '}
             Все права на методику принадлежат{' '}
-            <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.5)', textDecoration: 'none' }}>
+            <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
               Jeffrey Young
             </a>
             . Используется в образовательных целях.
@@ -572,21 +572,21 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           {/* Progress bar */}
           <div style={{ marginBottom: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>Страница {page + 1} из {TOTAL_PAGES}</span>
-              <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>{Math.round(((page + 1) / TOTAL_PAGES) * 100)}%</span>
+              <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>Страница {page + 1} из {TOTAL_PAGES}</span>
+              <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{Math.round(((page + 1) / TOTAL_PAGES) * 100)}%</span>
             </div>
             <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2 }}>
               <div style={{ height: '100%', width: `${((page + 1) / TOTAL_PAGES) * 100}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.3s ease' }} />
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>
+            <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>
               ~{Math.ceil((TOTAL_PAGES - page) * 0.4)} мин осталось
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 8, padding: '4px 10px' }}>
-              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>1 — не про меня</span>
-              <span style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.15)' }}>·</span>
-              <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.6)' }}>6 — полностью про меня</span>
+              <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>1 — не про меня</span>
+              <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>·</span>
+              <span style={{ fontSize: 11, color: 'var(--accent)' }}>6 — полностью про меня</span>
             </div>
           </div>
 
@@ -596,7 +596,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             const selected = answers[qIdx];
             return (
               <div key={qIdx} style={{ marginBottom: 20, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '14px 14px 12px' }}>
-                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 6 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 6 }}>
                   Вопрос {qIdx + 1}
                 </div>
                 <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.5, marginBottom: 12 }}>{q}</div>
@@ -625,7 +625,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
             <button
               onClick={handleBack}
-              style={{ flex: 1, padding: '13px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '13px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
             >
               ← Назад
             </button>
@@ -644,7 +644,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             </button>
           </div>
           {page < TOTAL_PAGES - 1 && (
-            <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 8 }}>
+            <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 8 }}>
               Можно остановиться — прогресс сохранится
             </div>
           )}
@@ -660,16 +660,16 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
               Схемы, которые могут быть актуальны
             </div>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.5, marginBottom: 8 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8 }}>
               Схема считается выраженной если больше половины ответов — 5 или 6
             </div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', lineHeight: 1.5, marginBottom: 20, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 20, fontStyle: 'italic' }}>
               Это инструмент самоисследования, не клиническое заключение. Результаты могут быть отправной точкой для разговора с психологом.
             </div>
 
             {/* Active schemas */}
             {activeSchemas.length === 0 && (
-              <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 20, textAlign: 'center', padding: '20px 0' }}>
+              <div style={{ fontSize: 14, color: 'var(--text-sub)', marginBottom: 20, textAlign: 'center', padding: '20px 0' }}>
                 Активных схем не обнаружено
               </div>
             )}
@@ -709,7 +709,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   </div>
 
                   {/* Desc */}
-                  <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.5, marginBottom: 8 }}>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8 }}>
                     {schema.desc}
                   </div>
 
@@ -718,8 +718,8 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                     onClick={() => onViewSchemas ? onViewSchemas(schema.name) : onClose()}
                     style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: showDiaryHint ? 8 : 0, padding: '4px 0' }}
                   >
-                    <span style={{ fontSize: 13, color: 'rgba(167,139,250,0.85)' }}>Читать карточку схемы</span>
-                    <span style={{ fontSize: 16, color: 'rgba(167,139,250,0.5)' }}>›</span>
+                    <span style={{ fontSize: 13, color: 'var(--accent)' }}>Читать карточку схемы</span>
+                    <span style={{ fontSize: 16, color: 'var(--accent)' }}>›</span>
                   </div>
 
                   {/* Diary connection */}
@@ -740,7 +740,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   onClick={() => setInactiveExpanded(prev => !prev)}
                   style={{
                     width: '100%', padding: '11px 16px', border: 'none', borderRadius: 12,
-                    background: 'rgba(var(--fg-rgb),0.05)', color: 'rgba(var(--fg-rgb),0.5)',
+                    background: 'rgba(var(--fg-rgb),0.05)', color: 'var(--text-sub)',
                     fontSize: 14, fontWeight: 500, cursor: 'pointer', textAlign: 'left',
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}
@@ -764,7 +764,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                           border: '1px solid transparent',
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
-                            <div style={{ fontSize: 13, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.6)', flex: 1, paddingRight: 8, lineHeight: 1.3 }}>
+                            <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-sub)', flex: 1, paddingRight: 8, lineHeight: 1.3 }}>
                               {schema.name}
                             </div>
                             <div style={{ fontSize: 13, fontWeight: 600, color: barColor, flexShrink: 0 }}>
@@ -792,7 +792,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', marginBottom: 8 }}>
                   Хочешь разобраться глубже?
                 </div>
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.65, marginBottom: 12 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
                   Схемы — это паттерны, сформировавшиеся давно. Их можно менять, но это требует времени и поддержки. Схема-терапия — один из самых эффективных методов для этой работы.
                 </div>
                 <a
@@ -822,23 +822,23 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
                 <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)', marginBottom: 12 }}>Результаты будут удалены. Точно начать заново?</div>
                 <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={() => setRetakeConfirm(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
+                  <button onClick={() => setRetakeConfirm(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
                   <button onClick={handleRetake} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Начать заново</button>
                 </div>
               </div>
             ) : (
               <button
                 onClick={() => setRetakeConfirm(true)}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.55)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
               >
                 Пройти заново
               </button>
             )}
 
-            <div style={{ marginTop: 16, fontSize: 11, color: 'rgba(var(--fg-rgb),0.15)', lineHeight: 1.7, textAlign: 'center' }}>
+            <div style={{ marginTop: 16, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, textAlign: 'center' }}>
               © Jeffrey Young, Schema Therapy Institute.{' '}
               Все права на методику YSQ-R принадлежат{' '}
-              <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'rgba(167,139,250,0.3)', textDecoration: 'none' }}>
+              <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
                 Jeffrey Young
               </a>
               . Используется в образовательных целях.

@@ -20,7 +20,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto', paddingTop: safeTop }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '16px 20px 8px' }}>
-        <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
+        <span onClick={onClose} style={{ fontSize: 26, color: 'var(--text-sub)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
         <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>История планов</span>
       </div>
 
@@ -30,10 +30,10 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
         ) : plans.length === 0 ? (
           <div style={{ padding: '32px 0' }}>
             <div style={{ textAlign: 'center', fontSize: 36, marginBottom: 16 }}>📋</div>
-            <div style={{ textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.6)', marginBottom: 8 }}>
+            <div style={{ textAlign: 'center', fontSize: 15, fontWeight: 600, color: 'var(--text-sub)', marginBottom: 8 }}>
               Планов пока нет
             </div>
-            <div style={{ textAlign: 'center', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', lineHeight: 1.7, marginBottom: 20 }}>
+            <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 20 }}>
               Планы создаются в трекере — выбери потребность и нажми «Запланировать практику»
             </div>
             {onOpenTracker && (
@@ -53,7 +53,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                   borderRadius: 14, padding: '13px 14px',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{plan.scheduledDate}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>{plan.scheduledDate}</div>
                     <div style={{ fontSize: 15 }}>{plan.done === true ? '✅' : plan.done === false ? '❌' : '⏳'}</div>
                   </div>
                   <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.5 }}>{plan.practiceText}</div>

@@ -61,7 +61,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
             Мои схемы и режимы
           </div>
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 4 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4 }}>
             Личная карта паттернов
           </div>
         </div>
@@ -79,14 +79,14 @@ export function SchemasSection({ onOpenSchema }: Props) {
         {/* ── Схемы ── */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.4)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
               Схемы
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div onClick={() => setShowSchemaPicker(true)} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
                 {hasAnySchemas ? 'Изменить' : 'Выбрать'}
               </div>
-              <div onClick={() => onOpenSchema({ startTest: true })} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', cursor: 'pointer' }}>
+              <div onClick={() => onOpenSchema({ startTest: true })} style={{ fontSize: 12, color: 'var(--text-sub)', cursor: 'pointer' }}>
                 YSQ-тест →
               </div>
             </div>
@@ -131,12 +131,12 @@ export function SchemasSection({ onOpenSchema }: Props) {
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{s.name}</div>
                             {(s as any).desc && (
-                              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3, lineHeight: 1.4 }}>
+                              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>
                                 {(s as any).desc}
                               </div>
                             )}
                           </div>
-                          <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 14, flexShrink: 0 }}>›</span>
+                          <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
                         </div>
                       ))}
                     </div>
@@ -149,7 +149,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
               <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8, letterSpacing: '-0.3px' }}>
                 Узнай свои схемы
               </div>
-              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.65, marginBottom: 16 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 16 }}>
                 Схемы — устойчивые паттерны мышления и поведения из детства. Они влияют на то, как ты реагируешь сегодня.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -178,7 +178,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
         {/* ── Режимы ── */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 18px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: (myModes.length > 0 || profileLoading) ? 14 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.4)' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
               Режимы
             </div>
             <div onClick={() => setShowModePicker(true)} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
@@ -213,13 +213,13 @@ export function SchemasSection({ onOpenSchema }: Props) {
                         {introSaved ? 'Заполнено' : 'Познакомиться →'}
                       </div>
                     </div>
-                    <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 14 }}>›</span>
+                    <span style={{ color: 'var(--text-faint)', fontSize: 14 }}>›</span>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 8, lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 8, lineHeight: 1.5 }}>
               Добавь режимы которые тебе близки — и познакомься с каждым
             </div>
           )}
@@ -301,13 +301,13 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Мои режимы</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 20, lineHeight: 1.5 }}>
           Выбери режимы которые ты замечаешь у себя. Потом можно познакомиться с каждым.
         </div>
 
         {/* Популярные */}
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 8 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-sub)', marginBottom: 8 }}>
             С чего начать
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -321,7 +321,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{mode.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
-                    {MODE_DESC[id] && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[id]}</div>}
+                    {MODE_DESC[id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[id]}</div>}
                   </div>
                   {active && <span style={{ color: groupColor, fontSize: 14, flexShrink: 0 }}>✓</span>}
                 </div>
@@ -331,7 +331,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
         </div>
 
         <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.06)', marginBottom: 18 }} />
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 14 }}>Все режимы</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14 }}>Все режимы</div>
 
         {MODE_GROUPS.map(group => (
           <div key={group.id} style={{ marginBottom: 18 }}>
@@ -346,7 +346,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
                     <span style={{ fontSize: 18, flexShrink: 0 }}>{m.emoji}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
-                      {MODE_DESC[m.id] && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[m.id]}</div>}
+                      {MODE_DESC[m.id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[m.id]}</div>}
                     </div>
                     {active && <span style={{ color: group.color, fontSize: 14, flexShrink: 0 }}>✓</span>}
                   </div>

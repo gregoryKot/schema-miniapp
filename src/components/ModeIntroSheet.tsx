@@ -143,20 +143,20 @@ export function ModeIntroSheet({ modeId, onClose }: Props) {
             border: `1px solid ${mode.groupColor}25`,
             borderRadius: 12, padding: '10px 14px', marginBottom: 14,
           }}>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
               {MODE_DESC[modeId]}
             </div>
           </div>
         )}
 
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.6, marginBottom: 20 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
           Ответь на вопросы — не торопись, это для себя. Чем честнее, тем точнее будет картина.
         </div>
 
         {QUESTIONS.map(q => (
           <div key={q.key} style={{ marginBottom: 18 }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{q.label}</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 8 }}>{q.hint}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>{q.hint}</div>
             <textarea
               value={data[q.key]}
               onChange={e => set(q.key, e.target.value)}

@@ -74,7 +74,7 @@ export function BottomNav({ section, onSelect, userRole }: Props) {
     }}>
       {/* Beta badge */}
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 1 }}>
-        <div style={{ fontSize: 9, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.2)', letterSpacing: '0.1em' }}>
+        <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-faint)', letterSpacing: '0.1em' }}>
           β бета
         </div>
       </div>

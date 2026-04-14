@@ -52,7 +52,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
             </div>
             <div>
               <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Моё безопасное место</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Прочти — и почувствуй</div>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Прочти — и почувствуй</div>
             </div>
           </div>
 
@@ -60,12 +60,12 @@ export function SafePlace({ onClose, onComplete }: Props) {
             <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{saved.text}</div>
           </div>
 
-          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'center', marginBottom: 16 }}>
+          <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center', marginBottom: 16 }}>
             {justSaved ? '✓ Сохранено' : `Обновлено ${saved.savedAt}`}
           </div>
 
           <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-            <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Изменить
             </button>
             <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -89,14 +89,14 @@ export function SafePlace({ onClose, onComplete }: Props) {
           </div>
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Безопасное место</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Напиши — чтобы возвращаться в трудный момент</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Напиши — чтобы возвращаться в трудный момент</div>
           </div>
         </div>
 
         {/* Prompts */}
         <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
           {PROMPTS.map((p, i) => (
-            <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
+            <div key={i} style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
               {p}
             </div>
           ))}

@@ -93,7 +93,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
 
       {/* Header */}
       <div style={{ padding: '24px 20px 0' }}>
-        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
+        <div style={{ fontSize: 12, color: 'var(--text-sub)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
           {formatGreetingDate()}
         </div>
         <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
@@ -119,11 +119,11 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent)', marginBottom: 2 }}>
                 👨‍⚕️ Кабинет терапевта
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.5)' }}>
+              <div style={{ fontSize: 12, color: 'var(--accent)' }}>
                 Клиенты · Задания · Концептуализация
               </div>
             </div>
-            <div style={{ fontSize: 22, color: 'rgba(167,139,250,0.5)', fontWeight: 300 }}>›</div>
+            <div style={{ fontSize: 22, color: 'var(--accent)', fontWeight: 300 }}>›</div>
           </div>
         )}
 
@@ -163,7 +163,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
                 <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
                 <div>
                   <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? 'var(--accent-orange)' : 'rgba(var(--fg-rgb),0.3)' }}>{streak}</div>
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 3, fontWeight: 500 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, fontWeight: 500 }}>
                     {plural(streak, 'день', 'дня', 'дней')}
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
 
           {/* Tracker button */}
           <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 14px', cursor: 'pointer' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.35)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
               {allRated ? 'Готово сегодня ✓' : `${ratedCount} из ${needs.length}`}
             </div>
             <div style={{ display: 'flex', gap: 5 }}>
@@ -210,7 +210,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 || !diariesLoaded ? 12 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.35)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
               Дневник
             </div>
             {diariesLoaded && (
@@ -232,7 +232,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
                   <span style={{ fontSize: 15, flexShrink: 0 }}>{entry.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text-sub)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.label}
                     </div>
                   </div>
@@ -240,7 +240,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               ))}
             </div>
           ) : (
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
               Фиксируй моменты когда схемы активируются — это главная практика
             </div>
           )}
@@ -248,7 +248,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
             <div style={{ marginTop: 10, borderTop: '1px solid rgba(var(--fg-rgb),0.05)', paddingTop: 10 }}>
               <button
                 onClick={e => { e.stopPropagation(); setShowDiaryTaskCreate(true); }}
-                style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: 'rgba(167,139,250,0.6)', cursor: 'pointer', fontWeight: 500 }}
+                style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}
               >
                 + Поставить цель на дневник
               </button>
@@ -285,7 +285,7 @@ function OnboardingComplete({ onDone }: { onDone: () => void }) {
     }}>
       <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
       <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Отличный старт!</div>
-      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6 }}>
+      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
         Теперь просто заполняй трекер каждый день — через неделю начнут проявляться паттерны
       </div>
     </div>
@@ -440,7 +440,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
       animation: 'pop-in 0.3s ease both',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.6)' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)' }}>
           С ЧЕГО НАЧАТЬ
         </div>
         <div style={{ display: 'flex', gap: 5 }}>
@@ -463,7 +463,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
       <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 6 }}>
         {current.title}
       </div>
-      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.55, marginBottom: 16 }}>
+      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 16 }}>
         {current.description}
       </div>
 
@@ -484,7 +484,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
             style={{
               padding: '11px 14px', borderRadius: 12, border: 'none',
               background: 'rgba(var(--fg-rgb),0.06)',
-              color: 'rgba(var(--fg-rgb),0.4)', fontSize: 13, cursor: 'pointer',
+              color: 'var(--text-sub)', fontSize: 13, cursor: 'pointer',
             }}
           >
             Не сейчас
@@ -492,7 +492,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
         )}
       </div>
       {!current.canSkip && resolved > 0 && (
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', marginTop: 10 }}>
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 10 }}>
           {resolved} из {total} шагов выполнено
         </div>
       )}

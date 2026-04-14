@@ -28,7 +28,7 @@ function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (
     <div style={{ marginTop: 20, marginBottom: 8 }}>
       <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>{hint}</div>}
+      {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
     </div>
   );
 }
@@ -131,7 +131,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник проявления схем</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 4 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 4 }}>
           Новая запись{hasDraft ? ' · черновик восстановлен' : ''}
         </div>
 
@@ -158,7 +158,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           const meta = EMOTIONS.find(e => e.id === em.id)!;
           return (
             <div key={em.id} style={{ marginBottom: 8, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '10px 12px' }}>
-              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', marginBottom: 7 }}>{meta.emoji} {meta.label}</div>
+              <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 7 }}>{meta.emoji} {meta.label}</div>
               <div style={{ display: 'flex', gap: 5 }}>
                 {INTENSITY_LABELS.map((lbl, i) => (
                   <button key={i} onClick={() => setIntensity(em.id, i + 1)} style={{
@@ -210,7 +210,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         })}
         {hasPersonalSchemas && (
           <button onClick={() => setShowAllSchemas(v => !v)} style={{
-            background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.35)',
+            background: 'none', border: 'none', color: 'var(--text-sub)',
             fontSize: 12, cursor: 'pointer', padding: '4px 0', marginBottom: 8,
           }}>
             {showAllSchemas ? '↑ Показать только мои схемы' : '↓ Показать все схемы'}
@@ -239,7 +239,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           {saving ? 'Сохраняю...' : 'Сохранить'}
         </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 8 }}>
             Нужно заполнить хотя бы спусковой механизм
           </div>
         )}

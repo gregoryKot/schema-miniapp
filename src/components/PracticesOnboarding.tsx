@@ -85,7 +85,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3, marginBottom: 10 }}>
               Что тебя вытаскивает?
             </div>
-            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7 }}>
               Когда потребность низкая — сложно вспомнить что помогает.{' '}
               <span style={{ color: 'rgba(var(--fg-rgb),0.8)' }}>Добавь заранее</span> — и они будут под рукой в нужный момент.
             </div>
@@ -96,7 +96,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             border: '1px solid rgba(167,139,250,0.15)',
             borderRadius: 14, padding: '14px 16px', marginBottom: 24,
           }}>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
               В схема-терапии это называют <span style={{ color: 'var(--accent)', fontWeight: 500 }}>копинг-карточками</span> — маленькими напоминаниями себе о том, что реально работает. Не воля, а конкретный шаг.
             </div>
           </div>
@@ -115,7 +115,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             onClick={finish}
             style={{
               width: '100%', padding: '12px 0', borderRadius: 14, border: 'none',
-              background: 'transparent', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, cursor: 'pointer',
+              background: 'transparent', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer',
             }}
           >
             Пропустить, сделаю позже
@@ -143,7 +143,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               {emoji}
             </div>
             <div>
-              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-sub)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
                 {(step as number) + 1} из {total}
               </div>
               <div style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>
@@ -152,7 +152,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             </div>
           </div>
 
-          <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 14 }}>
+          <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 14 }}>
             Выбери готовые или добавь своё:
           </div>
 
@@ -217,7 +217,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
               style={{
                 flex: 1, padding: '14px 0', borderRadius: 14,
                 border: '1px solid rgba(var(--fg-rgb),0.1)',
-                background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)',
+                background: 'transparent', color: 'var(--text-sub)',
                 fontSize: 14, cursor: 'pointer',
               }}
             >

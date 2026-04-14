@@ -279,13 +279,13 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
             <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3, marginBottom: 10 }}>
               Колесо детства
             </div>
-            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.7 }}>
+            <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7 }}>
               Те же пять потребностей — но про детство.
             </div>
           </div>
 
           <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.75 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.75 }}>
               В схема-терапии считается, что схемы формируются когда базовые потребности{' '}
               <span style={{ color: 'var(--accent)', fontWeight: 500 }}>систематически не удовлетворялись в детстве</span>.
               Это упражнение поможет увидеть, какие области могут быть особенно чувствительными — и почему дневник сегодня показывает то, что показывает.
@@ -293,7 +293,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           </div>
 
           <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.6 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6 }}>
               Это не диагностика. Оценки приблизительны и субъективны. Результаты — для твоего понимания, не для выводов.
             </div>
           </div>
@@ -304,7 +304,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           >
             Оценить детство — 2 минуты
           </button>
-          <button onClick={finish} style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'transparent', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, cursor: 'pointer' }}>
+          <button onClick={finish} style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}>
             Пропустить
           </button>
         </div>
@@ -316,14 +316,14 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {/* Idealization warning */}
           <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 20 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-yellow)', marginBottom: 4 }}>⚠️ Осторожно: защитная идеализация</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.65 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.65 }}>
               Психика защищает нас от боли — поэтому мы склонны помнить хорошее и не замечать систематические паттерны.
               Оценивай <em>не отдельные моменты</em>, а то <em>как было в целом, большую часть времени</em>.
-              Под каждым ползунком — описания крайностей, а по кнопке <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.12)', fontSize: 10, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.5)', verticalAlign: 'middle' }}>?</span> — реальные примеры из жизни. Сравни с ними.
+              Под каждым ползунком — описания крайностей, а по кнопке <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.12)', fontSize: 10, fontWeight: 700, color: 'var(--text-sub)', verticalAlign: 'middle' }}>?</span> — реальные примеры из жизни. Сравни с ними.
             </div>
           </div>
 
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 20, lineHeight: 1.5 }}>
             0 — совсем нет, 10 — в полной мере
           </div>
 
@@ -341,7 +341,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{meta.label}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{meta.question}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
                     <button
@@ -355,7 +355,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                       }}
                     >?</button>
                     <div style={{ fontSize: 16, fontWeight: 700, color, minWidth: 28, textAlign: 'right' }}>
-                      {value}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>/10</span>
+                      {value}<span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-sub)' }}>/10</span>
                     </div>
                   </div>
                 </div>
@@ -386,7 +386,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                 {/* Examples panel */}
                 {openExampleId === id && (
                   <div style={{ marginTop: 10, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(167,139,250,0.15)' }}>
-                    <div style={{ padding: '8px 12px', background: 'rgba(167,139,250,0.08)', fontSize: 11, color: 'rgba(var(--fg-rgb),0.4)', fontWeight: 500 }}>
+                    <div style={{ padding: '8px 12px', background: 'rgba(167,139,250,0.08)', fontSize: 11, color: 'var(--text-sub)', fontWeight: 500 }}>
                       Примеры — как это выглядит в жизни
                     </div>
                     {meta.examples.map((ex, i) => {
@@ -407,12 +407,12 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                               fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 20,
                               background: badgeColor + '22', color: badgeColor, flexShrink: 0,
                             }}>≈{ex.score}/10</span>
-                            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginLeft: 'auto' }}>
+                            <span style={{ fontSize: 11, color: 'var(--text-faint)', marginLeft: 'auto' }}>
                               {isOpen ? '▴' : '▾'}
                             </span>
                           </div>
                           {isOpen && (
-                            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.6, marginTop: 8 }}>
+                            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6, marginTop: 8 }}>
                               {ex.text}
                             </div>
                           )}
@@ -440,7 +440,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
         <div>
           <div style={{ textAlign: 'center', marginBottom: 24, paddingTop: 4 }}>
             <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>Твоё колесо детства</div>
-            <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
               Сравнение отобразится в разделе История поверх дневника
             </div>
           </div>
@@ -458,7 +458,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
               return (
                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 13 }}>{NEED_META[id].emoji}</span>
-                  <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{NEED_META[id].label.split(' ')[0]}</span>
+                  <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{NEED_META[id].label.split(' ')[0]}</span>
                   <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? 'var(--accent-red)' : value <= 6 ? 'var(--accent-yellow)' : color }}>{value}</span>
                 </div>
               );
@@ -469,7 +469,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {lowNeeds.length > 0 && (
             <div style={{ marginBottom: 24 }}>
               <SectionLabel>Возможные активные схемы</SectionLabel>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 12, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 12, lineHeight: 1.6 }}>
                 Когда потребность хронически не удовлетворялась в детстве, психика вырабатывает стратегии выживания. Это и есть схемы — не диагноз, а паттерн, который когда-то помогал.
               </div>
               {lowNeeds.map(id => {
@@ -482,7 +482,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                       <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{meta.label}</span>
                       <span style={{ fontSize: 12, color: hint.color, marginLeft: 'auto' }}>{ratings[id]}/10 в детстве</span>
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 6 }}>Домен: {hint.domain}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 6 }}>Домен: {hint.domain}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                       {hint.schemas.map(s => {
                         const schemaData = SCHEMA_DOMAINS.flatMap(d => d.schemas.map(sc => ({ ...sc, color: d.color }))).find(sc => sc.name === s);
@@ -513,9 +513,9 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
               >
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--accent)' }}>Подробнее о схемах</div>
-                  <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Что они значат и как с ними работать</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Что они значат и как с ними работать</div>
                 </div>
-                <span style={{ fontSize: 18, color: 'rgba(167,139,250,0.6)' }}>›</span>
+                <span style={{ fontSize: 18, color: 'var(--accent)' }}>›</span>
               </div>
             </div>
           )}
@@ -523,7 +523,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           {lowNeeds.length === 0 && (
             <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 14, padding: '14px 16px', marginBottom: 24 }}>
               <div style={{ fontSize: 14, color: 'var(--accent-green)', fontWeight: 500, marginBottom: 6 }}>Хорошее детство по всем зонам</div>
-              <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
                 Все потребности выше 4/10 — это редкость и ресурс. Если сейчас что-то низкое, скорее всего это ситуативное, а не схема.
               </div>
             </div>
@@ -536,7 +536,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={() => setPhase('fill')}
-              style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 14, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}
             >
               ✎ Изменить
             </button>

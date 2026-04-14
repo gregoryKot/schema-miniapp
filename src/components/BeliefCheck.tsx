@@ -66,29 +66,29 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
         <div style={{ paddingTop: 4, textAlign: 'center' }}>
           <div style={{ fontSize: 44, marginBottom: 10 }}>🔍</div>
           <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Проверено</div>
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5, marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 20 }}>
             Иногда достаточно увидеть доказательства, чтобы мысль потеряла силу
           </div>
           <div style={{ background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.15)', borderRadius: 16, padding: '14px 16px', textAlign: 'left', marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: 'rgba(96,165,250,0.7)', fontWeight: 600, marginBottom: 6 }}>УБЕЖДЕНИЕ</div>
+            <div style={{ fontSize: 12, color: 'var(--accent-blue)', fontWeight: 600, marginBottom: 6 }}>УБЕЖДЕНИЕ</div>
             <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 12, lineHeight: 1.5 }}>«{belief}»</div>
             {forList.length > 0 && (
               <>
-                <div style={{ fontSize: 11, color: 'rgba(248,113,113,0.7)', fontWeight: 600, marginBottom: 4 }}>ЗА ({forList.length})</div>
-                {forList.map((f, i) => <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', marginBottom: 2 }}>• {f}</div>)}
+                <div style={{ fontSize: 11, color: 'var(--accent-red)', fontWeight: 600, marginBottom: 4 }}>ЗА ({forList.length})</div>
+                {forList.map((f, i) => <div key={i} style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 2 }}>• {f}</div>)}
                 <div style={{ marginBottom: 10 }} />
               </>
             )}
             {againstList.length > 0 && (
               <>
-                <div style={{ fontSize: 11, color: 'rgba(52,211,153,0.7)', fontWeight: 600, marginBottom: 4 }}>ПРОТИВ ({againstList.length})</div>
-                {againstList.map((a, i) => <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', marginBottom: 2 }}>• {a}</div>)}
+                <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600, marginBottom: 4 }}>ПРОТИВ ({againstList.length})</div>
+                {againstList.map((a, i) => <div key={i} style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 2 }}>• {a}</div>)}
                 <div style={{ marginBottom: 10 }} />
               </>
             )}
             {reframe && (
               <>
-                <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.7)', fontWeight: 600, marginBottom: 4 }}>ПЕРЕФОРМУЛИРОВКА</div>
+                <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, marginBottom: 4 }}>ПЕРЕФОРМУЛИРОВКА</div>
                 <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5 }}>{reframe}</div>
               </>
             )}
@@ -128,14 +128,14 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
           </div>
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Проверить убеждение</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Правда ли это на самом деле?</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Правда ли это на самом деле?</div>
           </div>
         </div>
 
         {step === 'belief' && (
           <>
             <div style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6 }}>
                 Запиши мысль или убеждение, которое тебя беспокоит. Схемы часто говорят с нами голосом абсолютных утверждений: «я никогда», «всё всегда», «я недостаточно».
               </div>
             </div>
@@ -155,15 +155,15 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
         {step === 'for' && (
           <>
             <div style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, color: 'rgba(248,113,113,0.8)', fontWeight: 600, marginBottom: 4 }}>Доказательства ЗА</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>«{belief}» — что подтверждает эту мысль? Будь честен.</div>
+              <div style={{ fontSize: 12, color: 'var(--accent-red)', fontWeight: 600, marginBottom: 4 }}>Доказательства ЗА</div>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>«{belief}» — что подтверждает эту мысль? Будь честен.</div>
             </div>
             {forList.length > 0 && (
               <div style={{ marginBottom: 10 }}>
                 {forList.map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
-                    <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', flex: 1 }}>• {f}</span>
-                    <span onClick={() => setForList(l => l.filter((_, j) => j !== i))} style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)', cursor: 'pointer', padding: '0 4px' }}>×</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-sub)', flex: 1 }}>• {f}</span>
+                    <span onClick={() => setForList(l => l.filter((_, j) => j !== i))} style={{ fontSize: 16, color: 'var(--text-faint)', cursor: 'pointer', padding: '0 4px' }}>×</span>
                   </div>
                 ))}
               </div>
@@ -187,15 +187,15 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
         {step === 'against' && (
           <>
             <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, color: 'rgba(52,211,153,0.8)', fontWeight: 600, marginBottom: 4 }}>Доказательства ПРОТИВ</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>Что опровергает «{belief}»? Вспомни факты, исключения, другие точки зрения.</div>
+              <div style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, marginBottom: 4 }}>Доказательства ПРОТИВ</div>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>Что опровергает «{belief}»? Вспомни факты, исключения, другие точки зрения.</div>
             </div>
             {againstList.length > 0 && (
               <div style={{ marginBottom: 10 }}>
                 {againstList.map((a, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
-                    <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.55)', flex: 1 }}>• {a}</span>
-                    <span onClick={() => setAgainstList(l => l.filter((_, j) => j !== i))} style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)', cursor: 'pointer', padding: '0 4px' }}>×</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-sub)', flex: 1 }}>• {a}</span>
+                    <span onClick={() => setAgainstList(l => l.filter((_, j) => j !== i))} style={{ fontSize: 16, color: 'var(--text-faint)', cursor: 'pointer', padding: '0 4px' }}>×</span>
                   </div>
                 ))}
               </div>
@@ -219,8 +219,8 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
         {step === 'reframe' && (
           <>
             <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.8)', fontWeight: 600, marginBottom: 4 }}>Переформулировка</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, marginBottom: 4 }}>Переформулировка</div>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>
                 Посмотрев на оба списка — как можно сформулировать эту мысль точнее и добрее к себе?
               </div>
             </div>
@@ -239,11 +239,11 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
 
         {step === 'belief' && history.length > 0 && (
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.2)', marginBottom: 10 }}>Прошлые проверки</div>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>Прошлые проверки</div>
             {history.map(h => (
               <div key={h.id} style={{ padding: '10px 14px', background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 12, marginBottom: 7 }}>
-                <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 3 }}>{h.date}</div>
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.4 }}>«{h.belief}»</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 3 }}>{h.date}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>«{h.belief}»</div>
               </div>
             ))}
           </div>

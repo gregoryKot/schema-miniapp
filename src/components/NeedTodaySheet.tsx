@@ -87,14 +87,14 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             ))}
           </div>
         </div>
-        <div style={{ fontSize: 20, color: 'rgba(var(--fg-rgb),0.2)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
+        <div style={{ fontSize: 20, color: 'var(--text-faint)', flexShrink: 0, lineHeight: 1, paddingTop: 2 }}>✕</div>
       </div>
 
       {/* Section 5: Slider — at top for immediate access */}
       <div style={{ marginBottom: 28 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 10 }}>
           <span style={{ fontSize: 28, fontWeight: 700, color }}>{value}</span>
-          <span style={{ fontSize: 14, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>/10</span>
+          <span style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-sub)' }}>/10</span>
         </div>
         <div
           ref={trackRef}
@@ -152,7 +152,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showExamples ? 10 : 0 }}
         >
           <SectionLabel mb={0}>Как это выглядит в жизни</SectionLabel>
-          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>{showExamples ? '▴' : '▾'}</span>
+          <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{showExamples ? '▴' : '▾'}</span>
         </div>
         {showExamples && (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -163,7 +163,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
                 borderBottom: i < data.examples.length - 1 ? '1px solid rgba(var(--fg-rgb),0.05)' : 'none',
               }}>
                 <span style={{ color, fontSize: 14, flexShrink: 0, lineHeight: 1.5 }}>›</span>
-                <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>{ex}</span>
+                <span style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5 }}>{ex}</span>
               </div>
             ))}
           </div>
@@ -177,7 +177,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', marginBottom: showRanges ? 10 : 0 }}
         >
           <SectionLabel mb={0}>Как понять оценку</SectionLabel>
-          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>{showRanges ? '▴' : '▾'}</span>
+          <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{showRanges ? '▴' : '▾'}</span>
         </div>
         {showRanges && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -229,7 +229,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
           >
             <div>
               <div style={{ fontSize: 14, fontWeight: 500, color }}>Сделать завтра что-то для себя</div>
-              <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>
                 Один шаг — и напомним
               </div>
             </div>
@@ -247,11 +247,11 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             >
               <div>
                 <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--accent-red)' }}>Раздел Помощь</div>
-                <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
+                <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>
                   Инструменты прямо сейчас
                 </div>
               </div>
-              <div style={{ fontSize: 18, color: 'rgba(248,113,113,0.6)', flexShrink: 0 }}>›</div>
+              <div style={{ fontSize: 18, color: 'var(--accent-red)', flexShrink: 0 }}>›</div>
             </div>
           )}
         </div>

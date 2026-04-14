@@ -33,9 +33,9 @@ function ToolRow({ emoji, label, sub, divider, onClick, accent }: { emoji: strin
       <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 500, color: accent ?? 'var(--text)' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{sub}</div>}
+        {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{sub}</div>}
       </div>
-      <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 16 }}>›</span>
+      <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>›</span>
     </div>
   );
 }
@@ -70,7 +70,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
           <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
         <TaskProgressBar task={task} />
-        {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
+        {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
       </div>
       {!task.doneToday && task.done === null && task.type === 'custom' && onComplete ? (
         <button
@@ -81,7 +81,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
           {completing ? '...' : 'Сделал'}
         </button>
       ) : !task.doneToday && task.type !== 'custom' ? (
-        <span style={{ color: 'rgba(167,139,250,0.5)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
+        <span style={{ color: 'var(--accent)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
       ) : null}
     </div>
   );
@@ -98,7 +98,7 @@ function TaskProgressBar({ task }: { task: UserTask }) {
       <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: 'var(--accent)', borderRadius: 4, transition: 'width 0.3s ease' }} />
       </div>
-      <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{progress}/{target}</span>
+      <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{progress}/{target}</span>
     </div>
   );
 }
@@ -166,7 +166,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>
         <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>Помощь</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 4, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4, lineHeight: 1.5 }}>
           Инструменты схема-терапии и твои задания
         </div>
         {/* Next session banner for clients */}
@@ -184,7 +184,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               <span style={{ fontSize: 12, fontWeight: 600, color: isToday ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.6)' }}>
                 {isToday ? 'Сегодня встреча' : `Встреча: ${label}`}
               </span>
-              {relation.partnerName && <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>с {relation.partnerName}</span>}
+              {relation.partnerName && <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>с {relation.partnerName}</span>}
             </div>
           );
         })()}
@@ -200,7 +200,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
             </div>
 
             {tasks.length === 0 && (
-              <div style={{ padding: '8px 16px 12px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)' }}>
+              <div style={{ padding: '8px 16px 12px', fontSize: 13, color: 'var(--text-sub)' }}>
                 Нет активных заданий
               </div>
             )}
@@ -231,14 +231,14 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               {tasks.length > 0 && (
                 <div
                   onClick={() => setShowAllTasks(true)}
-                  style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
+                  style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'rgba(167,139,250,0.08)' }}
                 >
                   Все задания
                 </div>
               )}
               <div
                 onClick={() => setShowTaskCreate(true)}
-                style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'rgba(167,139,250,0.8)', background: 'rgba(167,139,250,0.08)' }}
+                style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'rgba(167,139,250,0.08)' }}
               >
                 + Поставить цель
               </div>
@@ -304,7 +304,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         <BottomSheet onClose={() => setShowAllTasks(false)} zIndex={200}>
           <SectionLabel purple mb={16}>Все задания</SectionLabel>
           {tasks.length === 0 ? (
-            <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
               Нет активных заданий
             </div>
           ) : tasks.map(task => (
@@ -312,11 +312,11 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               <span style={{ fontSize: 15, flexShrink: 0 }}>{task.done === true ? '✅' : task.done === false ? '❌' : '⏳'}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, color: 'var(--text)' }}>
-                  {task.assignedBy !== null && <span style={{ color: 'rgba(255,200,100,0.8)', marginRight: 4 }}>👨‍⚕️</span>}
+                  {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
                   {task.text}
                 </div>
                 <TaskProgressBar task={task} />
-                {task.dueDate && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
+                {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
               </div>
               {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
                 <button
@@ -330,16 +330,16 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           ))}
           {taskHistory.length > 0 && (
             <>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.25)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
               {taskHistory.map(task => (
                 <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.55 }}>
                   <span style={{ fontSize: 14, flexShrink: 0 }}>{task.done === true ? '✅' : '❌'}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.4 }}>
-                      {task.assignedBy !== null && <span style={{ color: 'rgba(255,200,100,0.8)', marginRight: 4 }}>👨‍⚕️</span>}
+                      {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
                       {task.text}
                     </div>
-                    {task.completedAt && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                    {task.completedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
                   </div>
                 </div>
               ))}

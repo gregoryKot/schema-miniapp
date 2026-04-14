@@ -47,7 +47,7 @@ export function LetterToSelf({ onClose, onComplete }: Props) {
     return (
       <BottomSheet onClose={() => setViewing(null)} zIndex={300}>
         <div style={{ paddingTop: 4 }}>
-          <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 12 }}>{viewing.date}</div>
+          <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 12 }}>{viewing.date}</div>
           <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{viewing.text}</div>
         </div>
       </BottomSheet>
@@ -64,14 +64,14 @@ export function LetterToSelf({ onClose, onComplete }: Props) {
           </div>
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Письмо Уязвимому Ребёнку</div>
-            <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Написать себе из прошлого</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Написать себе из прошлого</div>
           </div>
         </div>
 
         {/* Prompts */}
         <div style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
           {PROMPTS.map((p, i) => (
-            <div key={i} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
+            <div key={i} style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
               {p}
             </div>
           ))}
@@ -96,13 +96,13 @@ export function LetterToSelf({ onClose, onComplete }: Props) {
         {/* Past letters */}
         {letters.length > 0 && (
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.2)', marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
               Прошлые письма
             </div>
             {letters.slice(0, 5).map(l => (
               <div key={l.id} onClick={() => setViewing(l)} style={{ padding: '11px 14px', background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 12, marginBottom: 7, cursor: 'pointer' }}>
-                <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>{l.date}</div>
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 4 }}>{l.date}</div>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {l.text}
                 </div>
               </div>

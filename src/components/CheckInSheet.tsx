@@ -35,7 +35,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>
           Вчера ты планировал
         </div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 4 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4 }}>
           {needEmoji} {needLabel}
         </div>
       </div>
@@ -51,7 +51,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         {plan.practiceText}
       </div>
 
-      <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', textAlign: 'center', marginBottom: 16 }}>
+      <div style={{ fontSize: 14, color: 'var(--text-sub)', textAlign: 'center', marginBottom: 16 }}>
         Получилось?
       </div>
 
@@ -63,7 +63,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
             flex: 1, padding: '15px 0', borderRadius: 14,
             border: '1px solid rgba(var(--fg-rgb),0.1)',
             background: 'rgba(var(--fg-rgb),0.05)',
-            color: 'rgba(var(--fg-rgb),0.6)', fontSize: 15, cursor: 'pointer',
+            color: 'var(--text-sub)', fontSize: 15, cursor: 'pointer',
           }}
         >
           Не вышло
@@ -89,7 +89,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         <button
           onClick={onDone}
           disabled={saving}
-          style={{ background: 'none', border: 'none', fontSize: 13, color: 'rgba(var(--fg-rgb),0.25)', cursor: 'pointer', padding: '4px 12px' }}
+          style={{ background: 'none', border: 'none', fontSize: 13, color: 'var(--text-faint)', cursor: 'pointer', padding: '4px 12px' }}
         >
           Пропустить
         </button>

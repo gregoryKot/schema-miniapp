@@ -80,7 +80,7 @@ export function BottomSheet({ onClose, children, zIndex = 200, scrollRef }: Prop
           <div style={{
             textAlign: 'center',
             fontSize: 12,
-            color: 'rgba(var(--fg-rgb),0.35)',
+            color: 'var(--text-sub)',
             padding: '0 0 10px',
             animation: 'fade-in 300ms ease',
             flexShrink: 0,

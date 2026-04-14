@@ -92,7 +92,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
               <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.8)' }}>
                 {opt.label}
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{opt.sub}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{opt.sub}</div>
             </div>
           </div>
         ))}

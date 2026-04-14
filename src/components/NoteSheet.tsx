@@ -107,7 +107,7 @@ export function NoteSheet({ date, onClose }: Props) {
             fontFamily: 'inherit',
           }}
         />
-        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
 

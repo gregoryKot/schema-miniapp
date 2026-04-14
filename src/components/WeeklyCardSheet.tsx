@@ -267,7 +267,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
         </div>
 
         {history.length === 0 ? (
-          <div style={{ textAlign: 'center', color: 'rgba(var(--fg-rgb),0.3)', padding: '32px 0' }}>
+          <div style={{ textAlign: 'center', color: 'var(--text-sub)', padding: '32px 0' }}>
             Нет данных за неделю
           </div>
         ) : (

@@ -42,7 +42,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
       <div style={{ paddingTop: 8 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
           <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)' }}>Достижения</div>
-          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)' }}>{earned} / {achievements.length}</div>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earned} / {achievements.length}</div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -102,7 +102,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
           >
             <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{meta.emoji}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{meta.title}</div>
-            <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 28 }}>{meta.desc}</div>
+            <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 28 }}>{meta.desc}</div>
             <button
               onClick={shareOne}
               style={{

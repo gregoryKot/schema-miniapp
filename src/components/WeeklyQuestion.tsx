@@ -82,7 +82,7 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={handleSkip} style={{
           flex: 1, padding: '9px 0', border: 'none', borderRadius: 10,
-          background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.35)',
+          background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)',
           fontSize: 12, cursor: 'pointer',
         }}>Пропустить</button>
         <button onClick={handleSave} disabled={!text.trim() || saving} style={{

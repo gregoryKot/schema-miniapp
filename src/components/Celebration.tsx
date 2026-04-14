@@ -102,7 +102,7 @@ export function Celebration({ streak, onDone }: Props) {
         <div style={{ fontSize: 52, fontWeight: 800, color: 'var(--text)', lineHeight: 1, marginBottom: 6 }}>
           {streak}
         </div>
-        <div style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 16 }}>
+        <div style={{ fontSize: 16, color: 'var(--text-sub)', marginBottom: 16 }}>
           {pluralDays(streak)} подряд
         </div>
         <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5, maxWidth: 220 }}>
@@ -128,7 +128,7 @@ export function Celebration({ streak, onDone }: Props) {
         >
           {copied ? 'Скопировано!' : 'Поделиться'}
         </button>
-        <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 12 }}>
+        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 12 }}>
           нажми в другом месте, чтобы закрыть
         </div>
       </div>

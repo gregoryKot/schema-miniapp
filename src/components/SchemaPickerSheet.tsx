@@ -41,7 +41,7 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Мои схемы</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginBottom: 20, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 20, lineHeight: 1.5 }}>
           Выбери схемы, которые тебе близки. Можно без теста — если ты уже знаешь свои.
         </div>
 
@@ -72,7 +72,7 @@ export function SchemaPickerSheet({ selected, onSave, onClose }: Props) {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.6)', fontWeight: active ? 600 : 400 }}>{s.name}</div>
                       {SCHEMA_DESC[s.id] && (
-                        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
+                        <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{SCHEMA_DESC[s.id]}</div>
                       )}
                     </div>
                     {active && <span style={{ color: domain.color, fontSize: 14, flexShrink: 0 }}>✓</span>}

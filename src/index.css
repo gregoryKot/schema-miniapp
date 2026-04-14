@@ -41,8 +41,8 @@ html[data-theme="light"] {
   --sheet-bg:      #f7f4ff;
   --text:          #1a0e40;
   --nav-bg:        rgba(236,231,251,0.97);
-  --text-sub:      rgba(0,0,0,0.65);
-  --text-faint:    rgba(0,0,0,0.5);
+  --text-sub:      rgba(0,0,0,0.72);
+  --text-faint:    rgba(0,0,0,0.55);
   --chip-sel-text: #1a0e40;
   /* Darker shades for light backgrounds — pass contrast checks */
   --accent:        #6d28d9;

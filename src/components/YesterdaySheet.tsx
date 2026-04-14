@@ -58,10 +58,10 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 8 }}>
         <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Заполнить вчера</div>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 24 }}>{date}</div>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 24 }}>{date}</div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', color: 'rgba(var(--fg-rgb),0.3)', padding: '40px 0' }}>Загрузка...</div>
+          <div style={{ textAlign: 'center', color: 'var(--text-sub)', padding: '40px 0' }}>Загрузка...</div>
         ) : loadError ? (
           <div style={{ textAlign: 'center', color: 'var(--accent-red)', padding: '40px 0', fontSize: 14 }}>
             Не удалось загрузить — попробуй позже
@@ -122,9 +122,9 @@ function SliderRow({ needId, label, value, color, saved, onChange }: {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <span style={{ fontSize: 14, color: 'var(--text)' }}>{label}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {saved && value > 0 && <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>✓</span>}
+          {saved && value > 0 && <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>✓</span>}
           <span style={{ fontSize: 15, fontWeight: 600, color: value > 0 ? color : 'rgba(var(--fg-rgb),0.2)' }}>
-            {value > 0 ? value : '—'}<span style={{ fontSize: 11, fontWeight: 400, color: 'rgba(var(--fg-rgb),0.3)' }}>{value > 0 ? '/10' : ''}</span>
+            {value > 0 ? value : '—'}<span style={{ fontSize: 11, fontWeight: 400, color: 'var(--text-sub)' }}>{value > 0 ? '/10' : ''}</span>
           </span>
         </div>
       </div>

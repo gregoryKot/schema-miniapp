@@ -79,7 +79,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             fontFamily: 'inherit',
           }}
         />
-        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'right', marginTop: 4, marginBottom: 16 }}>
           {text.length}/500
         </div>
 
@@ -89,7 +89,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             style={{
               flex: 1, padding: '13px 0', border: 'none', borderRadius: 12,
               background: 'rgba(var(--fg-rgb),0.08)',
-              color: 'rgba(var(--fg-rgb),0.4)',
+              color: 'var(--text-sub)',
               fontSize: 15, fontWeight: 500, cursor: 'pointer',
             }}
           >

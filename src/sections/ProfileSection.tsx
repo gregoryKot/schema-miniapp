@@ -92,7 +92,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
           {firstName || 'Я'}
         </div>
-        <button onClick={onOpenSettings} style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <button onClick={onOpenSettings} style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ⚙️
         </button>
       </div>
@@ -138,7 +138,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   {currentStreak > 0 ? (
                     <>
                       <div style={{ fontSize: 40, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>{currentStreak}</div>
-                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>
                         {currentStreak === 1 ? 'день подряд' : currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
                       </div>
                     </>
@@ -147,7 +147,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                       <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.2 }}>
                         {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
                       </div>
-                      <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 4 }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
                         {totalDays === 0
                           ? 'Первая запись — самая важная'
                           : 'Заполни сегодня — серия начнётся снова'}
@@ -156,8 +156,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
-                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Рекорд: <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{longestStreak}</span></div>}
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Всего: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{totalDays}</span></div>
+                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>Рекорд: <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{longestStreak}</span></div>}
+                  <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>Всего: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{totalDays}</span></div>
                 </div>
               </div>
 
@@ -211,7 +211,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
                 <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)' }}>{insightSummary}</span>
               </div>
-              <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
+              <span style={{ fontSize: 16, color: 'var(--text-faint)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
             </div>
             {insightsOpen && (
               <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.05)' }}>
@@ -219,14 +219,14 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                     {insights?.bestDayOfWeek && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
+                        <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>
                           Лучше всего — <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
                         </span>
-                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
+                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
                       </div>
                     )}
                     {insights?.worstDayOfWeek && (
-                      <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
+                      <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>
                         Тяжелее — <span style={{ color: 'var(--accent-red)', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
                       </span>
                     )}
@@ -239,7 +239,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                     return (
                       <div key={s.needId}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{NEED_NAMES[s.needId]}</span>
+                          <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{NEED_NAMES[s.needId]}</span>
                           <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
                         </div>
                         <div style={{ height: 3, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.07)' }}>
@@ -268,14 +268,14 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   ))}
                 </div>
               ) : (
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>
                   Первое — за первую запись в дневник
                 </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 12 }}>
-              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)' }}>{earnedList.length}/{achievements.length}</span>
-              <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.2)' }}>›</span>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earnedList.length}/{achievements.length}</span>
+              <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>
             </div>
           </div>
         )}
@@ -292,7 +292,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           <div style={{ paddingTop: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>Достижения</span>
-              <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.35)' }}>{earnedList.length}/{achievements.length}</span>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earnedList.length}/{achievements.length}</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {achievements.map(a => {
@@ -316,7 +316,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                     <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? '#fff' : 'rgba(var(--fg-rgb),0.25)', marginBottom: 4 }}>{m.title}</div>
                     <div style={{ fontSize: 11, color: a.earned ? 'rgba(var(--fg-rgb),0.45)' : 'rgba(var(--fg-rgb),0.18)', lineHeight: 1.4 }}>{m.desc}</div>
-                    {progress && <div style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
+                    {progress && <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
                   </div>
                 );
               })}
@@ -334,7 +334,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
             <div onClick={e => e.stopPropagation()} style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.2), rgba(79,163,247,0.1))', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
               <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{m.emoji}</div>
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{m.title}</div>
-              <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>
+              <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>
               <button onClick={async () => {
                 const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/Emotional_Needs_bot`;
                 try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch {}
@@ -350,7 +350,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
       {showBestDayInfo && (
         <BottomSheet onClose={() => setShowBestDayInfo(false)} zIndex={300}>
           <div style={{ paddingTop: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.7)', marginBottom: 16 }}>Лучший день</div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16 }}>Лучший день</div>
             <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>День недели, в который твои оценки в среднем выше всего.</p>
             <p style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7 }}>Становится точнее с каждой неделей.</p>
           </div>
@@ -362,7 +362,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
 function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.25)', marginBottom: 8, ...style }}>
+    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 8, ...style }}>
       {children}
     </div>
   );

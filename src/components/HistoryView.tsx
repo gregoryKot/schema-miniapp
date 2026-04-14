@@ -233,14 +233,14 @@ function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Rec
               background: color, flexShrink: 0,
             }} />
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.45)', fontWeight: 400, lineHeight: 1.2 }}>
+              <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 400, lineHeight: 1.2 }}>
                 {need.chartLabel}
               </div>
               <div style={{ fontSize: 14, fontWeight: 700, color, lineHeight: 1.2 }}>
                 {value}
               </div>
             </div>
-            <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.25)', flexShrink: 0 }}>›</span>
+            <span style={{ fontSize: 16, color: 'var(--text-faint)', flexShrink: 0 }}>›</span>
           </div>
         );
       })}
@@ -349,7 +349,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
       }}
     >
       <div>
-        <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 3 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 3 }}>
           Стоит уделить внимание
         </div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
@@ -358,7 +358,7 @@ function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontSize: 16, fontWeight: 700, color }}>{ratings[lowest.id] ?? 0}</span>
-        {onTap && <span style={{ fontSize: 16, color: 'rgba(var(--fg-rgb),0.25)' }}>›</span>}
+        {onTap && <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>}
       </div>
     </div>
   );
@@ -414,7 +414,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)', marginBottom: 10 }}>
           История пока пуста
         </div>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.7, marginBottom: 24 }}>
+        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 24 }}>
           Заполни дневник сегодня — и через 3–5 дней здесь начнёт проявляться твой паттерн: что тебя питает, что истощает
         </div>
         {onGoToToday && (
@@ -503,7 +503,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         </div>
         {onChangeDays && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', whiteSpace: 'nowrap' }}>глубина</span>
+            <span style={{ fontSize: 11, color: 'var(--text-sub)', whiteSpace: 'nowrap' }}>глубина</span>
             <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 10, padding: 3 }}>
             {DAYS_OPTIONS.map(d => {
               const active = days === d;
@@ -520,7 +520,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
 
       {/* Early-days nudge */}
       {history.length < 3 && (
-        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>
+        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'var(--text-sub)', textAlign: 'center' }}>
           Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
         </div>
       )}
@@ -549,16 +549,16 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6, cursor: onOpenChildhoodWheel ? 'pointer' : 'default' }}
               >
                 <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(var(--fg-rgb),0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
-                <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>детство</span>
-                {onOpenChildhoodWheel && <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)' }}>→</span>}
+                <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>детство</span>
+                {onOpenChildhoodWheel && <span style={{ fontSize: 11, color: 'var(--accent)' }}>→</span>}
               </div>
             ) : onOpenChildhoodWheel ? (
               <div
                 onClick={onOpenChildhoodWheel}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginBottom: 6, cursor: 'pointer' }}
               >
-                <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.5)' }}>🌱 Оценить детство</span>
-                <span style={{ fontSize: 11, color: 'rgba(167,139,250,0.35)' }}>→</span>
+                <span style={{ fontSize: 11, color: 'var(--accent)' }}>🌱 Оценить детство</span>
+                <span style={{ fontSize: 11, color: 'var(--accent)' }}>→</span>
               </div>
             ) : null}
 
@@ -571,8 +571,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   marginBottom: 10, cursor: 'pointer',
                 }}
               >
-                <span style={{ fontSize: 12, color: 'rgba(167,139,250,0.6)' }}>Понять что за этим стоит</span>
-                <span style={{ fontSize: 12, color: 'rgba(167,139,250,0.4)' }}>→</span>
+                <span style={{ fontSize: 12, color: 'var(--accent)' }}>Понять что за этим стоит</span>
+                <span style={{ fontSize: 12, color: 'var(--accent)' }}>→</span>
               </div>
             )}
 
@@ -581,7 +581,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               <div style={{
                 textAlign: 'center',
                 fontSize: 11,
-                color: 'rgba(var(--fg-rgb),0.25)',
+                color: 'var(--text-faint)',
                 marginBottom: 10,
               }}>
                 Нажми на категорию чтобы узнать что делать
@@ -599,7 +599,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить этот день</div>
-                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
                   </div>
                 </div>
               </div>
@@ -665,7 +665,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 <span style={{ fontSize: 13, color: noteText ? 'rgba(var(--fg-rgb),0.7)' : 'rgba(var(--fg-rgb),0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {noteText || 'Добавить заметку к этому дню'}
                 </span>
-                {noteText && <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.2)' }}>›</span>}
+                {noteText && <span style={{ fontSize: 14, color: 'var(--text-faint)' }}>›</span>}
               </div>
               {noteTags.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
@@ -686,7 +686,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           <div style={{ padding: '0 24px' }}>
             <div style={{
               fontSize: 11, fontWeight: 500,
-              color: 'rgba(var(--fg-rgb),0.3)',
+              color: 'var(--text-sub)',
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               marginBottom: 14,
@@ -748,7 +748,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               style={{
                 width: '100%', marginTop: 20, padding: '13px 0',
                 border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 14,
-                background: 'rgba(var(--fg-rgb),0.04)', color: 'rgba(var(--fg-rgb),0.6)',
+                background: 'rgba(var(--fg-rgb),0.04)', color: 'var(--text-sub)',
                 fontSize: 14, fontWeight: 500, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}

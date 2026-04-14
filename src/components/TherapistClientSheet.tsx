@@ -520,7 +520,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         <input
                           ref={inviteInputRef} readOnly value={inviteUrl}
                           onClick={() => inviteInputRef.current?.select()}
-                          style={{ width: '100%', boxSizing: 'border-box', marginBottom: 10, background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '9px 12px', outline: 'none', cursor: 'text', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 12, fontFamily: 'monospace' }}
+                          style={{ width: '100%', boxSizing: 'border-box', marginBottom: 10, background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '9px 12px', outline: 'none', cursor: 'text', color: 'var(--text-sub)', fontSize: 12, fontFamily: 'monospace' }}
                         />
                         <div style={{ display: 'flex', gap: 8 }}>
                           <button onClick={copyInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'rgba(6,214,160,0.15)' : 'rgba(var(--fg-rgb),0.07)', color: inviteCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -530,7 +530,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             Поделиться
                           </button>
                         </div>
-                        <button onClick={() => { setInviteUrl(''); setInviteCopied(false); }} style={{ width: '100%', marginTop: 8, background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.2)', fontSize: 12, cursor: 'pointer', padding: '4px 0' }}>
+                        <button onClick={() => { setInviteUrl(''); setInviteCopied(false); }} style={{ width: '100%', marginTop: 8, background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 12, cursor: 'pointer', padding: '4px 0' }}>
                           Создать новую
                         </button>
                       </>
@@ -558,7 +558,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         {addLoading ? '...' : 'Добавить'}
                       </button>
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', marginTop: 6 }}>Клиент должен хотя бы раз открыть приложение</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>Клиент должен хотя бы раз открыть приложение</div>
                   </>
                 )}
 
@@ -581,7 +581,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         {addLoading ? '...' : 'Создать'}
                       </button>
                     </div>
-                    <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)', marginTop: 6 }}>Для работы без Telegram: заметки, концептуализация, задания</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>Для работы без Telegram: заметки, концептуализация, задания</div>
                   </>
                 )}
 
@@ -592,9 +592,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             {/* Client list */}
             <SectionLabel mb={10}>Клиенты ({clients.length})</SectionLabel>
             {loading ? (
-              <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>Загружаю...</div>
+              <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>Загружаю...</div>
             ) : clients.length === 0 ? (
-              <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.8 }}>
+              <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.8 }}>
                 Нет подключённых клиентов.<br />Нажми <strong style={{ color: 'var(--accent)' }}>+</strong> чтобы добавить.
               </div>
             ) : clients.map(c => {
@@ -617,14 +617,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
                         {c.clientAlias ?? c.name ?? (isVirtual ? '👤 Оффлайн' : `ID ${c.telegramId}`)}
                       </div>
-                      <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
+                      <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
                         {isVirtual ? 'Без Telegram' : `${streakEmoji(c.streak)} ${c.streak} дн.${c.lastActiveDate ? ` · ${fmtDate(c.lastActiveDate)}` : ''}`}
                       </div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     {c.todayIndex !== null && <div style={{ fontSize: 15, fontWeight: 700, color: indexColor(c.todayIndex) }}>{c.todayIndex}</div>}
-                    <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontSize: 18 }}>›</span>
+                    <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
                   </div>
                 </div>
               );
@@ -646,7 +646,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 onClick={() => { switchView('list'); setRenamingAlias(false); setYsqRequested(false); }}
                 style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, cursor: 'pointer', marginLeft: -8 }}
               >
-                <span style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1 }}>‹</span>
+                <span style={{ fontSize: 26, color: 'var(--text-sub)', lineHeight: 1 }}>‹</span>
               </div>
 
               {/* Name / rename */}
@@ -664,7 +664,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {aliasSaving ? '...' : '✓'}
                     </button>
-                    <button onClick={() => { setRenamingAlias(false); setAliasError(''); }} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 13, cursor: 'pointer' }}>✕</button>
+                    <button onClick={() => { setRenamingAlias(false); setAliasError(''); }} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 13, cursor: 'pointer' }}>✕</button>
                   </div>
                   {aliasError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 4 }}>{aliasError}</div>}
                 </div>
@@ -675,11 +675,11 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   </div>
                   <button
                     onClick={() => { setAliasInput(selectedClient.clientAlias ?? selectedClient.name ?? ''); setRenamingAlias(true); }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'rgba(var(--fg-rgb),0.25)', padding: '4px', flexShrink: 0 }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: 'var(--text-faint)', padding: '4px', flexShrink: 0 }}
                   >✎</button>
                   <button
                     onClick={deleteClient} disabled={deleteLoading}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'rgba(248,113,113,0.35)', padding: '4px', flexShrink: 0 }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 16, color: 'var(--accent-red)', padding: '4px', flexShrink: 0 }}
                     title="Удалить клиента"
                   >🗑</button>
                 </div>
@@ -713,15 +713,15 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
                           />
                           <button onClick={async () => { await saveSessionInfo({ therapyStartDate: localStartDate || null }); setEditingStartDate(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
-                          <button onClick={() => setEditingStartDate(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                          <button onClick={() => setEditingStartDate(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                         </div>
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => { setLocalStartDate(selectedClient.therapyStartDate ?? selectedClient.relationCreatedAt?.slice(0, 10) ?? ''); setEditingStartDate(true); }}>
-                          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)' }}>
+                          <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>
                             {effectiveStart ? `С ${fmtDate(effectiveStart.slice(0, 10))}` : 'Начало не указано'}
                           </span>
-                          {duration && <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)' }}>· {duration}</span>}
-                          <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                          {duration && <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>· {duration}</span>}
+                          <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>✎</span>
                         </div>
                       )}
                     </div>
@@ -745,18 +745,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                           >{DAY_NAMES[d]}</button>
                         ))}
                         <button onClick={async () => { await saveSessionInfo({ meetingDays: localMeetingDays }); setEditingDays(false); }} disabled={sessionInfoSaving} style={{ padding: '4px 10px', borderRadius: 20, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✓</button>
-                        <button onClick={() => setEditingDays(false)} style={{ padding: '4px 8px', borderRadius: 20, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                        <button onClick={() => setEditingDays(false)} style={{ padding: '4px 8px', borderRadius: 20, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                       </div>
                     ) : (
                       <div style={{ display: 'flex', gap: 4, alignItems: 'center', cursor: 'pointer' }} onClick={() => { setLocalMeetingDays(selectedClient.meetingDays ?? []); setEditingDays(true); }}>
                         {displayDays.length === 0 ? (
-                          <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.25)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>дни встреч +</span>
+                          <span style={{ fontSize: 12, color: 'var(--text-faint)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>дни встреч +</span>
                         ) : (
                           <>
                             {[1,2,3,4,5,6,0].filter(d => displayDays.includes(d)).map(d => (
                               <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'rgba(167,139,250,0.15)', color: 'var(--accent)' }}>{DAY_NAMES[d]}</span>
                             ))}
-                            <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>✎</span>
                           </>
                         )}
                       </div>
@@ -771,18 +771,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
                           />
                           <button onClick={async () => { await saveSessionInfo({ nextSession: localNextSession || null }); setEditingNextSession(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
-                          <button onClick={() => setEditingNextSession(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
+                          <button onClick={() => setEditingNextSession(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                         </div>
                       ) : (
                         <div style={{ marginLeft: 'auto', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }} onClick={() => { setLocalNextSession(selectedClient.nextSession ?? ''); setEditingNextSession(true); }}>
                           {selectedClient.nextSession ? (
                             <>
-                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>след.</span>
+                              <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>след.</span>
                               <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.7)' }}>{nextSessionLabel(selectedClient.nextSession)}</span>
-                              <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
+                              <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>✎</span>
                             </>
                           ) : (
-                            <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.25)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>следующая +</span>
+                            <span style={{ fontSize: 12, color: 'var(--text-faint)', borderBottom: '1px dashed rgba(var(--fg-rgb),0.2)' }}>следующая +</span>
                           )}
                         </div>
                       )
@@ -806,7 +806,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     <>
                       {hasGoals && (
                         <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 5 }}>Цель терапии</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 5 }}>Цель терапии</div>
                           <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.5 }}>
                             {((concept?.goals || (localConcept.goals as string)) ?? '').slice(0, 160)}
                             {((concept?.goals || (localConcept.goals as string)) ?? '').length > 160 ? '...' : ''}
@@ -815,7 +815,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       )}
                       {hasSchemas && (
                         <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 6 }}>Схемы ({activeSchemaIds.length})</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 6 }}>Схемы ({activeSchemaIds.length})</div>
                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                             {activeSchemaIds.map(id => {
                               const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
@@ -827,7 +827,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       )}
                       {hasModes && (
                         <div style={{ marginBottom: hasTransitions ? 12 : 0 }}>
-                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 6 }}>Карта режимов</div>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 6 }}>Карта режимов</div>
                           {MODE_GROUPS.map(group => {
                             const groupModes = group.items.filter(m => activeModeIds.includes(m.id));
                             if (groupModes.length === 0) return null;
@@ -844,8 +844,8 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       )}
                       {hasTransitions && (
                         <div>
-                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.3)', textTransform: 'uppercase', marginBottom: 5 }}>Переходы режимов</div>
-                          <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.5 }}>
+                          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 5 }}>Переходы режимов</div>
+                          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
                             {((concept?.modeTransitions || (localConcept.modeTransitions as string)) ?? '').slice(0, 200)}
                             {((concept?.modeTransitions || (localConcept.modeTransitions as string)) ?? '').length > 200 ? '...' : ''}
                           </div>
@@ -857,7 +857,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     </>
                   ) : (
                     <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 10 }}>Концептуализация не заполнена</div>
+                      <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>Концептуализация не заполнена</div>
                       <button onClick={() => setShowConceptSheet(true)} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                         Заполнить концептуализацию
                       </button>
@@ -873,25 +873,25 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 <span style={{ fontSize: 18 }}>📋</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Задания</div>
-                  {clientTasks.filter(t => t.done === null && !t.doneToday).length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{clientTasks.filter(t => t.done === null && !t.doneToday).length} активных</div>}
+                  {clientTasks.filter(t => t.done === null && !t.doneToday).length > 0 && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{clientTasks.filter(t => t.done === null && !t.doneToday).length} активных</div>}
                 </div>
-                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+                <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
               </div>
               <div onClick={() => setShowNotesSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
                 <span style={{ fontSize: 18 }}>📝</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Заметки сессий</div>
-                  {notes.length > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{notes.length} заметок</div>}
+                  {notes.length > 0 && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{notes.length} заметок</div>}
                 </div>
-                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+                <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
               </div>
               <div onClick={() => setShowConceptSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
                 <span style={{ fontSize: 18 }}>🗂</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Концептуализация</div>
-                  {concept?.updatedAt && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>Обновлено {fmtDate(concept.updatedAt.slice(0, 10))}</div>}
+                  {concept?.updatedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>Обновлено {fmtDate(concept.updatedAt.slice(0, 10))}</div>}
                 </div>
-                <span style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18 }}>›</span>
+                <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
               </div>
             </div>
 
@@ -906,13 +906,13 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📋 Задания</div>
             <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 12 }}>
               {clientTasks.length === 0 ? (
-                <div style={{ padding: '20px 16px', fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', textAlign: 'center' }}>Нет назначенных заданий</div>
+                <div style={{ padding: '20px 16px', fontSize: 13, color: 'var(--text-sub)', textAlign: 'center' }}>Нет назначенных заданий</div>
               ) : clientTasks.map((task, i) => (
                 <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 16px', borderTop: i > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
                   <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>{task.done === true ? '✅' : task.done === false ? '❌' : task.doneToday ? '✅' : '⏳'}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.4 }}>{task.text}</div>
-                    <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 3 }}>
                       {task.dueDate ? `Срок: ${fmtDate(task.dueDate)}` : fmtDate(task.createdAt.slice(0, 10))}
                     </div>
                     {task.progress !== undefined && task.targetDays && (
@@ -920,7 +920,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
                           <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: 'var(--accent)', borderRadius: 4 }} />
                         </div>
-                        <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-sub)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
                       </div>
                     )}
                   </div>
@@ -960,12 +960,12 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               </div>
             </div>
             {notes.length === 0 ? (
-              <div style={{ color: 'rgba(var(--fg-rgb),0.25)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
+              <div style={{ color: 'var(--text-faint)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
             ) : notes.map(note => (
               <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{fmtDate(note.date)}</span>
-                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.35)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+                  <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{fmtDate(note.date)}</span>
+                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'var(--accent-red)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
               </div>
@@ -999,16 +999,16 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(79,163,247,0.15)', color: 'rgba(79,163,247,0.9)' }}>{schema.emoji} {schema.name}</span> : null;
                   })}
                 </div>
-                {clientData?.ysqCompletedAt && <div style={{ fontSize: 10, color: 'rgba(var(--fg-rgb),0.25)', marginTop: 6 }}>Пройден: {fmtDate(clientData.ysqCompletedAt.slice(0, 10))}</div>}
+                {clientData?.ysqCompletedAt && <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 6 }}>Пройден: {fmtDate(clientData.ysqCompletedAt.slice(0, 10))}</div>}
               </div>
             )}
             {selfSchemaIds.length > 0 && (
               <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 8 }}>Схемы клиента (самооценка)</div>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 8 }}>Схемы клиента (самооценка)</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                   {selfSchemaIds.map(id => {
                     const schema = SCHEMA_DOMAINS.flatMap(d => d.schemas).find(s => s.id === id);
-                    return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)' }}>{schema.emoji} {schema.name}</span> : null;
+                    return schema ? <span key={id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)' }}>{schema.emoji} {schema.name}</span> : null;
                   })}
                 </div>
               </div>
@@ -1050,7 +1050,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             <div style={{ marginTop: 8 }}>
               {CONCEPT_FIELDS.map(({ key, label, placeholder }) => (
                 <div key={key} style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(var(--fg-rgb),0.35)', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-sub)', textTransform: 'uppercase', marginBottom: 5 }}>{label}</div>
                   <textarea
                     value={(localConcept[key] as string) ?? ''}
                     onChange={e => patchConcept({ [key]: e.target.value })}
@@ -1080,7 +1080,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               <div style={{ marginTop: 20 }}>
                 <button
                   onClick={() => setShowHistory(h => !h)}
-                  style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
                 >
                   <span>{showHistory ? '▲' : '▼'}</span>
                   История изменений ({(concept.history as unknown[]).length})
@@ -1105,7 +1105,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       return (
                         <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.4)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-sub)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
                             <button
                               onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
                               style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
@@ -1132,8 +1132,8 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             </div>
                           )}
                           {textFields.map(({ label, val }) => (
-                            <div key={label} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', marginBottom: 3 }}>
-                              <span style={{ color: 'rgba(var(--fg-rgb),0.2)', fontWeight: 600 }}>{label}: </span>
+                            <div key={label} style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 3 }}>
+                              <span style={{ color: 'var(--text-faint)', fontWeight: 600 }}>{label}: </span>
                               {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
                             </div>
                           ))}
