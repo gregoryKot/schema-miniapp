@@ -121,3 +121,57 @@ button {
   from { transform: translateY(100%); }
   to   { transform: translateY(0%); }
 }
+
+/* ── Utility classes — use instead of inline color styles ────────────────
+   Example: <div className="text-sub">…</div>
+   instead of: <div style={{ color: 'var(--text-sub)' }}>…</div>
+*/
+
+/* Text colors */
+.text-main  { color: var(--text); }
+.text-sub   { color: var(--text-sub); }
+.text-faint { color: var(--text-faint); }
+
+/* Accent text */
+.text-accent        { color: var(--accent); }
+.text-accent-green  { color: var(--accent-green); }
+.text-accent-yellow { color: var(--accent-yellow); }
+.text-accent-red    { color: var(--accent-red); }
+.text-accent-blue   { color: var(--accent-blue); }
+.text-accent-orange { color: var(--accent-orange); }
+.text-accent-indigo { color: var(--accent-indigo); }
+
+/* Typography scale */
+.text-xs  { font-size: 11px; }
+.text-sm  { font-size: 13px; }
+.text-md  { font-size: 15px; }
+.text-lg  { font-size: 17px; }
+.text-xl  { font-size: 20px; }
+.text-2xl { font-size: 24px; }
+.text-3xl { font-size: 28px; }
+
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold   { font-weight: 700; }
+.font-black  { font-weight: 800; }
+
+/* Card backgrounds */
+.card {
+  background: rgba(var(--fg-rgb),0.04);
+  border: 1px solid rgba(var(--fg-rgb),0.07);
+  border-radius: 16px;
+}
+.card-accent {
+  background: rgba(var(--fg-rgb),0.04);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+}
+
+/* Section label (uppercase small header inside a card) */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
