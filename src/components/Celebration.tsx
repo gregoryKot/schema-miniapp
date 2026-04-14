@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-const COLORS = ['#ff6b9d', 'var(--accent-yellow)', '#06d6a0', 'var(--accent)', '#4fa3f7', '#ff9a3c'];
+// Canvas fillStyle не понимает CSS-переменные — только hex
+const COLORS = ['#ff6b9d', '#facc15', '#06d6a0', '#a78bfa', '#4fa3f7', '#ff9a3c'];
 
 const MILESTONE_TEXT: Record<number, string> = {
   3:   'Хорошее начало — паттерн уже виден',
@@ -91,9 +92,10 @@ export function Celebration({ streak, onDone }: Props) {
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} />
       <div style={{
         position: 'relative', zIndex: 1, textAlign: 'center',
-        background: 'rgba(22,24,33,0.92)', borderRadius: 24,
+        background: 'var(--bg)', borderRadius: 24,
         padding: '32px 36px', margin: '0 32px',
-        border: '1px solid rgba(var(--fg-rgb),0.08)',
+        border: '1px solid rgba(var(--fg-rgb),0.12)',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.35)',
         animation: 'sheet-up 400ms cubic-bezier(0.34,1.56,0.64,1)',
       }}>
         <div style={{ fontSize: 56, lineHeight: 1, marginBottom: 12 }}>

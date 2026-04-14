@@ -4,7 +4,7 @@ import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './YSQTestSheet';
 import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { useSafeTop } from '../utils/safezone';
-import { getTheme, toggleTheme, Theme } from '../utils/theme';
+import { getTheme, toggleTheme, resetToSystemTheme, Theme } from '../utils/theme';
 
 const TIMEZONES = [
   { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
@@ -186,9 +186,17 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                   <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
-                      <span style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>
-                        {theme === 'dark' ? 'Тёмная тема' : 'Светлая тема'}
-                      </span>
+                      <div>
+                        <div style={{ fontSize: 14, color: 'var(--text)', fontWeight: 500 }}>
+                          {theme === 'dark' ? 'Тёмная тема' : 'Светлая тема'}
+                        </div>
+                        <div
+                          onClick={() => setTheme(resetToSystemTheme())}
+                          style={{ fontSize: 11, color: 'var(--accent)', cursor: 'pointer', marginTop: 1 }}
+                        >
+                          Авто (по Telegram) →
+                        </div>
+                      </div>
                     </div>
                     <div
                       onClick={() => setTheme(toggleTheme())}
