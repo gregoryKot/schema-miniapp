@@ -28,7 +28,7 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
             height: 56,
             borderRadius: '50%',
             border: 'none',
-            background: '#a78bfa',
+            background: 'var(--accent)',
             cursor: 'pointer',
             boxShadow: '0 4px 16px rgba(167,139,250,0.45)',
             WebkitTapHighlightColor: 'transparent',

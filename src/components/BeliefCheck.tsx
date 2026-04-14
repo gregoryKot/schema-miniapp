@@ -93,7 +93,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
               </>
             )}
           </div>
-          <button onClick={onClose} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
             Готово
           </button>
         </div>
@@ -111,12 +111,12 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
         {/* Progress */}
         <div style={{ display: 'flex', gap: 5, marginBottom: 6 }}>
           {STEP_ORDER.map((_, i) => (
-            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= stepIndex ? '#60a5fa' : 'rgba(var(--fg-rgb),0.1)', transition: 'background 0.2s' }} />
+            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= stepIndex ? 'var(--accent-blue)' : 'rgba(var(--fg-rgb),0.1)', transition: 'background 0.2s' }} />
           ))}
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
           {STEP_LABELS.map((label, i) => (
-            <div key={i} style={{ fontSize: 9, color: i === stepIndex ? '#60a5fa' : 'rgba(var(--fg-rgb),0.2)', fontWeight: i === stepIndex ? 700 : 400, transition: 'color 0.2s', textAlign: 'center', flex: 1 }}>
+            <div key={i} style={{ fontSize: 9, color: i === stepIndex ? 'var(--accent-blue)' : 'rgba(var(--fg-rgb),0.2)', fontWeight: i === stepIndex ? 700 : 400, transition: 'color 0.2s', textAlign: 'center', flex: 1 }}>
               {label}
             </div>
           ))}
@@ -146,7 +146,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
               rows={4}
               style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${belief.trim() ? 'rgba(96,165,250,0.3)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
             />
-            <button onClick={() => setStep('for')} disabled={!belief.trim()} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: belief.trim() ? 'rgba(96,165,250,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: belief.trim() ? '#60a5fa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: belief.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}>
+            <button onClick={() => setStep('for')} disabled={!belief.trim()} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: belief.trim() ? 'rgba(96,165,250,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: belief.trim() ? 'var(--accent-blue)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: belief.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}>
               Дальше →
             </button>
           </>
@@ -176,9 +176,9 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
                 placeholder="Добавить..."
                 style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
               />
-              <button onClick={addFor} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.15)', color: '#f87171', fontSize: 16, cursor: 'pointer' }}>+</button>
+              <button onClick={addFor} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.15)', color: 'var(--accent-red)', fontSize: 16, cursor: 'pointer' }}>+</button>
             </div>
-            <button onClick={() => setStep('against')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
+            <button onClick={() => setStep('against')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
               Дальше →
             </button>
           </>
@@ -208,9 +208,9 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
                 placeholder="Добавить..."
                 style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
               />
-              <button onClick={addAgainst} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: 16, cursor: 'pointer' }}>+</button>
+              <button onClick={addAgainst} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 16, cursor: 'pointer' }}>+</button>
             </div>
-            <button onClick={() => setStep('reframe')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
+            <button onClick={() => setStep('reframe')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
               Дальше →
             </button>
           </>
@@ -231,7 +231,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
               rows={4}
               style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${reframe.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
             />
-            <button onClick={handleSave} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 16 }}>
+            <button onClick={handleSave} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 16 }}>
               Сохранить
             </button>
           </>

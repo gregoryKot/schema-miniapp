@@ -50,8 +50,8 @@ function streakEmoji(s: number) {
 }
 function indexColor(v: number) {
   if (v >= 7) return '#06d6a0';
-  if (v >= 4) return '#ffd166';
-  return '#f87171';
+  if (v >= 4) return 'var(--accent-yellow)';
+  return 'var(--accent-red)';
 }
 
 const CONCEPT_FIELDS: { key: keyof ClientConceptualization; label: string; placeholder: string }[] = [
@@ -469,7 +469,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 style={{
                   width: 36, height: 36, borderRadius: 18, border: 'none',
                   background: addMode ? 'rgba(var(--fg-rgb),0.08)' : 'rgba(167,139,250,0.2)',
-                  color: addMode ? 'rgba(var(--fg-rgb),0.5)' : '#a78bfa',
+                  color: addMode ? 'rgba(var(--fg-rgb),0.5)' : 'var(--accent)',
                   fontSize: addMode ? 18 : 22, fontWeight: 300, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.15s ease',
@@ -495,7 +495,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       style={{
                         flex: 1, padding: '9px 4px', borderRadius: 12, border: 'none',
                         background: addMode === mode ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
-                        color: addMode === mode ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)',
+                        color: addMode === mode ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)',
                         fontSize: 12, fontWeight: addMode === mode ? 600 : 400, cursor: 'pointer',
                         transition: 'all 0.15s ease',
                       }}
@@ -511,7 +511,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     {!inviteUrl ? (
                       <button
                         onClick={createInvite} disabled={inviteLoading}
-                        style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.2)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
+                        style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.2)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
                       >
                         {inviteLoading ? 'Создаю...' : 'Создать ссылку'}
                       </button>
@@ -526,7 +526,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                           <button onClick={copyInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'rgba(6,214,160,0.15)' : 'rgba(var(--fg-rgb),0.07)', color: inviteCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             {inviteCopied ? '✓ Скопировано' : 'Скопировать'}
                           </button>
-                          <button onClick={shareInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                          <button onClick={shareInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             Поделиться
                           </button>
                         </div>
@@ -549,7 +549,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         placeholder="Telegram ID клиента"
                         inputMode="numeric"
                         autoFocus
-                        style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${addError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
+                        style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${addError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
                       />
                       <button
                         onClick={addByTelegramId} disabled={addLoading || !addInput.trim()}
@@ -572,11 +572,11 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         onKeyDown={e => e.key === 'Enter' && addVirtualClient()}
                         placeholder="Имя клиента"
                         autoFocus
-                        style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${addError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
+                        style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${addError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', outline: 'none', color: 'var(--text)', fontSize: 14 }}
                       />
                       <button
                         onClick={addVirtualClient} disabled={addLoading || !addInput.trim()}
-                        style={{ padding: '9px 16px', borderRadius: 10, border: 'none', background: addInput.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.05)', color: addInput.trim() ? '#fff' : 'rgba(var(--fg-rgb),0.3)', fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'default', flexShrink: 0 }}
+                        style={{ padding: '9px 16px', borderRadius: 10, border: 'none', background: addInput.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.05)', color: addInput.trim() ? '#fff' : 'rgba(var(--fg-rgb),0.3)', fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'default', flexShrink: 0 }}
                       >
                         {addLoading ? '...' : 'Создать'}
                       </button>
@@ -585,7 +585,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   </>
                 )}
 
-                {addError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 8 }}>{addError}</div>}
+                {addError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 8 }}>{addError}</div>}
               </div>
             )}
 
@@ -595,7 +595,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>Загружаю...</div>
             ) : clients.length === 0 ? (
               <div style={{ color: 'rgba(var(--fg-rgb),0.3)', fontSize: 14, textAlign: 'center', paddingTop: 20, lineHeight: 1.8 }}>
-                Нет подключённых клиентов.<br />Нажми <strong style={{ color: '#a78bfa' }}>+</strong> чтобы добавить.
+                Нет подключённых клиентов.<br />Нажми <strong style={{ color: 'var(--accent)' }}>+</strong> чтобы добавить.
               </div>
             ) : clients.map(c => {
               const isToday = c.lastActiveDate === today;
@@ -661,12 +661,12 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       maxLength={100}
                       style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 10, padding: '7px 10px', outline: 'none', color: 'var(--text)', fontSize: 15 }}
                     />
-                    <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    <button onClick={saveAlias} disabled={aliasSaving} style={{ padding: '7px 12px', borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {aliasSaving ? '...' : '✓'}
                     </button>
                     <button onClick={() => { setRenamingAlias(false); setAliasError(''); }} style={{ padding: '7px 10px', borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 13, cursor: 'pointer' }}>✕</button>
                   </div>
-                  {aliasError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 4 }}>{aliasError}</div>}
+                  {aliasError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 4 }}>{aliasError}</div>}
                 </div>
               ) : (
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -687,7 +687,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             </div>
 
               {/* Delete error */}
-              {deleteError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 4, textAlign: 'center' }}>{deleteError}</div>}
+              {deleteError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 4, textAlign: 'center' }}>{deleteError}</div>}
 
               {/* Thin separator */}
               <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.06)', margin: '10px -20px 0' }} />
@@ -712,7 +712,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             type="date" value={localStartDate} onChange={e => setLocalStartDate(e.target.value)} autoFocus
                             style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
                           />
-                          <button onClick={async () => { await saveSessionInfo({ therapyStartDate: localStartDate || null }); setEditingStartDate(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
+                          <button onClick={async () => { await saveSessionInfo({ therapyStartDate: localStartDate || null }); setEditingStartDate(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
                           <button onClick={() => setEditingStartDate(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                         </div>
                       ) : (
@@ -741,10 +741,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         {[1,2,3,4,5,6,0].map(d => (
                           <button key={d}
                             onClick={() => setLocalMeetingDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])}
-                            style={{ padding: '4px 9px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, background: localMeetingDays.includes(d) ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.07)', color: localMeetingDays.includes(d) ? '#a78bfa' : 'rgba(var(--fg-rgb),0.4)' }}
+                            style={{ padding: '4px 9px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, background: localMeetingDays.includes(d) ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.07)', color: localMeetingDays.includes(d) ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)' }}
                           >{DAY_NAMES[d]}</button>
                         ))}
-                        <button onClick={async () => { await saveSessionInfo({ meetingDays: localMeetingDays }); setEditingDays(false); }} disabled={sessionInfoSaving} style={{ padding: '4px 10px', borderRadius: 20, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✓</button>
+                        <button onClick={async () => { await saveSessionInfo({ meetingDays: localMeetingDays }); setEditingDays(false); }} disabled={sessionInfoSaving} style={{ padding: '4px 10px', borderRadius: 20, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✓</button>
                         <button onClick={() => setEditingDays(false)} style={{ padding: '4px 8px', borderRadius: 20, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                       </div>
                     ) : (
@@ -754,7 +754,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         ) : (
                           <>
                             {[1,2,3,4,5,6,0].filter(d => displayDays.includes(d)).map(d => (
-                              <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'rgba(167,139,250,0.15)', color: '#a78bfa' }}>{DAY_NAMES[d]}</span>
+                              <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'rgba(167,139,250,0.15)', color: 'var(--accent)' }}>{DAY_NAMES[d]}</span>
                             ))}
                             <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.2)' }}>✎</span>
                           </>
@@ -770,7 +770,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             type="datetime-local" value={localNextSession} onChange={e => setLocalNextSession(e.target.value)} autoFocus
                             style={{ background: 'rgba(var(--fg-rgb),0.07)', border: '1px solid rgba(var(--fg-rgb),0.15)', borderRadius: 8, padding: '5px 8px', outline: 'none', color: 'var(--text)', fontSize: 13 }}
                           />
-                          <button onClick={async () => { await saveSessionInfo({ nextSession: localNextSession || null }); setEditingNextSession(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#a78bfa', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
+                          <button onClick={async () => { await saveSessionInfo({ nextSession: localNextSession || null }); setEditingNextSession(false); }} disabled={sessionInfoSaving} style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>✓</button>
                           <button onClick={() => setEditingNextSession(false)} style={{ padding: '5px 8px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 12, cursor: 'pointer' }}>✕</button>
                         </div>
                       ) : (
@@ -788,7 +788,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       )
                     )}
                   </div>
-                  {sessionInfoError && <div style={{ fontSize: 11, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{sessionInfoError}</div>}
+                  {sessionInfoError && <div style={{ fontSize: 11, color: 'var(--accent-red)', marginTop: 6, textAlign: 'center' }}>{sessionInfoError}</div>}
                 </div>
               );
             })()}
@@ -851,14 +851,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                           </div>
                         </div>
                       )}
-                      <button onClick={() => setShowConceptSheet(true)} style={{ marginTop: 12, background: 'none', border: 'none', color: '#a78bfa', fontSize: 12, cursor: 'pointer', padding: 0, fontWeight: 500 }}>
+                      <button onClick={() => setShowConceptSheet(true)} style={{ marginTop: 12, background: 'none', border: 'none', color: 'var(--accent)', fontSize: 12, cursor: 'pointer', padding: 0, fontWeight: 500 }}>
                         Редактировать концептуализацию →
                       </button>
                     </>
                   ) : (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.3)', marginBottom: 10 }}>Концептуализация не заполнена</div>
-                      <button onClick={() => setShowConceptSheet(true)} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      <button onClick={() => setShowConceptSheet(true)} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                         Заполнить концептуализацию
                       </button>
                     </div>
@@ -918,7 +918,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     {task.progress !== undefined && task.targetDays && (
                       <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                         <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
-                          <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: '#a78bfa', borderRadius: 4 }} />
+                          <div style={{ width: `${Math.min(task.progress / task.targetDays, 1) * 100}%`, height: '100%', background: 'var(--accent)', borderRadius: 4 }} />
                         </div>
                         <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', flexShrink: 0 }}>{task.progress}/{task.targetDays}</span>
                       </div>
@@ -929,7 +929,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             </div>
             <button
               onClick={() => setShowAssign(true)}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
             >
               + Назначить задание
             </button>
@@ -950,10 +950,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 style={{ width: '100%', boxSizing: 'border-box', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--text)', fontSize: 13, lineHeight: 1.5, fontFamily: 'inherit' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
-                {noteError ? <div style={{ fontSize: 12, color: '#f87171' }}>{noteError}</div> : <div />}
+                {noteError ? <div style={{ fontSize: 12, color: 'var(--accent-red)' }}>{noteError}</div> : <div />}
                 <button
                   onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
-                  style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
+                  style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
                 >
                   {noteSaving ? 'Сохраняю...' : 'Сохранить'}
                 </button>
@@ -987,7 +987,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 >
                   {ysqRequested ? '✓ Запрос отправлен' : '📋 Запросить тест YSQ'}
                 </button>
-                {ysqError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
+                {ysqError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 6, textAlign: 'center' }}>{ysqError}</div>}
               </div>
             )}
             {ysqSchemaIds.length > 0 && (
@@ -1067,7 +1067,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             >
               {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
             </button>
-            {conceptError && <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
+            {conceptError && <div style={{ fontSize: 12, color: 'var(--accent-red)', textAlign: 'center', marginTop: 6 }}>{conceptError}</div>}
             {concept && (
               <button
                 onClick={handleExport}
@@ -1108,7 +1108,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                             <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.4)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
                             <button
                               onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
-                              style={{ fontSize: 11, color: '#a78bfa', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
+                              style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
                             >Восстановить</button>
                           </div>
                           {snapSchemas.length > 0 && (

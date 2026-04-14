@@ -25,7 +25,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
     : null;
 
   const question = lowestNeed ? NEED_DATA[lowestNeed.id]?.question : null;
-  const color = lowestNeed ? (COLORS[lowestNeed.id] ?? '#a78bfa') : '#a78bfa';
+  const color = lowestNeed ? (COLORS[lowestNeed.id] ?? 'var(--accent)') : 'var(--accent)';
 
   useEffect(() => {
     api.getNote(date).then(r => { setText(r.text ?? ''); setLoaded(true); });
@@ -100,7 +100,7 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
             disabled={saving}
             style={{
               flex: 2, padding: '13px 0', border: 'none', borderRadius: 12,
-              background: text.trim() ? '#a78bfa' : 'rgba(167,139,250,0.4)',
+              background: text.trim() ? 'var(--accent)' : 'rgba(167,139,250,0.4)',
               color: 'var(--text)',
               fontSize: 15, fontWeight: 600, cursor: 'pointer',
             }}

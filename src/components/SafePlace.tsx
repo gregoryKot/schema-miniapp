@@ -68,7 +68,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
             <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Изменить
             </button>
-            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Готово
             </button>
           </div>
@@ -113,7 +113,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
         <button
           onClick={handleSave}
           disabled={!text.trim()}
-          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'rgba(52,211,153,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: text.trim() ? '#34d399' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
+          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'rgba(52,211,153,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: text.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
         >
           Сохранить
         </button>

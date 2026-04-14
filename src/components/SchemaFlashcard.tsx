@@ -105,7 +105,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
   const progressBar = (
     <div style={{ display: 'flex', gap: 5, marginBottom: 20 }}>
       {STEPS.map((s, i) => (
-        <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= stepIndex ? '#a78bfa' : 'rgba(var(--fg-rgb),0.1)', transition: 'background 0.2s' }} />
+        <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= stepIndex ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)', transition: 'background 0.2s' }} />
       ))}
     </div>
   );
@@ -202,7 +202,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           {onOpenTracker && (
             <button
               onClick={() => { onClose(); setTimeout(onOpenTracker!, 100); }}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: '1px solid rgba(167,139,250,0.2)', background: 'transparent', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: '1px solid rgba(167,139,250,0.2)', background: 'transparent', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
             >
               Открыть трекер потребностей →
             </button>
@@ -211,7 +211,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
             <button onClick={handleNew} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Ещё одну
             </button>
-            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Готово
             </button>
           </div>
@@ -238,7 +238,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {['Вдох через нос — 4 секунды', 'Задержи — 2 секунды', 'Медленный выдох — 6 секунд'].map((t, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#60a5fa', fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--accent-blue)', fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
                   <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)' }}>{t}</div>
                 </div>
               ))}
@@ -249,7 +249,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           </div>
           <button
             onClick={() => setGrounded(true)}
-            style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: '#60a5fa', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+            style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
           >
             Стало чуть лучше → разобраться
           </button>
@@ -356,7 +356,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
             </button>
             <button
               onClick={() => setStep('need')}
-              style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.2)', color: '#a78bfa', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.2)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >
               Дальше →
             </button>
@@ -453,7 +453,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           <button
             onClick={save}
             disabled={!action.trim()}
-            style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: action.trim() ? 'rgba(52,211,153,0.2)' : 'rgba(var(--fg-rgb),0.07)', color: action.trim() ? '#34d399' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: action.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}
+            style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: action.trim() ? 'rgba(52,211,153,0.2)' : 'rgba(var(--fg-rgb),0.07)', color: action.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: action.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}
           >
             Сохранить
           </button>

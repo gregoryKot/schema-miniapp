@@ -13,9 +13,9 @@ export interface DayHistory {
 export const COLORS: Record<string, string> = {
   attachment: '#ff6b9d',
   autonomy:   '#4fa3f7',
-  expression: '#ffd166',
+  expression: 'var(--accent-yellow)',
   play:       '#06d6a0',
-  limits:     '#a78bfa',
+  limits:     'var(--accent)',
 };
 
 export const YESTERDAY: Record<string, number> = {

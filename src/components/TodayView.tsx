@@ -110,7 +110,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
         onClick={onDismiss}
         style={{
           width: '100%', padding: '10px 0', border: 'none', borderRadius: 10,
-          background: 'rgba(167,139,250,0.2)', color: '#a78bfa',
+          background: 'rgba(167,139,250,0.2)', color: 'var(--accent)',
           fontSize: 13, fontWeight: 600, cursor: 'pointer',
         }}
       >
@@ -290,7 +290,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
 
       {/* Note button + auto-save status */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minHeight: 18 }}>
-        <div style={{ fontSize: 12, color: saveError ? '#f87171' : 'rgba(var(--fg-rgb),0.3)' }}>
+        <div style={{ fontSize: 12, color: saveError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.3)' }}>
           {saveError ? 'Ошибка сохранения — потяни слайдер ещё раз' : lastSavedAt && `Сохранено ${lastSavedAt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}`}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -331,7 +331,7 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
         >
           <span style={{ fontSize: 20, flexShrink: 0 }}>🗂</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#a78bfa' }}>Что тебе помогает?</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Что тебе помогает?</div>
             <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Добавь практики — будут под рукой в нужный момент</div>
           </div>
           <button

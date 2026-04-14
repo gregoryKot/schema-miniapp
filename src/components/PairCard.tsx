@@ -10,8 +10,8 @@ interface Props {
 
 function indexColor(v: number): string {
   if (v >= 7) return '#06d6a0';
-  if (v >= 4) return '#ffd166';
-  return '#f87171';
+  if (v >= 4) return 'var(--accent-yellow)';
+  return 'var(--accent-red)';
 }
 
 export function PairCard({ partners, pendingCode, showInvite, onOpen, onDismissInvite }: Props) {

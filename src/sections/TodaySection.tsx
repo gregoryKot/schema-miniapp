@@ -116,7 +116,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
             }}
           >
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#a78bfa', marginBottom: 2 }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent)', marginBottom: 2 }}>
                 👨‍⚕️ Кабинет терапевта
               </div>
               <div style={{ fontSize: 12, color: 'rgba(167,139,250,0.5)' }}>
@@ -162,7 +162,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               <>
                 <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
                 <div>
-                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? '#fb923c' : 'rgba(var(--fg-rgb),0.3)' }}>{streak}</div>
+                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? 'var(--accent-orange)' : 'rgba(var(--fg-rgb),0.3)' }}>{streak}</div>
                   <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 3, fontWeight: 500 }}>
                     {plural(streak, 'день', 'дня', 'дней')}
                   </div>
@@ -214,7 +214,7 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
               Дневник
             </div>
             {diariesLoaded && (
-              <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500 }}>
+              <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>
                 {recentDiaries.length > 0 ? 'Все записи →' : 'Открыть →'}
               </div>
             )}
@@ -332,7 +332,7 @@ const STEPS: StepDef[] = [
     emoji: '📔',
     title: 'Сделай первую запись в дневнике',
     description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии',
-    actionLabel: 'Открыть дневник',
+    actionLabel: 'Открыть СхемаЛаб',
     canSkip: false,
     isDone: (p) => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary),
   },
@@ -451,7 +451,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
             return (
               <div key={s.id} style={{
                 width: isCurrent ? 18 : 8, height: 8, borderRadius: 4,
-                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? '#a78bfa' : 'rgba(var(--fg-rgb),0.12)',
+                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.12)',
                 transition: 'all 0.3s ease',
               }} />
             );

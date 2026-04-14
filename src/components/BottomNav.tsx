@@ -7,9 +7,9 @@ interface Props {
 }
 
 const TABS: { id: Section; label: string; activeColor: string }[] = [
-  { id: 'today',   label: 'Сегодня', activeColor: '#a78bfa' },
-  { id: 'help',    label: 'Помощь',  activeColor: '#f87171' },
-  { id: 'schemas', label: 'Схемы',   activeColor: '#60a5fa' },
+  { id: 'today',   label: 'Сегодня', activeColor: 'var(--accent)' },
+  { id: 'help',    label: 'Помощь',  activeColor: 'var(--accent-red)' },
+  { id: 'schemas', label: 'Схемы',   activeColor: 'var(--accent-blue)' },
   { id: 'profile', label: 'Я',       activeColor: '#f472b6' },
 ];
 

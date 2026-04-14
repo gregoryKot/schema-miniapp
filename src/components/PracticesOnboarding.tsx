@@ -71,7 +71,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
   }
 
   const currentNeed = step !== 'intro' ? needs[step as number] : null;
-  const color = currentNeed ? COLORS[currentNeed.id] ?? '#888' : '#a78bfa';
+  const color = currentNeed ? COLORS[currentNeed.id] ?? '#888' : 'var(--accent)';
   const emoji = currentNeed ? NEED_DATA[currentNeed.id]?.emoji ?? '' : '';
   const total = needs.length;
   const progress = step === 'intro' ? 0 : ((step as number) + 1) / total;
@@ -97,7 +97,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
             borderRadius: 14, padding: '14px 16px', marginBottom: 24,
           }}>
             <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.6)', lineHeight: 1.7 }}>
-              В схема-терапии это называют <span style={{ color: '#a78bfa', fontWeight: 500 }}>копинг-карточками</span> — маленькими напоминаниями себе о том, что реально работает. Не воля, а конкретный шаг.
+              В схема-терапии это называют <span style={{ color: 'var(--accent)', fontWeight: 500 }}>копинг-карточками</span> — маленькими напоминаниями себе о том, что реально работает. Не воля, а конкретный шаг.
             </div>
           </div>
 
@@ -207,7 +207,7 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
           />
 
           {saveError && (
-            <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 8 }}>
               Не удалось сохранить — попробуй ещё раз
             </div>
           )}

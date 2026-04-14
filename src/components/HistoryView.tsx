@@ -598,7 +598,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 }} onClick={() => onBackfill(selected.date)}>
                   <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить этот день</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить этот день</div>
                     <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
                   </div>
                 </div>
@@ -639,7 +639,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                       target="_blank"
                       rel="noreferrer"
                       style={{
-                        display: 'inline-block', fontSize: 13, color: '#a78bfa',
+                        display: 'inline-block', fontSize: 13, color: 'var(--accent)',
                         textDecoration: 'none', fontWeight: 500,
                       }}
                     >
@@ -674,7 +674,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                       fontSize: 11, padding: '3px 10px', borderRadius: 20,
                       background: 'rgba(167,139,250,0.15)',
                       border: '1px solid rgba(167,139,250,0.3)',
-                      color: '#a78bfa',
+                      color: 'var(--accent)',
                     }}>{tag}</span>
                   ))}
                 </div>
@@ -732,7 +732,7 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                     target="_blank"
                     rel="noreferrer"
                     style={{
-                      display: 'inline-block', fontSize: 13, color: '#a78bfa',
+                      display: 'inline-block', fontSize: 13, color: 'var(--accent)',
                       textDecoration: 'none', fontWeight: 500,
                     }}
                   >

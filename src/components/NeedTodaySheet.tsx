@@ -246,7 +246,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
               }}
             >
               <div>
-                <div style={{ fontSize: 14, fontWeight: 500, color: '#f87171' }}>Раздел Помощь</div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--accent-red)' }}>Раздел Помощь</div>
                 <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>
                   Инструменты прямо сейчас
                 </div>
@@ -281,7 +281,7 @@ export function NeedTodaySheet({ need, value, onChange, onClose, onPlanSaved, on
             <a
               href={getTherapistContact().url}
               target="_blank" rel="noopener noreferrer"
-              style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}
+              style={{ display: 'inline-block', fontSize: 14, color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}
             >
               → {getTherapistContact().name === 'автору' ? 'Поговорить с психологом' : `Написать ${getTherapistContact().name}`}
             </a>

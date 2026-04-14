@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const COLORS = ['#ff6b9d', '#ffd166', '#06d6a0', '#a78bfa', '#4fa3f7', '#ff9a3c'];
+const COLORS = ['#ff6b9d', 'var(--accent-yellow)', '#06d6a0', 'var(--accent)', '#4fa3f7', '#ff9a3c'];
 
 const MILESTONE_TEXT: Record<number, string> = {
   3:   'Хорошее начало — паттерн уже виден',

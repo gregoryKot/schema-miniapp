@@ -107,7 +107,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
               onClick={shareOne}
               style={{
                 width: '100%', padding: '14px 0', border: 'none', borderRadius: 14,
-                background: '#a78bfa', color: 'var(--text)',
+                background: 'var(--accent)', color: 'var(--text)',
                 fontSize: 15, fontWeight: 600, cursor: 'pointer',
               }}
             >

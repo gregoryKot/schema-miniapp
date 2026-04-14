@@ -15,9 +15,9 @@ interface Props {
 }
 
 const DIARY_META: Record<DiaryType, { title: string; emoji: string; color: string; emptyText: string }> = {
-  schema:    { title: 'Дневник схем',          emoji: '📓', color: '#f87171', emptyText: 'Ещё нет записей. Запиши момент, когда активировалась схема.' },
-  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: '#60a5fa', emptyText: 'Ещё нет записей. Зафиксируй режим, когда заметишь его.' },
-  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: '#34d399', emptyText: 'Ещё нет записей. Начни с трёх вещей за сегодня.' },
+  schema:    { title: 'Дневник схем',          emoji: '📓', color: 'var(--accent-red)', emptyText: 'Ещё нет записей. Запиши момент, когда активировалась схема.' },
+  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: 'var(--accent-blue)', emptyText: 'Ещё нет записей. Зафиксируй режим, когда заметишь его.' },
+  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: 'var(--accent-green)', emptyText: 'Ещё нет записей. Начни с трёх вещей за сегодня.' },
 };
 
 function formatDt(iso: string) {
@@ -46,7 +46,7 @@ function DeleteBtn({ color, onClick }: { color: string; onClick: () => void }) {
   }
   return (
     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-      <button onClick={onClick} style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+      <button onClick={onClick} style={{ flex: 1, padding: '8px 0', borderRadius: 8, border: 'none', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
         Удалить навсегда
       </button>
       <button onClick={() => setConfirm(false)} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'rgba(var(--fg-rgb),0.4)', fontSize: 12, cursor: 'pointer' }}>
@@ -212,7 +212,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
         ) : (
           <button
             onClick={onDelete}
-            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.2)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.2)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
             Точно удалить
           </button>

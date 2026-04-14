@@ -146,7 +146,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Эмоциональная депривация',
     questions: [1,2,3,4,5],
-    color: '#f87171',
+    color: 'var(--accent-red)',
     desc: 'Ощущение что тебя никто по-настоящему не понимает и не заботится о тебе так, как ты нуждаешься.',
     tip: 'Попробуй прямо попросить о поддержке — не намёком, а словами.',
     needId: 'attachment',
@@ -154,7 +154,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Покинутость/Нестабильность',
     questions: [6,7,8,9,10,11,12,13],
-    color: '#f87171',
+    color: 'var(--accent-red)',
     desc: 'Страх что близкие уйдут или окажутся ненадёжными — даже если сейчас всё хорошо.',
     tip: 'Замечай, когда партнёр рядом — это реальный факт, а не случайность.',
     needId: 'attachment',
@@ -162,7 +162,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Недоверие/Ожидание жестокого обращения',
     questions: [14,15,16,17,18],
-    color: '#f87171',
+    color: 'var(--accent-red)',
     desc: 'Убеждённость что люди в конечном счёте причинят боль, обманут или используют.',
     tip: 'Выбери одного человека которому доверяешь — и сделай один маленький шаг навстречу.',
     needId: 'attachment',
@@ -170,7 +170,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Социальная отчужденность',
     questions: [19,20,21,22,23],
-    color: '#f87171',
+    color: 'var(--accent-red)',
     desc: 'Ощущение что ты принципиально другой и не принадлежишь ни к какой группе.',
     tip: 'Найди одно сообщество по интересу — не для дружбы, просто чтобы быть среди своих.',
     needId: 'attachment',
@@ -178,7 +178,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Дефективность/Стыд',
     questions: [24,25,26,27,28,29],
-    color: '#f87171',
+    color: 'var(--accent-red)',
     desc: 'Глубокое ощущение что ты плох, и если кто-то узнает тебя настоящего — отвернётся.',
     tip: 'Поделись чем-то личным с одним человеком которому доверяешь — и посмотри что будет.',
     needId: 'attachment',
@@ -186,7 +186,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Неуспешность',
     questions: [30,31,32,33,34,35],
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     desc: 'Убеждённость что ты неизбежно потерпишь неудачу и хуже других в работе или учёбе.',
     tip: 'Запиши три реальных достижения за последний год — маленьких, но своих.',
     needId: 'autonomy',
@@ -194,7 +194,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Зависимость/Беспомощность',
     questions: [36,37,38,39,40,41,42,43],
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     desc: 'Чувство что не способен справляться с жизнью самостоятельно без чьей-то помощи.',
     tip: 'Реши одну бытовую задачу без совета — любую, самую маленькую.',
     needId: 'autonomy',
@@ -202,7 +202,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Уязвимость',
     questions: [44,45,46,47,48,49],
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     desc: 'Хроническое ожидание катастрофы: болезни, финансового краха, опасности.',
     tip: 'Когда возникает тревога — спроси себя: какова реальная вероятность этого прямо сейчас?',
     needId: 'autonomy',
@@ -210,7 +210,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Спутанность/Неразвитая идентичность',
     questions: [50,51,52,53,54,55,56],
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     desc: 'Трудно ощущать себя отдельной личностью — слишком много слияния с близкими.',
     tip: 'Сделай что-то только для себя — без объяснений и разрешения.',
     needId: 'autonomy',
@@ -218,7 +218,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Покорность',
     questions: [57,58,59,60,61],
-    color: '#34d399',
+    color: 'var(--accent-green)',
     desc: 'Привычка уступать и подавлять свои желания из страха конфликта или отвержения.',
     tip: 'Выскажи одно своё мнение сегодня — даже если оно отличается от чужого.',
     needId: 'expression',
@@ -226,7 +226,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Самопожертвование',
     questions: [62,63,64,65,66,67],
-    color: '#34d399',
+    color: 'var(--accent-green)',
     desc: 'Постоянная забота о других за счёт собственных потребностей, с накопленной обидой.',
     tip: 'Откажи кому-то в одной просьбе — и заметь, что ничего страшного не произошло.',
     needId: 'expression',
@@ -234,7 +234,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Страх потери контроля над эмоциями',
     questions: [68,69,70,71],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Страх что если дать волю чувствам — они выйдут из-под контроля и навредят.',
     tip: 'Назови вслух одну эмоцию которую сейчас чувствуешь — просто назови, не действуй.',
     needId: 'expression',
@@ -242,7 +242,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Эмоциональная скованность',
     questions: [72,73,74,75,76],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Подавление спонтанных чувств из стыда или убеждения что эмоции — слабость.',
     tip: 'Позволь себе что-то почувствовать сегодня — смех, злость, нежность — не сдерживай.',
     needId: 'expression',
@@ -250,7 +250,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Жёсткие стандарты/Придирчивость',
     questions: [77,78,79,80,81,82,83],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Постоянное давление соответствовать очень высоким стандартам, жертвуя радостью.',
     tip: 'Сделай что-то «достаточно хорошо» — не идеально — и остановись на этом.',
     needId: 'play',
@@ -258,7 +258,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Привилегированность/Грандиозность',
     questions: [84,85,86,87,88,89],
-    color: '#facc15',
+    color: 'var(--accent-yellow)',
     desc: 'Ощущение особых прав, нетерпимость к ограничениям и чужим нуждам.',
     tip: 'Спроси кого-то что им нужно — и сделай это, даже если тебе не хочется.',
     needId: 'limits',
@@ -266,7 +266,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Недостаточность самоконтроля',
     questions: [90,91,92,93,94,95,96],
-    color: '#facc15',
+    color: 'var(--accent-yellow)',
     desc: 'Трудно сдерживать импульсы или доводить дела до конца когда скучно.',
     tip: 'Поставь таймер на 20 минут и сделай одно неприятное дело до сигнала.',
     needId: 'limits',
@@ -274,7 +274,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Поиск одобрения',
     questions: [97,98,99,100,101],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Самооценка зависит от чужой оценки, подстройка под других чтобы понравиться.',
     tip: 'Прими одно решение исходя только из своих желаний — без оглядки на реакцию других.',
     needId: 'expression',
@@ -282,7 +282,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Негативизм/Пессимизм',
     questions: [102,103,104,105,106,107],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Устойчивый фокус на негативном, хроническое ожидание плохого исхода.',
     tip: 'Запиши одну хорошую вещь которая случилась сегодня — даже маленькую.',
     needId: 'play',
@@ -290,7 +290,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Пунитивность (на себя)',
     questions: [108,109,110,111,112],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Жёсткая самокритика за ошибки, убеждённость что заслуживаешь наказания.',
     tip: 'Скажи себе то, что сказал бы другу в такой же ситуации — без осуждения.',
     needId: 'play',
@@ -298,7 +298,7 @@ const SCHEMAS: SchemaInfo[] = [
   {
     name: 'Пунитивность (на других)',
     questions: [113,114,115,116],
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     desc: 'Нетерпимость к чужим ошибкам, гнев когда другие не соответствуют ожиданиям.',
     tip: 'Спроси себя: что стоит за поведением этого человека? Что он чувствовал?',
     needId: 'limits',
@@ -488,7 +488,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
         return domain.color;
       }
     }
-    return '#818cf8';
+    return 'var(--accent-indigo)';
   };
 
   const schemaColor = (s: SchemaInfo) => getColor(s.name) || s.color;
@@ -528,7 +528,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             <>
               <button
                 onClick={handleContinue}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
               >
                 Продолжить ({progressAnswered} из 116 ответов)
               </button>
@@ -542,7 +542,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           ) : (
             <button
               onClick={() => { userStartedRef.current = true; setPhase('test'); setPage(0); }}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
             >
               Начать
             </button>
@@ -576,7 +576,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>{Math.round(((page + 1) / TOTAL_PAGES) * 100)}%</span>
             </div>
             <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2 }}>
-              <div style={{ height: '100%', width: `${((page + 1) / TOTAL_PAGES) * 100}%`, background: '#a78bfa', borderRadius: 2, transition: 'width 0.3s ease' }} />
+              <div style={{ height: '100%', width: `${((page + 1) / TOTAL_PAGES) * 100}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.3s ease' }} />
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
@@ -607,7 +607,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                       onClick={() => handleAnswer(qIdx, n)}
                       style={{
                         flex: 1, height: 36, border: 'none', borderRadius: 8, cursor: 'pointer',
-                        background: selected === n ? '#a78bfa' : 'rgba(var(--fg-rgb),0.09)',
+                        background: selected === n ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.09)',
                         color: selected === n ? '#fff' : 'rgba(var(--fg-rgb),0.55)',
                         fontSize: 14, fontWeight: selected === n ? 700 : 400,
                         transition: 'all 0.15s ease',
@@ -634,7 +634,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               disabled={!pageAnswered}
               style={{
                 flex: 2, padding: '13px 0', border: 'none', borderRadius: 14,
-                background: pageAnswered ? '#a78bfa' : 'rgba(var(--fg-rgb),0.07)',
+                background: pageAnswered ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.07)',
                 color: pageAnswered ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
                 fontSize: 15, fontWeight: 600, cursor: pageAnswered ? 'pointer' : 'default',
                 transition: 'all 0.2s ease',
@@ -724,7 +724,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
                   {/* Diary connection */}
                   {showDiaryHint && (
-                    <div style={{ fontSize: 12, color: '#facc15', lineHeight: 1.4, padding: '6px 10px', background: 'rgba(250,204,21,0.1)', borderRadius: 8 }}>
+                    <div style={{ fontSize: 12, color: 'var(--accent-yellow)', lineHeight: 1.4, padding: '6px 10px', background: 'rgba(250,204,21,0.1)', borderRadius: 8 }}>
                       <span style={{ marginRight: 4 }}>⚡</span>
                       Совпадает с дневником: «{needLabel}» стабильно низкая
                     </div>
@@ -754,7 +754,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                     {inactiveSchemas.map(schema => {
                       const s = scores[schema.name];
                       const mid = s.pct5plus >= 30 && s.pct5plus <= 50;
-                      const barColor = mid ? '#fbbf24' : 'rgba(var(--fg-rgb),0.2)';
+                      const barColor = mid ? 'var(--accent-yellow)' : 'rgba(var(--fg-rgb),0.2)';
                       return (
                         <div key={schema.name} style={{
                           marginBottom: 8,
@@ -789,7 +789,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                 border: '1px solid rgba(167,139,250,0.2)',
                 borderRadius: 16, padding: '16px 18px',
               }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa', marginBottom: 8 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', marginBottom: 8 }}>
                   Хочешь разобраться глубже?
                 </div>
                 <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.65, marginBottom: 12 }}>
@@ -803,7 +803,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                     display: 'block', textAlign: 'center',
                     padding: '11px 0', borderRadius: 12,
                     background: 'rgba(167,139,250,0.15)',
-                    color: '#a78bfa', fontSize: 14, fontWeight: 500,
+                    color: 'var(--accent)', fontSize: 14, fontWeight: 500,
                     textDecoration: 'none',
                   }}
                 >
@@ -814,7 +814,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
             <button
               onClick={onClose}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 4, marginBottom: 10 }}
+              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 4, marginBottom: 10 }}
             >
               Сохранить и закрыть
             </button>
@@ -823,7 +823,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                 <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)', marginBottom: 12 }}>Результаты будут удалены. Точно начать заново?</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => setRetakeConfirm(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
-                  <button onClick={handleRetake} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Начать заново</button>
+                  <button onClick={handleRetake} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Начать заново</button>
                 </div>
               </div>
             ) : (

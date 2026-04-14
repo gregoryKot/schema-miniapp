@@ -141,7 +141,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
           <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', flex: 1 }}>
             {view === 'time' ? 'Время уведомления' : view === 'tz' ? 'Часовой пояс' : 'Настройки'}
           </span>
-          <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: savedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+          <span style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, opacity: savedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>
             Сохранено ✓
           </span>
         </div>
@@ -155,7 +155,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 const active = h === localHour;
                 return (
                   <div key={h} onClick={async () => { await patch({ notifyLocalHour: h }); setView('main'); }}
-                    style={{ padding: '12px 0', borderRadius: 12, textAlign: 'center', background: active ? '#a78bfa' : 'rgba(var(--fg-rgb),0.06)', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontSize: 15, fontWeight: active ? 600 : 400, cursor: 'pointer' }}
+                    style={{ padding: '12px 0', borderRadius: 12, textAlign: 'center', background: active ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.06)', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.6)', fontSize: 15, fontWeight: active ? 600 : 400, cursor: 'pointer' }}
                   >{pad(h)}:00</div>
                 );
               })}
@@ -169,7 +169,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 const active = tz.iana === settings.notifyTimezone;
                 return (
                   <div key={tz.iana} onClick={async () => { await patch({ notifyTimezone: tz.iana }); setView('main'); }}
-                    style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.04)', color: active ? '#a78bfa' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
+                    style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.04)', color: active ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
                   >{tz.label}{active && <span>✓</span>}</div>
                 );
               })}
@@ -194,7 +194,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       onClick={() => setTheme(toggleTheme())}
                       style={{
                         width: 46, height: 26, borderRadius: 13,
-                        background: theme === 'light' ? '#a78bfa' : 'rgba(167,139,250,0.3)',
+                        background: theme === 'light' ? 'var(--accent)' : 'rgba(167,139,250,0.3)',
                         position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
                         flexShrink: 0,
                       }}
@@ -224,7 +224,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         onClick={onToggleTherapistMode}
                         style={{
                           width: 46, height: 26, borderRadius: 13,
-                          background: therapistMode ? '#a78bfa' : 'rgba(167,139,250,0.3)',
+                          background: therapistMode ? 'var(--accent)' : 'rgba(167,139,250,0.3)',
                           position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
                           flexShrink: 0,
                         }}
@@ -268,7 +268,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                           setTimeout(() => setSavedToast(false), 1800);
                         } catch {} finally { setNameSaving(false); }
                       }}
-                      style={{ background: 'rgba(167,139,250,0.2)', border: 'none', borderRadius: 10, padding: '6px 14px', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                      style={{ background: 'rgba(167,139,250,0.2)', border: 'none', borderRadius: 10, padding: '6px 14px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
                     >
                       {nameSaving ? '...' : 'Сохранить'}
                     </button>
@@ -322,7 +322,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         </div>
                         <button
                           onClick={() => { api.leaveTherapy().then(() => setTherapyRelation(null)).catch(() => {}); }}
-                          style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '8px 16px', color: '#f87171', fontSize: 13, cursor: 'pointer' }}
+                          style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent-red)', fontSize: 13, cursor: 'pointer' }}
                         >
                           Отключиться
                         </button>
@@ -338,7 +338,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                             onChange={e => setTherapyJoinCode(e.target.value.toUpperCase())}
                             placeholder="ABCDEF"
                             maxLength={8}
-                            style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${therapyJoinError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14 }}
+                            style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${therapyJoinError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14 }}
                           />
                           <button
                             onClick={async () => {
@@ -351,12 +351,12 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                                 setTherapyJoinCode('');
                               } catch { setTherapyJoinError('Неверный код'); }
                             }}
-                            style={{ background: '#a78bfa', border: 'none', borderRadius: 10, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                            style={{ background: 'var(--accent)', border: 'none', borderRadius: 10, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                           >
                             Войти
                           </button>
                         </div>
-                        {therapyJoinError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{therapyJoinError}</div>}
+                        {therapyJoinError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 6 }}>{therapyJoinError}</div>}
                       </div>
                     )}
                   </div>
@@ -390,7 +390,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                           onChange={e => setTherapistCode(e.target.value)}
                           placeholder="Код"
                           type="password"
-                          style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${therapistCodeError ? '#f87171' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14 }}
+                          style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${therapistCodeError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14 }}
                         />
                         <button
                           disabled={therapistCodeLoading}
@@ -407,12 +407,12 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                               setTherapistCodeLoading(false);
                             }
                           }}
-                          style={{ background: '#a78bfa', border: 'none', borderRadius: 10, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                          style={{ background: 'var(--accent)', border: 'none', borderRadius: 10, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                         >
                           Войти
                         </button>
                       </div>
-                      {therapistCodeError && <div style={{ fontSize: 12, color: '#f87171', marginTop: 6 }}>{therapistCodeError}</div>}
+                      {therapistCodeError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 6 }}>{therapistCodeError}</div>}
                     </div>
                   )}
                 </div>
@@ -428,7 +428,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
                     >
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>Открыть кабинет</div>
+                        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--accent)' }}>Открыть кабинет</div>
                         <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 2 }}>Клиенты, задания, приглашения</div>
                       </div>
                       <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
@@ -442,7 +442,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                             try { await navigator.clipboard.writeText(url); } catch { /* ignore */ }
                           } catch { /* ignore */ }
                         }}
-                        style={{ background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', borderRadius: 10, padding: '8px 16px', color: '#a78bfa', fontSize: 13, cursor: 'pointer' }}
+                        style={{ background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent)', fontSize: 13, cursor: 'pointer' }}
                       >
                         + Создать приглашение клиенту
                       </button>
@@ -485,14 +485,14 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.4)', lineHeight: 1.6, marginBottom: 4 }}>
                         Приглашай друга — видите индексы дня друг друга
                       </div>
-                      <button onClick={handleCreateInvite} disabled={pairLoading} style={{ padding: 14, border: 'none', borderRadius: 12, background: '#a78bfa', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: pairLoading ? 'default' : 'pointer' }}>
+                      <button onClick={handleCreateInvite} disabled={pairLoading} style={{ padding: 14, border: 'none', borderRadius: 12, background: 'var(--accent)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: pairLoading ? 'default' : 'pointer' }}>
                         {pairLoading ? '...' : pairData?.pendingCode ? 'Создать новую ссылку' : 'Создать приглашение'}
                       </button>
                       {pairInviteUrl && (
                         <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px' }}>
                           <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                           <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{pairInviteUrl}</div>
-                          <button onClick={handleCopyPairInvite} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: pairInviteCopied ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                          <button onClick={handleCopyPairInvite} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: pairInviteCopied ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             {pairInviteCopied ? '✓ Скопировано' : 'Скопировать ссылку'}
                           </button>
                         </div>
@@ -511,12 +511,12 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: 'rgba(var(--fg-rgb),0.06)', border: '1px solid rgba(var(--fg-rgb),0.1)', color: 'var(--text)', fontSize: 16, fontFamily: 'monospace', outline: 'none', letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12 }}
                       />
                       {joinError && (
-                        <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+                        <div style={{ fontSize: 12, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 8 }}>
                           Код не найден или уже использован
                         </div>
                       )}
                       <button onClick={handleJoin} disabled={!joinCode.trim() || pairLoading}
-                        style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                        style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                         Присоединиться
                       </button>
                     </div>
@@ -601,7 +601,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               <div style={{ marginBottom: 12 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(var(--fg-rgb),0.8)', marginBottom: 10 }}>Удалить данные теста YSQ-R</div>
                 <button onClick={() => { localStorage.removeItem(YSQ_PROGRESS_KEY); localStorage.removeItem(YSQ_RESULT_KEY); api.deleteYsqResult().catch(() => {}); setShowPrivacy(false); }}
-                  style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: '#f87171', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+                  style={{ width: '100%', padding: '13px 0', borderRadius: 12, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.08)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
                   Удалить результаты теста
                 </button>
               </div>
@@ -618,7 +618,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
       {showDeleteSheet && (
         <BottomSheet onClose={() => { setShowDeleteSheet(false); setDeleteConfirm(false); }} zIndex={300}>
           <div style={{ paddingTop: 4 }}>
-            <div style={{ fontSize: 18, fontWeight: 700, color: '#f87171', marginBottom: 8 }}>Удалить все данные</div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--accent-red)', marginBottom: 8 }}>Удалить все данные</div>
             <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.45)', lineHeight: 1.6, marginBottom: 20 }}>
               Дневники, оценки, практики, колесо детства, результаты тестов, заметки, задания, связи с терапевтом — всё удалится с сервера. Это действие необратимо.
             </div>
@@ -627,13 +627,13 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 <button onClick={() => setShowDeleteSheet(false)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'rgba(var(--fg-rgb),0.5)', fontSize: 14, cursor: 'pointer' }}>
                   Отмена
                 </button>
-                <button onClick={() => setDeleteConfirm(true)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(239,68,68,0.15)', color: '#f87171', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={() => setDeleteConfirm(true)} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(239,68,68,0.15)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                   Удалить
                 </button>
               </div>
             ) : (
               <div>
-                <div style={{ fontSize: 14, color: '#f87171', textAlign: 'center', marginBottom: 16, fontWeight: 500 }}>Точно? Восстановить невозможно.</div>
+                <div style={{ fontSize: 14, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 16, fontWeight: 500 }}>Точно? Восстановить невозможно.</div>
                 <button disabled={deleting} onClick={async () => { setDeleting(true); try { await api.deleteAllUserData(); localStorage.clear(); sessionStorage.clear(); window.location.reload(); } catch { setDeleting(false); setDeleteConfirm(false); } }}
                   style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: '#ef4444', color: 'var(--text)', fontSize: 15, fontWeight: 700, cursor: deleting ? 'default' : 'pointer' }}>
                   {deleting ? 'Удаляем...' : 'Да, удалить всё навсегда'}
@@ -659,7 +659,7 @@ function SettingsLabel({ children }: { children: React.ReactNode }) {
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (
-    <div onClick={onClick} style={{ width: 44, height: 26, borderRadius: 13, flexShrink: 0, background: on ? '#a78bfa' : 'rgba(var(--fg-rgb),0.12)', position: 'relative', transition: 'background 0.2s', cursor: 'pointer' }}>
+    <div onClick={onClick} style={{ width: 44, height: 26, borderRadius: 13, flexShrink: 0, background: on ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.12)', position: 'relative', transition: 'background 0.2s', cursor: 'pointer' }}>
       <div style={{ position: 'absolute', top: 3, left: on ? 21 : 3, width: 20, height: 20, borderRadius: '50%', background: 'var(--bg)', transition: 'left 0.2s' }} />
     </div>
   );

@@ -59,7 +59,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
   }
 
   const needId = NEED_IDS[needIdx];
-  const needColor = COLORS[needId] ?? '#a78bfa';
+  const needColor = COLORS[needId] ?? 'var(--accent)';
   const todayScore = ratings[needId];
   const isLow = todayScore !== undefined && todayScore <= 4;
   const isMid = todayScore !== undefined && todayScore > 4 && todayScore <= 7;
@@ -71,8 +71,8 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
         <span onClick={onClose} style={{ fontSize: 26, color: 'rgba(var(--fg-rgb),0.4)', cursor: 'pointer', lineHeight: 1 }}>‹</span>
         <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)', flex: 1 }}>Мои практики</span>
         {errorToast
-          ? <span style={{ fontSize: 12, color: '#f87171', fontWeight: 600, opacity: 1, transition: 'opacity 0.3s ease' }}>Ошибка сохранения</span>
-          : <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
+          ? <span style={{ fontSize: 12, color: 'var(--accent-red)', fontWeight: 600, opacity: 1, transition: 'opacity 0.3s ease' }}>Ошибка сохранения</span>
+          : <span style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, opacity: addedToast ? 1 : 0, transition: 'opacity 0.3s ease' }}>Добавлено ✓</span>
         }
       </div>
 
@@ -82,7 +82,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
           Практики — конкретные действия, которые наполняют потребность.
           {onOpenTracker && (
             <> Видишь что что-то просело?{' '}
-              <span onClick={onOpenTracker} style={{ color: '#a78bfa', cursor: 'pointer' }}>Открой трекер →</span>
+              <span onClick={onOpenTracker} style={{ color: 'var(--accent)', cursor: 'pointer' }}>Открой трекер →</span>
             </>
           )}
         </div>
@@ -101,7 +101,7 @@ export function PracticesScreen({ onClose, onOpenTracker }: Props) {
                 style={{ flexShrink: 0, padding: '7px 12px', borderRadius: 20, background: active ? color + '28' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${active ? color + '55' : 'transparent'}`, color: active ? color : 'rgba(var(--fg-rgb),0.45)', fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap', fontWeight: active ? 600 : 400, display: 'flex', alignItems: 'center', gap: 5 }}>
                 {emoji} {NEED_NAMES[id]}
                 {score !== undefined && (
-                  <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.7, color: score <= 4 ? '#f87171' : score <= 7 ? '#fbbf24' : '#34d399' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, opacity: 0.7, color: score <= 4 ? 'var(--accent-red)' : score <= 7 ? 'var(--accent-yellow)' : 'var(--accent-green)' }}>
                     {score}
                   </span>
                 )}

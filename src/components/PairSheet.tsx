@@ -8,8 +8,8 @@ interface Props {
 
 function indexColor(v: number): string {
   if (v >= 7) return '#06d6a0';
-  if (v >= 4) return '#ffd166';
-  return '#f87171';
+  if (v >= 4) return 'var(--accent-yellow)';
+  return 'var(--accent-red)';
 }
 
 export function PairSheet({ onClose }: Props) {
@@ -90,7 +90,7 @@ export function PairSheet({ onClose }: Props) {
         <div style={{ fontSize: 20, fontWeight: 600, color: 'var(--text)', marginBottom: 20 }}>Вместе</div>
 
         {!data ? (
-          <div style={{ textAlign: 'center', color: loadError ? '#f87171' : 'rgba(var(--fg-rgb),0.3)', padding: '40px 0' }}>
+          <div style={{ textAlign: 'center', color: loadError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.3)', padding: '40px 0' }}>
             {loadError ? 'Ошибка загрузки — попробуй закрыть и открыть снова' : 'Загрузка...'}
           </div>
         ) : (
@@ -161,7 +161,7 @@ export function PairSheet({ onClose }: Props) {
                   {confirmLeaveCode === partner.code ? (
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button onClick={() => setConfirmLeaveCode(null)} style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.6)', fontSize: 13, cursor: 'pointer' }}>Отмена</button>
-                      <button onClick={() => handleLeave(partner.code)} style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,80,80,0.2)', color: '#f87171', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Выйти</button>
+                      <button onClick={() => handleLeave(partner.code)} style={{ flex: 1, padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,80,80,0.2)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Выйти</button>
                     </div>
                   ) : (
                     <button onClick={() => setConfirmLeaveCode(partner.code)} style={{ width: '100%', padding: '9px', border: 'none', borderRadius: 10, background: 'rgba(255,80,80,0.08)', color: 'rgba(255,100,100,0.6)', fontSize: 13, cursor: 'pointer' }}>
@@ -181,7 +181,7 @@ export function PairSheet({ onClose }: Props) {
                 </div>
                 <button
                   onClick={() => handleCopyPending(pendingUrl)}
-                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedPending ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedPending ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedPending ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedPending ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
                   {copiedPending ? '✓ Скопировано' : 'Скопировать ссылку'}
                 </button>
@@ -205,7 +205,7 @@ export function PairSheet({ onClose }: Props) {
                   <button
                     onClick={handleCreateInvite}
                     disabled={loading}
-                    style={{ width: '100%', padding: '13px', border: 'none', borderRadius: 12, background: '#a78bfa', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: loading ? 'default' : 'pointer', marginBottom: 10 }}
+                    style={{ width: '100%', padding: '13px', border: 'none', borderRadius: 12, background: 'var(--accent)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: loading ? 'default' : 'pointer', marginBottom: 10 }}
                   >
                     {loading ? '...' : data.partners.length > 0 ? 'Пригласить ещё друга' : 'Создать приглашение'}
                   </button>
@@ -215,7 +215,7 @@ export function PairSheet({ onClose }: Props) {
                   <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px', marginBottom: 10 }}>
                     <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                     <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{inviteUrl}</div>
-                    <button onClick={() => handleCopyInvite(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedInvite ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedInvite ? '#06d6a0' : '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    <button onClick={() => handleCopyInvite(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedInvite ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedInvite ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {copiedInvite ? '✓ Скопировано' : 'Скопировать ссылку'}
                     </button>
                   </div>
@@ -240,11 +240,11 @@ export function PairSheet({ onClose }: Props) {
                   placeholder="Код из приглашения"
                   style={{ width: '100%', padding: '12px 14px', borderRadius: 12, background: 'rgba(var(--fg-rgb),0.06)', border: '1px solid rgba(var(--fg-rgb),0.1)', color: 'var(--text)', fontSize: 16, fontFamily: 'monospace', outline: 'none', letterSpacing: 4, textAlign: 'center', boxSizing: 'border-box', marginBottom: 12 }}
                 />
-                {joinError && <div style={{ fontSize: 13, color: '#f87171', textAlign: 'center', marginBottom: 10 }}>{joinError}</div>}
+                {joinError && <div style={{ fontSize: 13, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 10 }}>{joinError}</div>}
                 <button
                   onClick={handleJoin}
                   disabled={!joinCode.trim() || loading}
-                  style={{ width: '100%', padding: '14px', border: 'none', borderRadius: 12, background: joinCode.trim() ? '#a78bfa' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '14px', border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
                 >
                   Присоединиться
                 </button>

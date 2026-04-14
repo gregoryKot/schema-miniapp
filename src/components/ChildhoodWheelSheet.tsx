@@ -91,27 +91,27 @@ const NEED_META: Record<NeedId, {
 const SCHEMA_HINTS: Record<NeedId, { domain: string; color: string; schemas: string[] }> = {
   attachment: {
     domain: 'Отчуждение и отвержение',
-    color: '#f87171',
+    color: 'var(--accent-red)',
     schemas: ['Покинутость / Нестабильность', 'Недоверие', 'Эмоциональная депривация', 'Дефективность / Стыд'],
   },
   autonomy: {
     domain: 'Нарушение автономии',
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     schemas: ['Зависимость / Беспомощность', 'Неуспешность', 'Спутанность / Неразвитая идентичность'],
   },
   expression: {
     domain: 'Ориентация на других + Бдительность',
-    color: '#34d399',
+    color: 'var(--accent-green)',
     schemas: ['Покорность', 'Самопожертвование', 'Страх потери контроля над эмоциями', 'Эмоциональная скованность', 'Поиск одобрения'],
   },
   play: {
     domain: 'Бдительность и подавление',
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     schemas: ['Жёсткие стандарты / Придирчивость', 'Негативизм / Пессимизм', 'Пунитивность (на себя)', 'Пунитивность (на других)'],
   },
   limits: {
     domain: 'Нарушение границ',
-    color: '#facc15',
+    color: 'var(--accent-yellow)',
     schemas: ['Привилегированность / Грандиозность', 'Недостаточность самоконтроля'],
   },
 };
@@ -287,7 +287,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
           <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
             <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.65)', lineHeight: 1.75 }}>
               В схема-терапии считается, что схемы формируются когда базовые потребности{' '}
-              <span style={{ color: '#a78bfa', fontWeight: 500 }}>систематически не удовлетворялись в детстве</span>.
+              <span style={{ color: 'var(--accent)', fontWeight: 500 }}>систематически не удовлетворялись в детстве</span>.
               Это упражнение поможет увидеть, какие области могут быть особенно чувствительными — и почему дневник сегодня показывает то, что показывает.
             </div>
           </div>
@@ -315,7 +315,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
         <div>
           {/* Idealization warning */}
           <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px', marginBottom: 20 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>⚠️ Осторожно: защитная идеализация</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-yellow)', marginBottom: 4 }}>⚠️ Осторожно: защитная идеализация</div>
             <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.65 }}>
               Психика защищает нас от боли — поэтому мы склонны помнить хорошее и не замечать систематические паттерны.
               Оценивай <em>не отдельные моменты</em>, а то <em>как было в целом, большую часть времени</em>.
@@ -349,7 +349,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                       style={{
                         width: 24, height: 24, borderRadius: '50%', border: 'none', cursor: 'pointer',
                         background: openExampleId === id ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.08)',
-                        color: openExampleId === id ? '#a78bfa' : 'rgba(var(--fg-rgb),0.35)',
+                        color: openExampleId === id ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.35)',
                         fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
                         transition: 'all 0.15s',
                       }}
@@ -390,7 +390,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                       Примеры — как это выглядит в жизни
                     </div>
                     {meta.examples.map((ex, i) => {
-                      const badgeColor = ex.score <= 3 ? '#f87171' : ex.score < 8 ? '#fbbf24' : '#34d399';
+                      const badgeColor = ex.score <= 3 ? 'var(--accent-red)' : ex.score < 8 ? 'var(--accent-yellow)' : 'var(--accent-green)';
                       const isOpen = openExampleIdx === i;
                       return (
                         <div
@@ -459,7 +459,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                 <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                   <span style={{ fontSize: 13 }}>{NEED_META[id].emoji}</span>
                   <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.5)' }}>{NEED_META[id].label.split(' ')[0]}</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? '#f87171' : value <= 6 ? '#fbbf24' : color }}>{value}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: value <= 4 ? 'var(--accent-red)' : value <= 6 ? 'var(--accent-yellow)' : color }}>{value}</span>
                 </div>
               );
             })}
@@ -512,7 +512,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)', borderRadius: 14, padding: '12px 16px', cursor: 'pointer', marginTop: 4 }}
               >
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: '#a78bfa' }}>Подробнее о схемах</div>
+                  <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--accent)' }}>Подробнее о схемах</div>
                   <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 2 }}>Что они значат и как с ними работать</div>
                 </div>
                 <span style={{ fontSize: 18, color: 'rgba(167,139,250,0.6)' }}>›</span>
@@ -522,7 +522,7 @@ export function ChildhoodWheelSheet({ onClose, onOpenSchemas, onSaved }: Props) 
 
           {lowNeeds.length === 0 && (
             <div style={{ background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 14, padding: '14px 16px', marginBottom: 24 }}>
-              <div style={{ fontSize: 14, color: '#34d399', fontWeight: 500, marginBottom: 6 }}>Хорошее детство по всем зонам</div>
+              <div style={{ fontSize: 14, color: 'var(--accent-green)', fontWeight: 500, marginBottom: 6 }}>Хорошее детство по всем зонам</div>
               <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.55)', lineHeight: 1.6 }}>
                 Все потребности выше 4/10 — это редкость и ресурс. Если сейчас что-то низкое, скорее всего это ситуативное, а не схема.
               </div>

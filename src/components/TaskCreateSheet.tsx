@@ -89,7 +89,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
           >
             <span style={{ fontSize: 16, flexShrink: 0 }}>{opt.emoji}</span>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? '#a78bfa' : 'rgba(var(--fg-rgb),0.8)' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: type === opt.type ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.8)' }}>
                 {opt.label}
               </div>
               <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 1 }}>{opt.sub}</div>
@@ -110,8 +110,8 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
                 style={{
                   flex: 1, textAlign: 'center', padding: '8px 0', borderRadius: 10, cursor: 'pointer',
                   background: targetDays === d ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
-                  border: `1px solid ${targetDays === d ? '#a78bfa' : 'rgba(var(--fg-rgb),0.1)'}`,
-                  fontSize: 14, fontWeight: 600, color: targetDays === d ? '#a78bfa' : 'rgba(var(--fg-rgb),0.5)',
+                  border: `1px solid ${targetDays === d ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
+                  fontSize: 14, fontWeight: 600, color: targetDays === d ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.5)',
                 }}
               >
                 {d}
@@ -155,14 +155,14 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
         </div>
       )}
 
-      {error && <div style={{ fontSize: 13, color: '#f87171', marginBottom: 12 }}>{error}</div>}
+      {error && <div style={{ fontSize: 13, color: 'var(--accent-red)', marginBottom: 12 }}>{error}</div>}
 
       <button
         onClick={handleCreate}
         disabled={saving}
         style={{
           width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
-          background: saving ? 'rgba(167,139,250,0.3)' : '#a78bfa',
+          background: saving ? 'rgba(167,139,250,0.3)' : 'var(--accent)',
           color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
         }}
       >

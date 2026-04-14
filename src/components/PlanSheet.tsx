@@ -356,7 +356,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
                 background: savedOk ? 'rgba(52,211,153,0.2)' : saving ? 'rgba(var(--fg-rgb),0.1)' : color,
-                color: savedOk ? '#34d399' : '#fff', fontSize: 15, fontWeight: 600, cursor: (saving || savedOk) ? 'default' : 'pointer',
+                color: savedOk ? 'var(--accent-green)' : '#fff', fontSize: 15, fontWeight: 600, cursor: (saving || savedOk) ? 'default' : 'pointer',
                 transition: 'all 0.3s',
               }}
             >

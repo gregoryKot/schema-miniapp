@@ -17,7 +17,7 @@ interface Props {
   }) => Promise<void>;
 }
 
-const COLOR = '#60a5fa';
+const COLOR = 'var(--accent-blue)';
 
 function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (

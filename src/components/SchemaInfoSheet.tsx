@@ -48,7 +48,7 @@ const NEEDS_DATA = [
 const MODES = [
   {
     group: 'Детские режимы',
-    color: '#60a5fa',
+    color: 'var(--accent-blue)',
     items: [
       {
         name: 'Уязвимый Ребёнок',
@@ -72,7 +72,7 @@ const MODES = [
   },
   {
     group: 'Дисфункциональные копинги',
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     items: [
       {
         name: 'Послушный Капитулянт',
@@ -96,7 +96,7 @@ const MODES = [
   },
   {
     group: 'Критикующие режимы',
-    color: '#f87171',
+    color: 'var(--accent-red)',
     items: [
       {
         name: 'Карающий Критик',
@@ -120,7 +120,7 @@ const MODES = [
   },
   {
     group: 'Здоровые режимы',
-    color: '#34d399',
+    color: 'var(--accent-green)',
     items: [
       {
         name: 'Счастливый Ребёнок',
@@ -251,7 +251,7 @@ function ModesTab() {
           borderRadius: 16, padding: '14px 16px', marginBottom: 20, cursor: 'pointer',
         }}
       >
-        <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+        <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
           Режим прямо сейчас
         </div>
         <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)' }}>Как ты себя чувствуешь? →</div>
@@ -324,12 +324,12 @@ function ModesTab() {
             <SectionLabel purple mb={8}>Режим</SectionLabel>
             <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>{checkinMode.mode}</div>
             <div style={{ background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '14px 16px', marginBottom: 24, textAlign: 'left' }}>
-              <div style={{ fontSize: 12, color: '#a78bfa', marginBottom: 6 }}>Что помогает</div>
+              <div style={{ fontSize: 12, color: 'var(--accent)', marginBottom: 6 }}>Что помогает</div>
               <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6 }}>{checkinMode.tip}</div>
             </div>
             <button
               onClick={() => { setCheckinMode(null); setShowCheckin(false); }}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(167,139,250,0.25)', color: '#a78bfa', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(167,139,250,0.25)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >Понятно</button>
           </div>
         </div>
@@ -408,7 +408,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
                 }}>
                 <span style={{ fontSize: 18 }}>⏸</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-yellow)' }}>Незаконченный тест</div>
                   <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
                 <span style={{ fontSize: 16, color: 'rgba(251,191,36,0.3)' }}>›</span>
@@ -423,7 +423,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
               }}
             >
               <div>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#a78bfa' }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent)' }}>
                   {hasResult ? 'Мои результаты YSQ-R' : hasProgress ? 'Продолжить тест' : 'Пройти тест на схемы'}
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.35)', marginTop: 3 }}>

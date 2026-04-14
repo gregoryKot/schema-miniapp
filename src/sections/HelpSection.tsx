@@ -76,7 +76,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
         <button
           disabled={completing}
           onClick={e => { e.stopPropagation(); setCompleting(true); onComplete(); }}
-          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
+          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
         >
           {completing ? '...' : 'Сделал'}
         </button>
@@ -96,7 +96,7 @@ function TaskProgressBar({ task }: { task: UserTask }) {
   return (
     <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
       <div style={{ flex: 1, height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 4, overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: '#a78bfa', borderRadius: 4, transition: 'width 0.3s ease' }} />
+        <div style={{ width: `${pct}%`, height: '100%', background: 'var(--accent)', borderRadius: 4, transition: 'width 0.3s ease' }} />
       </div>
       <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>{progress}/{target}</span>
     </div>
@@ -181,7 +181,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           return (
             <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 7, background: isToday ? 'rgba(52,211,153,0.1)' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${isToday ? 'rgba(52,211,153,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 20, padding: '5px 12px' }}>
               <span style={{ fontSize: 13 }}>📅</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: isToday ? '#34d399' : 'rgba(var(--fg-rgb),0.6)' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: isToday ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.6)' }}>
                 {isToday ? 'Сегодня встреча' : `Встреча: ${label}`}
               </span>
               {relation.partnerName && <span style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)' }}>с {relation.partnerName}</span>}
@@ -321,7 +321,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
                 <button
                   onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
-                  style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: '#34d399', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+                  style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
                 >
                   Сделал
                 </button>
@@ -347,7 +347,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           )}
           <button
             onClick={() => { setShowAllTasks(false); setShowTaskCreate(true); }}
-            style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
+            style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
           >
             + Поставить цель
           </button>

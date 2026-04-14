@@ -80,7 +80,7 @@ export function NoteSheet({ date, onClose }: Props) {
                   padding: '6px 12px', borderRadius: 20, cursor: 'pointer',
                   background: on ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
                   border: `1px solid ${on ? 'rgba(167,139,250,0.5)' : 'rgba(var(--fg-rgb),0.07)'}`,
-                  color: on ? '#a78bfa' : 'rgba(var(--fg-rgb),0.5)',
+                  color: on ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.5)',
                   fontSize: 12, fontWeight: on ? 600 : 400,
                   transition: 'all 0.15s',
                 }}
@@ -121,7 +121,7 @@ export function NoteSheet({ date, onClose }: Props) {
           disabled={!hasContent || saving}
           style={{
             width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: hasContent ? '#a78bfa' : 'rgba(var(--fg-rgb),0.08)',
+            background: hasContent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)',
             color: hasContent ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
             fontSize: 15, fontWeight: 600, cursor: hasContent ? 'pointer' : 'default',
           }}

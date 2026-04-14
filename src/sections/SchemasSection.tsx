@@ -67,7 +67,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
         </div>
         <button
           onClick={() => onOpenSchema({ tab: 'needs' })}
-          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.1)', color: '#a78bfa', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
+          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.1)', color: 'var(--accent)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
           title="Библиотека схемотерапии"
         >
           📚
@@ -83,7 +83,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
               Схемы
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
-              <div onClick={() => setShowSchemaPicker(true)} style={{ fontSize: 12, color: '#a78bfa', cursor: 'pointer', fontWeight: 500 }}>
+              <div onClick={() => setShowSchemaPicker(true)} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
                 {hasAnySchemas ? 'Изменить' : 'Выбрать'}
               </div>
               <div onClick={() => onOpenSchema({ startTest: true })} style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.3)', cursor: 'pointer' }}>
@@ -164,7 +164,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
                   padding: '12px 16px', borderRadius: 14,
                   border: '1px solid rgba(167,139,250,0.25)',
                   background: 'rgba(167,139,250,0.08)',
-                  color: '#a78bfa', fontSize: 14, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
+                  color: 'var(--accent)', fontSize: 14, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}>
                   Выбрать
                 </button>
@@ -181,7 +181,7 @@ export function SchemasSection({ onOpenSchema }: Props) {
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(var(--fg-rgb),0.4)' }}>
               Режимы
             </div>
-            <div onClick={() => setShowModePicker(true)} style={{ fontSize: 12, color: '#a78bfa', cursor: 'pointer', fontWeight: 500 }}>
+            <div onClick={() => setShowModePicker(true)} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
               {myModes.length > 0 ? 'Изменить' : 'Добавить'}
             </div>
           </div>

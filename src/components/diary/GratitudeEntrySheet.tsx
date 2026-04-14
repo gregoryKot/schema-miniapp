@@ -59,7 +59,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
               background: item.trim() ? '#34d39944' : 'rgba(var(--fg-rgb),0.06)',
               border: item.trim() ? '1px solid #34d399' : '1px solid rgba(var(--fg-rgb),0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14, color: '#34d399', fontWeight: 700,
+              fontSize: 14, color: 'var(--accent-green)', fontWeight: 700,
             }}>
               {i + 1}
             </div>
@@ -89,7 +89,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
 
         <button onClick={handleSave} disabled={!canSave || saving} style={{
           marginTop: 20, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? '#34d399' : 'rgba(var(--fg-rgb),0.1)',
+          background: canSave ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.1)',
           color: canSave ? 'var(--bg)' : 'rgba(var(--fg-rgb),0.3)',
           border: 'none', fontSize: 16, fontWeight: 700, cursor: canSave ? 'pointer' : 'default',
         }}>

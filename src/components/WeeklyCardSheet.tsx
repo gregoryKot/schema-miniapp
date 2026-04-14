@@ -51,7 +51,7 @@ function drawCard(
 
   // Top accent bar
   const accentGrad = ctx.createLinearGradient(28, 0, W - 28, 0);
-  accentGrad.addColorStop(0, '#a78bfa');
+  accentGrad.addColorStop(0, 'var(--accent)');
   accentGrad.addColorStop(1, '#4fa3f7');
   ctx.strokeStyle = accentGrad;
   ctx.lineWidth = 2;

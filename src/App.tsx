@@ -109,8 +109,8 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         onClick={onToggle}
         style={{
           width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-          border: `2px solid ${checked ? '#a78bfa' : 'rgba(var(--fg-rgb),0.2)'}`,
-          background: checked ? '#a78bfa' : 'transparent',
+          border: `2px solid ${checked ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)'}`,
+          background: checked ? 'var(--accent)' : 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           transition: 'all 0.15s',
         }}
@@ -125,7 +125,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     <BottomSheet onClose={() => {}} zIndex={300}>
       <div style={{ textAlign: 'center', marginBottom: 20, paddingTop: 4 }}>
         <div style={{ fontSize: 36, marginBottom: 8 }}>🧠</div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: '#fbbf24', letterSpacing: '0.1em' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: 'var(--accent-yellow)', letterSpacing: '0.1em' }}>
           БЕТА-ВЕРСИЯ
         </div>
         <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.3)', marginTop: 6, lineHeight: 1.4 }}>
@@ -134,13 +134,13 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
       </div>
 
       <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
-        <div style={{ fontSize: 12, color: '#a78bfa', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
           Прежде чем начать
         </div>
         <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
           <br /><br />
-          Дневник помогает видеть паттерны и чуть лучше понимать себя. Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
+          СхемаЛаб — инструмент самопознания: дневник, тесты, трекер потребностей и пространство для работы с терапевтом. Помогает видеть паттерны и глубже понимать себя. Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
         </div>
       </div>
 
@@ -149,7 +149,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           Данные и конфиденциальность
         </div>
         <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.5)', lineHeight: 1.6, marginBottom: 14 }}>
-          Все данные хранятся на защищённом сервере, привязаны к Telegram-аккаунту и не передаются третьим лицам. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none' }}>@kotlarewski</a>.
+          Все данные хранятся на защищённом сервере, зашифрованы и привязаны к Telegram-аккаунту. Не передаются третьим лицам. Удалить данные — <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@kotlarewski</a>.
         </div>
         <Checkbox
           checked={c2}
@@ -178,11 +178,11 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         </div>
         <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6, marginBottom: 8 }}>
           Канал о схема-терапии —{' '}
-          <a href="https://t.me/SchemeHappens" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
+          <a href="https://t.me/SchemeHappens" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
         </div>
         <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.6 }}>
           Записаться на сессию —{' '}
-          <a href="https://t.me/kotlarewski" style={{ color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
+          <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
         </div>
       </div>
 
@@ -497,7 +497,7 @@ export default function App() {
         </div>
         <button
           onClick={() => window.location.reload()}
-          style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+          style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
         >
           Повторить
         </button>
@@ -533,7 +533,7 @@ export default function App() {
             }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
                 <span style={{ fontSize: 18 }}>👨‍⚕️</span>
-                <span style={{ fontSize: 10, fontWeight: 700, color: '#a78bfa', letterSpacing: '0.03em' }}>Кабинет</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.03em' }}>Кабинет</span>
               </div>
               <button
                 onClick={() => setShowSettings(true)}
@@ -674,7 +674,7 @@ export default function App() {
               >
                 <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#60a5fa' }}>Заполнить вчера</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить вчера</div>
                   <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
                 </div>
                 <button
@@ -689,7 +689,7 @@ export default function App() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px' }}>
                 <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
                 <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24' }}>Незаконченный тест схем</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-yellow)' }}>Незаконченный тест схем</div>
                   <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
                 </div>
                 <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'rgba(var(--fg-rgb),0.25)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
@@ -756,7 +756,7 @@ export default function App() {
             <div style={{ position: 'sticky', bottom: 0, padding: '12px 20px 28px', background: 'linear-gradient(to top, var(--bg) 65%, transparent)', zIndex: 5 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
-                style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'rgba(52,211,153,0.14)', color: '#34d399', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'rgba(52,211,153,0.14)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
               >
                 Готово — закрыть трекер ✓
               </button>
@@ -895,7 +895,7 @@ export default function App() {
               }}
             >
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#a78bfa' }}>Схема-терапия</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)' }}>Схема-терапия</div>
                 <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)', marginTop: 2 }}>Схемы, режимы, потребности</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.7)" strokeWidth="2" strokeLinecap="round">

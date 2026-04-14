@@ -156,8 +156,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   )}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
-                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Рекорд: <span style={{ color: '#ffd166', fontWeight: 600 }}>{longestStreak}</span></div>}
-                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Всего: <span style={{ color: '#a78bfa', fontWeight: 600 }}>{totalDays}</span></div>
+                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Рекорд: <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{longestStreak}</span></div>}
+                  <div style={{ fontSize: 11, color: 'rgba(var(--fg-rgb),0.35)' }}>Всего: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{totalDays}</span></div>
                 </div>
               </div>
 
@@ -169,7 +169,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%',
-                          background: done ? (i === 6 ? '#ffd166' : '#a78bfa') : 'rgba(var(--fg-rgb),0.07)',
+                          background: done ? (i === 6 ? 'var(--accent-yellow)' : 'var(--accent)') : 'rgba(var(--fg-rgb),0.07)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: done ? 13 : 0,
                           outline: isToday ? '2px solid rgba(167,139,250,0.5)' : 'none',
@@ -177,7 +177,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                         }}>
                           {done && '✓'}
                         </div>
-                        <div style={{ fontSize: 10, color: isToday ? '#a78bfa' : 'rgba(var(--fg-rgb),0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
+                        <div style={{ fontSize: 10, color: isToday ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
                       </div>
                     );
                   })}
@@ -185,7 +185,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
               )}
 
               {currentStreak === 0 && totalDays > 0 && onOpenTracker && (
-                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   Заполнить сегодня →
                 </button>
               )}
@@ -195,7 +195,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
                   const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
                   try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
-                }} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: '#a78bfa', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                }} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   Поделиться серией
                 </button>
               )}
@@ -220,21 +220,21 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                     {insights?.bestDayOfWeek && (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                         <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
-                          Лучше всего — <span style={{ color: '#ffd166', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
+                          Лучше всего — <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
                         </span>
                         <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'rgba(var(--fg-rgb),0.3)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
                       </div>
                     )}
                     {insights?.worstDayOfWeek && (
                       <span style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.4)' }}>
-                        Тяжелее — <span style={{ color: '#f87171', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
+                        Тяжелее — <span style={{ color: 'var(--accent-red)', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
                       </span>
                     )}
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
                   {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? '#f87171' : 'rgba(var(--fg-rgb),0.25)';
+                    const trendColor = s.trend === '↑' ? '#4ade80' : s.trend === '↓' ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.25)';
                     const barW = Math.round(((s.avg ?? 0) / 10) * 100);
                     return (
                       <div key={s.needId}>
@@ -338,7 +338,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
               <button onClick={async () => {
                 const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/Emotional_Needs_bot`;
                 try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch {}
-              }} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: '#a78bfa', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+              }} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
                 Поделиться
               </button>
             </div>

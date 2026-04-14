@@ -63,7 +63,7 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
         {loading ? (
           <div style={{ textAlign: 'center', color: 'rgba(var(--fg-rgb),0.3)', padding: '40px 0' }}>Загрузка...</div>
         ) : loadError ? (
-          <div style={{ textAlign: 'center', color: '#f87171', padding: '40px 0', fontSize: 14 }}>
+          <div style={{ textAlign: 'center', color: 'var(--accent-red)', padding: '40px 0', fontSize: 14 }}>
             Не удалось загрузить — попробуй позже
           </div>
         ) : needs.map(n => {
@@ -84,7 +84,7 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
         })}
 
         {saveError && (
-          <div style={{ fontSize: 12, color: '#f87171', textAlign: 'center', marginBottom: 8 }}>
+          <div style={{ fontSize: 12, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 8 }}>
             Ошибка сохранения — потяни ползунок ещё раз
           </div>
         )}
@@ -92,7 +92,7 @@ export function YesterdaySheet({ needs, date, onClose }: Props) {
           onClick={onClose}
           style={{
             marginTop: 8, width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: allDone ? '#a78bfa' : 'rgba(var(--fg-rgb),0.08)',
+            background: allDone ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)',
             color: allDone ? '#fff' : 'rgba(var(--fg-rgb),0.5)',
             fontSize: 15, fontWeight: 600, cursor: 'pointer',
           }}

@@ -88,7 +88,7 @@ export function LetterToSelf({ onClose, onComplete }: Props) {
         <button
           onClick={handleSave}
           disabled={!text.trim() || saved}
-          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: saved ? 'rgba(52,211,153,0.15)' : text.trim() ? 'rgba(251,191,36,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: saved ? '#34d399' : text.trim() ? '#fbbf24' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() && !saved ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 20 }}
+          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: saved ? 'rgba(52,211,153,0.15)' : text.trim() ? 'rgba(251,191,36,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: saved ? 'var(--accent-green)' : text.trim() ? 'var(--accent-yellow)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() && !saved ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 20 }}
         >
           {saved ? '✓ Сохранено' : 'Сохранить письмо'}
         </button>

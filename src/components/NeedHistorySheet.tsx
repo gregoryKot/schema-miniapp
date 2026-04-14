@@ -139,7 +139,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
           }}>
             <div style={{ fontSize: 28, flexShrink: 0 }}>🌱</div>
             <div>
-              <div style={{ fontSize: 12, color: childhoodValue <= 4 ? '#f87171' : '#34d399', fontWeight: 500, marginBottom: 3 }}>
+              <div style={{ fontSize: 12, color: childhoodValue <= 4 ? 'var(--accent-red)' : 'var(--accent-green)', fontWeight: 500, marginBottom: 3 }}>
                 Детство: {childhoodValue}/10
                 {recentAvg > 0 && childhoodValue > 0 && (
                   <span style={{ color: 'rgba(var(--fg-rgb),0.3)', fontWeight: 400, marginLeft: 8 }}>
@@ -184,7 +184,7 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
             {DISCLAIMER_CONTENT.map((p, i) => (
               <p key={i} style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 14 }}>{p}</p>
             ))}
-            <a href={getTherapistContact().url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 14, color: '#a78bfa', textDecoration: 'none', fontWeight: 500 }}>
+            <a href={getTherapistContact().url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', fontSize: 14, color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>
               → {getTherapistContact().name === 'автору' ? 'Поговорить с психологом' : `Написать ${getTherapistContact().name}`}
             </a>
           </div>

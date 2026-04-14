@@ -23,7 +23,7 @@ export const SCHEMA_DOMAINS = [
   {
     id: 'rejection',
     domain: 'Отчуждение и отвержение',
-    color: '#f87171',
+    color: 'var(--accent-red)',
     schemas: [
       { id: 'emotional_deprivation',  name: 'Эмоциональная депривация',            emoji: '🫤',
         desc: 'Убеждение, что эмоциональные потребности никогда не будут удовлетворены',
@@ -45,7 +45,7 @@ export const SCHEMA_DOMAINS = [
   {
     id: 'autonomy',
     domain: 'Нарушение автономии',
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     schemas: [
       { id: 'dependence',              name: 'Зависимость / Беспомощность',           emoji: '🪢',
         desc: 'Убеждённость в неспособности справляться с жизнью без чужой помощи',
@@ -64,7 +64,7 @@ export const SCHEMA_DOMAINS = [
   {
     id: 'limits',
     domain: 'Нарушение границ',
-    color: '#facc15',
+    color: 'var(--accent-yellow)',
     schemas: [
       { id: 'entitlement',               name: 'Привилегированность / Грандиозность', emoji: '👑',
         desc: 'Ощущение особости и права получать всё желаемое вне зависимости от других',
@@ -77,7 +77,7 @@ export const SCHEMA_DOMAINS = [
   {
     id: 'other_directed',
     domain: 'Ориентация на других',
-    color: '#34d399',
+    color: 'var(--accent-green)',
     schemas: [
       { id: 'subjugation',       name: 'Покорность',         emoji: '🎭',
         desc: 'Подавление своих желаний чтобы избежать конфликта или отвержения',
@@ -93,7 +93,7 @@ export const SCHEMA_DOMAINS = [
   {
     id: 'vigilance',
     domain: 'Бдительность и подавление',
-    color: '#818cf8',
+    color: 'var(--accent-indigo)',
     schemas: [
       { id: 'negativity',              name: 'Негативизм / Пессимизм',                  emoji: '🌧️',
         desc: 'Устойчивый фокус на негативе: потерях, разочарованиях, худшем сценарии',
@@ -127,7 +127,7 @@ export const MODE_GROUPS = [
   {
     id: 'child',
     group: 'Детские режимы',
-    color: '#60a5fa',
+    color: 'var(--accent-blue)',
     items: [
       // Уязвимые
       { id: 'vulnerable_child',  name: 'Уязвимый Ребёнок',   emoji: '🥺' },
@@ -156,7 +156,7 @@ export const MODE_GROUPS = [
   {
     id: 'coping_avoidance',
     group: 'Копинг: Избегание',
-    color: '#a78bfa',
+    color: 'var(--accent)',
     items: [
       { id: 'detached_protector',      name: 'Отстранённый Защитник',      emoji: '🌫️' },
       { id: 'detached_self_soother',   name: 'Отстранённый Самоутешитель', emoji: '🛋️' },
@@ -167,7 +167,7 @@ export const MODE_GROUPS = [
   {
     id: 'coping_overcompensation',
     group: 'Копинг: Гиперкомпенсация',
-    color: '#fb923c',
+    color: 'var(--accent-orange)',
     items: [
       { id: 'self_aggrandiser',          name: 'Самовозвеличиватель',              emoji: '🔥' },
       { id: 'overcontroller',            name: 'Гиперконтролёр',                   emoji: '🎛️' },
@@ -187,7 +187,7 @@ export const MODE_GROUPS = [
   {
     id: 'critic',
     group: 'Критикующие режимы',
-    color: '#f87171',
+    color: 'var(--accent-red)',
     items: [
       { id: 'demanding_critic',  name: 'Требовательный Критик',    emoji: '😬' },
       { id: 'punitive_critic',   name: 'Карающий Критик',          emoji: '😠' },
@@ -197,7 +197,7 @@ export const MODE_GROUPS = [
   {
     id: 'healthy',
     group: 'Здоровые режимы',
-    color: '#34d399',
+    color: 'var(--accent-green)',
     items: [
       { id: 'happy_child',    name: 'Счастливый Ребёнок', emoji: '😄' },
       { id: 'healthy_adult',  name: 'Здоровый Взрослый',  emoji: '🌿' },

@@ -88,7 +88,7 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
         <button onClick={handleSave} disabled={!text.trim() || saving} style={{
           flex: 2, padding: '9px 0', border: 'none', borderRadius: 10,
           background: text.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.06)',
-          color: text.trim() ? '#a78bfa' : 'rgba(var(--fg-rgb),0.2)',
+          color: text.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)',
           fontSize: 12, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
         }}>Сохранить</button>
       </div>

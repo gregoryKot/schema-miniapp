@@ -81,7 +81,7 @@ export function CheckInSheet({ plan, needEmoji, needLabel, color, onDone }: Prop
         </button>
       </div>
       {error && (
-        <div style={{ marginTop: 12, fontSize: 13, color: '#f87171', textAlign: 'center' }}>
+        <div style={{ marginTop: 12, fontSize: 13, color: 'var(--accent-red)', textAlign: 'center' }}>
           Не удалось сохранить — попробуй ещё раз
         </div>
       )}

@@ -25,6 +25,14 @@ html, body {
   --text-sub:      rgba(255,255,255,0.5);
   --text-faint:    rgba(255,255,255,0.35);
   --chip-sel-text: #ffffff;
+  /* Accent colors — light mode overrides ensure WCAG AA contrast (≥4.5:1) */
+  --accent:        #a78bfa;
+  --accent-indigo: #818cf8;
+  --accent-orange: #fb923c;
+  --accent-blue:   #60a5fa;
+  --accent-green:  #34d399;
+  --accent-yellow: #facc15;
+  --accent-red:    #f87171;
 }
 
 html[data-theme="light"] {
@@ -36,6 +44,14 @@ html[data-theme="light"] {
   --text-sub:      rgba(0,0,0,0.65);
   --text-faint:    rgba(0,0,0,0.5);
   --chip-sel-text: #1a0e40;
+  /* Darker shades for light backgrounds — pass contrast checks */
+  --accent:        #6d28d9;
+  --accent-indigo: #4338ca;
+  --accent-orange: #c2410c;
+  --accent-blue:   #1d4ed8;
+  --accent-green:  #059669;
+  --accent-yellow: #92400e;
+  --accent-red:    #dc2626;
 }
 
 body {

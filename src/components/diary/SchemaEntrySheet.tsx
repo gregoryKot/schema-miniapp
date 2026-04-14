@@ -22,7 +22,7 @@ interface Props {
   }) => Promise<void>;
 }
 
-const COLOR = '#f87171';
+const COLOR = 'var(--accent-red)';
 
 function FieldLabel({ title, hint }: { title: string; hint?: string }) {
   return (

@@ -37,7 +37,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
               Планы создаются в трекере — выбери потребность и нажми «Запланировать практику»
             </div>
             {onOpenTracker && (
-              <button onClick={() => { onClose(); onOpenTracker(); }} style={{ display: 'block', margin: '0 auto', padding: '12px 28px', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => { onClose(); onOpenTracker(); }} style={{ display: 'block', margin: '0 auto', padding: '12px 28px', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                 Открыть трекер
               </button>
             )}
@@ -75,7 +75,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                           setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: false } : p));
                           api.checkinPlan(plan.id, false).catch(() => setPlans(snapshot));
                         }}
-                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(248,113,113,0.1)', color: '#f87171', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(248,113,113,0.1)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
                       >
                         Не вышло
                       </button>
