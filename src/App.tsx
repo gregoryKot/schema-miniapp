@@ -626,6 +626,8 @@ export default function App() {
       {!therapistMode && section === 'schemas' && (
         <SchemasSection
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
+          childhoodRatings={childhoodRatings}
+          onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
         />
       )}
 

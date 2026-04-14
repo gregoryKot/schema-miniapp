@@ -23,9 +23,17 @@ function readLocalIds(key: string): string[] {
 
 interface Props {
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
+  childhoodRatings?: Record<string, number>;
+  onOpenChildhoodWheel?: () => void;
 }
 
-export function SchemasSection({ onOpenSchema }: Props) {
+function needScoreColor(v: number) {
+  if (v <= 3) return 'var(--accent-red)';
+  if (v <= 6) return 'var(--accent-yellow)';
+  return 'var(--accent-green)';
+}
+
+export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChildhoodWheel }: Props) {
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
   const [ysqSchemaIds, setYsqSchemaIds] = useState<string[]>([]);
@@ -34,8 +42,8 @@ export function SchemasSection({ onOpenSchema }: Props) {
   const [showModePicker, setShowModePicker] = useState(false);
   const [introModeId, setIntroModeId] = useState<string | null>(null);
   const [needsOpen, setNeedsOpen] = useState(false);
-  const [schemasOpen, setSchemasOpen] = useState(true);
-  const [modesOpen, setModesOpen] = useState(true);
+  const [schemasOpen, setSchemasOpen] = useState(false);
+  const [modesOpen, setModesOpen] = useState(false);
   const safeTop = useSafeTop();
 
   useEffect(() => {
@@ -63,6 +71,11 @@ export function SchemasSection({ onOpenSchema }: Props) {
   }
 
   const hasAnySchemas = allSchemaIds.length > 0;
+  const hasChildhood = Object.keys(childhoodRatings).length > 0;
+
+  const allSchemaObjects = SCHEMA_DOMAINS.flatMap(d => d.schemas).filter(s => allSchemaIds.includes(s.id));
+  const previewSchemaEmojis = allSchemaObjects.slice(0, 6).map(s => (s as any).emoji).filter(Boolean) as string[];
+  const previewModeEmojis = myModes.slice(0, 6).map(m => m.emoji);
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
@@ -98,23 +111,46 @@ export function SchemasSection({ onOpenSchema }: Props) {
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
                 Потребности
               </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {NEED_IDS.map(n => (
-                  <span key={n.id} style={{ fontSize: 14 }}>{NEED_DATA[n.id]?.emoji}</span>
-                ))}
-              </div>
+              {hasChildhood ? (
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {NEED_IDS.map(n => {
+                    const v = childhoodRatings[n.id];
+                    return v !== undefined ? (
+                      <span key={n.id} style={{ fontSize: 13, color: needScoreColor(v) }}>{NEED_DATA[n.id]?.emoji}</span>
+                    ) : (
+                      <span key={n.id} style={{ fontSize: 13, opacity: 0.3 }}>{NEED_DATA[n.id]?.emoji}</span>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {NEED_IDS.map(n => (
+                    <span key={n.id} style={{ fontSize: 13 }}>{NEED_DATA[n.id]?.emoji}</span>
+                  ))}
+                </div>
+              )}
             </div>
             <span style={{ color: 'var(--text-faint)', fontSize: 14, transition: 'transform 0.2s', display: 'inline-block', transform: needsOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>›</span>
           </div>
           {needsOpen && (
             <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {!hasChildhood && (
+                <div
+                  onClick={() => onOpenChildhoodWheel?.()}
+                  style={{ padding: '10px 14px', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.08)', cursor: 'pointer', marginBottom: 4 }}
+                >
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Как потребности удовлетворялись в детстве?</div>
+                  <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 3 }}>Заполнить колесо детства →</div>
+                </div>
+              )}
               {NEED_IDS.map(({ id, color, name }) => {
                 const d = NEED_DATA[id];
                 if (!d) return null;
+                const childScore = childhoodRatings[id];
                 return (
                   <div
                     key={id}
-                    onClick={() => onOpenSchema({ tab: 'needs' })}
+                    onClick={() => onOpenChildhoodWheel?.()}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
@@ -132,7 +168,14 @@ export function SchemasSection({ onOpenSchema }: Props) {
                       <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{name}</div>
                       <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{d.hint}</div>
                     </div>
-                    <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
+                    {childScore !== undefined ? (
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: needScoreColor(childScore), lineHeight: 1 }}>{childScore}</div>
+                        <div style={{ fontSize: 9, color: 'var(--text-faint)', letterSpacing: '0.04em', marginTop: 2 }}>детство</div>
+                      </div>
+                    ) : (
+                      <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
+                    )}
                   </div>
                 );
               })}
@@ -146,12 +189,17 @@ export function SchemasSection({ onOpenSchema }: Props) {
             onClick={() => setSchemasOpen(o => !o)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', cursor: 'pointer' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
                 Схемы
               </div>
-              {!profileLoading && hasAnySchemas && (
-                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{allSchemaIds.length}</div>
+              {!profileLoading && (
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {previewSchemaEmojis.length > 0
+                    ? previewSchemaEmojis.map((e, i) => <span key={i} style={{ fontSize: 13 }}>{e}</span>)
+                    : <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>не выбраны</span>
+                  }
+                </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -242,12 +290,17 @@ export function SchemasSection({ onOpenSchema }: Props) {
             onClick={() => setModesOpen(o => !o)}
             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', cursor: 'pointer' }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
                 Режимы
               </div>
-              {!profileLoading && myModes.length > 0 && (
-                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>{myModes.length}</div>
+              {!profileLoading && (
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {previewModeEmojis.length > 0
+                    ? previewModeEmojis.map((e, i) => <span key={i} style={{ fontSize: 13 }}>{e}</span>)
+                    : <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>не выбраны</span>
+                  }
+                </div>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
