@@ -5,6 +5,7 @@ import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { useSafeTop } from '../utils/safezone';
 import { getTheme, toggleTheme, resetToSystemTheme, Theme } from '../utils/theme';
+import { ABOUT_TEXT, NEEDS_EXPLAINER } from '../aboutData';
 
 const TIMEZONES = [
   { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
@@ -552,27 +553,25 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* О приложении */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>О ПРИЛОЖЕНИИ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px' }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>СхемаЛаб</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
-                    Дневник потребностей и инструменты схема-терапии. Помогает отслеживать состояние, понимать паттерны и работать с ранними дезадаптивными схемами.
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {[
-                      { label: 'Дневник потребностей', desc: '5 базовых потребностей, ежедневная оценка' },
-                      { label: 'Схемы и режимы', desc: '20 ранних дезадаптивных схем, YSQ-тест' },
-                      { label: 'Аналитика', desc: 'Тренды, инсайты, достижения' },
-                    ].map(item => (
-                      <div key={item.label} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                        <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'var(--accent)', marginTop: 6, flexShrink: 0 }} />
+                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '20px 16px' }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 16 }}>СхемаЛаб</div>
+                  {ABOUT_TEXT.map((para, i) => (
+                    <p key={i} style={{ fontSize: 14, color: i === 0 ? 'var(--text)' : 'var(--text-sub)', lineHeight: 1.7, marginBottom: 12, marginTop: 0 }}>{para}</p>
+                  ))}
+                  <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.07)', margin: '16px 0' }} />
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-sub)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>Пять потребностей</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {NEEDS_EXPLAINER.map(n => (
+                      <div key={n.name} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                        <span style={{ fontSize: 22, flexShrink: 0 }}>{n.emoji}</span>
                         <div>
-                          <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{item.label}</span>
-                          <span style={{ fontSize: 13, color: 'var(--text-sub)' }}> — {item.desc}</span>
+                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{n.name}</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>{n.text}</div>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 14, lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 16, lineHeight: 1.5 }}>
                     Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
                   </div>
                 </div>
