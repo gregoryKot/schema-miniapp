@@ -361,7 +361,7 @@ export function SchemaInfoContent({ initialTab, highlight }: { initialTab?: Tab;
           const active = tab === t.key;
           return (
             <button key={t.key} onClick={() => setTab(t.key)}
-              style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? '#fff' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
+              style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? 'var(--text)' : 'var(--text-faint)', fontSize: 13, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}
             >{t.label}</button>
           );
         })}

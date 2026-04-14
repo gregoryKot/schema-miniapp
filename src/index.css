@@ -33,6 +33,7 @@ html, body {
   --accent-green:  #34d399;
   --accent-yellow: #facc15;
   --accent-red:    #f87171;
+  --accent-pink:   #f472b6;
 }
 
 html[data-theme="light"] {
@@ -52,6 +53,7 @@ html[data-theme="light"] {
   --accent-green:  #059669;
   --accent-yellow: #92400e;
   --accent-red:    #dc2626;
+  --accent-pink:   #be185d;
 }
 
 body {

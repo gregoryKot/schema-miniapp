@@ -585,9 +585,12 @@ export default function App() {
               position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
               background: 'var(--nav-bg)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
               borderTop: '1px solid rgba(var(--fg-rgb),0.08)',
-              display: 'flex', alignItems: 'stretch', height: 64,
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
             }}>
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 5, paddingBottom: 1 }}>
+              <div style={{ fontSize: 9, fontWeight: 600, color: 'var(--text-faint)', letterSpacing: '0.1em' }}>β бета</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'stretch', height: 60 }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3 }}>
                 <span style={{ fontSize: 18 }}>👨‍⚕️</span>
                 <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.03em' }}>Кабинет</span>
@@ -601,6 +604,7 @@ export default function App() {
                 </svg>
                 Настройки
               </button>
+            </div>
             </div>
           )}
         </>

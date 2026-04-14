@@ -282,8 +282,6 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
           )}
         </div>
 
-        <TherapyNote compact />
-
         {/* ── Режимы ── */}
         <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
           <div
@@ -358,6 +356,8 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
             </div>
           )}
         </div>
+
+        <TherapyNote compact />
 
       </div>
 
