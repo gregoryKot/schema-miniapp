@@ -3,6 +3,7 @@ import { api, Achievement } from '../api';
 import { useSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { TherapyNote } from '../components/TherapyNote';
+import { MyNotesSheet } from '../components/MyNotesSheet';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -51,6 +52,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [insights, setInsights]         = useState<InsightsData | null>(null);
   const [ready, setReady]               = useState(false);
 
+  const [notesCount, setNotesCount] = useState<{ schema: number; mode: number } | null>(null);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
@@ -73,6 +76,9 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
       api.getStreak().then(setStreak).catch(() => {}),
       api.getAchievements().then(setAchievements).catch(() => {}),
       api.getInsights().then(setInsights).catch(() => {}),
+      Promise.all([api.getSchemaNotes(), api.getModeNotes()])
+        .then(([sn, mn]) => setNotesCount({ schema: sn.length, mode: mn.length }))
+        .catch(() => {}),
     ]).finally(() => setReady(true));
   }, [refreshKey]);
 
@@ -297,6 +303,24 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         )}
 
 
+        {/* ── Мои записи ── */}
+        {ready && notesCount !== null && (
+          <div onClick={() => setNotesOpen(true)} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <SectionLabel>МОИ ЗАПИСИ</SectionLabel>
+              {notesCount.schema + notesCount.mode === 0 ? (
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>Карточки схем и режимов</div>
+              ) : (
+                <div style={{ display: 'flex', gap: 12, marginTop: 2 }}>
+                  {notesCount.schema > 0 && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🧩 Схемы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.schema}</span></span>}
+                  {notesCount.mode > 0   && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🔄 Режимы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.mode}</span></span>}
+                </div>
+              )}
+            </div>
+            <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>
+          </div>
+        )}
+
         <div style={{ padding: '4px 0' }}>
           <TherapyNote compact />
         </div>
@@ -372,6 +396,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           </div>
         </BottomSheet>
       )}
+
+      {notesOpen && <MyNotesSheet onClose={() => setNotesOpen(false)} />}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
 import { SCHEMA_DOMAINS } from '../schemaTherapyData';
@@ -102,6 +102,11 @@ export function SchemaIntroSheet({ schemaId, onClose, onComplete }: Props) {
   const [data, setData] = useState<SchemaIntroData>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  }, []);
 
   useEffect(() => {
     // Load from server first, fallback to localStorage
@@ -134,16 +139,22 @@ export function SchemaIntroSheet({ schemaId, onClose, onComplete }: Props) {
   if (!schema) return null;
 
   const colorHex = VAR_HEX[schema.color] ?? '#a78bfa';
-  const set = (key: keyof SchemaIntroData, value: string) =>
-    setData(prev => ({ ...prev, [key]: value }));
+  const set = (key: keyof SchemaIntroData, value: string) => {
+    const newData = { ...data, [key]: value };
+    setData(newData);
+    localStorage.setItem(LS_KEY(schemaId), JSON.stringify(newData));
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      api.saveSchemaNote({ schemaId, ...newData }).catch(() => {});
+    }, 1500);
+  };
   const hasAny = Object.values(data).some(v => v.trim().length > 0);
 
   const handleSave = async () => {
+    if (autoSaveTimer.current) { clearTimeout(autoSaveTimer.current); autoSaveTimer.current = null; }
     setSaving(true);
     localStorage.setItem(LS_KEY(schemaId), JSON.stringify(data));
-    try {
-      await api.saveSchemaNote({ schemaId, ...data });
-    } catch {}
+    try { await api.saveSchemaNote({ schemaId, ...data }); } catch {}
     setSaving(false);
     setSaved(true);
     onComplete?.();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { getModeById } from '../schemaTherapyData';
 import { TherapyNote } from './TherapyNote';
@@ -98,6 +98,11 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
   const [data, setData] = useState<IntroData>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
+  }, []);
 
   useEffect(() => {
     api.getModeNotes().then(notes => {
@@ -114,10 +119,18 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
     });
   }, [modeId]);
 
-  const set = (key: keyof IntroData, value: string) =>
-    setData(prev => ({ ...prev, [key]: value }));
+  const set = (key: keyof IntroData, value: string) => {
+    const newData = { ...data, [key]: value };
+    setData(newData);
+    localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(newData));
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    autoSaveTimer.current = setTimeout(() => {
+      api.saveModeNote({ modeId, ...newData }).catch(() => {});
+    }, 1500);
+  };
 
   const handleSave = async () => {
+    if (autoSaveTimer.current) { clearTimeout(autoSaveTimer.current); autoSaveTimer.current = null; }
     setSaving(true);
     localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(data));
     try { await api.saveModeNote({ modeId, ...data }); } catch {}
