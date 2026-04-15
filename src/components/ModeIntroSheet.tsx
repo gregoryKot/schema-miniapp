@@ -90,9 +90,10 @@ const QUESTIONS: { key: keyof IntroData; label: string; hint: string; placeholde
 interface Props {
   modeId: string;
   onClose: () => void;
+  onComplete?: () => void;
 }
 
-export function ModeIntroSheet({ modeId, onClose }: Props) {
+export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
   const mode = getModeById(modeId);
   const [data, setData] = useState<IntroData>(EMPTY);
   const [saving, setSaving] = useState(false);
@@ -122,6 +123,7 @@ export function ModeIntroSheet({ modeId, onClose }: Props) {
     try { await api.saveModeNote({ modeId, ...data }); } catch {}
     setSaving(false);
     setSaved(true);
+    onComplete?.();
     setTimeout(() => setSaved(false), 1800);
   };
 

@@ -94,9 +94,10 @@ const QUESTIONS: {
 interface Props {
   schemaId: string;
   onClose: () => void;
+  onComplete?: () => void;
 }
 
-export function SchemaIntroSheet({ schemaId, onClose }: Props) {
+export function SchemaIntroSheet({ schemaId, onClose, onComplete }: Props) {
   const schema = getSchemaById(schemaId);
   const [data, setData] = useState<SchemaIntroData>(EMPTY);
   const [saving, setSaving] = useState(false);
@@ -145,6 +146,7 @@ export function SchemaIntroSheet({ schemaId, onClose }: Props) {
     } catch {}
     setSaving(false);
     setSaved(true);
+    onComplete?.();
     setTimeout(() => setSaved(false), 1800);
   };
 

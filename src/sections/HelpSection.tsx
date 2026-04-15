@@ -297,8 +297,8 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} onComplete={handleTaskComplete} />}
       {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} onComplete={handleTaskComplete} />}
       {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} onComplete={handleTaskComplete} />}
-      {introSchemaId && <SchemaIntroSheet schemaId={introSchemaId} onClose={() => { setIntroSchemaId(null); handleTaskComplete(); }} />}
-      {introModeId && <ModeIntroSheet modeId={introModeId} onClose={() => { setIntroModeId(null); handleTaskComplete(); }} />}
+      {introSchemaId && <SchemaIntroSheet schemaId={introSchemaId} onClose={() => setIntroSchemaId(null)} onComplete={() => { setIntroSchemaId(null); handleTaskComplete(); }} />}
+      {introModeId && <ModeIntroSheet modeId={introModeId} onClose={() => setIntroModeId(null)} onComplete={() => { setIntroModeId(null); handleTaskComplete(); }} />}
       {showTaskCreate && (
         <TaskCreateSheet
           onCreated={() => {
