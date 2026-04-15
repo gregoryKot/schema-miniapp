@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
 import { SCHEMA_DOMAINS } from '../schemaTherapyData';
+import { api } from '../api';
 
-const STORAGE_KEY = (id: string) => `schema_intro_${id}`;
+const LS_KEY = (id: string) => `schema_intro_${id}`;
 
 const VAR_HEX: Record<string, string> = {
   'var(--accent-red)':    '#f87171',
@@ -23,39 +24,70 @@ function getSchemaById(id: string) {
   return null;
 }
 
-interface IntroData {
-  triggers: string;
-  feelings: string;
-  thoughts: string;
-  behavior: string;
+export interface SchemaIntroData {
+  triggers: string;    // ситуация-триггер
+  feelings: string;    // эмоции и тело
+  thoughts: string;    // голос схемы
+  origins: string;     // детские корни
+  reality: string;     // реальность vs схема
+  healthyView: string; // голос Здорового Взрослого
+  behavior: string;    // здоровое действие
 }
 
-const EMPTY: IntroData = { triggers: '', feelings: '', thoughts: '', behavior: '' };
+const EMPTY: SchemaIntroData = {
+  triggers: '', feelings: '', thoughts: '',
+  origins: '', reality: '', healthyView: '', behavior: '',
+};
 
-const QUESTIONS: { key: keyof IntroData; label: string; hint: string; placeholder: string }[] = [
+const QUESTIONS: {
+  key: keyof SchemaIntroData;
+  label: string;
+  hint: string;
+  placeholder: string;
+  optional?: boolean;
+}[] = [
   {
     key: 'triggers',
-    label: 'Когда активируется',
-    hint: 'Ситуации, люди, слова — что запускает эту схему?',
-    placeholder: 'Например: когда меня критикуют, когда остаюсь один…',
+    label: '1. Ситуация-триггер',
+    hint: 'Что именно произошло? Что запустило схему?',
+    placeholder: 'Например: мне не ответили на сообщение, попросили переделать работу...',
   },
   {
     key: 'feelings',
-    label: 'Что чувствую',
-    hint: 'Эмоции и ощущения в теле',
-    placeholder: 'Например: тревога, тяжесть в груди, хочется исчезнуть…',
+    label: '2. Эмоции и тело',
+    hint: 'Что ты почувствовал(а)? Где это ощущалось физически?',
+    placeholder: 'Например: тревога, комок в горле, напряжение в плечах, хотелось уйти...',
   },
   {
     key: 'thoughts',
-    label: 'Что говорит схема',
-    hint: 'Убеждение, которое она внушает',
-    placeholder: 'Например: «меня никто не любит», «я недостаточно хорош»…',
+    label: '3. Голос схемы',
+    hint: 'Что схема говорит о тебе, о других, о будущем?',
+    placeholder: 'Например: «я всегда один», «меня никто не ценит», «всё рухнет»...',
+  },
+  {
+    key: 'origins',
+    label: '4. Детские корни',
+    hint: 'Когда это впервые появилось? Что происходило в семье?',
+    placeholder: 'Например: мама часто критиковала, папа уходил когда злился...',
+    optional: true,
+  },
+  {
+    key: 'reality',
+    label: '5. Реальность vs схема',
+    hint: 'Какие факты противоречат голосу схемы? Что на самом деле правда?',
+    placeholder: 'Например: есть люди которым я важен, я справлялся с трудным раньше...',
+  },
+  {
+    key: 'healthyView',
+    label: '6. Голос Здорового Взрослого',
+    hint: 'Что бы сказал мудрый, заботливый внутренний голос?',
+    placeholder: 'Например: «эта боль из прошлого, сейчас я в безопасности», «я достаточно хорош»...',
   },
   {
     key: 'behavior',
-    label: 'Как я обычно реагирую',
-    hint: 'Что делаю или перестаю делать в этом состоянии',
-    placeholder: 'Например: ухожу в себя, цепляюсь, злюсь, стараюсь угодить…',
+    label: '7. Здоровое действие',
+    hint: 'Что можно сделать иначе прямо сейчас вместо привычной реакции?',
+    placeholder: 'Например: сказать о своих чувствах, взять паузу, позвонить другу...',
   },
 ];
 
@@ -66,32 +98,60 @@ interface Props {
 
 export function SchemaIntroSheet({ schemaId, onClose }: Props) {
   const schema = getSchemaById(schemaId);
-  const [data, setData] = useState<IntroData>(EMPTY);
+  const [data, setData] = useState<SchemaIntroData>(EMPTY);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY(schemaId));
-    if (stored) {
-      try { setData(JSON.parse(stored)); } catch {}
-    }
+    // Load from server first, fallback to localStorage
+    api.getSchemaNotes().then(notes => {
+      const note = notes.find(n => n.schemaId === schemaId);
+      if (note) {
+        setData({
+          triggers:    note.triggers,
+          feelings:    note.feelings,
+          thoughts:    note.thoughts,
+          origins:     note.origins,
+          reality:     note.reality,
+          healthyView: note.healthyView,
+          behavior:    note.behavior,
+        });
+      } else {
+        const stored = localStorage.getItem(LS_KEY(schemaId));
+        if (stored) {
+          try { setData(JSON.parse(stored)); } catch {}
+        }
+      }
+    }).catch(() => {
+      const stored = localStorage.getItem(LS_KEY(schemaId));
+      if (stored) {
+        try { setData(JSON.parse(stored)); } catch {}
+      }
+    });
   }, [schemaId]);
 
   if (!schema) return null;
 
   const colorHex = VAR_HEX[schema.color] ?? '#a78bfa';
-  const set = (key: keyof IntroData, value: string) =>
+  const set = (key: keyof SchemaIntroData, value: string) =>
     setData(prev => ({ ...prev, [key]: value }));
   const hasAny = Object.values(data).some(v => v.trim().length > 0);
 
-  const handleSave = () => {
-    localStorage.setItem(STORAGE_KEY(schemaId), JSON.stringify(data));
+  const handleSave = async () => {
+    setSaving(true);
+    localStorage.setItem(LS_KEY(schemaId), JSON.stringify(data));
+    try {
+      await api.saveSchemaNote({ schemaId, ...data });
+    } catch {}
+    setSaving(false);
     setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
+    setTimeout(() => setSaved(false), 1800);
   };
 
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
+
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
           <div style={{
@@ -119,12 +179,18 @@ export function SchemaIntroSheet({ schemaId, onClose }: Props) {
         </div>
 
         <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
-          Ответь честно — это личная карточка только для тебя. Чем точнее, тем яснее видна схема.
+          Заполни карточку в момент когда схема активировалась — или по свежим следам.
+          Со временем ты научишься узнавать её раньше.
         </div>
 
         {QUESTIONS.map(q => (
           <div key={q.key} style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{q.label}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{q.label}</div>
+              {q.optional && (
+                <span style={{ fontSize: 11, color: 'var(--text-faint)', fontStyle: 'italic' }}>необязательно</span>
+              )}
+            </div>
             <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>{q.hint}</div>
             <textarea
               value={data[q.key]}
@@ -148,7 +214,7 @@ export function SchemaIntroSheet({ schemaId, onClose }: Props) {
 
         <button
           onClick={handleSave}
-          disabled={!hasAny}
+          disabled={!hasAny || saving}
           style={{
             width: '100%', padding: '14px', borderRadius: 14, border: 'none',
             background: hasAny
@@ -159,7 +225,7 @@ export function SchemaIntroSheet({ schemaId, onClose }: Props) {
             cursor: hasAny ? 'pointer' : 'default', transition: 'all 0.2s',
           }}
         >
-          {saved ? '✓ Сохранено' : 'Сохранить'}
+          {saving ? 'Сохраняем…' : saved ? '✓ Сохранено' : 'Сохранить'}
         </button>
       </div>
     </BottomSheet>

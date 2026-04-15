@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { getModeById } from '../schemaTherapyData';
 import { TherapyNote } from './TherapyNote';
+import { api } from '../api';
 
 const STORAGE_KEY = (modeId: string) => `mode_intro_${modeId}`;
 
@@ -94,22 +95,34 @@ interface Props {
 export function ModeIntroSheet({ modeId, onClose }: Props) {
   const mode = getModeById(modeId);
   const [data, setData] = useState<IntroData>(EMPTY);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY(modeId));
-    if (stored) {
-      try { setData(JSON.parse(stored)); } catch {}
-    }
+    api.getModeNotes().then(notes => {
+      const note = notes.find(n => n.modeId === modeId);
+      if (note) {
+        setData({ triggers: note.triggers, feelings: note.feelings, thoughts: note.thoughts, needs: note.needs, behavior: note.behavior });
+      } else {
+        const stored = localStorage.getItem(STORAGE_KEY(modeId));
+        if (stored) { try { setData(JSON.parse(stored)); } catch {} }
+      }
+    }).catch(() => {
+      const stored = localStorage.getItem(STORAGE_KEY(modeId));
+      if (stored) { try { setData(JSON.parse(stored)); } catch {} }
+    });
   }, [modeId]);
 
   const set = (key: keyof IntroData, value: string) =>
     setData(prev => ({ ...prev, [key]: value }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setSaving(true);
     localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(data));
+    try { await api.saveModeNote({ modeId, ...data }); } catch {}
+    setSaving(false);
     setSaved(true);
-    setTimeout(() => setSaved(false), 1500);
+    setTimeout(() => setSaved(false), 1800);
   };
 
   const hasAny = Object.values(data).some(v => v.trim().length > 0);
@@ -191,7 +204,7 @@ export function ModeIntroSheet({ modeId, onClose }: Props) {
             transition: 'all 0.2s',
           }}
         >
-          {saved ? '✓ Сохранено' : 'Сохранить'}
+          {saving ? 'Сохраняем…' : saved ? '✓ Сохранено' : 'Сохранить'}
         </button>
       </div>
     </BottomSheet>

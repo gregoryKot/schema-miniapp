@@ -318,4 +318,12 @@ export const api = {
 
   // ─── Client YSQ / profile data ───────────────────────────────────────────────
   getTherapyClientData: (clientId: number) => get<ClientData>(`/api/therapy/client-data/${clientId}`),
+
+  // ─── Schema & Mode Notes ─────────────────────────────────────────────────────
+  getSchemaNotes: () => get<Array<{ schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string }>>('/api/schema-notes'),
+  saveSchemaNote: (body: { schemaId: string; triggers?: string; feelings?: string; thoughts?: string; origins?: string; reality?: string; healthyView?: string; behavior?: string }) =>
+    post('/api/schema-notes', body),
+  getModeNotes: () => get<Array<{ modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string }>>('/api/mode-notes'),
+  saveModeNote: (body: { modeId: string; triggers?: string; feelings?: string; thoughts?: string; needs?: string; behavior?: string }) =>
+    post('/api/mode-notes', body),
 };
