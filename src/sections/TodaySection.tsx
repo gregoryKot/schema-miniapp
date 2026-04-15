@@ -324,7 +324,7 @@ const STEPS: StepDef[] = [
     title: 'Оцени потребности сегодня',
     description: 'Посмотри на свой день через пять ключевых потребностей — займёт 2 минуты',
     actionLabel: 'Перейти в трекер',
-    canSkip: false,
+    canSkip: true,
     isDone: (p) => !!(p?.lastActivity.needsTracker),
   },
   {
@@ -332,8 +332,8 @@ const STEPS: StepDef[] = [
     emoji: '📔',
     title: 'Сделай первую запись в дневнике',
     description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии',
-    actionLabel: 'Открыть СхемаЛаб',
-    canSkip: false,
+    actionLabel: 'Открыть дневник',
+    canSkip: true,
     isDone: (p) => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary),
   },
   {
