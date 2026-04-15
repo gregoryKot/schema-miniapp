@@ -6,7 +6,9 @@ import { BeliefCheck } from '../components/BeliefCheck';
 import { SafePlace } from '../components/SafePlace';
 import { TherapyNote } from '../components/TherapyNote';
 import { CHILDHOOD_DONE_KEY } from '../components/ChildhoodWheelSheet';
-import { TaskCreateSheet } from '../components/TaskCreateSheet';
+import { TaskCreateSheet, getTaskDisplayText } from '../components/TaskCreateSheet';
+import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
+import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { api, UserTask, TherapyRelationInfo } from '../api';
 import { BottomSheet } from '../components/BottomSheet';
 import { SectionLabel } from '../components/SectionLabel';
@@ -52,7 +54,7 @@ function plural(n: number, one: string, few: string, many: string) {
 const TASK_EMOJI: Record<string, string> = {
   diary_streak: '📔', tracker_streak: '📊', belief_check: '🔍',
   letter_to_self: '✉️', safe_place: '🏡', childhood_wheel: '🌱',
-  flashcard: '🆘', custom: '✏️',
+  flashcard: '🆘', schema_intro: '🧩', mode_intro: '🔄', custom: '✏️',
 };
 
 function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
@@ -65,7 +67,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
     >
       <span style={{ fontSize: 15, flexShrink: 0 }}>{task.doneToday ? '✅' : (TASK_EMOJI[task.type] ?? '⏳')}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--text)' }}>{task.text}</div>
+        <div style={{ fontSize: 13, color: 'var(--text)' }}>{getTaskDisplayText(task.type, task.text)}</div>
         {task.doneToday && isStreakTask && (
           <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
@@ -111,6 +113,8 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const [showBeliefCheck, setShowBeliefCheck] = useState(false);
   const [showLetterToSelf, setShowLetterToSelf] = useState(false);
   const [showSafePlace, setShowSafePlace] = useState(false);
+  const [introSchemaId, setIntroSchemaId] = useState<string | null>(null);
+  const [introModeId, setIntroModeId] = useState<string | null>(null);
   const [activeTaskId, setActiveTaskId] = useState<number | null>(null);
   const [showTaskCreate, setShowTaskCreate] = useState(false);
   const [showAllTasks, setShowAllTasks] = useState(false);
@@ -146,6 +150,8 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       case 'safe_place':      setShowSafePlace(true); break;
       case 'childhood_wheel': onOpenChildhoodWheel(); break;
       case 'flashcard':       setShowFlashcard(true); break;
+      case 'schema_intro':    if (task.text) setIntroSchemaId(task.text); break;
+      case 'mode_intro':      if (task.text) setIntroModeId(task.text); break;
       default: break;
     }
   }
@@ -291,6 +297,8 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       {showBeliefCheck && <BeliefCheck onClose={() => setShowBeliefCheck(false)} onComplete={handleTaskComplete} />}
       {showLetterToSelf && <LetterToSelf onClose={() => setShowLetterToSelf(false)} onComplete={handleTaskComplete} />}
       {showSafePlace && <SafePlace onClose={() => setShowSafePlace(false)} onComplete={handleTaskComplete} />}
+      {introSchemaId && <SchemaIntroSheet schemaId={introSchemaId} onClose={() => { setIntroSchemaId(null); handleTaskComplete(); }} />}
+      {introModeId && <ModeIntroSheet modeId={introModeId} onClose={() => { setIntroModeId(null); handleTaskComplete(); }} />}
       {showTaskCreate && (
         <TaskCreateSheet
           onCreated={() => {
