@@ -5,7 +5,6 @@ import { BottomSheet } from './BottomSheet';
 import { Loader } from './Loader';
 import { useSafeTop } from '../utils/safezone';
 import { getTheme, toggleTheme, resetToSystemTheme, Theme } from '../utils/theme';
-import { ABOUT_TEXT, NEEDS_EXPLAINER } from '../aboutData';
 
 const TIMEZONES = [
   { label: 'Лос-Анджелес (UTC−8)', iana: 'America/Los_Angeles' },
@@ -554,24 +553,23 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>О ПРИЛОЖЕНИИ</SettingsLabel>
                 <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '20px 16px' }}>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 16 }}>СхемаЛаб</div>
-                  {ABOUT_TEXT.map((para, i) => (
-                    <p key={i} style={{ fontSize: 14, color: i === 0 ? 'var(--text)' : 'var(--text-sub)', lineHeight: 1.7, marginBottom: 12, marginTop: 0 }}>{para}</p>
-                  ))}
-                  <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.07)', margin: '16px 0' }} />
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-sub)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>Пять потребностей</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {NEEDS_EXPLAINER.map(n => (
-                      <div key={n.name} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                        <span style={{ fontSize: 22, flexShrink: 0 }}>{n.emoji}</span>
-                        <div>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{n.name}</div>
-                          <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>{n.text}</div>
-                        </div>
-                      </div>
-                    ))}
+                  <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 10 }}>СхемаЛаб</div>
+                  <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, margin: '0 0 16px' }}>
+                    Инструмент самопознания на основе схема-терапии: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
+                  </p>
+                  <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.07)', marginBottom: 16 }} />
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-sub)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>Об авторе</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+                    <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+                      Канал о схема-терапии —{' '}
+                      <a href="https://t.me/SchemeHappens" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@SchemeHappens</a>
+                    </div>
+                    <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+                      Записаться на сессию —{' '}
+                      <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@kotlarewski</a>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 16, lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.5 }}>
                     Разработано для образовательных целей. Не является медицинским или психологическим сервисом.
                   </div>
                 </div>
