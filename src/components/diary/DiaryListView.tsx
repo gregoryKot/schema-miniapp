@@ -198,7 +198,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
       <div style={{ display: 'flex', gap: 8 }}>
         <button
           onClick={onContinue}
-          style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: 'none', background: color, color: type === 'gratitude' ? 'var(--bg)' : '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: 'none', background: color, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
         >
           Продолжить
         </button>
@@ -282,7 +282,7 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
       <button onClick={onNewEntry} style={{
         position: 'fixed', bottom: 80, right: 20,
         background: meta.color, border: 'none', borderRadius: 20,
-        padding: '14px 20px', color: type === 'gratitude' ? 'var(--bg)' : '#fff',
+        padding: '14px 20px', color: '#fff',
         fontSize: 15, fontWeight: 700, cursor: 'pointer',
         boxShadow: `0 4px 24px ${meta.color}66`,
       }}>

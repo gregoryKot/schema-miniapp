@@ -6,6 +6,8 @@ import { useSafeTop } from '../utils/safezone';
 import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
+import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
+import { NeedDetailSheet } from '../components/NeedDetailSheet';
 import { TherapyNote } from '../components/TherapyNote';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
@@ -53,6 +55,8 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
   const [showSchemaPicker, setShowSchemaPicker] = useState(false);
   const [showModePicker, setShowModePicker] = useState(false);
   const [introModeId, setIntroModeId] = useState<string | null>(null);
+  const [introSchemaId, setIntroSchemaId] = useState<string | null>(null);
+  const [detailNeedId, setDetailNeedId] = useState<string | null>(null);
   const [needsOpen, setNeedsOpen] = useState(false);
   const [schemasOpen, setSchemasOpen] = useState(false);
   const [modesOpen, setModesOpen] = useState(false);
@@ -167,7 +171,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                 return (
                   <div
                     key={id}
-                    onClick={() => onOpenSchema({ tab: 'needs' })}
+                    onClick={() => setDetailNeedId(id)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 12,
                       padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
@@ -253,32 +257,35 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                           {domain.domain}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {domainActive.map(s => (
-                            <div
-                              key={s.id}
-                              onClick={() => onOpenSchema({ tab: 'schemas', highlight: s.name })}
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 12,
-                                padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                                background: `${hex(domain.color)}0d`, border: `1px solid ${hex(domain.color)}22`,
-                              }}
-                            >
-                              <div style={{
-                                width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                                background: `${hex(domain.color)}18`, border: `1px solid ${hex(domain.color)}30`,
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
-                              }}>
-                                {(s as any).emoji ?? '●'}
+                          {domainActive.map(s => {
+                            const introSaved = !!localStorage.getItem(`schema_intro_${s.id}`);
+                            return (
+                              <div
+                                key={s.id}
+                                onClick={() => setIntroSchemaId(s.id)}
+                                style={{
+                                  display: 'flex', alignItems: 'center', gap: 12,
+                                  padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
+                                  background: `${hex(domain.color)}0d`, border: `1px solid ${hex(domain.color)}22`,
+                                }}
+                              >
+                                <div style={{
+                                  width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                                  background: `${hex(domain.color)}18`, border: `1px solid ${hex(domain.color)}30`,
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                                }}>
+                                  {(s as any).emoji ?? '●'}
+                                </div>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{s.name}</div>
+                                  <div style={{ fontSize: 11, color: introSaved ? domain.color : 'var(--text-faint)', marginTop: 2 }}>
+                                    {introSaved ? 'Заполнено' : 'Познакомиться →'}
+                                  </div>
+                                </div>
+                                <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
                               </div>
-                              <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{s.name}</div>
-                                {(s as any).desc && (
-                                  <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{(s as any).desc}</div>
-                                )}
-                              </div>
-                              <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       </div>
                     );
@@ -382,13 +389,11 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
           )}
         </div>
 
-        <TherapyNote compact />
-
       </div>
 
       {/* Therapy note */}
       <div style={{ padding: '0 20px', marginTop: 4, marginBottom: 12 }}>
-        <TherapyNote />
+        <TherapyNote compact />
       </div>
 
       {/* Section info sheet */}
@@ -440,6 +445,19 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
 
       {introModeId && (
         <ModeIntroSheet modeId={introModeId} onClose={() => setIntroModeId(null)} />
+      )}
+
+      {introSchemaId && (
+        <SchemaIntroSheet schemaId={introSchemaId} onClose={() => setIntroSchemaId(null)} />
+      )}
+
+      {detailNeedId && (
+        <NeedDetailSheet
+          needId={detailNeedId}
+          childhoodRating={childhoodRatings[detailNeedId]}
+          activeSchemaIds={allSchemaIds}
+          onClose={() => setDetailNeedId(null)}
+        />
       )}
     </div>
   );
