@@ -104,7 +104,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           transition: 'all 0.15s',
         }}
       >
-        {checked && <span style={{ fontSize: 11, color: 'var(--text)', fontWeight: 700 }}>✓</span>}
+        {checked && <span style={{ fontSize: 11, color: 'var(--on-accent)', fontWeight: 700 }}>✓</span>}
       </div>
       <span onClick={onToggle} style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>{label}</span>
     </label>
@@ -358,9 +358,6 @@ export default function App() {
       })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
-    api.getDisclaimer().then(({ accepted }) => {
-      if (accepted) { localStorage.setItem(DISCLAIMER_KEY, '1'); setDisclaimerDone(true); }
-    }).catch(() => {});
     api.getPair().then(setPairData).catch(e => console.error('getPair failed', e));
     api.getSettings().then(s => {
       setPairCardDismissed(s.pairCardDismissed);

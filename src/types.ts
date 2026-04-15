@@ -11,11 +11,11 @@ export interface DayHistory {
 }
 
 export const COLORS: Record<string, string> = {
-  attachment: '#ff6b9d',
+  attachment: '#f472b6',
   autonomy:   '#4fa3f7',
-  expression: 'var(--accent-yellow)',
-  play:       '#06d6a0',
-  limits:     'var(--accent)',
+  expression: '#f59e0b',
+  play:       '#10b981',
+  limits:     '#a78bfa',
 };
 
 export const YESTERDAY: Record<string, number> = {

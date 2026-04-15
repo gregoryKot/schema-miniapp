@@ -180,7 +180,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                           background: done ? (i === 6 ? 'var(--accent-yellow)' : 'var(--accent)') : 'rgba(var(--fg-rgb),0.07)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: done ? 13 : 0,
-                          outline: isToday ? '2px solid rgba(167,139,250,0.5)' : 'none',
+                          color: 'var(--on-accent)',
+                          outline: isToday ? '2px solid var(--accent)' : 'none',
                           outlineOffset: 2,
                         }}>
                           {done && '✓'}

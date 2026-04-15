@@ -25,6 +25,7 @@ html, body {
   --text-sub:      rgba(255,255,255,0.5);
   --text-faint:    rgba(255,255,255,0.35);
   --chip-sel-text: #ffffff;
+  --on-accent:     #ffffff;
   /* Accent colors — light mode overrides ensure WCAG AA contrast (≥4.5:1) */
   --accent:        #a78bfa;
   --accent-indigo: #818cf8;
@@ -38,13 +39,14 @@ html, body {
 
 html[data-theme="light"] {
   --fg-rgb:        0, 0, 0;
-  --bg:            #ece7fb;
-  --sheet-bg:      #f7f4ff;
-  --text:          #1a0e40;
-  --nav-bg:        rgba(236,231,251,0.97);
-  --text-sub:      rgba(0,0,0,0.72);
-  --text-faint:    rgba(0,0,0,0.55);
-  --chip-sel-text: #1a0e40;
+  --bg:            #edeaf5;
+  --sheet-bg:      #ffffff;
+  --text:          #16132c;
+  --nav-bg:        rgba(237,234,245,0.97);
+  --text-sub:      rgba(22,19,44,0.62);
+  --text-faint:    rgba(22,19,44,0.42);
+  --chip-sel-text: #ffffff;
+  --on-accent:     #ffffff;
   /* Darker shades for light backgrounds — pass contrast checks */
   --accent:        #6d28d9;
   --accent-indigo: #4338ca;
