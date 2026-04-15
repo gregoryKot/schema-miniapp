@@ -371,6 +371,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
   });
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
   const [celebrating, setCelebrating] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   if (done) return null;
 
@@ -394,9 +395,9 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
   }
 
   const ctx: StepContext = { hasSchemas };
-  const current = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
+  const autoStep = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
-  if (!current && !celebrating) {
+  if (!autoStep && !celebrating) {
     if (!localStorage.getItem(ONBOARDING_DONE_KEY)) {
       setCelebrating(true);
     } else {
@@ -411,26 +412,36 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
     );
   }
 
-  if (!current) return null;
+  if (!autoStep) return null;
 
-  const resolved = STEPS.filter(s => s.isDone(profile, ctx) || skipped.includes(s.id)).length;
-  const total = STEPS.length;
+  // selected step via dot tap, or auto (first pending)
+  const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
 
   function handleSkip() {
-    const next = [...skipped, current!.id];
+    if (skipped.includes(current.id)) {
+      // already skipped — just deselect
+      setSelectedId(null);
+      return;
+    }
+    const next = [...skipped, current.id];
     localStorage.setItem(ONBOARDING_SKIPPED_KEY, JSON.stringify(next));
     setSkipped(next);
+    setSelectedId(null);
   }
 
   function handleAction() {
-    switch (current!.id) {
+    switch (current.id) {
       case 'ysq':      onOpenSchema({ startTest: true }); break;
       case 'tracker':  onOpenTracker(); break;
       case 'diary':    onOpenDiaries(); break;
       case 'notify':   onOpenAdvanced(); break;
       case 'childhood': onOpenChildhoodWheel(); break;
     }
+    setSelectedId(null);
   }
+
+  const isCurrentDone = current.isDone(profile, ctx);
+  const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
 
   return (
     <div style={{
@@ -449,11 +460,15 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
             const isSkipped = skipped.includes(s.id) && !isDone;
             const isCurrent = s.id === current.id;
             return (
-              <div key={s.id} style={{
-                width: isCurrent ? 18 : 8, height: 8, borderRadius: 4,
-                background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.12)',
-                transition: 'all 0.3s ease',
-              }} />
+              <div
+                key={s.id}
+                onClick={() => setSelectedId(s.id === current.id ? null : s.id)}
+                style={{
+                  width: isCurrent ? 18 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
+                  background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.12)',
+                  transition: 'all 0.3s ease',
+                }}
+              />
             );
           })}
         </div>
@@ -468,34 +483,35 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
       </div>
 
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <button
-          onClick={handleAction}
-          style={{
-            flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
-            background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-            color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          {current.actionLabel} →
-        </button>
-        {current.canSkip && (
+        {isCurrentDone ? (
+          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', fontSize: 13, fontWeight: 600, color: 'rgba(52,211,153,0.9)', textAlign: 'center' }}>
+            ✓ Выполнено
+          </div>
+        ) : (
+          <button
+            onClick={handleAction}
+            style={{
+              flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
+              background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+              color: '#ffffff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            {current.actionLabel} →
+          </button>
+        )}
+        {!isCurrentDone && (
           <button
             onClick={handleSkip}
             style={{
               padding: '11px 14px', borderRadius: 12, border: 'none',
               background: 'rgba(var(--fg-rgb),0.06)',
-              color: 'var(--text-sub)', fontSize: 13, cursor: 'pointer',
+              color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-sub)', fontSize: 13, cursor: 'pointer',
             }}
           >
-            Не сейчас
+            {isCurrentSkipped ? 'Вернуть' : 'Не сейчас'}
           </button>
         )}
       </div>
-      {!current.canSkip && resolved > 0 && (
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 10 }}>
-          {resolved} из {total} шагов выполнено
-        </div>
-      )}
     </div>
   );
 }
