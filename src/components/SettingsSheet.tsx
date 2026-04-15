@@ -51,6 +51,8 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const [showNotifyInfo, setShowNotifyInfo] = useState(false);
+  const [showPairInfo, setShowPairInfo] = useState(false);
+  const [showTherapistInfo, setShowTherapistInfo] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleting, setDeleting]     = useState(false);
   const [savedToast, setSavedToast] = useState(false);
@@ -291,10 +293,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
               {/* Уведомления */}
               <div style={{ marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-                  <SettingsLabel>УВЕДОМЛЕНИЯ</SettingsLabel>
-                  <span onClick={() => setShowNotifyInfo(true)} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 8, fontWeight: 600, cursor: 'pointer', flexShrink: 0, marginBottom: 10 }}>?</span>
-                </div>
+                <SectionHeader onInfo={() => setShowNotifyInfo(true)}>УВЕДОМЛЕНИЯ</SectionHeader>
                 <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 8 }}>
                   <Row label="Итоги дня" sub="Ежедневный отчёт по потребностям" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
                   <Row label="Напоминание" sub="Заполнить трекер вечером" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
@@ -316,7 +315,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Терапевт — CLIENT view */}
               {userRole !== 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
-                  <SettingsLabel>МОЙ ТЕРАПЕВТ</SettingsLabel>
+                  <SectionHeader onInfo={() => setShowTherapistInfo(true)}>МОЙ ТЕРАПЕВТ</SectionHeader>
                   <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
                     {therapyRelation === undefined ? (
                       <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
@@ -466,7 +465,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
               {/* Партнёр */}
               <div style={{ marginBottom: 8 }}>
-                <SettingsLabel>ПАРТНЁР</SettingsLabel>
+                <SectionHeader onInfo={() => setShowPairInfo(true)}>ПАРТНЁР</SectionHeader>
                 <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
                   {pairLoading && !pairData ? (
                     <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Загрузка...</div>
@@ -615,6 +614,42 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
         </BottomSheet>
       )}
 
+      {/* Pair info */}
+      {showPairInfo && (
+        <BottomSheet onClose={() => setShowPairInfo(false)} zIndex={300}>
+          <div style={{ paddingTop: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16 }}>Зачем привязывать друга</div>
+            <p style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.7, marginBottom: 12 }}>
+              Это необязательно — но может помочь.
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 12 }}>
+              Ты и друг (партнёр, коллега) видите <b style={{ color: 'var(--text)' }}>индексы дня</b> друг друга — просто число от 0 до 10. Никаких деталей, дневников или оценок.
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7 }}>
+              Иногда знать, что кому-то важно как у тебя дела — уже достаточно. Это мягкая взаимная видимость, без осуждения.
+            </p>
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* Therapist info */}
+      {showTherapistInfo && (
+        <BottomSheet onClose={() => setShowTherapistInfo(false)} zIndex={300}>
+          <div style={{ paddingTop: 8 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 16 }}>Зачем подключать терапевта</div>
+            <p style={{ fontSize: 15, color: 'var(--text)', lineHeight: 1.7, marginBottom: 12 }}>
+              Если ты работаешь со схема-терапевтом — приложение может стать частью этой работы.
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 12 }}>
+              Терапевт, которому ты дашь код, видит <b style={{ color: 'var(--text)' }}>трекер потребностей и задания</b>. Дневники остаются приватными — только у тебя.
+            </p>
+            <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7 }}>
+              Это даёт терапевту контекст без лишних объяснений — и позволяет работать с реальными паттернами, не с тем, что вспомнилось на сессии.
+            </p>
+          </div>
+        </BottomSheet>
+      )}
+
       {/* Privacy */}
       {showPrivacy && (
         <BottomSheet onClose={() => { setShowPrivacy(false); setDeleteConfirm(false); }} zIndex={300}>
@@ -683,13 +718,23 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function SettingsLabel({ children }: { children: React.ReactNode }) {
+function SectionHeader({ children, onInfo }: { children: React.ReactNode; onInfo?: () => void }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--text-sub)', marginBottom: 10, paddingTop: 6 }}>
-      {children}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10, paddingTop: 6 }}>
+      <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
+        {children}
+      </div>
+      {onInfo && (
+        <button
+          onClick={onInfo}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-faint)', fontSize: 9, fontWeight: 700, cursor: 'pointer', border: 'none', flexShrink: 0, padding: 0 }}
+        >?</button>
+      )}
     </div>
   );
 }
+
+const SettingsLabel = ({ children }: { children: React.ReactNode }) => <SectionHeader>{children}</SectionHeader>;
 
 function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
   return (

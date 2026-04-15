@@ -5,7 +5,6 @@ import { NeedSlider } from './NeedSlider';
 import { NeedTodaySheet } from './NeedTodaySheet';
 import { PlanSheet } from './PlanSheet';
 import { IndexInfoSheet } from './IndexInfoSheet';
-import { SectionLabel } from './SectionLabel';
 import { NEED_DATA } from '../needData';
 import { shouldShowPracticesOnboarding, PRACTICES_ONBOARDING_KEY } from './PracticesOnboarding';
 import { TaskCreateSheet } from './TaskCreateSheet';
@@ -70,52 +69,67 @@ function DonutRing({ percent }: { percent: number }) {
 
 const ONBOARDING_KEY = 'onboarding_v2_done';
 
+const ONBOARDING_STEPS = [
+  {
+    emoji: '👆',
+    title: 'Оценивай действия',
+    text: 'Не «я вроде чувствую близость», а «кто-то обнял» или «я сказал, что думаю». Оценка от 1 до 10 — потяни ползунок.',
+  },
+  {
+    emoji: '💡',
+    title: 'Нажми на потребность',
+    text: 'Там объяснение что это, советы и мини-практика. Это ключ к пониманию паттерна.',
+  },
+  {
+    emoji: '📊',
+    title: 'Паттерн появится через 3–5 дней',
+    text: 'Всё сохраняется автоматически. Через несколько дней в «Истории» будет видна динамика.',
+  },
+];
+
 function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
+  const [step, setStep] = useState(0);
+  const total = ONBOARDING_STEPS.length;
+  const current = ONBOARDING_STEPS[step];
+  const isLast = step === total - 1;
+
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(79,163,247,0.08))',
-      border: '1px solid rgba(167,139,250,0.25)',
-      borderRadius: 16,
-      padding: '16px 18px',
-      marginBottom: 24,
+      background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
+      border: '1px solid rgba(167,139,250,0.2)',
+      borderRadius: 16, padding: '16px 18px', marginBottom: 24,
     }}>
-      <SectionLabel purple>Как это работает</SectionLabel>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>👆</span>
-          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
-            Оценивай <b style={{ color: 'var(--text)' }}>конкретные действия</b>, не фоновое ощущение. Не «я вроде чувствую близость», а «кто-то обнял» или «я сказал, что думаю». Потяни ползунок от <b style={{ color: 'var(--text)' }}>1 до 10</b>
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>💡</span>
-          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
-            Нажми на <b style={{ color: 'var(--text)' }}>название потребности</b> — там объяснение и советы
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>📊</span>
-          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
-            Всё сохраняется автоматически. <b style={{ color: 'var(--text)' }}>Через 3–5 дней</b> паттерн начнёт проявляться во вкладке <b style={{ color: 'var(--text)' }}>История</b>
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-          <span style={{ fontSize: 16, flexShrink: 0 }}>ⓘ</span>
-          <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.5 }}>
-            Нажми на <b style={{ color: 'var(--text)' }}>«Трекер потребностей»</b> в заголовке — там про то, зачем это вообще
-          </span>
+      {/* Step dots */}
+      <div style={{ display: 'flex', gap: 5, marginBottom: 14 }}>
+        {ONBOARDING_STEPS.map((_, i) => (
+          <div key={i} onClick={() => setStep(i)} style={{ width: i === step ? 18 : 6, height: 6, borderRadius: 3, background: i === step ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.15)', cursor: 'pointer', transition: 'all 0.2s' }} />
+        ))}
+      </div>
+
+      {/* Content */}
+      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 16 }}>
+        <span style={{ fontSize: 28, flexShrink: 0, lineHeight: 1 }}>{current.emoji}</span>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 5 }}>{current.title}</div>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>{current.text}</div>
         </div>
       </div>
-      <button
-        onClick={onDismiss}
-        style={{
-          width: '100%', padding: '10px 0', border: 'none', borderRadius: 10,
-          background: 'rgba(167,139,250,0.2)', color: 'var(--accent)',
-          fontSize: 13, fontWeight: 600, cursor: 'pointer',
-        }}
-      >
-        Понятно, начнём
-      </button>
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button
+          onClick={onDismiss}
+          style={{ padding: '8px 14px', border: 'none', borderRadius: 10, background: 'transparent', color: 'var(--text-faint)', fontSize: 12, cursor: 'pointer' }}
+        >
+          Пропустить
+        </button>
+        <button
+          onClick={() => isLast ? onDismiss() : setStep(s => s + 1)}
+          style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 10, background: 'rgba(167,139,250,0.18)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+        >
+          {isLast ? 'Понятно, начнём' : 'Далее →'}
+        </button>
+      </div>
     </div>
   );
 }

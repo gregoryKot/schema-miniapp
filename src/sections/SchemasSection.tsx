@@ -56,6 +56,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
   const [needsOpen, setNeedsOpen] = useState(false);
   const [schemasOpen, setSchemasOpen] = useState(false);
   const [modesOpen, setModesOpen] = useState(false);
+  const [showSectionInfo, setShowSectionInfo] = useState(false);
   const safeTop = useSafeTop();
 
   useEffect(() => {
@@ -102,13 +103,17 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
             Потребности, схемы и режимы
           </div>
         </div>
-        <button
-          onClick={() => onOpenSchema()}
-          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
-          title="Теория"
-        >
-          📚
-        </button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+          <button
+            onClick={() => setShowSectionInfo(true)}
+            style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          >?</button>
+          <button
+            onClick={() => onOpenSchema()}
+            style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+            title="Теория"
+          >📚</button>
+        </div>
       </div>
 
       <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -380,6 +385,42 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
         <TherapyNote compact />
 
       </div>
+
+      {/* Therapy note */}
+      <div style={{ padding: '0 20px', marginTop: 4, marginBottom: 12 }}>
+        <TherapyNote />
+      </div>
+
+      {/* Section info sheet */}
+      {showSectionInfo && (
+        <BottomSheet onClose={() => setShowSectionInfo(false)} zIndex={200}>
+          <div style={{ paddingTop: 8 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Мои паттерны</div>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 20 }}>
+              Схема-терапия говорит: нас ведут паттерны — устойчивые способы реагировать, защищаться, получать или избегать. Осознать их — первый шаг к изменению.
+            </div>
+            {[
+              { emoji: '🌱', title: 'Потребности', text: 'Пять базовых эмоциональных потребностей. Заполни колесо детства — и увидишь, что формировало твои схемы.' },
+              { emoji: '🧩', title: 'Схемы', text: 'Убеждения и паттерны из прошлого, которые продолжают управлять настоящим. Узнай свои — через тест или вручную.' },
+              { emoji: '🔄', title: 'Режимы', text: 'Текущие состояния психики — они меняются в течение дня. Знать режим прямо сейчас — значит уже что-то с ним сделать.' },
+            ].map(item => (
+              <div key={item.title} style={{ display: 'flex', gap: 14, marginBottom: 16, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 24, flexShrink: 0 }}>{item.emoji}</span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>{item.title}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>{item.text}</div>
+                </div>
+              </div>
+            ))}
+            <button
+              onClick={() => { setShowSectionInfo(false); onOpenSchema({ tab: 'modes' }); }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+            >
+              Познакомиться с режимами →
+            </button>
+          </div>
+        </BottomSheet>
+      )}
 
       {showSchemaPicker && (
         <SchemaPickerSheet
