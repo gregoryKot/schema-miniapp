@@ -81,10 +81,30 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
 
   return (
     <BottomSheet onClose={onClose}>
-      <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 4 }}>
-          {existing ? 'Черновик восстановлен' : 'Новая запись'}
+      <div>
+        {/* Sticky header with save button */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 5,
+          background: 'var(--sheet-bg)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          paddingTop: 4, paddingBottom: 12,
+          borderBottom: '1px solid rgba(var(--fg-rgb),0.06)',
+          marginBottom: 8,
+        }}>
+          <div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
+              {existing ? 'Черновик восстановлен' : 'Новая запись'}
+            </div>
+          </div>
+          <button onClick={handleSave} disabled={!canSave || saving} style={{
+            padding: '9px 18px', borderRadius: 12, border: 'none',
+            background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.08)',
+            color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
+            fontSize: 13, fontWeight: 600, cursor: canSave ? 'pointer' : 'default', flexShrink: 0,
+          }}>
+            {saving ? '...' : 'Сохранить'}
+          </button>
         </div>
 
         <FieldLabel title="1. Режим" hint="кто включился" />
@@ -131,16 +151,8 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
         <FieldLabel title="8. Детские воспоминания" hint="связанные с ситуацией" />
         <Area value={childhoodMemories} onChange={setChildhoodMemories} placeholder="Напоминает ли что-то из детства? Похожие ситуации, ощущения..." rows={3} />
 
-        <button onClick={handleSave} disabled={!canSave || saving} style={{
-          marginTop: 24, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.1)',
-          color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
-          border: 'none', fontSize: 16, fontWeight: 600, cursor: canSave ? 'pointer' : 'default',
-        }}>
-          {saving ? 'Сохраняю...' : 'Сохранить'}
-        </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 16, paddingBottom: 8 }}>
             Обязательно: выбери режим и опиши ситуацию
           </div>
         )}

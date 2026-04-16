@@ -129,10 +129,30 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
 
   return (
     <BottomSheet onClose={onClose}>
-      <div style={{ paddingTop: 4 }}>
-        <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Дневник проявления схем</div>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 4 }}>
-          Новая запись{hasDraft ? ' · черновик восстановлен' : ''}
+      <div>
+        {/* Sticky header with save button */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 5,
+          background: 'var(--sheet-bg)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          paddingTop: 4, paddingBottom: 12,
+          borderBottom: '1px solid rgba(var(--fg-rgb),0.06)',
+          marginBottom: 8,
+        }}>
+          <div>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Дневник схем</div>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
+              {hasDraft ? 'Черновик восстановлен' : 'Новая запись'}
+            </div>
+          </div>
+          <button onClick={handleSave} disabled={!canSave || saving} style={{
+            padding: '9px 18px', borderRadius: 12, border: 'none',
+            background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.08)',
+            color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
+            fontSize: 13, fontWeight: 600, cursor: canSave ? 'pointer' : 'default', flexShrink: 0,
+          }}>
+            {saving ? '...' : 'Сохранить'}
+          </button>
         </div>
 
         <FieldLabel title="1. Спусковой механизм" hint="что произошло" />
@@ -230,16 +250,8 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         <FieldLabel title="10. Здоровое поведение" hint="что я могу сделать, сохраняя независимость и безопасность" />
         <Area value={healthyBehavior} onChange={setHealthyBehavior} placeholder="Как Здоровый Взрослый поступил бы в этой ситуации?" />
 
-        <button onClick={handleSave} disabled={!canSave || saving} style={{
-          marginTop: 24, width: '100%', padding: '14px', borderRadius: 14,
-          background: canSave ? COLOR : 'rgba(var(--fg-rgb),0.1)',
-          color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
-          border: 'none', fontSize: 16, fontWeight: 600, cursor: canSave ? 'pointer' : 'default',
-        }}>
-          {saving ? 'Сохраняю...' : 'Сохранить'}
-        </button>
         {!canSave && (
-          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 16, paddingBottom: 8 }}>
             Нужно заполнить хотя бы спусковой механизм
           </div>
         )}
