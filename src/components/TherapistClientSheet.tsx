@@ -964,7 +964,18 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
         <BottomSheet onClose={() => setShowNotesSheet(false)}>
           <div style={{ paddingTop: 4 }}>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>📝 Заметки сессий</div>
-            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginBottom: 12 }}>
+            {notes.length === 0 ? (
+              <div style={{ color: 'var(--text-faint)', fontSize: 13, textAlign: 'center', padding: '20px 0 16px' }}>Нет заметок. Добавь первую ниже.</div>
+            ) : notes.map(note => (
+              <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{fmtDate(note.date)}</span>
+                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'var(--accent-red)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
+                </div>
+                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
+              </div>
+            ))}
+            <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 14, marginTop: 8 }}>
               <textarea
                 value={newNoteText} onChange={e => { setNewNoteText(e.target.value); setNoteError(''); }}
                 placeholder="Заметка сессии: наблюдения, гипотезы, динамика, план следующей встречи..."
@@ -977,21 +988,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
                   style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
                 >
-                  {noteSaving ? 'Сохраняю...' : 'Сохранить'}
+                  {noteSaving ? 'Сохраняю...' : 'Добавить заметку'}
                 </button>
               </div>
             </div>
-            {notes.length === 0 ? (
-              <div style={{ color: 'var(--text-faint)', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>Нет заметок. Добавь первую выше.</div>
-            ) : notes.map(note => (
-              <div key={note.id} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px', marginBottom: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                  <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{fmtDate(note.date)}</span>
-                  <button onClick={() => removeNote(note.id)} style={{ background: 'none', border: 'none', color: 'var(--accent-red)', fontSize: 18, cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>×</button>
-                </div>
-                <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{note.text}</div>
-              </div>
-            ))}
           </div>
         </BottomSheet>
       )}
@@ -1000,7 +1000,76 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
       {showConceptSheet && selectedClient && (
         <BottomSheet onClose={() => { if (conceptDirty) saveConcept(); setShowConceptSheet(false); }}>
           <div style={{ paddingTop: 4 }}>
-            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>🗂 Концептуализация</div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>🗂 Концептуализация</div>
+              {concept && (concept.history as unknown[])?.length > 0 && (
+                <button
+                  onClick={() => setShowHistory(h => !h)}
+                  style={{ background: showHistory ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.06)', border: 'none', borderRadius: 10, padding: '5px 10px', color: showHistory ? 'var(--accent)' : 'var(--text-sub)', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+                >
+                  🕐 История ({(concept.history as unknown[]).length})
+                </button>
+              )}
+            </div>
+            {showHistory && concept && (concept.history as unknown[])?.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {(concept.history as import('../api').ConceptSnapshot[]).map((snap, i) => {
+                    const snapSchemas = (snap.schemaIds ?? []).map(id => {
+                      const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
+                      const schema = domain?.schemas.find(s => s.id === id);
+                      return schema ? { schema, color: domain!.color } : null;
+                    }).filter(Boolean) as { schema: { id: string; name: string; emoji: string }; color: string }[];
+                    const textFields = [
+                      { label: 'Цель', val: snap.goals },
+                      { label: 'Опыт', val: snap.earlyExperience },
+                      { label: 'Потребности', val: snap.unmetNeeds },
+                      { label: 'Триггеры', val: snap.triggers },
+                      { label: 'Копинг', val: snap.copingStyles },
+                      { label: 'Переходы', val: snap.modeTransitions },
+                      { label: 'Проблемы', val: snap.currentProblems },
+                    ].filter(f => f.val);
+                    return (
+                      <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-sub)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
+                          <button
+                            onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
+                            style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
+                          >Восстановить</button>
+                        </div>
+                        {snapSchemas.length > 0 && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+                            {snapSchemas.map(({ schema, color }) => (
+                              <span key={schema.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: color + '20', color }}>{schema.emoji} {schema.name}</span>
+                            ))}
+                          </div>
+                        )}
+                        {(snap.modeIds ?? []).length > 0 && (
+                          <div style={{ marginBottom: 6 }}>
+                            {MODE_GROUPS.map(group => {
+                              const gm = group.items.filter(m => (snap.modeIds ?? []).includes(m.id));
+                              if (gm.length === 0) return null;
+                              return (
+                                <div key={group.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
+                                  {gm.map(m => <span key={m.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: group.color + '20', color: group.color }}>{m.emoji} {m.name}</span>)}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {textFields.map(({ label, val }) => (
+                          <div key={label} style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 3 }}>
+                            <span style={{ color: 'var(--text-faint)', fontWeight: 600 }}>{label}: </span>
+                            {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {selectedClient.telegramId > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <button
@@ -1097,74 +1166,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               >
                 {exportCopied ? '✓ Скопировано' : '↗ Экспорт / Поделиться'}
               </button>
-            )}
-            {concept && (concept.history as unknown[])?.length > 0 && (
-              <div style={{ marginTop: 20 }}>
-                <button
-                  onClick={() => setShowHistory(h => !h)}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: 12, cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 8 }}
-                >
-                  <span>{showHistory ? '▲' : '▼'}</span>
-                  История изменений ({(concept.history as unknown[]).length})
-                </button>
-                {showHistory && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {(concept.history as import('../api').ConceptSnapshot[]).map((snap, i) => {
-                      const snapSchemas = (snap.schemaIds ?? []).map(id => {
-                        const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
-                        const schema = domain?.schemas.find(s => s.id === id);
-                        return schema ? { schema, color: domain!.color } : null;
-                      }).filter(Boolean) as { schema: { id: string; name: string; emoji: string }; color: string }[];
-                      const textFields = [
-                        { label: 'Цель', val: snap.goals },
-                        { label: 'Опыт', val: snap.earlyExperience },
-                        { label: 'Потребности', val: snap.unmetNeeds },
-                        { label: 'Триггеры', val: snap.triggers },
-                        { label: 'Копинг', val: snap.copingStyles },
-                        { label: 'Переходы', val: snap.modeTransitions },
-                        { label: 'Проблемы', val: snap.currentProblems },
-                      ].filter(f => f.val);
-                      return (
-                        <div key={i} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.06)', borderRadius: 14, padding: '12px 14px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-sub)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
-                            <button
-                              onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
-                              style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
-                            >Восстановить</button>
-                          </div>
-                          {snapSchemas.length > 0 && (
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
-                              {snapSchemas.map(({ schema, color }) => (
-                                <span key={schema.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: color + '20', color }}>{schema.emoji} {schema.name}</span>
-                              ))}
-                            </div>
-                          )}
-                          {(snap.modeIds ?? []).length > 0 && (
-                            <div style={{ marginBottom: 6 }}>
-                              {MODE_GROUPS.map(group => {
-                                const gm = group.items.filter(m => (snap.modeIds ?? []).includes(m.id));
-                                if (gm.length === 0) return null;
-                                return (
-                                  <div key={group.id} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 3 }}>
-                                    {gm.map(m => <span key={m.id} style={{ fontSize: 11, padding: '2px 8px', borderRadius: 20, background: group.color + '20', color: group.color }}>{m.emoji} {m.name}</span>)}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                          {textFields.map(({ label, val }) => (
-                            <div key={label} style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 3 }}>
-                              <span style={{ color: 'var(--text-faint)', fontWeight: 600 }}>{label}: </span>
-                              {(val ?? '').slice(0, 140)}{(val ?? '').length > 140 ? '...' : ''}
-                            </div>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
             )}
           </div>
         </BottomSheet>

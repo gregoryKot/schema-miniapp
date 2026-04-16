@@ -45,7 +45,7 @@ html[data-theme="light"] {
   --nav-bg:        rgba(237,234,245,0.97);
   --text-sub:      rgba(22,19,44,0.62);
   --text-faint:    rgba(22,19,44,0.42);
-  --chip-sel-text: #ffffff;
+  --chip-sel-text: #16132c;
   --on-accent:     #ffffff;
   /* Darker shades for light backgrounds — pass contrast checks */
   --accent:        #6d28d9;
