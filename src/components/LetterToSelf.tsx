@@ -1,17 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
+import { api } from '../api';
 
 const STORAGE_KEY = 'letters_to_self';
 
 interface Letter {
-  id: string;
+  id: string | number;
   date: string;
   text: string;
 }
 
-function loadLetters(): Letter[] {
+function loadLocal(): Letter[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'); } catch { return []; }
+}
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 interface Props { onClose: () => void; onComplete?: () => void; }
@@ -25,19 +30,29 @@ const PROMPTS = [
 export function LetterToSelf({ onClose, onComplete }: Props) {
   const [text, setText] = useState('');
   const [saved, setSaved] = useState(false);
-  const [letters, setLetters] = useState<Letter[]>(() => loadLetters());
+  const [letters, setLetters] = useState<Letter[]>(() => loadLocal());
   const [viewing, setViewing] = useState<Letter | null>(null);
 
-  function handleSave() {
+  useEffect(() => {
+    api.getLetters().then(rows => {
+      setLetters(rows.map(r => ({ id: r.id, date: fmtDate(r.createdAt), text: r.text })));
+    }).catch(() => {});
+  }, []);
+
+  async function handleSave() {
     if (!text.trim()) return;
+    const trimmed = text.trim();
     const letter: Letter = {
       id: Date.now().toString(),
       date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-      text: text.trim(),
+      text: trimmed,
     };
-    const updated = [letter, ...loadLetters()].slice(0, 30);
+    // Sync to localStorage
+    const updated = [letter, ...loadLocal()].slice(0, 30);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setLetters(updated);
+    setLetters(prev => [letter, ...prev]);
+    // Save to server
+    api.createLetter(trimmed).catch(() => {});
     setSaved(true);
     onComplete?.();
     setTimeout(() => { setSaved(false); setText(''); }, 1800);

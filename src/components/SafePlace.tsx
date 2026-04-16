@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
+import { api } from '../api';
 
 const STORAGE_KEY = 'safe_place';
 
@@ -9,7 +10,7 @@ interface SafePlaceData {
   savedAt: string;
 }
 
-function load(): SafePlaceData | null {
+function loadLocal(): SafePlaceData | null {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null'); } catch { return null; }
 }
 
@@ -22,19 +23,37 @@ const PROMPTS = [
 interface Props { onClose: () => void; onComplete?: () => void; }
 
 export function SafePlace({ onClose, onComplete }: Props) {
-  const [saved, setSaved] = useState<SafePlaceData | null>(() => load());
-  const [editing, setEditing] = useState(!load());
-  const [text, setText] = useState(() => load()?.text ?? '');
+  const [saved, setSaved] = useState<SafePlaceData | null>(() => loadLocal());
+  const [editing, setEditing] = useState(!loadLocal());
+  const [text, setText] = useState(() => loadLocal()?.text ?? '');
   const [justSaved, setJustSaved] = useState(false);
 
-  function handleSave() {
+  useEffect(() => {
+    api.getSafePlace().then(data => {
+      if (data) {
+        const local: SafePlaceData = {
+          text: data.description,
+          savedAt: new Date(data.updatedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(local));
+        setSaved(local);
+        if (!text) setText(data.description);
+        setEditing(false);
+      }
+    }).catch(() => {});
+  }, []);
+
+  async function handleSave() {
     if (!text.trim()) return;
+    const trimmed = text.trim();
     const data: SafePlaceData = {
-      text: text.trim(),
+      text: trimmed,
       savedAt: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     setSaved(data);
+    // Save to server
+    api.saveSafePlace(trimmed).catch(() => {});
     setJustSaved(true);
     setEditing(false);
     onComplete?.();

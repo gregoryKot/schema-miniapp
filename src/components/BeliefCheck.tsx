@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
+import { api } from '../api';
 
 const STORAGE_KEY = 'belief_checks';
 
 interface BeliefEntry {
-  id: string;
+  id: string | number;
   date: string;
   belief: string;
   for: string[];
@@ -13,7 +14,11 @@ interface BeliefEntry {
   reframe: string;
 }
 
-function loadEntries(): BeliefEntry[] {
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+}
+
+function loadLocal(): BeliefEntry[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'); } catch { return []; }
 }
 
@@ -29,7 +34,16 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
   const [againstInput, setAgainstInput] = useState('');
   const [againstList, setAgainstList] = useState<string[]>([]);
   const [reframe, setReframe] = useState('');
-  const [history] = useState<BeliefEntry[]>(() => loadEntries().slice(0, 3));
+  const [history, setHistory] = useState<BeliefEntry[]>(() => loadLocal().slice(0, 3));
+
+  useEffect(() => {
+    api.getBeliefChecks().then(rows => {
+      setHistory(rows.slice(0, 3).map(r => ({
+        id: r.id, date: fmtDate(r.createdAt), belief: r.belief,
+        for: r.evidenceFor, against: r.evidenceAgainst, reframe: r.reframe ?? '',
+      })));
+    }).catch(() => {});
+  }, []);
 
   function addFor() {
     const v = forInput.trim();
@@ -45,7 +59,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
     setAgainstInput('');
   }
 
-  function handleSave() {
+  async function handleSave() {
     const entry: BeliefEntry = {
       id: Date.now().toString(),
       date: new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }),
@@ -54,8 +68,11 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
       against: againstList,
       reframe: reframe.trim(),
     };
-    const all = [entry, ...loadEntries()].slice(0, 20);
+    // Sync to localStorage immediately
+    const all = [entry, ...loadLocal()].slice(0, 20);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    // Save to server
+    api.createBeliefCheck({ belief: entry.belief, evidenceFor: entry.for, evidenceAgainst: entry.against, reframe: entry.reframe || undefined }).catch(() => {});
     setStep('done');
     onComplete?.();
   }

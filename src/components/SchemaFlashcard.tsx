@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { TherapyNote } from './TherapyNote';
+import { api } from '../api';
 
 const STORAGE_KEY = 'schema_flashcards';
 
 interface FlashcardEntry {
-  id: string;
+  id: string | number;
   date: string;
   mode: string;
   reflection: string;
@@ -55,7 +56,7 @@ const NEEDS = [
 type Step = 'mode' | 'response' | 'need' | 'action';
 const STEPS: Step[] = ['mode', 'response', 'need', 'action'];
 
-function loadCards(): FlashcardEntry[] {
+function loadLocal(): FlashcardEntry[] {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'); } catch { return []; }
 }
 
@@ -69,9 +70,22 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
   const [selectedNeed, setSelectedNeed] = useState<string | null>(null);
   const [action, setAction] = useState('');
   const [done, setDone] = useState(false);
-  const [allCards, setAllCards] = useState<FlashcardEntry[]>(() => loadCards());
+  const [allCards, setAllCards] = useState<FlashcardEntry[]>(() => loadLocal());
   const [viewing, setViewing] = useState<FlashcardEntry | null>(null);
   const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    api.getFlashcards().then(rows => {
+      setAllCards(rows.map(r => ({
+        id: r.id,
+        date: new Date(r.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }),
+        mode: r.modeId,
+        reflection: r.reflection ?? '',
+        needId: r.needId,
+        action: r.action ?? '',
+      })));
+    }).catch(() => {});
+  }, []);
 
   const stepIndex = STEPS.indexOf(step);
   const modeData = MODES.find(m => m.id === selectedMode);
@@ -85,9 +99,11 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
       needId: selectedNeed!,
       action,
     };
-    const cards = [entry, ...loadCards()].slice(0, 20);
+    const cards = [entry, ...loadLocal()].slice(0, 20);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cards));
     setAllCards(cards);
+    // Save to server
+    api.createFlashcard({ modeId: selectedMode!, needId: selectedNeed!, reflection: reflection || undefined, action: action || undefined }).catch(() => {});
     setDone(true);
     onComplete?.();
   }

@@ -5,7 +5,7 @@ import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { fmtDate, todayStr } from '../utils/format';
 import { useSafeTop } from '../utils/safezone';
-import { SCHEMA_DOMAINS, MODE_GROUPS } from '../schemaTherapyData';
+import { SCHEMA_DOMAINS, MODE_GROUPS, getModeById } from '../schemaTherapyData';
 
 interface Props {
   view: 'list' | 'client';
@@ -89,6 +89,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
   const [showTasksSheet, setShowTasksSheet] = useState(false);
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [showConceptSheet, setShowConceptSheet] = useState(false);
+  const [showClientNotesSheet, setShowClientNotesSheet] = useState(false);
+  const [clientSchemaNotesData, setClientSchemaNotesData] = useState<Array<{ schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string }>>([]);
+  const [clientModeNotesData, setClientModeNotesData]     = useState<Array<{ modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string }>>([]);
   const [clientTasks, setClientTasks] = useState<UserTask[]>([]);
   const [notes, setNotes] = useState<TherapistNote[]>([]);
   const [noteError, setNoteError] = useState('');
@@ -149,12 +152,13 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
     if (!backHandlerRef || view !== 'client') return;
     backHandlerRef.current = () => {
       if (showAssign)       { setShowAssign(false);       return; }
-      if (showConceptSheet) { setShowConceptSheet(false); return; }
-      if (showTasksSheet)   { setShowTasksSheet(false);   return; }
-      if (showNotesSheet)   { setShowNotesSheet(false);   return; }
+      if (showConceptSheet)       { setShowConceptSheet(false);       return; }
+      if (showTasksSheet)         { setShowTasksSheet(false);         return; }
+      if (showNotesSheet)         { setShowNotesSheet(false);         return; }
+      if (showClientNotesSheet)   { setShowClientNotesSheet(false);   return; }
       switchView('list');
     };
-  }, [view, showAssign, showConceptSheet, showTasksSheet, showNotesSheet, backHandlerRef]);
+  }, [view, showAssign, showConceptSheet, showTasksSheet, showNotesSheet, showClientNotesSheet, backHandlerRef]);
 
   // ─── Open client ────────────────────────────────────────────────────────────
 
@@ -166,6 +170,9 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
     setShowTasksSheet(false);
     setShowNotesSheet(false);
     setShowConceptSheet(false);
+    setShowClientNotesSheet(false);
+    setClientSchemaNotesData([]);
+    setClientModeNotesData([]);
     setClientTasks([]);
     setNotes([]);
     setNoteError('');
@@ -188,11 +195,13 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
     setLocalStartDate(client.therapyStartDate ?? '');
     switchView('client');
 
-    const [tasks, fetchedNotes, fetchedConcept, fetchedData] = await Promise.all([
+    const [tasks, fetchedNotes, fetchedConcept, fetchedData, sn, mn] = await Promise.all([
       api.getTherapyTasksForClient(clientId).catch(() => []),
       api.getTherapistNotes(clientId).catch(() => []),
       api.getConceptualization(clientId).catch(() => null),
       api.getTherapyClientData(clientId).catch(() => null),
+      api.getClientSchemaNotes(clientId).catch(() => []),
+      api.getClientModeNotes(clientId).catch(() => []),
     ]);
 
     // Discard stale results if user switched to a different client
@@ -202,6 +211,8 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
     setNotes(fetchedNotes);
     setConcept(fetchedConcept);
     setClientData(fetchedData);
+    setClientSchemaNotesData(sn);
+    setClientModeNotesData(mn);
     if (fetchedConcept) setLocalConcept(fetchedConcept);
   }
 
@@ -893,6 +904,17 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 </div>
                 <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
               </div>
+              <div onClick={() => setShowClientNotesSheet(true)} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 14, padding: '13px 16px', cursor: 'pointer' }}>
+                <span style={{ fontSize: 18 }}>📖</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Записи клиента</div>
+                  {(clientSchemaNotesData.length + clientModeNotesData.length) > 0
+                    ? <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>Схем: {clientSchemaNotesData.length} · Режимов: {clientModeNotesData.length}</div>
+                    : <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 1 }}>Карточки схем и режимов</div>
+                  }
+                </div>
+                <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
+              </div>
             </div>
 
             </div>
@@ -1143,6 +1165,84 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   </div>
                 )}
               </div>
+            )}
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* ── CLIENT NOTES SHEET ── */}
+      {showClientNotesSheet && selectedClient && (
+        <BottomSheet onClose={() => setShowClientNotesSheet(false)}>
+          <div style={{ paddingTop: 4 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 20 }}>
+              📖 Записи клиента
+            </div>
+            {clientSchemaNotesData.length === 0 && clientModeNotesData.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '32px 0' }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>📝</div>
+                <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6 }}>Клиент ещё не заполнил карточки схем или режимов</div>
+              </div>
+            ) : (
+              <>
+                {clientSchemaNotesData.length > 0 && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                      Схемы · {clientSchemaNotesData.length}
+                    </div>
+                    {clientSchemaNotesData.map(n => {
+                      const s = SCHEMA_DOMAINS.flatMap(d => d.schemas.map(x => ({ ...x, color: d.color }))).find(x => x.id === n.schemaId);
+                      const filled = [n.triggers, n.feelings, n.thoughts, n.origins, n.reality, n.healthyView, n.behavior].filter(Boolean);
+                      return (
+                        <div key={n.schemaId} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{(s as any)?.emoji ?? '●'} {s?.name ?? n.schemaId}</div>
+                          {[
+                            { label: 'Триггеры', val: n.triggers },
+                            { label: 'Чувства', val: n.feelings },
+                            { label: 'Мысли', val: n.thoughts },
+                            { label: 'Корни', val: n.origins },
+                            { label: 'Реальность', val: n.reality },
+                            { label: 'Здоровый взгляд', val: n.healthyView },
+                            { label: 'Поведение', val: n.behavior },
+                          ].filter(f => f.val?.trim()).map(f => (
+                            <div key={f.label} style={{ marginBottom: 6 }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>{f.label}</div>
+                              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{f.val}</div>
+                            </div>
+                          ))}
+                          {filled.length === 0 && <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>Не заполнено</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {clientModeNotesData.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                      Режимы · {clientModeNotesData.length}
+                    </div>
+                    {clientModeNotesData.map(n => {
+                      const m = getModeById(n.modeId);
+                      return (
+                        <div key={n.modeId} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{m?.emoji ?? '🔄'} {m?.name ?? n.modeId}</div>
+                          {[
+                            { label: 'Триггеры', val: n.triggers },
+                            { label: 'Чувства', val: n.feelings },
+                            { label: 'Мысли', val: n.thoughts },
+                            { label: 'Потребности', val: n.needs },
+                            { label: 'Поведение', val: n.behavior },
+                          ].filter(f => f.val?.trim()).map(f => (
+                            <div key={f.label} style={{ marginBottom: 6 }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>{f.label}</div>
+                              <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{f.val}</div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </BottomSheet>
