@@ -72,7 +72,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
   useEffect(() => {
     api.getSettings()
       .then(setSettings)
-      .catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false, mySchemaIds: [], myModeIds: [] }));
+      .catch(() => setSettings({ notifyEnabled: false, notifyLocalHour: 21, notifyTimezone: 'Europe/Moscow', notifyReminderEnabled: false, pairCardDismissed: false, mySchemaIds: [], myModeIds: [], therapistShareCards: true, therapistShareProfile: true }));
     setPairLoading(true);
     api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
     api.getTherapyRelation().then(setTherapyRelation).catch(() => setTherapyRelation(null));
@@ -321,12 +321,41 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
                     ) : therapyRelation?.status === 'active' ? (
                       <div>
-                        <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 4 }}>
+                        <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 12 }}>
                           👨‍⚕️ {therapyRelation.partnerName ?? 'Терапевт'} подключён
                         </div>
-                        <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 12 }}>
-                          Терапевт видит: трекер, задания
+
+                        {/* Privacy toggles */}
+                        <div style={{ marginBottom: 12, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, overflow: 'hidden' }}>
+                          <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(var(--fg-rgb),0.06)' }}>
+                            <div>
+                              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>Карточки схем и режимов</div>
+                              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>Личные карточки и заметки</div>
+                            </div>
+                            <div
+                              onClick={() => patch({ therapistShareCards: !settings.therapistShareCards })}
+                              style={{ width: 40, height: 22, borderRadius: 11, background: settings.therapistShareCards ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.15)', position: 'relative', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0 }}
+                            >
+                              <div style={{ position: 'absolute', top: 2, left: settings.therapistShareCards ? 20 : 2, width: 18, height: 18, borderRadius: '50%', background: 'var(--bg)', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                            </div>
+                          </div>
+                          <div style={{ padding: '11px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                              <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>Профиль и схемы YSQ</div>
+                              <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>Активные схемы и результаты теста</div>
+                            </div>
+                            <div
+                              onClick={() => patch({ therapistShareProfile: !settings.therapistShareProfile })}
+                              style={{ width: 40, height: 22, borderRadius: 11, background: settings.therapistShareProfile ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.15)', position: 'relative', cursor: 'pointer', transition: 'background 0.2s', flexShrink: 0 }}
+                            >
+                              <div style={{ position: 'absolute', top: 2, left: settings.therapistShareProfile ? 20 : 2, width: 18, height: 18, borderRadius: '50%', background: 'var(--bg)', transition: 'left 0.2s', boxShadow: '0 1px 3px rgba(0,0,0,0.3)' }} />
+                            </div>
+                          </div>
                         </div>
+                        <div style={{ fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.5, marginBottom: 12 }}>
+                          Трекер потребностей и задания терапевт всегда видит
+                        </div>
+
                         <button
                           onClick={() => { api.leaveTherapy().then(() => setTherapyRelation(null)).catch(() => {}); }}
                           style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent-red)', fontSize: 13, cursor: 'pointer' }}
@@ -641,7 +670,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               Если ты работаешь со схема-терапевтом — приложение может стать частью этой работы.
             </p>
             <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 12 }}>
-              Терапевт, которому ты дашь код, видит <b style={{ color: 'var(--text)' }}>трекер потребностей и задания</b>. Дневники остаются приватными — только у тебя.
+              Терапевт, которому ты дашь код, видит <b style={{ color: 'var(--text)' }}>трекер потребностей и задания</b>. Карточки схем, профиль и дневники ты контролируешь сам — можно закрыть в настройках.
             </p>
             <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7 }}>
               Это даёт терапевту контекст без лишних объяснений — и позволяет работать с реальными паттернами, не с тем, что вспомнилось на сессии.
@@ -703,7 +732,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
             ) : (
               <div>
                 <div style={{ fontSize: 14, color: 'var(--accent-red)', textAlign: 'center', marginBottom: 16, fontWeight: 500 }}>Точно? Восстановить невозможно.</div>
-                <button disabled={deleting} onClick={async () => { setDeleting(true); try { await api.deleteAllUserData(); localStorage.clear(); sessionStorage.clear(); window.location.reload(); } catch { setDeleting(false); setDeleteConfirm(false); } }}
+                <button disabled={deleting} onClick={async () => { setDeleting(true); try { await api.deleteAllUserData(); const theme = localStorage.getItem('app_theme'); localStorage.clear(); sessionStorage.clear(); if (theme) localStorage.setItem('app_theme', theme); window.location.reload(); } catch { setDeleting(false); setDeleteConfirm(false); } }}
                   style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: '#ef4444', color: 'var(--text)', fontSize: 15, fontWeight: 700, cursor: deleting ? 'default' : 'pointer' }}>
                   {deleting ? 'Удаляем...' : 'Да, удалить всё навсегда'}
                 </button>

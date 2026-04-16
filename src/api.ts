@@ -64,6 +64,8 @@ export interface UserSettings {
   pairCardDismissed: boolean;
   mySchemaIds: string[];
   myModeIds: string[];
+  therapistShareCards: boolean;
+  therapistShareProfile: boolean;
 }
 
 export interface StreakData {
