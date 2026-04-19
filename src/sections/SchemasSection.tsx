@@ -8,15 +8,13 @@ import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
 import { NeedDetailSheet } from '../components/NeedDetailSheet';
-import { TherapyNote } from '../components/TherapyNote';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
-// CSS-переменные не резолвятся в template literals — маппинг для hex-фонов карточек
 const VAR_HEX: Record<string, string> = {
   'var(--accent-red)':    '#f87171',
   'var(--accent-orange)': '#fb923c',
   'var(--accent-yellow)': '#facc15',
-  'var(--accent-green)':  '#34d399',
+  'var(--accent-green)':  '#4ade80',
   'var(--accent-indigo)': '#818cf8',
   'var(--accent-blue)':   '#60a5fa',
   'var(--accent)':        '#a78bfa',
@@ -35,10 +33,12 @@ function readLocalIds(key: string): string[] {
   try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
 }
 
-interface Props {
-  onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
-  childhoodRatings?: Record<string, number>;
-  onOpenChildhoodWheel?: () => void;
+function shortName(name: string): string {
+  const part = name.split(' / ')[0];
+  return part
+    .replace('Эмоциональная ', 'Эмоц. ')
+    .replace('Социальная ', 'Соц. ')
+    .replace('Недостаточность ', 'Недост. ');
 }
 
 function needScoreColor(v: number) {
@@ -47,20 +47,27 @@ function needScoreColor(v: number) {
   return 'var(--accent-green)';
 }
 
+interface Props {
+  onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
+  childhoodRatings?: Record<string, number>;
+  onOpenChildhoodWheel?: () => void;
+}
+
+type Tab = 'schemas' | 'modes' | 'needs';
+
 export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChildhoodWheel }: Props) {
+  const [tab, setTab]                     = useState<Tab>('schemas');
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
-  const [myModeIds, setMyModeIds] = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
-  const [ysqSchemaIds, setYsqSchemaIds] = useState<string[]>([]);
+  const [myModeIds, setMyModeIds]         = useState<string[]>(() => readLocalIds(MY_MODE_IDS_KEY));
+  const [ysqSchemaIds, setYsqSchemaIds]   = useState<string[]>([]);
   const [profileLoading, setProfileLoading] = useState(true);
   const [showSchemaPicker, setShowSchemaPicker] = useState(false);
-  const [showModePicker, setShowModePicker] = useState(false);
-  const [introModeId, setIntroModeId] = useState<string | null>(null);
+  const [showModePicker, setShowModePicker]     = useState(false);
+  const [introModeId, setIntroModeId]     = useState<string | null>(null);
   const [introSchemaId, setIntroSchemaId] = useState<string | null>(null);
-  const [detailNeedId, setDetailNeedId] = useState<string | null>(null);
-  const [needsOpen, setNeedsOpen] = useState(false);
-  const [schemasOpen, setSchemasOpen] = useState(false);
-  const [modesOpen, setModesOpen] = useState(false);
-  const [showSectionInfo, setShowSectionInfo] = useState(false);
+  const [detailNeedId, setDetailNeedId]   = useState<string | null>(null);
+  const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
+  const [expandedModeGroups, setExpandedModeGroups] = useState<Set<string>>(new Set());
   const safeTop = useSafeTop();
 
   useEffect(() => {
@@ -87,346 +94,396 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
     api.updateSettings({ mySchemaIds: ids }).catch(() => {});
   }
 
-  const hasAnySchemas = allSchemaIds.length > 0;
+  function toggleDomain(id: string) {
+    setExpandedDomains(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function toggleModeGroup(id: string) {
+    setExpandedModeGroups(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
   const hasChildhood = Object.keys(childhoodRatings).length > 0;
 
-  const allSchemaObjects = SCHEMA_DOMAINS.flatMap(d => d.schemas).filter(s => allSchemaIds.includes(s.id));
-  const previewSchemaEmojis = allSchemaObjects.slice(0, 6).map(s => (s as any).emoji).filter(Boolean) as string[];
-  const previewModeEmojis = myModes.slice(0, 6).map(m => m.emoji);
+  const TABS: { id: Tab; label: string }[] = [
+    { id: 'schemas', label: 'Схемы' },
+    { id: 'modes',   label: 'Режимы' },
+    { id: 'needs',   label: 'Потребности' },
+  ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop }}>
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '24px 20px 16px' }}>
-        <div>
-          <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-            Мои паттерны
-          </div>
-          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4 }}>
-            Потребности, схемы и режимы
-          </div>
+      {/* ── Header ── */}
+      <div style={{ padding: '24px 20px 0' }}>
+        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+          Паттерны
         </div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
-          <button
-            onClick={() => setShowSectionInfo(true)}
-            style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-          >?</button>
-          <button
-            onClick={() => onOpenSchema()}
-            style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-            title="Теория"
-          >📚</button>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 3 }}>
+          Схемы, режимы, потребности
         </div>
       </div>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* ── Tab switcher ── */}
+      <div style={{ padding: '16px 20px 0' }}>
+        <div style={{
+          display: 'flex',
+          background: 'var(--surface)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 14,
+          padding: 3,
+        }}>
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{
+              flex: 1,
+              padding: '9px 0',
+              borderRadius: 11,
+              border: 'none',
+              fontFamily: 'inherit',
+              fontSize: 14,
+              fontWeight: tab === t.id ? 700 : 400,
+              cursor: 'pointer',
+              background: tab === t.id ? 'var(--sheet-bg)' : 'transparent',
+              color: tab === t.id ? 'var(--text)' : 'var(--text-sub)',
+              transition: 'all 0.18s',
+              boxShadow: tab === t.id ? '0 1px 6px rgba(0,0,0,0.18)' : 'none',
+            }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        {/* ── Потребности ── */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div
-            onClick={() => setNeedsOpen(o => !o)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
-                Потребности
+      <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+        {/* ══════════════════════ СХЕМЫ ══════════════════════ */}
+        {tab === 'schemas' && (
+          <>
+            {/* МОИ СХЕМЫ */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                Мои схемы
               </div>
-              {hasChildhood ? (
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {NEED_IDS.map(n => {
-                    const v = childhoodRatings[n.id];
-                    return v !== undefined ? (
-                      <span key={n.id} style={{ fontSize: 13, color: needScoreColor(v) }}>{NEED_DATA[n.id]?.emoji}</span>
-                    ) : (
-                      <span key={n.id} style={{ fontSize: 13, opacity: 0.3 }}>{NEED_DATA[n.id]?.emoji}</span>
-                    );
-                  })}
+              {profileLoading ? (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {[80, 100, 90, 110].map((w, i) => (
+                    <div key={i} style={{ height: 32, width: w, borderRadius: 20,
+                      background: 'linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%)',
+                      backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  ))}
                 </div>
               ) : (
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {NEED_IDS.map(n => (
-                    <span key={n.id} style={{ fontSize: 13 }}>{NEED_DATA[n.id]?.emoji}</span>
-                  ))}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {allSchemaIds.map(id => {
+                    const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
+                    const schema = domain?.schemas.find(s => s.id === id);
+                    if (!schema || !domain) return null;
+                    const c = hex(domain.color);
+                    return (
+                      <button key={id} onClick={() => setIntroSchemaId(id)} style={{
+                        padding: '6px 13px', borderRadius: 20,
+                        border: `1.5px solid ${c}55`,
+                        background: `${c}12`,
+                        color: c, fontSize: 13, fontWeight: 600,
+                        cursor: 'pointer', fontFamily: 'inherit',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}>
+                        {shortName(schema.name)}
+                      </button>
+                    );
+                  })}
+                  <button onClick={() => setShowSchemaPicker(true)} style={{
+                    padding: '6px 13px', borderRadius: 20,
+                    border: '1.5px dashed var(--border-color)',
+                    background: 'transparent',
+                    color: 'var(--text-sub)', fontSize: 13, fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}>
+                    + Добавить
+                  </button>
                 </div>
               )}
             </div>
-            <span style={{ color: 'var(--text-faint)', fontSize: 14, transition: 'transform 0.2s', display: 'inline-block', transform: needsOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>›</span>
-          </div>
-          {needsOpen && (
-            <div style={{ padding: '0 14px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {!hasChildhood && (
-                <div
-                  onClick={() => onOpenChildhoodWheel?.()}
-                  style={{ padding: '10px 14px', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.08)', cursor: 'pointer', marginBottom: 4 }}
-                >
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Как потребности удовлетворялись в детстве?</div>
-                  <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 3 }}>Заполнить колесо детства →</div>
+
+            {/* YSQ card */}
+            <div style={{
+              background: 'var(--surface)', border: '1px solid var(--border-color)',
+              borderRadius: 18, padding: '14px 16px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent)', marginBottom: 2 }}>
+                  YSQ-тест схем
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+                  Определи схемы автоматически
+                </div>
+              </div>
+              <button onClick={() => onOpenSchema({ startTest: true })} style={{
+                padding: '9px 20px', borderRadius: 12, border: 'none',
+                background: '#60a5fa', color: '#fff',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+              }}>
+                Начать
+              </button>
+            </div>
+
+            {/* ВСЕ СХЕМЫ */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                Все схемы
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {SCHEMA_DOMAINS.map(domain => {
+                  const isOpen = expandedDomains.has(domain.id);
+                  const c = hex(domain.color);
+                  return (
+                    <div key={domain.id} style={{
+                      background: 'var(--surface)', border: '1px solid var(--border-color)',
+                      borderRadius: 16, overflow: 'hidden',
+                    }}>
+                      <div onClick={() => toggleDomain(domain.id)} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '14px 16px', cursor: 'pointer',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: c, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
+                            {domain.domain}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 14, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
+                            {domain.schemas.length}
+                          </span>
+                          <span style={{
+                            color: 'var(--text-faint)', fontSize: 14,
+                            display: 'inline-block',
+                            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.2s',
+                          }}>›</span>
+                        </div>
+                      </div>
+                      {isOpen && (
+                        <div style={{ padding: '0 16px 14px', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                          {domain.schemas.map(s => {
+                            const active = allSchemaIds.includes(s.id);
+                            return (
+                              <button key={s.id} onClick={() => setIntroSchemaId(s.id)} style={{
+                                padding: '6px 13px', borderRadius: 20,
+                                border: `1.5px solid ${active ? c + '66' : c + '28'}`,
+                                background: active ? `${c}18` : `${c}08`,
+                                color: active ? c : 'var(--text-sub)',
+                                fontSize: 13, fontWeight: active ? 600 : 400,
+                                cursor: 'pointer', fontFamily: 'inherit',
+                                WebkitTapHighlightColor: 'transparent',
+                              }}>
+                                {shortName(s.name)}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ══════════════════════ РЕЖИМЫ ══════════════════════ */}
+        {tab === 'modes' && (
+          <>
+            {/* МОИ РЕЖИМЫ */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                Мои режимы
+              </div>
+              {profileLoading ? (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {[90, 110, 80].map((w, i) => (
+                    <div key={i} style={{ height: 32, width: w, borderRadius: 20,
+                      background: 'linear-gradient(90deg,var(--surface) 25%,var(--surface-2) 50%,var(--surface) 75%)',
+                      backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+                  ))}
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {myModes.map(m => {
+                    const c = hex(m.groupColor);
+                    return (
+                      <button key={m.id} onClick={() => setIntroModeId(m.id)} style={{
+                        padding: '6px 13px', borderRadius: 20,
+                        border: `1.5px solid ${c}55`,
+                        background: `${c}12`,
+                        color: c, fontSize: 13, fontWeight: 600,
+                        cursor: 'pointer', fontFamily: 'inherit',
+                        WebkitTapHighlightColor: 'transparent',
+                        display: 'flex', alignItems: 'center', gap: 5,
+                      }}>
+                        <span style={{ fontSize: 14 }}>{m.emoji}</span>
+                        {m.name}
+                      </button>
+                    );
+                  })}
+                  <button onClick={() => setShowModePicker(true)} style={{
+                    padding: '6px 13px', borderRadius: 20,
+                    border: '1.5px dashed var(--border-color)',
+                    background: 'transparent',
+                    color: 'var(--text-sub)', fontSize: 13, fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'inherit',
+                    WebkitTapHighlightColor: 'transparent',
+                  }}>
+                    + Добавить
+                  </button>
                 </div>
               )}
+            </div>
+
+            {/* ВСЕ РЕЖИМЫ */}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                Все режимы
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {MODE_GROUPS.map(group => {
+                  const isOpen = expandedModeGroups.has(group.id);
+                  const c = hex(group.color);
+                  return (
+                    <div key={group.id} style={{
+                      background: 'var(--surface)', border: '1px solid var(--border-color)',
+                      borderRadius: 16, overflow: 'hidden',
+                    }}>
+                      <div onClick={() => toggleModeGroup(group.id)} style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '14px 16px', cursor: 'pointer',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: c, flexShrink: 0 }} />
+                          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
+                            {group.group}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{ fontSize: 14, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
+                            {group.items.length}
+                          </span>
+                          <span style={{
+                            color: 'var(--text-faint)', fontSize: 14,
+                            display: 'inline-block',
+                            transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.2s',
+                          }}>›</span>
+                        </div>
+                      </div>
+                      {isOpen && (
+                        <div style={{ padding: '0 16px 14px', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                          {group.items.map(m => {
+                            const active = myModeIds.includes(m.id);
+                            return (
+                              <button key={m.id} onClick={() => setIntroModeId(m.id)} style={{
+                                padding: '6px 12px', borderRadius: 20,
+                                border: `1.5px solid ${active ? c + '66' : c + '28'}`,
+                                background: active ? `${c}18` : `${c}08`,
+                                color: active ? c : 'var(--text-sub)',
+                                fontSize: 13, fontWeight: active ? 600 : 400,
+                                cursor: 'pointer', fontFamily: 'inherit',
+                                WebkitTapHighlightColor: 'transparent',
+                                display: 'flex', alignItems: 'center', gap: 5,
+                              }}>
+                                <span style={{ fontSize: 14 }}>{m.emoji}</span>
+                                {m.name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* ══════════════════════ ПОТРЕБНОСТИ ══════════════════════ */}
+        {tab === 'needs' && (
+          <>
+            {!hasChildhood && (
+              <div onClick={() => onOpenChildhoodWheel?.()} style={{
+                background: 'rgba(124,114,248,0.07)', border: '1px solid rgba(124,114,248,0.2)',
+                borderRadius: 18, padding: '14px 16px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent)', marginBottom: 2 }}>
+                    Колесо детства
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+                    Как потребности удовлетворялись в детстве?
+                  </div>
+                </div>
+                <span style={{ fontSize: 20, color: 'var(--accent)', fontWeight: 300 }}>›</span>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {NEED_IDS.map(({ id, color }) => {
                 const d = NEED_DATA[id];
                 if (!d) return null;
                 const childScore = childhoodRatings[id];
                 return (
-                  <div
-                    key={id}
-                    onClick={() => setDetailNeedId(id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                      background: `${color}0d`, border: `1px solid ${color}22`,
-                    }}
-                  >
+                  <div key={id} onClick={() => setDetailNeedId(id)} style={{
+                    background: 'var(--surface)', border: `1px solid ${color}22`,
+                    borderRadius: 18, padding: '14px 16px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: 14,
+                  }}>
                     <div style={{
-                      width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                      width: 46, height: 46, borderRadius: 14, flexShrink: 0,
                       background: `${color}18`, border: `1px solid ${color}30`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
                     }}>
                       {d.emoji}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{d.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{d.hint}</div>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{d.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3 }}>{d.hint}</div>
                     </div>
                     {childScore !== undefined ? (
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <div style={{ fontSize: 16, fontWeight: 700, color: needScoreColor(childScore), lineHeight: 1 }}>{childScore}</div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: needScoreColor(childScore), lineHeight: 1 }}>{childScore}</div>
                         <div style={{ fontSize: 9, color: 'var(--text-faint)', letterSpacing: '0.04em', marginTop: 2 }}>детство</div>
                       </div>
                     ) : (
-                      <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
+                      <span style={{ color: 'var(--text-faint)', fontSize: 16, flexShrink: 0 }}>›</span>
                     )}
                   </div>
                 );
               })}
-              {hasChildhood && (
-                <div
-                  onClick={() => onOpenChildhoodWheel?.()}
-                  style={{ textAlign: 'center', paddingTop: 4, cursor: 'pointer' }}
-                >
-                  <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>Изменить ответы детства →</span>
-                </div>
-              )}
             </div>
-          )}
-        </div>
 
-        {/* ── Схемы ── */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div
-            onClick={() => setSchemasOpen(o => !o)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
-                Схемы
+            {hasChildhood && (
+              <div onClick={() => onOpenChildhoodWheel?.()} style={{
+                textAlign: 'center', paddingTop: 4, cursor: 'pointer',
+              }}>
+                <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>Изменить ответы →</span>
               </div>
-              {!profileLoading && (
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {previewSchemaEmojis.length > 0
-                    ? previewSchemaEmojis.map((e, i) => <span key={i} style={{ fontSize: 13 }}>{e}</span>)
-                    : <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>не выбраны</span>
-                  }
-                </div>
-              )}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div onClick={e => { e.stopPropagation(); setShowSchemaPicker(true); }} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
-                {hasAnySchemas ? 'Изменить' : 'Выбрать'}
-              </div>
-              <span style={{ color: 'var(--text-faint)', fontSize: 14, transition: 'transform 0.2s', display: 'inline-block', transform: schemasOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>›</span>
-            </div>
-          </div>
-          {schemasOpen && (
-            <div style={{ padding: '0 14px 14px' }}>
-              {profileLoading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {[90, 75, 60].map((w, i) => (
-                    <div key={i} style={{ height: 62, borderRadius: 14, width: `${w}%`, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  ))}
-                </div>
-              ) : hasAnySchemas ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {SCHEMA_DOMAINS.map(domain => {
-                    const domainActive = domain.schemas.filter(s => allSchemaIds.includes(s.id));
-                    if (domainActive.length === 0) return null;
-                    return (
-                      <div key={domain.id}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: domain.color, opacity: 0.75, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 8 }}>
-                          {domain.domain}
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                          {domainActive.map(s => {
-                            const introSaved = !!localStorage.getItem(`schema_intro_${s.id}`);
-                            return (
-                              <div
-                                key={s.id}
-                                onClick={() => setIntroSchemaId(s.id)}
-                                style={{
-                                  display: 'flex', alignItems: 'center', gap: 12,
-                                  padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                                  background: `${hex(domain.color)}0d`, border: `1px solid ${hex(domain.color)}22`,
-                                }}
-                              >
-                                <div style={{
-                                  width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                                  background: `${hex(domain.color)}18`, border: `1px solid ${hex(domain.color)}30`,
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
-                                }}>
-                                  {(s as any).emoji ?? '●'}
-                                </div>
-                                <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{s.name}</div>
-                                  <div style={{ fontSize: 11, color: introSaved ? domain.color : 'var(--text-faint)', marginTop: 2 }}>
-                                    {introSaved ? 'Заполнено' : 'Познакомиться →'}
-                                  </div>
-                                </div>
-                                <span style={{ color: 'var(--text-faint)', fontSize: 14, flexShrink: 0 }}>›</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <>
-                  <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8, letterSpacing: '-0.3px' }}>Узнай свои схемы</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 16 }}>
-                    Схемы — устойчивые паттерны мышления и поведения из детства. Они влияют на то, как ты реагируешь сегодня.
-                  </div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={() => onOpenSchema({ startTest: true })} style={{ flex: 1, padding: '12px 0', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #60a5fa)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-                      Пройти YSQ-тест
-                    </button>
-                    <button onClick={() => setShowSchemaPicker(true)} style={{ padding: '12px 16px', borderRadius: 14, border: '1px solid rgba(167,139,250,0.25)', background: 'rgba(167,139,250,0.08)', color: 'var(--accent)', fontSize: 14, fontWeight: 500, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                      Выбрать
-                    </button>
-                  </div>
-                  <div onClick={() => onOpenSchema({ startTest: true })} style={{ fontSize: 12, color: 'var(--text-faint)', textAlign: 'center', marginTop: 12, cursor: 'pointer' }}>
-                    YSQ-тест →
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* ── Режимы ── */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.02)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div
-            onClick={() => setModesOpen(o => !o)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', cursor: 'pointer' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
-                Режимы
-              </div>
-              {!profileLoading && (
-                <div style={{ display: 'flex', gap: 4 }}>
-                  {previewModeEmojis.length > 0
-                    ? previewModeEmojis.map((e, i) => <span key={i} style={{ fontSize: 13 }}>{e}</span>)
-                    : <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>не выбраны</span>
-                  }
-                </div>
-              )}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div onClick={e => { e.stopPropagation(); setShowModePicker(true); }} style={{ fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}>
-                {myModes.length > 0 ? 'Изменить' : 'Добавить'}
-              </div>
-              <span style={{ color: 'var(--text-faint)', fontSize: 14, transition: 'transform 0.2s', display: 'inline-block', transform: modesOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>›</span>
-            </div>
-          </div>
-          {modesOpen && (
-            <div style={{ padding: '0 14px 14px' }}>
-              {profileLoading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {[85, 70].map((w, i) => (
-                    <div key={i} style={{ height: 62, borderRadius: 14, width: `${w}%`, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  ))}
-                </div>
-              ) : myModes.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {myModes.map(m => {
-                    const introSaved = !!localStorage.getItem(`mode_intro_${m.id}`);
-                    return (
-                      <div
-                        key={m.id}
-                        onClick={() => setIntroModeId(m.id)}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '10px 12px', borderRadius: 14, cursor: 'pointer',
-                          background: `${hex(m.groupColor)}0d`, border: `1px solid ${hex(m.groupColor)}20`,
-                        }}
-                      >
-                        <div style={{
-                          width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                          background: `${hex(m.groupColor)}18`, border: `1px solid ${hex(m.groupColor)}30`,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
-                        }}>
-                          {m.emoji}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{m.name}</div>
-                          <div style={{ fontSize: 11, color: introSaved ? m.groupColor : 'var(--text-faint)', marginTop: 1 }}>
-                            {introSaved ? 'Заполнено' : 'Познакомиться →'}
-                          </div>
-                        </div>
-                        <span style={{ color: 'var(--text-faint)', fontSize: 14 }}>›</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
-                  Добавь режимы которые тебе близки — и познакомься с каждым
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            )}
+          </>
+        )}
 
       </div>
 
-      {/* Therapy note */}
-      <div style={{ padding: '0 20px', marginTop: 4, marginBottom: 12 }}>
-        <TherapyNote compact />
-      </div>
-
-      {/* Section info sheet */}
-      {showSectionInfo && (
-        <BottomSheet onClose={() => setShowSectionInfo(false)} zIndex={200}>
-          <div style={{ paddingTop: 8 }}>
-            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Мои паттерны</div>
-            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 20 }}>
-              Схема-терапия говорит: нас ведут паттерны — устойчивые способы реагировать, защищаться, получать или избегать. Осознать их — первый шаг к изменению.
-            </div>
-            {[
-              { emoji: '🌱', title: 'Потребности', text: 'Пять базовых эмоциональных потребностей. Заполни колесо детства — и увидишь, что формировало твои схемы.' },
-              { emoji: '🧩', title: 'Схемы', text: 'Убеждения и паттерны из прошлого, которые продолжают управлять настоящим. Узнай свои — через тест или вручную.' },
-              { emoji: '🔄', title: 'Режимы', text: 'Текущие состояния психики — они меняются в течение дня. Знать режим прямо сейчас — значит уже что-то с ним сделать.' },
-            ].map(item => (
-              <div key={item.title} style={{ display: 'flex', gap: 14, marginBottom: 16, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 24, flexShrink: 0 }}>{item.emoji}</span>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>{item.title}</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>{item.text}</div>
-                </div>
-              </div>
-            ))}
-            <button
-              onClick={() => { setShowSectionInfo(false); onOpenSchema({ tab: 'modes' }); }}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Познакомиться с режимами →
-            </button>
-          </div>
-        </BottomSheet>
-      )}
-
+      {/* ── Modals ── */}
       {showSchemaPicker && (
         <SchemaPickerSheet
           selected={manualSchemaIds}
@@ -514,10 +571,9 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
       <div style={{ paddingTop: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>Мои режимы</div>
         <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 20, lineHeight: 1.5 }}>
-          Выбери режимы которые ты замечаешь у себя. Потом можно познакомиться с каждым.
+          Выбери режимы которые ты замечаешь у себя.
         </div>
 
-        {/* Популярные */}
         <div style={{ marginBottom: 20 }}>
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-sub)', marginBottom: 8 }}>
             С чего начать
@@ -527,15 +583,15 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
               const mode = ALL_MODES.find(m => m.id === id);
               if (!mode) return null;
               const active = ids.includes(id);
-              const groupColor = mode.groupColor;
+              const c = hex(mode.groupColor);
               return (
-                <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${groupColor}12` : 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${active ? `${groupColor}30` : 'rgba(var(--fg-rgb),0.08)'}`, transition: 'all 0.15s' }}>
+                <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${c}12` : 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${active ? `${c}30` : 'rgba(var(--fg-rgb),0.08)'}`, transition: 'all 0.15s' }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{mode.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
                     {MODE_DESC[id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[id]}</div>}
                   </div>
-                  {active && <span style={{ color: groupColor, fontSize: 14, flexShrink: 0 }}>✓</span>}
+                  {active && <span style={{ color: c, fontSize: 14, flexShrink: 0 }}>✓</span>}
                 </div>
               );
             })}
@@ -545,30 +601,33 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
         <div style={{ height: 1, background: 'rgba(var(--fg-rgb),0.06)', marginBottom: 18 }} />
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14 }}>Все режимы</div>
 
-        {MODE_GROUPS.map(group => (
-          <div key={group.id} style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: group.color, marginBottom: 8, opacity: 0.8 }}>
-              {group.group}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {group.items.filter(m => !POPULAR_MODE_IDS.includes(m.id)).map(m => {
-                const active = ids.includes(m.id);
-                return (
-                  <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${group.color}12` : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${active ? `${group.color}30` : 'rgba(var(--fg-rgb),0.06)'}`, transition: 'all 0.15s' }}>
-                    <span style={{ fontSize: 18, flexShrink: 0 }}>{m.emoji}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
-                      {MODE_DESC[m.id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[m.id]}</div>}
+        {MODE_GROUPS.map(group => {
+          const c = hex(group.color);
+          return (
+            <div key={group.id} style={{ marginBottom: 18 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: c, marginBottom: 8, opacity: 0.8 }}>
+                {group.group}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {group.items.filter(m => !POPULAR_MODE_IDS.includes(m.id)).map(m => {
+                  const active = ids.includes(m.id);
+                  return (
+                    <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${c}12` : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${active ? `${c}30` : 'rgba(var(--fg-rgb),0.06)'}`, transition: 'all 0.15s' }}>
+                      <span style={{ fontSize: 18, flexShrink: 0 }}>{m.emoji}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
+                        {MODE_DESC[m.id] && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2, lineHeight: 1.4 }}>{MODE_DESC[m.id]}</div>}
+                      </div>
+                      {active && <span style={{ color: c, fontSize: 14, flexShrink: 0 }}>✓</span>}
                     </div>
-                    {active && <span style={{ color: group.color, fontSize: 14, flexShrink: 0 }}>✓</span>}
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
-        <button onClick={() => { onSave(ids); onClose(); }} style={{ width: '100%', padding: '14px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #60a5fa)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 8 }}>
+        <button onClick={() => { onSave(ids); onClose(); }} style={{ width: '100%', padding: '14px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #60a5fa)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 8 }}>
           Сохранить{ids.length > 0 ? ` (${ids.length})` : ''}
         </button>
       </div>
