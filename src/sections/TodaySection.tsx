@@ -75,19 +75,19 @@ function NeedMini({ need, value, onTap }: {
         )}
         <span style={{
           position: 'relative',
-          fontSize: 14, fontWeight: 700,
+          fontSize: filled ? 14 : 18, fontWeight: 700,
           color: filled ? color : 'var(--text-faint)',
           fontVariantNumeric: 'tabular-nums',
         }}>
-          {filled ? value : '·'}
+          {filled ? value : need.emoji}
         </span>
       </div>
       <span style={{
         fontSize: 9, color: 'var(--text-faint)', fontWeight: 600,
         textAlign: 'center', letterSpacing: '0.02em', lineHeight: 1.2,
-        maxWidth: 48,
+        maxWidth: 52, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
-        {need.chartLabel.slice(0, 7)}
+        {need.chartLabel}
       </span>
     </div>
   );
