@@ -106,7 +106,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
             <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-              {existing ? 'Черновик восстановлен' : 'Кто сейчас внутри?'}
+              {existing ? 'Продолжаем с того места' : 'Кто сейчас внутри?'}
             </div>
           </div>
           <button onClick={handleSave} disabled={!canSave || saving} style={{
@@ -115,7 +115,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
             color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
             fontSize: 13, fontWeight: 600, cursor: canSave ? 'pointer' : 'default', flexShrink: 0,
           }}>
-            {saving ? '...' : 'Сохранить'}
+            {saving ? 'Сохраняю...' : 'Сохранить'}
           </button>
         </div>
 
@@ -146,7 +146,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
         <Area value={situation} onChange={setSituation} placeholder="Что произошло? Где ты, с кем, в какой момент?" />
 
         <StepLabel step={3} title="Мысли" hint="что говорит этот режим" />
-        <Area value={thoughts} onChange={setThoughts} placeholder="Что думает этот режим? Какие у него убеждения?" rows={2} />
+        <Area value={thoughts} onChange={setThoughts} placeholder="Что этот режим говорит тебе? Во что он верит?" rows={2} />
 
         <StepLabel step={4} title="Чувства" hint="что этот режим ощущает" />
         <Area value={feelings} onChange={setFeelings} placeholder="Что этот режим чувствует? Страх, злость, пустоту..." rows={2} />
@@ -155,10 +155,10 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
         <Area value={bodyFeelings} onChange={setBodyFeelings} placeholder="Что происходит с телом? Напряжение, онемение, тяжесть..." rows={2} />
 
         <StepLabel step={6} title="Действия" hint="что ты делаешь или делал/а" />
-        <Area value={actions} onChange={setActions} placeholder="Что этот режим заставляет тебя делать или хотеть сделать?" rows={2} />
+        <Area value={actions} onChange={setActions} placeholder="Как этот режим тебя тянет поступить?" rows={2} />
 
         <StepLabel step={7} title="Что тебе на самом деле нужно?" />
-        <Area value={actualNeed} onChange={setActualNeed} placeholder="Какую потребность пытается закрыть этот режим?" rows={2} />
+        <Area value={actualNeed} onChange={setActualNeed} placeholder="Чего тебе на самом деле не хватает?" rows={2} />
 
         <StepLabel step={8} title="Детские воспоминания" hint="связанные с ситуацией" />
         <Area value={childhoodMemories} onChange={setChildhoodMemories} placeholder="Напоминает что-то из детства? Похожее чувство, похожая ситуация?" rows={3} />

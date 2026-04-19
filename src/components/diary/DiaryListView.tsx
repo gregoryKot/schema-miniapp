@@ -15,9 +15,9 @@ interface Props {
 }
 
 const DIARY_META: Record<DiaryType, { title: string; emoji: string; color: string; emptyLine1: string; emptyLine2: string; fabLabel: string }> = {
-  schema:    { title: 'Дневник схем',          emoji: '📓', color: 'var(--accent-red)',   emptyLine1: 'Здесь будут твои наблюдения.',          emptyLine2: 'Когда заметишь, что схема включилась — открой и запиши момент.', fabLabel: '+ Записать момент' },
-  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: 'var(--accent-blue)',  emptyLine1: 'Здесь будут твои записи о режимах.',    emptyLine2: 'Как только поймёшь, что какой-то режим взял управление — зафиксируй это.', fabLabel: '+ Записать режим' },
-  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: 'var(--accent-green)', emptyLine1: 'Здесь будут твои дни благодарности.',  emptyLine2: 'Начни сегодня — три вещи, большие или маленькие.', fabLabel: '+ Записать день' },
+  schema:    { title: 'Дневник схем',          emoji: '📓', color: 'var(--accent-red)',   emptyLine1: 'Пока здесь тихо.', emptyLine2: 'Когда что-то триггернёт — возвращайся и записывай.', fabLabel: '+ Записать момент' },
+  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: 'var(--accent-blue)',  emptyLine1: 'Пока здесь тихо.', emptyLine2: 'Как только поймаешь себя в знакомом состоянии — приходи записать.', fabLabel: '+ Записать режим' },
+  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: 'var(--accent-green)', emptyLine1: 'Пока здесь тихо.', emptyLine2: 'Начни сегодня — достаточно трёх вещей.', fabLabel: '+ Записать' },
 };
 
 function formatDt(iso: string) {
@@ -40,7 +40,7 @@ function DeleteBtn({ color, onClick }: { color: string; onClick: () => void }) {
   if (!confirm) {
     return (
       <button onClick={() => setConfirm(true)} style={{ marginTop: 8, background: `${color}22`, border: 'none', borderRadius: 8, padding: '6px 12px', color, fontSize: 12, cursor: 'pointer' }}>
-        Удалить запись
+        Удалить
       </button>
     );
   }
@@ -214,7 +214,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
             onClick={onDelete}
             style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.2)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
-            Точно удалить
+            Да, удалить
           </button>
         )}
       </div>

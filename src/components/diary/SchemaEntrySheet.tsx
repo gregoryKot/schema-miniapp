@@ -162,7 +162,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Дневник схем</div>
             <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-              {hasDraft ? 'Черновик восстановлен' : 'Новая запись'}
+              {hasDraft ? 'Продолжаем с того места' : 'С чего начнём?'}
             </div>
           </div>
           <button onClick={handleSave} disabled={!canSave || saving} style={{
@@ -171,7 +171,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
             color: canSave ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
             fontSize: 13, fontWeight: 600, cursor: canSave ? 'pointer' : 'default', flexShrink: 0,
           }}>
-            {saving ? '...' : 'Сохранить'}
+            {saving ? 'Сохраняю...' : 'Сохранить'}
           </button>
         </div>
 
@@ -213,7 +213,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           );
         })}
 
-        <StepLabel step={3} title="Мысли" hint="что говорит голова в этот момент" />
+        <StepLabel step={3} title="Мысли" hint="о чём думаешь" />
         <Area value={thoughts} onChange={setThoughts} placeholder="Какие мысли появились? Что ты говоришь себе?" />
 
         <StepLabel step={4} title="Тело" hint="что ощущаешь физически" />
@@ -222,7 +222,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
         <StepLabel step={5} title="Моя реакция" hint="что ты делаешь или хочешь сделать" />
         <Area value={actualBehavior} onChange={setActualBehavior} placeholder="Что ты сделал/а или хотел/а сделать? Убежать, замолчать, накричать..." rows={2} />
 
-        <StepLabel step={6} title="Схемы" hint="какая включилась" />
+        <StepLabel step={6} title="Схемы" hint="что сработало" />
         {SCHEMA_DOMAINS.map(domain => {
           const schemas = useFiltered
             ? domain.schemas.filter(s => activeSchemaIds?.includes(s.id) ?? false)
@@ -253,18 +253,18 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
             background: 'none', border: 'none', color: 'var(--text-sub)',
             fontSize: 12, cursor: 'pointer', padding: '4px 0', marginBottom: 8,
           }}>
-            {showAllSchemas ? '↑ Только мои схемы' : '↓ Все схемы'}
+            {showAllSchemas ? '↑ Только мои' : '↓ Показать все'}
           </button>
         )}
-        <Area value={schemaOrigin} onChange={setSchemaOrigin} placeholder="Откуда эта схема? Что вспоминается из детства или прошлого?" rows={2} />
+        <Area value={schemaOrigin} onChange={setSchemaOrigin} placeholder="Это напоминает что-то из прошлого? Из детства?" rows={2} />
 
-        <StepLabel step={7} title="Здоровый взгляд" hint="как выглядит ситуация без схемы" />
+        <StepLabel step={7} title="Здоровый взгляд" hint="если смотреть трезво" />
         <Area value={healthyView} onChange={setHealthyView} placeholder="Если убрать схему в сторону — что на самом деле здесь происходит?" />
 
-        <StepLabel step={8} title="Что действительно сложно" hint="без преувеличения" />
+        <StepLabel step={8} title="Что реально трудно" hint="без преувеличения" />
         <Area value={realProblems} onChange={setRealProblems} placeholder="Что в этом моменте по-настоящему трудно — если не раздувать?" rows={2} />
 
-        <StepLabel step={9} title="Где я преувеличил/а" hint="что было больше, чем нужно" />
+        <StepLabel step={9} title="Где я раздул/а" hint="что оказалось крупнее, чем есть" />
         <Area value={excessiveReactions} onChange={setExcessiveReactions} placeholder="Где реакция оказалась больше, чем требовала ситуация?" rows={2} />
 
         <StepLabel step={10} title="Здоровое поведение" hint="как поступил бы Здоровый Взрослый" />

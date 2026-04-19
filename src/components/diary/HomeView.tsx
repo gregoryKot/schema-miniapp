@@ -80,7 +80,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'schema',
       emoji: '📓',
       title: 'Дневник схем',
-      subtitle: 'Замечаешь, что схема сработала? Запиши момент — ситуацию, эмоции, мысли',
+      subtitle: 'Что-то триггернуло? Запиши — ситуацию, чувства, мысли',
       color: 'var(--accent-red)',
       count: schemaDiaryCount,
       lastDate: lastSchemaDiaryDate,
@@ -89,7 +89,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'mode',
       emoji: '🔄',
       title: 'Дневник режимов',
-      subtitle: 'Поймал режим в действии? Зафикисруй кто взял управление и что случилось',
+      subtitle: 'Поймал себя в знакомом состоянии? Запиши — кто взял управление',
       color: 'var(--accent-blue)',
       count: modeDiaryCount,
       lastDate: lastModeDiaryDate,
@@ -98,7 +98,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'gratitude',
       emoji: '🌱',
       title: 'Дневник благодарности',
-      subtitle: 'Три момента, большие или маленькие, за которые ты благодарен сегодня',
+      subtitle: 'Три вещи, за которые можно сказать спасибо сегодня',
       color: 'var(--accent-green)',
       count: gratitudeDiaryCount,
       lastDate: lastGratitudeDiaryDate,
@@ -111,11 +111,11 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
     <div style={{ padding: `${safeTop + 16}px 16px 32px` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         {onClose && <span onClick={onClose} style={{ fontSize: 26, color: 'var(--text-sub)', cursor: 'pointer', lineHeight: 1 }}>‹</span>}
-        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>Дневники</span>
+        <span style={{ fontSize: 18, fontWeight: 600, color: 'var(--text)' }}>Мои дневники</span>
       </div>
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
-          Инструменты схема-терапии для самонаблюдения. Веди один или все три — как удобно.
+          Замечай паттерны, фиксируй моменты. Веди один или все три — как тебе удобно.
         </div>
       </div>
       {diaries.map(meta => (

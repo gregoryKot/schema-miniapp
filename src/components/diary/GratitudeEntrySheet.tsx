@@ -48,7 +48,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
     'Кто-то, кто помог или поддержал...',
     'Момент, который хочется запомнить...',
     'Что-то простое, что согрело...',
-    'За что ещё можно быть благодарен/на...',
+    'Что-то, что обычно не замечаешь...',
   ];
 
   return (
@@ -95,7 +95,7 @@ export function GratitudeEntrySheet({ onClose, date, existingItems, onSave }: Pr
             borderRadius: 12, padding: '10px', width: '100%', color: 'var(--text-sub)',
             fontSize: 13, cursor: 'pointer', marginBottom: 4,
           }}>
-            + ещё одна
+            + добавить ещё
           </button>
         )}
 
