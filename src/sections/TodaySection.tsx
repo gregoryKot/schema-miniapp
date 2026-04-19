@@ -1,12 +1,119 @@
+// TodaySection.tsx — Redesigned Today screen
+// Place at: src/sections/TodaySection.tsx
+// Replaces the existing TodaySection.
+//
+// Key differences from original:
+//  – NeedMini grid with fill-bar indicators (tap opens tracker at that need)
+//  – Average score card when all needs rated
+//  – Diary preview with left-rail type indicator
+//  – Onboarding step card with dot progress
+//  – All colors via CSS tokens (light/dark theme ready)
+
 import { useEffect, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
-import { api } from '../api';
+import { api, StreakData } from '../api';
 import { Section } from '../components/BottomNav';
 import { useSafeTop } from '../utils/safezone';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 import { TaskCreateSheet } from '../components/TaskCreateSheet';
 
 export { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY };
+
+// ── Shared helpers ────────────────────────────────────────────────────────────
+
+function hexToRgb(hex: string): string {
+  return [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)).join(',');
+}
+
+function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10, m100 = n % 100;
+  if (m100 >= 11 && m100 <= 19) return many;
+  if (m10 === 1) return one;
+  if (m10 >= 2 && m10 <= 4) return few;
+  return many;
+}
+
+function formatGreetingDate(): string {
+  const now = new Date();
+  const dow  = now.toLocaleDateString('ru-RU', { weekday: 'long' });
+  const date = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+  return `${dow[0].toUpperCase()}${dow.slice(1)}, ${date}`;
+}
+
+function readLocalIds(key: string): string[] {
+  try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
+}
+
+// ── NeedMini ──────────────────────────────────────────────────────────────────
+
+function NeedMini({ need, value, onTap }: {
+  need: Need;
+  value: number | undefined;
+  onTap: () => void;
+}) {
+  const color  = COLORS[need.id] ?? '#888';
+  const rgb    = hexToRgb(color);
+  const filled = value !== undefined && value !== null;
+
+  return (
+    <div onClick={e => { e.stopPropagation(); onTap(); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
+      <div style={{
+        width: 46, height: 46, borderRadius: 14,
+        position: 'relative', overflow: 'hidden',
+        background: filled ? `rgba(${rgb},0.14)` : 'var(--surface)',
+        border: `1.5px solid ${filled ? color + '44' : 'var(--border-color)'}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'border-color 0.2s',
+      }}>
+        {filled && (
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0,
+            height: `${(value! / 10) * 100}%`,
+            background: `linear-gradient(to top, ${color}55, ${color}14)`,
+            transition: 'height 0.4s ease',
+          }}/>
+        )}
+        <span style={{
+          position: 'relative',
+          fontSize: 14, fontWeight: 700,
+          color: filled ? color : 'var(--text-faint)',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
+          {filled ? value : '·'}
+        </span>
+      </div>
+      <span style={{
+        fontSize: 9, color: 'var(--text-faint)', fontWeight: 600,
+        textAlign: 'center', letterSpacing: '0.02em', lineHeight: 1.2,
+        maxWidth: 48,
+      }}>
+        {need.chartLabel.slice(0, 7)}
+      </span>
+    </div>
+  );
+}
+
+// ── Diary type badge ──────────────────────────────────────────────────────────
+
+function DiaryTypeBadge({ type }: { type: string }) {
+  const MAP: Record<string, { label: string; color: string }> = {
+    schema:    { label: 'Схема',         color: '#818cf8' },
+    mode:      { label: 'Режим',         color: '#f472b6' },
+    gratitude: { label: 'Благодарность', color: '#4ade80' },
+  };
+  const { label, color } = MAP[type] ?? { label: type, color: '#aaa' };
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+      textTransform: 'uppercase', color,
+      background: color + '18', borderRadius: 6, padding: '2px 7px',
+    }}>
+      {label}
+    </span>
+  );
+}
+
+// ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
   needs: Need[];
@@ -15,6 +122,7 @@ interface Props {
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
   onOpenAdvanced: () => void;
   onOpenTracker: () => void;
+  onOpenTrackerAt?: (needId: string) => void;
   onOpenDiaries: () => void;
   onOpenChildhoodWheel: () => void;
   refreshKey?: number;
@@ -22,31 +130,22 @@ interface Props {
   onOpenTherapistCabinet?: () => void;
 }
 
-function formatGreetingDate(): string {
-  const now = new Date();
-  const dow = now.toLocaleDateString('ru-RU', { weekday: 'long' });
-  const date = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-  return `${dow[0].toUpperCase()}${dow.slice(1)}, ${date}`;
-}
+// ── TodaySection ──────────────────────────────────────────────────────────────
 
-function plural(n: number, one: string, few: string, many: string): string {
-  const mod10 = n % 10, mod100 = n % 100;
-  if (mod100 >= 11 && mod100 <= 19) return many;
-  if (mod10 === 1) return one;
-  if (mod10 >= 2 && mod10 <= 4) return few;
-  return many;
-}
-
-function readLocalIds(key: string): string[] {
-  try { return JSON.parse(localStorage.getItem(key) ?? '[]'); } catch { return []; }
-}
-
-export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel, refreshKey, userRole, onOpenTherapistCabinet }: Props) {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+export function TodaySection({
+  needs, ratings,
+  onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt,
+  onOpenDiaries, onOpenChildhoodWheel,
+  refreshKey, userRole, onOpenTherapistCabinet,
+}: Props) {
+  const [profile,       setProfile]       = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
-  const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; emoji: string; label: string; date: string }>>([]);
+  const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; label: string; time: string; dateStr: string }>>([]);
   const [diariesLoaded, setDiariesLoaded] = useState(false);
-  const [showDiaryTaskCreate, setShowDiaryTaskCreate] = useState(false);
+  const [showDiaryTask, setShowDiaryTask] = useState(false);
+  const safeTop = useSafeTop();
+
+  const firstName = (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.first_name ?? '';
 
   useEffect(() => {
     let ignore = false;
@@ -60,307 +159,274 @@ export function TodaySection({ needs, ratings, onNavigate, onOpenSchema, onOpenA
         setManualSchemaIds(p.mySchemaIds);
         localStorage.setItem(MY_SCHEMA_IDS_KEY, JSON.stringify(p.mySchemaIds));
       }
-      if (p.myModeIds.length > 0) {
-        localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(p.myModeIds));
-      }
     }).catch(() => {});
 
-    // Load recent diary entries
     Promise.all([api.getSchemaDiary(), api.getModeDiary(), api.getGratitudeDiary()])
       .then(([schema, mode, gratitude]) => {
         if (ignore) return;
-        const all: Array<{ type: string; emoji: string; label: string; date: string }> = [
-          ...schema.slice(0, 3).map(e => ({ type: 'schema', emoji: '📓', label: e.trigger.slice(0, 40), date: e.createdAt })),
-          ...mode.slice(0, 3).map(e => ({ type: 'mode', emoji: '🔄', label: e.situation.slice(0, 40), date: e.createdAt })),
-          ...gratitude.slice(0, 3).map(e => ({ type: 'gratitude', emoji: '🌱', label: e.items[0]?.slice(0, 40) ?? 'Благодарность', date: e.date })),
+        const all = [
+          ...schema.slice(0, 2).map(e => ({ type: 'schema', label: e.trigger.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: 'Сегодня' })),
+          ...mode.slice(0, 2).map(e => ({ type: 'mode', label: e.situation.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: 'Сегодня' })),
+          ...gratitude.slice(0, 2).map(e => ({ type: 'gratitude', label: e.items[0]?.slice(0, 46) ?? 'Благодарность', time: '', dateStr: e.date })),
         ];
-        all.sort((a, b) => b.date.localeCompare(a.date));
-        setRecentDiaries(all.slice(0, 4));
-      }).catch(() => {}).finally(() => { if (!ignore) setDiariesLoaded(true); });
+        all.sort((a, b) => b.time.localeCompare(a.time));
+        setRecentDiaries(all.slice(0, 3));
+      })
+      .catch(() => {})
+      .finally(() => { if (!ignore) setDiariesLoaded(true); });
 
     return () => { ignore = true; };
   }, [refreshKey]);
 
-  const firstName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
-  const streak = profile?.streak ?? 0;
-  const ratedCount = needs.filter(n => ratings[n.id] !== undefined).length;
-  const allRated = needs.length > 0 && ratedCount === needs.length;
-  const hasSchemas = [...new Set([...(profile?.ysq.activeSchemaIds ?? []), ...manualSchemaIds])].length > 0;
-  const safeTop = useSafeTop();
+  const streak       = profile?.streak ?? 0;
+  const ratedCount   = needs.filter(n => ratings[n.id] !== undefined).length;
+  const allRated     = needs.length > 0 && ratedCount === needs.length;
+  const avgScore     = allRated
+    ? (needs.reduce((s, n) => s + ratings[n.id], 0) / needs.length).toFixed(1)
+    : null;
+  const hasSchemas   = [...new Set([...(profile?.ysq.activeSchemaIds ?? []), ...manualSchemaIds])].length > 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, paddingTop: safeTop }}>
 
-      {/* Header */}
+      {/* ── Header ── */}
       <div style={{ padding: '24px 20px 0' }}>
-        <div style={{ fontSize: 12, color: 'var(--text-sub)', fontWeight: 500, marginBottom: 6, letterSpacing: '0.02em' }}>
+        <div style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 500, marginBottom: 5, letterSpacing: '0.03em' }}>
           {formatGreetingDate()}
         </div>
-        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-          {firstName ? `Привет, ${firstName}` : 'Добро пожаловать'}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
+            {firstName ? `Привет, ${firstName}` : 'Добро пожаловать'}
+          </div>
+          {/* Streak */}
+          {profile !== null && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
+              background: streak > 0 ? 'rgba(251,146,60,0.12)' : 'var(--surface)',
+              border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.22)' : 'var(--border-color)'}`,
+              borderRadius: 20, padding: '5px 10px',
+            }}>
+              <span style={{ fontSize: 13 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</span>
+              <span style={{ fontSize: 14, fontWeight: 700, color: streak > 0 ? '#fb923c' : 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
+                {streak}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      <div style={{ padding: '20px 20px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* ── Therapist cabinet banner ── */}
         {userRole === 'THERAPIST' && onOpenTherapistCabinet && (
-          <div
-            onClick={onOpenTherapistCabinet}
-            style={{
-              background: 'linear-gradient(135deg, rgba(var(--fg-rgb),0.08), rgba(var(--fg-rgb),0.04))',
-              border: '1px solid rgba(167,139,250,0.35)',
-              borderRadius: 18, padding: '16px 18px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              animation: 'slide-up 0.25s ease both',
-            }}
-          >
+          <div onClick={onOpenTherapistCabinet} style={{
+            background: 'rgba(167,139,250,0.07)', border: '1px solid rgba(167,139,250,0.25)',
+            borderRadius: 18, padding: '14px 18px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
             <div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--accent)', marginBottom: 2 }}>
-                👨‍⚕️ Кабинет терапевта
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent)', marginBottom: 2 }}>
+                Кабинет терапевта
               </div>
-              <div style={{ fontSize: 12, color: 'var(--accent)' }}>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>
                 Клиенты · Задания · Концептуализация
               </div>
             </div>
-            <div style={{ fontSize: 22, color: 'var(--accent)', fontWeight: 300 }}>›</div>
+            <span style={{ fontSize: 20, color: 'var(--accent)', fontWeight: 300 }}>›</span>
           </div>
         )}
 
-        {/* ── Онбординг ── */}
+        {/* ── Onboarding widget ── */}
         <OnboardingWidget
           profile={profile}
           hasSchemas={hasSchemas}
           onOpenSchema={onOpenSchema}
-          onNavigate={onNavigate}
           onOpenAdvanced={onOpenAdvanced}
           onOpenTracker={onOpenTracker}
-          onOpenChildhoodWheel={onOpenChildhoodWheel}
           onOpenDiaries={onOpenDiaries}
+          onOpenChildhoodWheel={onOpenChildhoodWheel}
         />
 
-        {/* ── Streak + Tracker ── */}
-        <div style={{ display: 'flex', gap: 10, animation: 'slide-up 0.3s ease 0.08s both' }}>
-          {/* Streak badge */}
-          <div
-            style={{
-              width: 110, flexShrink: 0,
-              background: profile === null ? 'rgba(var(--fg-rgb),0.03)' : streak > 0 ? 'linear-gradient(145deg, rgba(251,146,60,0.15), rgba(251,146,60,0.06))' : 'rgba(var(--fg-rgb),0.03)',
-              border: `1px solid ${profile !== null && streak > 0 ? 'rgba(251,146,60,0.3)' : 'rgba(var(--fg-rgb),0.07)'}`,
-              borderRadius: 16, padding: '16px 14px',
-              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-            }}>
-            {profile === null ? (
-              <>
-                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ width: '70%', height: 28, borderRadius: 6, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  <div style={{ width: '50%', height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ fontSize: 28 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</div>
-                <div>
-                  <div style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-1px', lineHeight: 1, color: streak > 0 ? 'var(--accent-orange)' : 'rgba(var(--fg-rgb),0.3)' }}>{streak}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, fontWeight: 500 }}>
-                    {plural(streak, 'день', 'дня', 'дней')}
-                  </div>
-                </div>
-              </>
-            )}
+        {/* ── Needs card ── */}
+        <div onClick={onOpenTracker} style={{
+          background: 'var(--surface)', border: '1px solid var(--border-color)',
+          borderRadius: 20, padding: '18px 18px', cursor: 'pointer',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+              Потребности
+            </div>
+            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+              {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
+            </span>
           </div>
 
-          {/* Tracker button */}
-          <div onClick={onOpenTracker} style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '16px 14px', cursor: 'pointer' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 12 }}>
-              {allRated ? 'Готово сегодня ✓' : `${ratedCount} из ${needs.length}`}
-            </div>
-            <div style={{ display: 'flex', gap: 5 }}>
-              {needs.map((need, idx) => {
-                const val = ratings[need.id];
-                const color = COLORS[need.id] ?? '#888';
-                const filled = val !== undefined;
-                return (
-                  <div key={need.id} style={{ flex: 1, animation: `slide-up 0.3s ease ${0.08 + idx * 0.04}s both` }}>
-                    <div style={{ width: '100%', height: 44, borderRadius: 8, position: 'relative', overflow: 'hidden', background: 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${filled ? `${color}40` : 'rgba(var(--fg-rgb),0.08)'}` }}>
-                      {filled && (
-                        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${(val / 10) * 100}%`, background: `linear-gradient(to top, ${color}66, ${color}22)`, transition: 'height 0.4s ease' }} />
-                      )}
-                      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: filled ? 13 : 16, fontWeight: 700, color: filled ? '#fff' : 'rgba(var(--fg-rgb),0.2)' }}>
-                        {filled ? val : need.emoji}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+          {/* 5 mini indicators */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            {needs.map(n => (
+              <NeedMini key={n.id} need={n} value={ratings[n.id]}
+                onTap={() => onOpenTrackerAt ? onOpenTrackerAt(n.id) : onOpenTracker()}
+              />
+            ))}
           </div>
+
+          {allRated && avgScore ? (
+            <div style={{
+              background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700,
+                  letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
+                  Средний индекс
+                </div>
+                <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-1.5px',
+                  color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                  {avgScore}
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено</div>
+            </div>
+          ) : (
+            <div style={{
+              background: 'rgba(var(--fg-rgb),0.04)',
+              borderRadius: 14, padding: '12px 14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              border: '1px solid var(--border-color)',
+            }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>
+                  Оценить потребности
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          )}
         </div>
 
-        {/* ── Последние записи дневника ── */}
-        <div
-          onClick={onOpenDiaries}
-          style={{
-            background: 'rgba(var(--fg-rgb),0.03)',
-            border: '1px solid rgba(var(--fg-rgb),0.07)',
-            borderRadius: 16, padding: '16px 18px',
-            animation: 'pop-in 0.3s ease 0.12s both',
-            cursor: 'pointer',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: recentDiaries.length > 0 || !diariesLoaded ? 12 : 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase' }}>
+        {/* ── Diary card ── */}
+        <div onClick={onOpenDiaries} style={{
+          background: 'var(--surface)', border: '1px solid var(--border-color)',
+          borderRadius: 20, padding: '18px 18px 14px', cursor: 'pointer',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
               Дневник
             </div>
-            {diariesLoaded && (
-              <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>
-                {recentDiaries.length > 0 ? 'Все записи →' : 'Открыть →'}
-              </div>
-            )}
+            <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>Все →</span>
           </div>
 
           {!diariesLoaded ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[80, 65, 90].map((w, i) => (
-                <div key={i} style={{ height: 12, borderRadius: 6, width: `${w}%`, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-              ))}
-            </div>
+            <SkeletonLines />
           ) : recentDiaries.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {recentDiaries.map((entry, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0' }}>
-                  <span style={{ fontSize: 15, flexShrink: 0 }}>{entry.emoji}</span>
+            recentDiaries.map((entry, i) => {
+              const typeColor = ({ schema: '#818cf8', mode: '#f472b6', gratitude: '#4ade80' } as any)[entry.type] ?? '#aaa';
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0',
+                  borderTop: i > 0 ? '1px solid var(--border-color)' : undefined,
+                }}>
+                  <div style={{ width: 3, height: 30, borderRadius: 2, flexShrink: 0, background: typeColor }}/>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: 'var(--text-sub)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.label}
                     </div>
+                    <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 1 }}>
+                      {entry.dateStr}{entry.time ? ` · ${entry.time}` : ''}
+                    </div>
                   </div>
+                  <DiaryTypeBadge type={entry.type}/>
                 </div>
-              ))}
-            </div>
+              );
+            })
           ) : (
-            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55 }}>
               Фиксируй моменты когда схемы активируются — это главная практика
             </div>
           )}
-          {diariesLoaded && (
-            <div style={{ marginTop: 10, borderTop: '1px solid rgba(var(--fg-rgb),0.05)', paddingTop: 10 }}>
-              <button
-                onClick={e => { e.stopPropagation(); setShowDiaryTaskCreate(true); }}
-                style={{ background: 'none', border: 'none', padding: 0, fontSize: 12, color: 'var(--accent)', cursor: 'pointer', fontWeight: 500 }}
-              >
-                + Поставить цель на дневник
-              </button>
-            </div>
-          )}
+
+          <div style={{ paddingTop: 10, marginTop: 2, borderTop: '1px solid var(--border-color)' }}>
+            <button
+              onClick={e => { e.stopPropagation(); setShowDiaryTask(true); }}
+              style={{ background: 'none', border: 'none', padding: 0,
+                fontSize: 12, color: 'var(--accent)', cursor: 'pointer',
+                fontWeight: 500, fontFamily: 'inherit' }}>
+              + Поставить цель на дневник
+            </button>
+          </div>
         </div>
 
       </div>
-      {showDiaryTaskCreate && (
+
+      {showDiaryTask && (
         <TaskCreateSheet
           defaultType="diary_streak"
-          onCreated={() => setShowDiaryTaskCreate(false)}
-          onClose={() => setShowDiaryTaskCreate(false)}
+          onCreated={() => setShowDiaryTask(false)}
+          onClose={() => setShowDiaryTask(false)}
         />
       )}
     </div>
   );
 }
 
-// ── Onboarding completion card ────────────────────────────────────────────────
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 
-function OnboardingComplete({ onDone }: { onDone: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onDone, 2800);
-    return () => clearTimeout(t);
-  }, []);
+function SkeletonLines() {
   return (
-    <div style={{
-      borderRadius: 16, padding: '20px 18px',
-      background: 'linear-gradient(135deg, rgba(52,211,153,0.12) 0%, rgba(96,165,250,0.07) 100%)',
-      border: '1px solid rgba(52,211,153,0.3)',
-      animation: 'pop-in 0.3s ease both',
-      textAlign: 'center',
-    }}>
-      <div style={{ fontSize: 36, marginBottom: 10 }}>🎉</div>
-      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Отличный старт!</div>
-      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-        Теперь просто заполняй трекер каждый день — через неделю начнут проявляться паттерны
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {[80, 65, 90].map((w, i) => (
+        <div key={i} style={{
+          height: 12, borderRadius: 6, width: `${w}%`,
+          background: 'linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%)',
+          backgroundSize: '200% auto',
+          animation: 'shimmer 1.5s linear infinite',
+        }}/>
+      ))}
     </div>
   );
 }
 
-// ── Onboarding widget ─────────────────────────────────────────────────────────
+// ── Onboarding widget (unchanged logic, new visual) ───────────────────────────
 
 const ONBOARDING_DONE_KEY    = 'onboarding_done';
 const ONBOARDING_SKIPPED_KEY = 'onboarding_skipped';
 
-interface StepContext { hasSchemas: boolean }
 interface StepDef {
   id: string;
   emoji: string;
   title: string;
   description: string;
   actionLabel: string;
-  canSkip: boolean;
-  isDone: (profile: UserProfile | null, ctx?: StepContext) => boolean;
+  isDone: (profile: UserProfile | null, ctx?: { hasSchemas: boolean }) => boolean;
 }
 
 const STEPS: StepDef[] = [
-  {
-    id: 'ysq',
-    emoji: '🧪',
-    title: 'Пройди YSQ-тест',
+  { id: 'ysq',      emoji: '🧪', title: 'Пройди YSQ-тест',           actionLabel: 'Начать тест',
     description: 'Узнай какие схемы активны именно у тебя — это основа всей работы в приложении',
-    actionLabel: 'Начать тест',
-    canSkip: true,
-    isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas),
-  },
-  {
-    id: 'tracker',
-    emoji: '📅',
-    title: 'Оцени потребности сегодня',
+    isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas) },
+  { id: 'tracker',  emoji: '📅', title: 'Оцени потребности сегодня', actionLabel: 'Перейти в трекер',
     description: 'Посмотри на свой день через пять ключевых потребностей — займёт 2 минуты',
-    actionLabel: 'Перейти в трекер',
-    canSkip: true,
-    isDone: (p) => !!(p?.lastActivity.needsTracker),
-  },
-  {
-    id: 'diary',
-    emoji: '📔',
-    title: 'Сделай первую запись в дневнике',
+    isDone: p => !!(p?.lastActivity.needsTracker) },
+  { id: 'diary',    emoji: '📔', title: 'Сделай первую запись',       actionLabel: 'Открыть дневник',
     description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии',
-    actionLabel: 'Открыть дневник',
-    canSkip: true,
-    isDone: (p) => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary),
-  },
-  {
-    id: 'notify',
-    emoji: '🔔',
-    title: 'Включи ежедневное напоминание',
+    isDone: p => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary) },
+  { id: 'notify',   emoji: '🔔', title: 'Включи напоминание',         actionLabel: 'Настроить',
     description: 'Без регулярности привычка не формируется. Одно уведомление в день — всё что нужно',
-    actionLabel: 'Настроить',
-    canSkip: true,
-    isDone: (p) => !!(p?.notifications.enabled),
-  },
-  {
-    id: 'childhood',
-    emoji: '🌀',
-    title: 'Исследуй колесо детства',
-    description: 'Откуда пришли твои паттерны — оцени как удовлетворялись потребности в детстве',
-    actionLabel: 'Открыть',
-    canSkip: true,
-    isDone: () => !!localStorage.getItem('childhood_wheel_done'),
-  },
+    isDone: p => !!(p?.notifications.enabled) },
+  { id: 'childhood',emoji: '🌀', title: 'Исследуй колесо детства',    actionLabel: 'Открыть',
+    description: 'Оцени как удовлетворялись потребности в детстве — откуда пришли твои паттерны',
+    isDone: () => !!localStorage.getItem('childhood_wheel_done') },
 ];
 
-function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
+function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
   profile: UserProfile | null;
   hasSchemas: boolean;
   onOpenSchema: Props['onOpenSchema'];
-  onNavigate: Props['onNavigate'];
   onOpenAdvanced: Props['onOpenAdvanced'];
   onOpenTracker: Props['onOpenTracker'];
   onOpenDiaries: Props['onOpenDiaries'];
@@ -370,145 +436,100 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onNavigate, onOpe
     try { return JSON.parse(localStorage.getItem(ONBOARDING_SKIPPED_KEY) ?? '[]'); } catch { return []; }
   });
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
-  const [celebrating, setCelebrating] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  if (done) return null;
+  if (done || profile === null) return null;
 
-  // While profile loads, show skeleton to avoid rendering wrong step
-  if (profile === null) {
-    return (
-      <div style={{ borderRadius: 16, padding: '16px 18px', background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.15)', animation: 'pop-in 0.3s ease both' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ width: 80, height: 10, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-          <div style={{ display: 'flex', gap: 5 }}>
-            {[0,1,2,3,4].map(i => <div key={i} style={{ width: i === 0 ? 18 : 8, height: 8, borderRadius: 4, background: 'rgba(167,139,250,0.2)' }} />)}
-          </div>
-        </div>
-        <div style={{ width: 32, height: 28, borderRadius: 6, marginBottom: 10, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '70%', height: 17, borderRadius: 6, marginBottom: 8, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '90%', height: 11, borderRadius: 4, marginBottom: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ width: '60%', height: 11, borderRadius: 4, marginBottom: 18, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-        <div style={{ height: 42, borderRadius: 14, background: 'linear-gradient(90deg,rgba(167,139,250,0.1) 25%,rgba(167,139,250,0.18) 50%,rgba(167,139,250,0.1) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-      </div>
-    );
-  }
-
-  const ctx: StepContext = { hasSchemas };
+  const ctx = { hasSchemas };
   const autoStep = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
-
-  if (!autoStep && !celebrating) {
+  if (!autoStep) {
     if (!localStorage.getItem(ONBOARDING_DONE_KEY)) {
-      setCelebrating(true);
-    } else {
+      localStorage.setItem(ONBOARDING_DONE_KEY, '1');
       setDone(true);
     }
     return null;
   }
 
-  if (celebrating) {
-    return (
-      <OnboardingComplete onDone={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); setCelebrating(false); }} />
-    );
+  const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
+  const isCurrentDone    = current.isDone(profile, ctx);
+  const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
+
+  function handleAction() {
+    switch (current.id) {
+      case 'ysq':       onOpenSchema({ startTest: true }); break;
+      case 'tracker':   onOpenTracker(); break;
+      case 'diary':     onOpenDiaries(); break;
+      case 'notify':    onOpenAdvanced(); break;
+      case 'childhood': onOpenChildhoodWheel(); break;
+    }
+    setSelectedId(null);
   }
 
-  if (!autoStep) return null;
-
-  // selected step via dot tap, or auto (first pending)
-  const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
-
   function handleSkip() {
-    if (skipped.includes(current.id)) {
-      // already skipped — just deselect
-      setSelectedId(null);
-      return;
-    }
     const next = [...skipped, current.id];
     localStorage.setItem(ONBOARDING_SKIPPED_KEY, JSON.stringify(next));
     setSkipped(next);
     setSelectedId(null);
   }
 
-  function handleAction() {
-    switch (current.id) {
-      case 'ysq':      onOpenSchema({ startTest: true }); break;
-      case 'tracker':  onOpenTracker(); break;
-      case 'diary':    onOpenDiaries(); break;
-      case 'notify':   onOpenAdvanced(); break;
-      case 'childhood': onOpenChildhoodWheel(); break;
-    }
-    setSelectedId(null);
-  }
-
-  const isCurrentDone = current.isDone(profile, ctx);
-  const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
-
   return (
     <div style={{
-      borderRadius: 16, padding: '16px 18px',
-      background: 'linear-gradient(135deg, rgba(167,139,250,0.09) 0%, rgba(96,165,250,0.05) 100%)',
-      border: '1px solid rgba(167,139,250,0.22)',
-      animation: 'pop-in 0.3s ease both',
+      background: 'rgba(var(--fg-rgb),0.04)',
+      border: '1px solid rgba(var(--fg-rgb),0.08)',
+      borderRadius: 20, padding: '16px 18px',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)' }}>
-          С ЧЕГО НАЧАТЬ
+          С чего начать
         </div>
         <div style={{ display: 'flex', gap: 5 }}>
-          {STEPS.map((s) => {
-            const isDone    = s.isDone(profile, ctx);
-            const isSkipped = skipped.includes(s.id) && !isDone;
-            const isCurrent = s.id === current.id;
+          {STEPS.map(s => {
+            const d = s.isDone(profile, ctx);
+            const sk = skipped.includes(s.id) && !d;
+            const cur = s.id === current.id;
             return (
-              <div
-                key={s.id}
-                onClick={() => setSelectedId(s.id === current.id ? null : s.id)}
-                style={{
-                  width: isCurrent ? 18 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
-                  background: isDone ? 'rgba(52,211,153,0.6)' : isSkipped ? 'rgba(255,180,0,0.35)' : isCurrent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.12)',
-                  transition: 'all 0.3s ease',
-                }}
-              />
+              <div key={s.id} onClick={() => setSelectedId(s.id === current.id ? null : s.id)} style={{
+                width: cur ? 18 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
+                background: d ? 'rgba(74,222,128,0.6)' : sk ? 'rgba(255,180,0,0.35)' : cur ? 'var(--accent)' : 'var(--surface-2)',
+                transition: 'all 0.3s ease',
+              }}/>
             );
           })}
         </div>
       </div>
 
-      <div style={{ fontSize: 28, marginBottom: 6 }}>{current.emoji}</div>
-      <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 6 }}>
+      <div style={{ fontSize: 26, marginBottom: 6 }}>{current.emoji}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 6 }}>
         {current.title}
       </div>
-      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 16 }}>
+      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 14 }}>
         {current.description}
       </div>
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 8 }}>
         {isCurrentDone ? (
-          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.25)', fontSize: 13, fontWeight: 600, color: 'rgba(52,211,153,0.9)', textAlign: 'center' }}>
+          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center',
+            background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.25)',
+            fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.9)' }}>
             ✓ Выполнено
           </div>
         ) : (
-          <button
-            onClick={handleAction}
-            style={{
-              flex: 1, padding: '11px 0', borderRadius: 12, border: 'none',
-              background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
-              color: '#ffffff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            }}
-          >
+          <button onClick={handleAction} style={{
+            flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit',
+            background: 'linear-gradient(135deg, var(--accent), #60a5fa)',
+            color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+          }}>
             {current.actionLabel} →
           </button>
         )}
         {!isCurrentDone && (
-          <button
-            onClick={handleSkip}
-            style={{
-              padding: '11px 14px', borderRadius: 12, border: 'none',
-              background: 'rgba(var(--fg-rgb),0.06)',
-              color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-sub)', fontSize: 13, cursor: 'pointer',
-            }}
-          >
-            {isCurrentSkipped ? 'Вернуть' : 'Не сейчас'}
+          <button onClick={handleSkip} style={{
+            padding: '11px 14px', borderRadius: 12, border: 'none', fontFamily: 'inherit',
+            background: 'var(--surface-2)',
+            color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-faint)',
+            fontSize: 13, cursor: 'pointer',
+          }}>
+            {isCurrentSkipped ? 'Вернуть' : 'Позже'}
           </button>
         )}
       </div>

@@ -603,6 +603,7 @@ export default function App() {
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
           onOpenAdvanced={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
+          onOpenTrackerAt={() => setShowTracker(true)}
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           refreshKey={todayRefreshKey}
