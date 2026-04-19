@@ -3,6 +3,7 @@ import { BottomSheet } from '../BottomSheet';
 import { EMOTIONS, INTENSITY_LABELS, SCHEMA_DOMAINS } from '../../schemaTherapyData';
 import { EmotionEntry } from '../../types';
 import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
+import { haptic } from '../../haptic';
 
 interface Props {
   activeSchemaIds?: string[];
@@ -24,18 +25,31 @@ interface Props {
 
 const COLOR = 'var(--accent-red)';
 
-function FieldLabel({ title, hint }: { title: string; hint?: string }) {
+function StepLabel({ step, title, hint, required }: { step: number; title: string; hint?: string; required?: boolean }) {
   return (
-    <div style={{ marginTop: 20, marginBottom: 8 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
+    <div style={{ marginTop: 22, marginBottom: 9, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <div style={{
+        width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+        background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.3)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, fontWeight: 700, color: 'var(--accent-red)', marginTop: 1,
+      }}>
+        {step}
+      </div>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>
+          {title}
+          {required && <span style={{ color: 'var(--accent-red)', marginLeft: 4, fontSize: 12 }}>*</span>}
+        </div>
+        {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
+      </div>
     </div>
   );
 }
 
 function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onChange: (v: string) => void; placeholder: string; rows?: number }) {
   return (
-    <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} style={{
+    <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} className="field-input" style={{
       width: '100%', background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)',
       borderRadius: 12, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.5, outline: 'none',
     }} />
@@ -77,7 +91,6 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
   const hasPersonalSchemas = activeSchemaIds && activeSchemaIds.length > 0;
   const useFiltered = hasPersonalSchemas && !showAllSchemas;
 
-  // Auto-save draft on every change
   useEffect(() => {
     const data: DraftData = {
       trigger, emotions, thoughts, bodyFeelings, actualBehavior,
@@ -86,19 +99,26 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
     saveDraft('schema', data);
   }, [trigger, emotions, thoughts, bodyFeelings, actualBehavior, schemaIds, schemaOrigin, healthyView, realProblems, excessiveReactions, healthyBehavior]);
 
-  const toggleEmotion = (id: string) =>
+  const toggleEmotion = (id: string) => {
+    haptic.select();
     setEmotions(prev => prev.find(e => e.id === id) ? prev.filter(e => e.id !== id) : [...prev, { id, intensity: 3 }]);
+  };
 
-  const setIntensity = (id: string, intensity: number) =>
+  const setIntensity = (id: string, intensity: number) => {
+    haptic.select();
     setEmotions(prev => prev.map(e => e.id === id ? { ...e, intensity } : e));
+  };
 
-  const toggleSchema = (id: string) =>
+  const toggleSchema = (id: string) => {
+    haptic.select();
     setSchemaIds(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+  };
 
   const canSave = trigger.trim().length > 0;
 
   const handleSave = async () => {
     if (!canSave || saving) return;
+    haptic.success();
     setSaving(true);
     try {
       await onSave({
@@ -116,7 +136,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
       });
       clearDraft('schema');
     } catch {
-      // save failed — draft preserved for retry
+      haptic.error();
     } finally {
       setSaving(false);
       onClose();
@@ -130,7 +150,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div>
-        {/* Sticky header with save button */}
+        {/* Sticky header */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 5,
           background: 'var(--sheet-bg)',
@@ -155,15 +175,15 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           </button>
         </div>
 
-        <FieldLabel title="1. Спусковой механизм" hint="что произошло" />
-        <Area value={trigger} onChange={setTrigger} placeholder="Опиши ситуацию: что случилось, где, с кем, когда?" rows={3} />
+        <StepLabel step={1} title="Что случилось?" hint="опиши ситуацию — где, с кем, когда" required />
+        <Area value={trigger} onChange={setTrigger} placeholder="Что произошло? Где ты был/а, с кем, в какой момент?" rows={3} />
 
-        <FieldLabel title="2. Чувства" hint="что я чувствую и готов/а сделать" />
+        <StepLabel step={2} title="Чувства" hint="что поднялось внутри" />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 10 }}>
           {EMOTIONS.map(em => {
             const sel = emotions.find(e => e.id === em.id);
             return (
-              <button key={em.id} onClick={() => toggleEmotion(em.id)} style={{
+              <button key={em.id} onClick={() => toggleEmotion(em.id)} className="sel-btn" style={{
                 background: sel ? '#f8717133' : 'rgba(var(--fg-rgb),0.06)',
                 border: sel ? '1px solid #f87171' : '1px solid transparent',
                 borderRadius: 20, padding: '6px 12px', color: sel ? 'var(--chip-sel-text)' : 'rgba(var(--fg-rgb),0.6)',
@@ -181,7 +201,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
               <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 7 }}>{meta.emoji} {meta.label}</div>
               <div style={{ display: 'flex', gap: 5 }}>
                 {INTENSITY_LABELS.map((lbl, i) => (
-                  <button key={i} onClick={() => setIntensity(em.id, i + 1)} style={{
+                  <button key={i} onClick={() => setIntensity(em.id, i + 1)} className="sel-btn" style={{
                     flex: 1, background: em.intensity === i + 1 ? COLOR : 'rgba(var(--fg-rgb),0.08)',
                     border: 'none', borderRadius: 8, padding: '5px 2px',
                     color: em.intensity === i + 1 ? '#fff' : 'rgba(var(--fg-rgb),0.4)',
@@ -193,16 +213,16 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           );
         })}
 
-        <FieldLabel title="3. Мысли" hint="что я думаю и предполагаю, чего боюсь" />
-        <Area value={thoughts} onChange={setThoughts} placeholder="Какие мысли возникли? Чего опасаешься?" />
+        <StepLabel step={3} title="Мысли" hint="что говорит голова в этот момент" />
+        <Area value={thoughts} onChange={setThoughts} placeholder="Какие мысли появились? Что ты говоришь себе?" />
 
-        <FieldLabel title="4. Тело" hint="что с моим телом" />
-        <Area value={bodyFeelings} onChange={setBodyFeelings} placeholder="Сжатие в груди, тяжесть, учащённый пульс..." rows={2} />
+        <StepLabel step={4} title="Тело" hint="что ощущаешь физически" />
+        <Area value={bodyFeelings} onChange={setBodyFeelings} placeholder="Где в теле это чувствуется? Сжатие, тяжесть, пульс, дыхание..." rows={2} />
 
-        <FieldLabel title="5. Фактическое поведение" hint="что я сейчас делаю" />
-        <Area value={actualBehavior} onChange={setActualBehavior} placeholder="Что ты делаешь или хочешь сделать в этой ситуации?" rows={2} />
+        <StepLabel step={5} title="Моя реакция" hint="что ты делаешь или хочешь сделать" />
+        <Area value={actualBehavior} onChange={setActualBehavior} placeholder="Что ты сделал/а или хотел/а сделать? Убежать, замолчать, накричать..." rows={2} />
 
-        <FieldLabel title="6. Схемы" hint="какая проявилась, откуда она у меня" />
+        <StepLabel step={6} title="Схемы" hint="какая включилась" />
         {SCHEMA_DOMAINS.map(domain => {
           const schemas = useFiltered
             ? domain.schemas.filter(s => activeSchemaIds?.includes(s.id) ?? false)
@@ -215,7 +235,7 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
                 {schemas.map(s => {
                   const sel = schemaIds.includes(s.id);
                   return (
-                    <button key={s.id} onClick={() => toggleSchema(s.id)} style={{
+                    <button key={s.id} onClick={() => toggleSchema(s.id)} className="sel-btn" style={{
                       background: sel ? `${domain.color}33` : 'rgba(var(--fg-rgb),0.06)',
                       border: sel ? `1px solid ${domain.color}` : '1px solid transparent',
                       borderRadius: 16, padding: '5px 10px',
@@ -229,30 +249,30 @@ export function SchemaEntrySheet({ activeSchemaIds, onClose, onSave }: Props) {
           );
         })}
         {hasPersonalSchemas && (
-          <button onClick={() => setShowAllSchemas(v => !v)} style={{
+          <button onClick={() => { haptic.tap(); setShowAllSchemas(v => !v); }} style={{
             background: 'none', border: 'none', color: 'var(--text-sub)',
             fontSize: 12, cursor: 'pointer', padding: '4px 0', marginBottom: 8,
           }}>
-            {showAllSchemas ? '↑ Показать только мои схемы' : '↓ Показать все схемы'}
+            {showAllSchemas ? '↑ Только мои схемы' : '↓ Все схемы'}
           </button>
         )}
-        <Area value={schemaOrigin} onChange={setSchemaOrigin} placeholder="Откуда эта схема? Связанные воспоминания из прошлого..." rows={2} />
+        <Area value={schemaOrigin} onChange={setSchemaOrigin} placeholder="Откуда эта схема? Что вспоминается из детства или прошлого?" rows={2} />
 
-        <FieldLabel title="7. Здоровый взгляд" hint="что на самом деле происходит" />
-        <Area value={healthyView} onChange={setHealthyView} placeholder="Если смотреть на ситуацию без схемы — что ты видишь?" />
+        <StepLabel step={7} title="Здоровый взгляд" hint="как выглядит ситуация без схемы" />
+        <Area value={healthyView} onChange={setHealthyView} placeholder="Если убрать схему в сторону — что на самом деле здесь происходит?" />
 
-        <FieldLabel title="8. Реальные проблемы" hint="в чём реальные трудности" />
-        <Area value={realProblems} onChange={setRealProblems} placeholder="Что в этой ситуации действительно сложно?" rows={2} />
+        <StepLabel step={8} title="Что действительно сложно" hint="без преувеличения" />
+        <Area value={realProblems} onChange={setRealProblems} placeholder="Что в этом моменте по-настоящему трудно — если не раздувать?" rows={2} />
 
-        <FieldLabel title="9. Чрезмерные реакции" hint="в чём я переоценил/а ситуацию" />
-        <Area value={excessiveReactions} onChange={setExcessiveReactions} placeholder="Где реакция была сильнее, чем требует ситуация?" rows={2} />
+        <StepLabel step={9} title="Где я преувеличил/а" hint="что было больше, чем нужно" />
+        <Area value={excessiveReactions} onChange={setExcessiveReactions} placeholder="Где реакция оказалась больше, чем требовала ситуация?" rows={2} />
 
-        <FieldLabel title="10. Здоровое поведение" hint="что я могу сделать, сохраняя независимость и безопасность" />
-        <Area value={healthyBehavior} onChange={setHealthyBehavior} placeholder="Как Здоровый Взрослый поступил бы в этой ситуации?" />
+        <StepLabel step={10} title="Здоровое поведение" hint="как поступил бы Здоровый Взрослый" />
+        <Area value={healthyBehavior} onChange={setHealthyBehavior} placeholder="Что сделал бы Здоровый Взрослый внутри тебя?" />
 
         {!canSave && (
           <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 16, paddingBottom: 8 }}>
-            Нужно заполнить хотя бы спусковой механизм
+            Опиши ситуацию — и можно будет сохранить
           </div>
         )}
       </div>

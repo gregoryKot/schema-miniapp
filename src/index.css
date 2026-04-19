@@ -179,3 +179,39 @@ button {
   text-transform: uppercase;
   color: var(--text-faint);
 }
+
+/* Placeholder color */
+::placeholder {
+  color: var(--text-faint);
+  opacity: 1;
+}
+
+/* Hide scrollbars */
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Textarea / input focus ring */
+.field-input:focus {
+  border-color: rgba(var(--fg-rgb), 0.25) !important;
+  outline: none;
+}
+
+/* Chip / selection button transitions */
+.sel-btn {
+  transition: background 150ms, border-color 150ms, color 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Card tap feedback */
+.card {
+  transition: opacity 120ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:active {
+  opacity: 0.7;
+}

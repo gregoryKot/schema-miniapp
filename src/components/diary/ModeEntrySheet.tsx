@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BottomSheet } from '../BottomSheet';
 import { MODE_GROUPS } from '../../schemaTherapyData';
 import { saveDraft, loadDraft, clearDraft } from '../../utils/drafts';
+import { haptic } from '../../haptic';
 
 interface Props {
   onClose: () => void;
@@ -19,18 +20,28 @@ interface Props {
 
 const COLOR = 'var(--accent-blue)';
 
-function FieldLabel({ title, hint }: { title: string; hint?: string }) {
+function StepLabel({ step, title, hint }: { step: number; title: string; hint?: string }) {
   return (
-    <div style={{ marginTop: 20, marginBottom: 8 }}>
-      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
-      {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
+    <div style={{ marginTop: 22, marginBottom: 9, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <div style={{
+        width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+        background: 'rgba(96,165,250,0.15)', border: '1px solid rgba(96,165,250,0.3)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, fontWeight: 700, color: 'var(--accent-blue)', marginTop: 1,
+      }}>
+        {step}
+      </div>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{title}</div>
+        {hint && <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>{hint}</div>}
+      </div>
     </div>
   );
 }
 
 function Area({ value, onChange, placeholder, rows = 3 }: { value: string; onChange: (v: string) => void; placeholder: string; rows?: number }) {
   return (
-    <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} style={{
+    <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows} className="field-input" style={{
       width: '100%', background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)',
       borderRadius: 12, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.5, outline: 'none',
     }} />
@@ -59,6 +70,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
 
   const handleSave = async () => {
     if (!canSave || saving) return;
+    haptic.success();
     setSaving(true);
     try {
       await onSave({
@@ -72,7 +84,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
       });
       clearDraft('mode');
     } catch {
-      // save failed — draft preserved for retry
+      haptic.error();
     } finally {
       setSaving(false);
       onClose();
@@ -82,7 +94,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
   return (
     <BottomSheet onClose={onClose}>
       <div>
-        {/* Sticky header with save button */}
+        {/* Sticky header */}
         <div style={{
           position: 'sticky', top: 0, zIndex: 5,
           background: 'var(--sheet-bg)',
@@ -94,7 +106,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
           <div>
             <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Дневник режимов</div>
             <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-              {existing ? 'Черновик восстановлен' : 'Новая запись'}
+              {existing ? 'Черновик восстановлен' : 'Кто сейчас внутри?'}
             </div>
           </div>
           <button onClick={handleSave} disabled={!canSave || saving} style={{
@@ -107,7 +119,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
           </button>
         </div>
 
-        <FieldLabel title="1. Режим" hint="кто включился" />
+        <StepLabel step={1} title="Режим" hint="кто взял управление" />
         {MODE_GROUPS.map(group => (
           <div key={group.id} style={{ marginBottom: 12 }}>
             <div style={{ fontSize: 10, color: group.color, fontWeight: 600, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{group.group}</div>
@@ -115,7 +127,7 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
               {group.items.map(m => {
                 const sel = modeId === m.id;
                 return (
-                  <button key={m.id} onClick={() => setModeId(sel ? '' : m.id)} style={{
+                  <button key={m.id} onClick={() => { haptic.select(); setModeId(sel ? '' : m.id); }} className="sel-btn" style={{
                     background: sel ? `${group.color}33` : 'rgba(var(--fg-rgb),0.06)',
                     border: sel ? `1px solid ${group.color}` : '1px solid transparent',
                     borderRadius: 16, padding: '6px 11px',
@@ -130,30 +142,30 @@ export function ModeEntrySheet({ onClose, onSave }: Props) {
           </div>
         ))}
 
-        <FieldLabel title="2. Ситуация" hint="что произошло?" />
-        <Area value={situation} onChange={setSituation} placeholder="Опиши что случилось, где, с кем, когда?" />
+        <StepLabel step={2} title="Ситуация" hint="что случилось" />
+        <Area value={situation} onChange={setSituation} placeholder="Что произошло? Где ты, с кем, в какой момент?" />
 
-        <FieldLabel title="3. Мысли" />
-        <Area value={thoughts} onChange={setThoughts} placeholder="Что думаешь в этом режиме?" rows={2} />
+        <StepLabel step={3} title="Мысли" hint="что говорит этот режим" />
+        <Area value={thoughts} onChange={setThoughts} placeholder="Что думает этот режим? Какие у него убеждения?" rows={2} />
 
-        <FieldLabel title="4. Чувства" />
-        <Area value={feelings} onChange={setFeelings} placeholder="Что чувствуешь? Страх, злость, пустота..." rows={2} />
+        <StepLabel step={4} title="Чувства" hint="что этот режим ощущает" />
+        <Area value={feelings} onChange={setFeelings} placeholder="Что этот режим чувствует? Страх, злость, пустоту..." rows={2} />
 
-        <FieldLabel title="5. Тело" hint="что ощутили?" />
-        <Area value={bodyFeelings} onChange={setBodyFeelings} placeholder="Напряжение, сжатие, онемение, тяжесть..." rows={2} />
+        <StepLabel step={5} title="Тело" hint="что ощущаешь" />
+        <Area value={bodyFeelings} onChange={setBodyFeelings} placeholder="Что происходит с телом? Напряжение, онемение, тяжесть..." rows={2} />
 
-        <FieldLabel title="6. Действия" hint="что конкретно делали" />
-        <Area value={actions} onChange={setActions} placeholder="Что делаешь или сделал/а в этом режиме?" rows={2} />
+        <StepLabel step={6} title="Действия" hint="что ты делаешь или делал/а" />
+        <Area value={actions} onChange={setActions} placeholder="Что этот режим заставляет тебя делать или хотеть сделать?" rows={2} />
 
-        <FieldLabel title="7. Что на самом деле вам было нужно?" />
-        <Area value={actualNeed} onChange={setActualNeed} placeholder="За этим режимом — какая настоящая потребность?" rows={2} />
+        <StepLabel step={7} title="Что тебе на самом деле нужно?" />
+        <Area value={actualNeed} onChange={setActualNeed} placeholder="Какую потребность пытается закрыть этот режим?" rows={2} />
 
-        <FieldLabel title="8. Детские воспоминания" hint="связанные с ситуацией" />
-        <Area value={childhoodMemories} onChange={setChildhoodMemories} placeholder="Напоминает ли что-то из детства? Похожие ситуации, ощущения..." rows={3} />
+        <StepLabel step={8} title="Детские воспоминания" hint="связанные с ситуацией" />
+        <Area value={childhoodMemories} onChange={setChildhoodMemories} placeholder="Напоминает что-то из детства? Похожее чувство, похожая ситуация?" rows={3} />
 
         {!canSave && (
           <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-sub)', marginTop: 16, paddingBottom: 8 }}>
-            Обязательно: выбери режим и опиши ситуацию
+            Выбери режим и опиши ситуацию — и можно будет сохранить
           </div>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { DiaryType } from '../../types';
 import { useSafeTop } from '../../utils/safezone';
 import { fmtDateLong } from '../../utils/format';
+import { haptic } from '../../haptic';
 
 interface DiaryMeta {
   type: DiaryType;
@@ -27,43 +28,48 @@ interface Props {
 function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
   return (
     <div
-      onClick={onOpen}
+      onClick={() => { haptic.tap(); onOpen(); }}
       style={{
         background: 'rgba(var(--fg-rgb),0.04)',
         borderRadius: 20,
-        padding: '18px 18px',
         marginBottom: 12,
         cursor: 'pointer',
         display: 'flex',
-        alignItems: 'center',
-        gap: 16,
+        alignItems: 'stretch',
         border: `1px solid rgba(var(--fg-rgb),0.06)`,
-        transition: 'background 150ms',
+        overflow: 'hidden',
+        WebkitTapHighlightColor: 'transparent',
+        transition: 'opacity 120ms',
       }}
     >
-      <div style={{
-        width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-        background: `${meta.color}22`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 26,
-      }}>
-        {meta.emoji}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>
-          {meta.title}
+      {/* Left color accent bar */}
+      <div style={{ width: 4, flexShrink: 0, background: meta.color, opacity: 0.7 }} />
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '18px 16px', flex: 1 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+          background: `${meta.color}20`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 24,
+        }}>
+          {meta.emoji}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>
-          {meta.subtitle}
-        </div>
-        {meta.count > 0 && (
-          <div style={{ fontSize: 11, color: meta.color, marginTop: 6, fontWeight: 500 }}>
-            {meta.count} {meta.count === 1 ? 'запись' : meta.count < 5 ? 'записи' : 'записей'}
-            {meta.lastDate && ` · последняя ${fmtDateLong(meta.lastDate)}`}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 3 }}>
+            {meta.title}
           </div>
-        )}
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>
+            {meta.subtitle}
+          </div>
+          {meta.count > 0 && (
+            <div style={{ fontSize: 11, color: meta.color, marginTop: 6, fontWeight: 500 }}>
+              {meta.count} {meta.count === 1 ? 'запись' : meta.count < 5 ? 'записи' : 'записей'}
+              {meta.lastDate && ` · последняя ${fmtDateLong(meta.lastDate)}`}
+            </div>
+          )}
+        </div>
+        <div style={{ color: 'var(--text-faint)', fontSize: 20, flexShrink: 0 }}>›</div>
       </div>
-      <div style={{ color: 'var(--text-faint)', fontSize: 20, flexShrink: 0 }}>›</div>
     </div>
   );
 }
@@ -74,7 +80,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'schema',
       emoji: '📓',
       title: 'Дневник схем',
-      subtitle: 'Когда схема активировалась — ситуация, эмоции, мысли',
+      subtitle: 'Замечаешь, что схема сработала? Запиши момент — ситуацию, эмоции, мысли',
       color: 'var(--accent-red)',
       count: schemaDiaryCount,
       lastDate: lastSchemaDiaryDate,
@@ -83,7 +89,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'mode',
       emoji: '🔄',
       title: 'Дневник режимов',
-      subtitle: 'Какой режим включился и что его запустило',
+      subtitle: 'Поймал режим в действии? Зафикисруй кто взял управление и что случилось',
       color: 'var(--accent-blue)',
       count: modeDiaryCount,
       lastDate: lastModeDiaryDate,
@@ -92,7 +98,7 @@ export function HomeView({ schemaDiaryCount, modeDiaryCount, gratitudeDiaryCount
       type: 'gratitude',
       emoji: '🌱',
       title: 'Дневник благодарности',
-      subtitle: 'Три вещи, за которые ты благодарен сегодня',
+      subtitle: 'Три момента, большие или маленькие, за которые ты благодарен сегодня',
       color: 'var(--accent-green)',
       count: gratitudeDiaryCount,
       lastDate: lastGratitudeDiaryDate,

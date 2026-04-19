@@ -15,7 +15,7 @@ export const EMOTIONS = [
   { id: 'apathy',      label: 'Апатия',      emoji: '😶' },
 ];
 
-export const INTENSITY_LABELS = ['слабо', 'умеренно', 'сильно', 'очень сильно', 'невыносимо'];
+export const INTENSITY_LABELS = ['чуть-чуть', 'заметно', 'сильно', 'очень', 'невыносимо'];
 
 // ─── 20 Early Maladaptive Schemas / 5 domains (МИСТ — schema-therapy.ru) ────
 

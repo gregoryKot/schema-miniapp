@@ -14,10 +14,10 @@ interface Props {
   onDelete: (type: DiaryType, id: number) => void;
 }
 
-const DIARY_META: Record<DiaryType, { title: string; emoji: string; color: string; emptyText: string }> = {
-  schema:    { title: 'Дневник схем',          emoji: '📓', color: 'var(--accent-red)', emptyText: 'Ещё нет записей. Запиши момент, когда активировалась схема.' },
-  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: 'var(--accent-blue)', emptyText: 'Ещё нет записей. Зафиксируй режим, когда заметишь его.' },
-  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: 'var(--accent-green)', emptyText: 'Ещё нет записей. Начни с трёх вещей за сегодня.' },
+const DIARY_META: Record<DiaryType, { title: string; emoji: string; color: string; emptyLine1: string; emptyLine2: string; fabLabel: string }> = {
+  schema:    { title: 'Дневник схем',          emoji: '📓', color: 'var(--accent-red)',   emptyLine1: 'Здесь будут твои наблюдения.',          emptyLine2: 'Когда заметишь, что схема включилась — открой и запиши момент.', fabLabel: '+ Записать момент' },
+  mode:      { title: 'Дневник режимов',       emoji: '🔄', color: 'var(--accent-blue)',  emptyLine1: 'Здесь будут твои записи о режимах.',    emptyLine2: 'Как только поймёшь, что какой-то режим взял управление — зафиксируй это.', fabLabel: '+ Записать режим' },
+  gratitude: { title: 'Дневник благодарности', emoji: '🌱', color: 'var(--accent-green)', emptyLine1: 'Здесь будут твои дни благодарности.',  emptyLine2: 'Начни сегодня — три вещи, большие или маленькие.', fabLabel: '+ Записать день' },
 };
 
 function formatDt(iso: string) {
@@ -222,8 +222,14 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
   );
 }
 
-function Empty({ text }: { text: string }) {
-  return <div style={{ textAlign: 'center', padding: '60px 24px', color: 'var(--text-sub)', fontSize: 14, lineHeight: 1.6 }}>{text}</div>;
+function Empty({ line1, line2 }: { line1: string; line2: string }) {
+  return (
+    <div style={{ textAlign: 'center', padding: '80px 32px 60px', color: 'var(--text-sub)', fontSize: 14, lineHeight: 1.7 }}>
+      <div style={{ fontSize: 42, marginBottom: 16, opacity: 0.4 }}>📭</div>
+      <div style={{ fontWeight: 500, color: 'var(--text-sub)', marginBottom: 6 }}>{line1}</div>
+      <div style={{ fontSize: 13, color: 'var(--text-faint)' }}>{line2}</div>
+    </div>
+  );
 }
 
 export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntries, onBack, onNewEntry, onDelete }: Props) {
@@ -266,15 +272,15 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
         )}
 
         {type === 'schema' && (
-          schemaEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
+          schemaEntries.length === 0 && !hasDraftEntry ? <Empty line1={meta.emptyLine1} line2={meta.emptyLine2} /> :
             schemaEntries.map(e => <SchemaCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('schema', e.id)} />)
         )}
         {type === 'mode' && (
-          modeEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
+          modeEntries.length === 0 && !hasDraftEntry ? <Empty line1={meta.emptyLine1} line2={meta.emptyLine2} /> :
             modeEntries.map(e => <ModeCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('mode', e.id)} />)
         )}
         {type === 'gratitude' && (
-          gratitudeEntries.length === 0 && !hasDraftEntry ? <Empty text={meta.emptyText} /> :
+          gratitudeEntries.length === 0 && !hasDraftEntry ? <Empty line1={meta.emptyLine1} line2={meta.emptyLine2} /> :
             gratitudeEntries.map(e => <GratitudeCard key={e.id} entry={e} color={meta.color} onDelete={() => onDelete('gratitude', e.id)} />)
         )}
       </div>
@@ -286,7 +292,7 @@ export function DiaryListView({ type, schemaEntries, modeEntries, gratitudeEntri
         fontSize: 15, fontWeight: 700, cursor: 'pointer',
         boxShadow: `0 4px 24px ${meta.color}66`,
       }}>
-        + Новая запись
+        {meta.fabLabel}
       </button>
     </div>
   );
