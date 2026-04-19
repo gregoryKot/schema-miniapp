@@ -13,6 +13,7 @@ import { HelpSection } from './sections/HelpSection';
 import { BottomNav, Section } from './components/BottomNav';
 import { FloatingPill } from './components/FloatingPill';
 import { TodayView } from './components/TodayView';
+import { TrackerOverlay } from './components/TrackerOverlay';
 import { HistoryView } from './components/HistoryView';
 import { BottomSheet } from './components/BottomSheet';
 import { SettingsSheet } from './components/SettingsSheet';
@@ -317,6 +318,8 @@ export default function App() {
 
   // Overlay states (open over current tab)
   const [showTracker, setShowTracker] = useState(false);
+  const [showTrackerOverlay, setShowTrackerOverlay] = useState(false);
+  const [trackerNeedId, setTrackerNeedId] = useState<string | null>(null);
   const [showDiaries, setShowDiaries] = useState(false);
   const [newDiaryEntry, setNewDiaryEntry] = useState<'schema' | 'mode' | 'gratitude' | null>(null);
   const [diaryActiveSchemaIds, setDiaryActiveSchemaIds] = useState<string[] | undefined>(undefined);
@@ -431,20 +434,20 @@ export default function App() {
   // Refresh Today section data after returning from overlays
   const prevOverlayRef = useRef(false);
   useEffect(() => {
-    const anyOpen = showTracker || showDiaries || showSchemaInfo;
+    const anyOpen = showTrackerOverlay || showTracker || showDiaries || showSchemaInfo;
     if (!anyOpen && prevOverlayRef.current) setTodayRefreshKey(k => k + 1);
     prevOverlayRef.current = anyOpen;
-  }, [showTracker, showDiaries, showSchemaInfo]);
+  }, [showTrackerOverlay, showTracker, showDiaries, showSchemaInfo]);
 
   // Refresh Profile section data after returning from settings/practices/plans/tracker
   const prevProfileOverlayRef = useRef(false);
   useEffect(() => {
-    const anyOpen = showSettings || showPractices || showPlans || showTracker || showChildhoodWheel;
+    const anyOpen = showSettings || showPractices || showPlans || showTrackerOverlay || showTracker || showChildhoodWheel;
     if (!anyOpen && prevProfileOverlayRef.current && section === 'profile') {
       setProfileRefreshKey(k => k + 1);
     }
     prevProfileOverlayRef.current = anyOpen;
-  }, [showSettings, showPractices, showPlans, showTracker, showChildhoodWheel, section]);
+  }, [showSettings, showPractices, showPlans, showTrackerOverlay, showTracker, showChildhoodWheel, section]);
 
   useEffect(() => {
     if (trackerTab === 'history') {
@@ -458,6 +461,7 @@ export default function App() {
   useEffect(() => {
     backHandlerRef.current =
       newDiaryEntry ? () => setNewDiaryEntry(null) :
+      showTrackerOverlay ? () => { setShowTrackerOverlay(false); setTrackerNeedId(null); } :
       showTracker ? () => { setShowTracker(false); setTrackerTab('today'); } :
       showDiaries ? () => setShowDiaries(false) :
       showSchemaInfo ? () => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); } :
@@ -473,9 +477,9 @@ export default function App() {
       () => {};
     const bb = window.Telegram?.WebApp?.BackButton;
     if (!bb) return;
-    const anyOpen = newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || (therapistMode && cabinetView === 'client');
+    const anyOpen = newDiaryEntry || showTrackerOverlay || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote || (therapistMode && cabinetView === 'client');
     if (anyOpen) bb.show(); else bb.hide();
-  }, [newDiaryEntry, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, therapistMode, cabinetView]);
+  }, [newDiaryEntry, showTrackerOverlay, showTracker, showDiaries, showSchemaInfo, showSettings, showPractices, showPlans, showAbout, showPairSheet, showChildhoodWheel, showPracticesOnboarding, showTodayNote, therapistMode, cabinetView]);
 
   useEffect(() => {
     const bb = window.Telegram?.WebApp?.BackButton;
@@ -485,7 +489,7 @@ export default function App() {
     return () => bb.offClick(handler);
   }, []);
 
-  const anyOverlayOpen = !!(newDiaryEntry || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote);
+  const anyOverlayOpen = !!(newDiaryEntry || showTrackerOverlay || showTracker || showDiaries || showSchemaInfo || showSettings || showPractices || showPlans || showAbout || showPairSheet || showChildhoodWheel || showPracticesOnboarding || showTodayNote);
 
   const handleSwipeStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0];
@@ -603,7 +607,7 @@ export default function App() {
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
           onOpenAdvanced={() => setShowSettings(true)}
           onOpenTracker={() => setShowTracker(true)}
-          onOpenTrackerAt={() => setShowTracker(true)}
+          onOpenTrackerAt={(needId) => { setTrackerNeedId(needId); setShowTrackerOverlay(true); }}
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           refreshKey={todayRefreshKey}
@@ -643,6 +647,20 @@ export default function App() {
           onOpenTracker={() => setShowTracker(true)}
           refreshKey={profileRefreshKey}
           displayName={displayName}
+        />
+      )}
+
+      {/* ── TrackerOverlay (NeedDial, per-need) ── */}
+      {showTrackerOverlay && (
+        <TrackerOverlay
+          needs={needs}
+          ratings={ratings}
+          saved={saved}
+          isOffline={isOffline}
+          onChange={handleChange}
+          onSaved={handleSaved}
+          onClose={() => { setShowTrackerOverlay(false); setTrackerNeedId(null); }}
+          initialNeedId={trackerNeedId}
         />
       )}
 
