@@ -66,7 +66,7 @@ function SchemaCard({ entry, color, onDelete }: { entry: SchemaDiaryEntry; color
   const schemas = entry.schemaIds.map(id => getSchemaById(id)).filter(Boolean);
 
   return (
-    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
+    <div className="card" style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{formatDt(entry.createdAt)}</span>
@@ -106,7 +106,7 @@ function ModeCard({ entry, color, onDelete }: { entry: ModeDiaryEntry; color: st
   const mode = getModeById(entry.modeId);
 
   return (
-    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
+    <div className="card" style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{formatDt(entry.createdAt)}</span>
@@ -136,7 +136,7 @@ function GratitudeCard({ entry, color, onDelete }: { entry: GratitudeDiaryEntry;
   const [open, setOpen] = useState(false);
 
   return (
-    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '14px 16px', marginBottom: 10, border: '1px solid rgba(var(--fg-rgb),0.06)' }}>
+    <div className="card" style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 10 }}>
       <div onClick={() => setOpen(v => !v)} style={{ cursor: 'pointer' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
           <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>

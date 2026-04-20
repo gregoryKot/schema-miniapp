@@ -64,16 +64,16 @@ html[data-theme="light"] {
   --accent-red:    #dc2626;
   --accent-pink:   #be185d;
 
-  /* More opaque surfaces so dark blobs don't bleed through */
-  --surface:       rgba(255, 255, 255, 0.92);
-  --surface-2:     rgba(0, 0, 0, 0.05);
-  --border-color:  rgba(0, 0, 0, 0.09);
-  --track-color:   rgba(0, 0, 0, 0.09);
+  /* Pure white surfaces — cards pop against lavender background */
+  --surface:       #ffffff;
+  --surface-2:     rgba(22, 19, 44, 0.05);
+  --border-color:  rgba(22, 19, 44, 0.09);
+  --track-color:   rgba(22, 19, 44, 0.09);
   --sheet-bg-2:    #f5f3ff;
 
-  /* Ambient blobs — soft light purples for light theme */
-  --blob-1: rgba(196, 181, 253, 0.55);
-  --blob-2: rgba(147, 197, 253, 0.45);
+  /* No ambient blobs in light theme — clean flat background */
+  --blob-1: rgba(0, 0, 0, 0);
+  --blob-2: rgba(0, 0, 0, 0);
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */
@@ -107,6 +107,12 @@ button { font-family: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 .card:active { opacity: 0.72; }
+
+/* Light theme: white cards with subtle shadow (iOS-style) */
+html[data-theme="light"] .card {
+  border-color: transparent;
+  box-shadow: 0 2px 12px rgba(22, 19, 44, 0.08), 0 0 1px rgba(22, 19, 44, 0.05);
+}
 
 /* ── Section label ─────────────────────────────────────────────────────────── */
 .section-label {

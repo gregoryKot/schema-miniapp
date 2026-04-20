@@ -29,14 +29,13 @@ function DiaryCard({ meta, onOpen }: { meta: DiaryMeta; onOpen: () => void }) {
   return (
     <div
       onClick={() => { haptic.tap(); onOpen(); }}
+      className="card"
       style={{
-        background: 'rgba(var(--fg-rgb),0.04)',
         borderRadius: 20,
         marginBottom: 12,
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'stretch',
-        border: `1px solid rgba(var(--fg-rgb),0.06)`,
         overflow: 'hidden',
         WebkitTapHighlightColor: 'transparent',
         transition: 'opacity 120ms',

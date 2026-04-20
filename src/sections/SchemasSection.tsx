@@ -142,7 +142,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
       <div style={{ padding: '16px 20px 0' }}>
         <div style={{
           display: 'flex',
-          background: 'var(--surface)',
+          background: 'var(--surface-2)',
           border: '1px solid var(--border-color)',
           borderRadius: 14,
           padding: 3,
