@@ -7,6 +7,7 @@ import { SchemaPickerSheet } from '../components/SchemaPickerSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
+import { SchemaDetailSheet } from '../components/SchemaDetailSheet';
 import { NeedDetailSheet } from '../components/NeedDetailSheet';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
@@ -64,6 +65,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
   const [showSchemaPicker, setShowSchemaPicker] = useState(false);
   const [showModePicker, setShowModePicker]     = useState(false);
   const [introModeId, setIntroModeId]     = useState<string | null>(null);
+  const [detailSchemaId, setDetailSchemaId] = useState<string | null>(null);
   const [introSchemaId, setIntroSchemaId] = useState<string | null>(null);
   const [detailNeedId, setDetailNeedId]   = useState<string | null>(null);
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
@@ -187,7 +189,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                     if (!schema || !domain) return null;
                     const c = hex(domain.color);
                     return (
-                      <button key={id} onClick={() => setIntroSchemaId(id)} style={{
+                      <button key={id} onClick={() => setDetailSchemaId(id)} style={{
                         padding: '6px 13px', borderRadius: 20,
                         border: `1.5px solid ${c}55`,
                         background: `${c}12`,
@@ -277,7 +279,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                           {domain.schemas.map(s => {
                             const active = allSchemaIds.includes(s.id);
                             return (
-                              <button key={s.id} onClick={() => setIntroSchemaId(s.id)} style={{
+                              <button key={s.id} onClick={() => setDetailSchemaId(s.id)} style={{
                                 padding: '6px 13px', borderRadius: 20,
                                 border: `1.5px solid ${active ? c + '66' : c + '28'}`,
                                 background: active ? `${c}18` : `${c}08`,
@@ -502,6 +504,14 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
 
       {introModeId && (
         <ModeIntroSheet modeId={introModeId} onClose={() => setIntroModeId(null)} />
+      )}
+
+      {detailSchemaId && (
+        <SchemaDetailSheet
+          schemaId={detailSchemaId}
+          onClose={() => setDetailSchemaId(null)}
+          onOpenDiary={() => setIntroSchemaId(detailSchemaId)}
+        />
       )}
 
       {introSchemaId && (

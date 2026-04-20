@@ -611,7 +611,7 @@ export default function App() {
           onNavigate={setSection}
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
           onOpenAdvanced={() => setShowSettings(true)}
-          onOpenTracker={() => setShowTracker(true)}
+          onOpenTracker={() => { setTrackerNeedId(null); setShowTrackerOverlay(true); }}
           onOpenTrackerAt={(needId) => { setTrackerNeedId(needId); setShowTrackerOverlay(true); }}
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
