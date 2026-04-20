@@ -115,7 +115,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     // Step 0: Welcome
     <div key={0}>
       <div style={{ textAlign: 'center', marginBottom: 24, paddingTop: 4 }}>
-        <div style={{ fontSize: 44, marginBottom: 10 }}>🧠</div>
+        <div style={{ width: 68, height: 68, borderRadius: 22, margin: '0 auto 14px', background: 'linear-gradient(135deg, var(--accent), #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>🧠</div>
         <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>СхемаЛаб</div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: 'var(--accent-yellow)', letterSpacing: '0.1em' }}>
           БЕТА-ВЕРСИЯ
