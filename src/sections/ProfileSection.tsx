@@ -103,8 +103,26 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
       {/* ── Хедер ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 0' }}>
-        <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
-          {firstName || 'Я'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Avatar */}
+          <div style={{
+            width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
+            background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 22, fontWeight: 700, color: '#fff',
+          }}>
+            {(firstName || 'Я')[0].toUpperCase()}
+          </div>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+              {firstName || 'Я'}
+            </div>
+            {totalDays > 0 && (
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 1 }}>
+                {totalDays} {totalDays === 1 ? 'день' : totalDays < 5 ? 'дня' : 'дней'} в приложении
+              </div>
+            )}
+          </div>
         </div>
         <button onClick={onOpenSettings} style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           ⚙️
@@ -122,8 +140,25 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           </>
         )}
 
+        {/* ── 3 stat cards ── */}
+        {ready && streak !== null && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+            {[
+              { value: currentStreak, label: 'Стрик', sub: 'ДНЕЙ' },
+              { value: totalDays,     label: 'Всего', sub: 'ДНЕЙ' },
+              { value: longestStreak, label: 'Рекорд', sub: 'ДНЕЙ' },
+            ].map(({ value, label, sub }) => (
+              <div key={label} className="card" style={{ borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.5px' }}>{value}</div>
+                <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>{sub}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* ── Стрик ── */}
-        {ready && <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '20px' }}>
+        {ready && <div className="card" style={{ borderRadius: 16, padding: '20px' }}>
           {streak === null ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -227,7 +262,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Паттерны (инсайты) ── */}
         {ready && hasInsights && (
-          <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+          <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
             <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
               <div>
                 <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
@@ -278,7 +313,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Достижения ── */}
         {ready && achievements && (
-          <div onClick={() => setShowAchievements(true)} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div onClick={() => setShowAchievements(true)} className="card" style={{ borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
               {achievements.length > 0 ? (
@@ -305,7 +340,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Мои записи ── */}
         {ready && notesCount !== null && (
-          <div onClick={() => setNotesOpen(true)} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div onClick={() => setNotesOpen(true)} className="card" style={{ borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <SectionLabel>МОИ ЗАПИСИ</SectionLabel>
               {notesCount.schema + notesCount.mode === 0 ? (

@@ -473,8 +473,14 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
         <div style={{ padding: `${safeTop + 20}px 20px 100px` }}>
           <div key={`list-${animKey}`} style={slideStyle}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>Кабинет</div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>Кабинет</div>
+                  <div style={{ background: 'rgba(167,139,250,0.2)', border: '1px solid rgba(167,139,250,0.35)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.03em' }}>психолог</div>
+                </div>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>Клиенты · Задания · Концептуализация</div>
+              </div>
               <button
                 onClick={() => openAddMode(addMode ? null : 'invite')}
                 style={{
@@ -483,12 +489,28 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   color: addMode ? 'rgba(var(--fg-rgb),0.5)' : 'var(--accent)',
                   fontSize: addMode ? 18 : 22, fontWeight: 300, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.15s ease', marginTop: 4,
                 }}
               >
                 {addMode ? '✕' : '+'}
               </button>
             </div>
+
+            {/* Stat cards */}
+            {!loading && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 20 }}>
+                {[
+                  { value: clients.length, label: 'КЛИЕНТОВ' },
+                  { value: clients.filter(c => c.lastActiveDate === today).length, label: 'АКТИВНЫХ' },
+                  { value: '—', label: 'ЗАДАНИЙ' },
+                ].map(({ value, label }) => (
+                  <div key={label} className="card" style={{ borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.5px' }}>{value}</div>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4 }}>{label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Add client panel */}
             {addMode !== null && (
@@ -601,7 +623,6 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             )}
 
             {/* Client list */}
-            <SectionLabel mb={10}>Клиенты ({clients.length})</SectionLabel>
             {loading ? (
               <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', paddingTop: 40 }}>Загружаю...</div>
             ) : clients.length === 0 ? (
@@ -611,35 +632,49 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             ) : clients.map(c => {
               const isToday = c.lastActiveDate === today;
               const isVirtual = c.telegramId < 0;
+              const displayName = c.clientAlias ?? c.name ?? (isVirtual ? 'Оффлайн' : `ID ${c.telegramId}`);
+              const initials = displayName.split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase();
+              const avatarColors = ['#a78bfa', '#60a5fa', '#f472b6', '#34d399', '#fb923c', '#facc15'];
+              const avatarColor = avatarColors[Math.abs(c.telegramId) % avatarColors.length];
               return (
                 <div
                   key={c.telegramId}
                   onClick={() => openClient(c)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '14px 16px', marginBottom: 8, cursor: 'pointer' }}
+                  className="card"
+                  style={{ borderRadius: 16, padding: '14px 16px', marginBottom: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div
-                      style={{
-                        width: 8, height: 8, borderRadius: 4, flexShrink: 0,
-                        background: isVirtual ? 'rgba(var(--fg-rgb),0.15)' : isToday ? '#06d6a0' : 'rgba(var(--fg-rgb),0.15)',
-                      }}
-                    />
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
-                        {c.clientAlias ?? c.name ?? (isVirtual ? '👤 Оффлайн' : `ID ${c.telegramId}`)}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-                        {isVirtual ? 'Без Telegram' : `${streakEmoji(c.streak)} ${c.streak} дн.${c.lastActiveDate ? ` · ${fmtDate(c.lastActiveDate)}` : ''}`}
-                      </div>
+                  {/* Avatar */}
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: avatarColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, fontWeight: 700, color: '#fff' }}>
+                    {initials || '?'}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
+                      {displayName}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>
+                      {isVirtual ? 'Без Telegram' : `${isToday ? 'Сегодня' : c.lastActiveDate ? fmtDate(c.lastActiveDate) : 'Не активен'} · Стрик ${c.streak} дн`}
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    {c.todayIndex !== null && <div style={{ fontSize: 15, fontWeight: 700, color: indexColor(c.todayIndex) }}>{c.todayIndex}</div>}
-                    <span style={{ color: 'var(--text-faint)', fontSize: 18 }}>›</span>
-                  </div>
+                  {c.todayIndex !== null && (
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: indexColor(c.todayIndex), lineHeight: 1 }}>{c.todayIndex.toFixed(1)}</div>
+                      <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>индекс</div>
+                    </div>
+                  )}
+                  <span style={{ color: 'var(--text-faint)', fontSize: 16, flexShrink: 0 }}>›</span>
                 </div>
               );
             })}
+
+            {/* Invite button */}
+            {!loading && clients.length > 0 && (
+              <div
+                onClick={() => openAddMode('invite')}
+                style={{ border: '1px dashed rgba(var(--fg-rgb),0.18)', borderRadius: 16, padding: '14px 16px', textAlign: 'center', cursor: 'pointer', color: 'var(--text-sub)', fontSize: 14 }}
+              >
+                + Пригласить клиента
+              </div>
+            )}
           </div>
         </div>
       )}

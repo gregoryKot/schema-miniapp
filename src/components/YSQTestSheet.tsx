@@ -313,8 +313,21 @@ const NEED_LABELS: Record<string, string> = {
   limits: 'Границы',
 };
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 1;
 const TOTAL_PAGES = Math.ceil(QUESTIONS.length / PAGE_SIZE);
+
+const ANSWER_LABELS = [
+  'Совсем не про меня',
+  'Редко про меня',
+  'Иногда бывает',
+  'Часто так',
+  'Очень похоже',
+  'Полностью про меня',
+];
+
+function getSchemaForQuestion(qIdx: number): SchemaInfo | undefined {
+  return SCHEMAS.find(s => s.questions.includes(qIdx + 1));
+}
 
 type Phase = 'intro' | 'test' | 'result';
 
@@ -431,11 +444,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     saveProgress(next, page);
   };
 
-  const pageStart = page * PAGE_SIZE;
-  const pageEnd = Math.min(pageStart + PAGE_SIZE, QUESTIONS.length);
-  const pageQuestions = QUESTIONS.slice(pageStart, pageEnd);
-  const pageAnswered = pageQuestions.every((_, i) => answers[pageStart + i] > 0);
-
   const handleNext = () => {
     if (page < TOTAL_PAGES - 1) {
       const next = page + 1;
@@ -492,6 +500,101 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   };
 
   const schemaColor = (s: SchemaInfo) => getColor(s.name) || s.color;
+
+  // Full-screen test phase
+  if (phase === 'test') {
+    const qIdx = page;
+    const currentAnswer = answers[qIdx];
+    const schema = getSchemaForQuestion(qIdx);
+    const progressPct = ((page + 1) / TOTAL_PAGES) * 100;
+
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+        {/* Header */}
+        <div style={{ flexShrink: 0, padding: '16px 20px 0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <button
+              onClick={() => handleBack()}
+              style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >✕</button>
+            <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>{page + 1} / {TOTAL_PAGES}</span>
+            <div style={{ width: 32 }} />
+          </div>
+          {/* Progress bar */}
+          <div style={{ height: 2, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2 }}>
+            <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s ease' }} />
+          </div>
+        </div>
+
+        {/* Question */}
+        <div style={{ flex: 1, padding: '24px 20px 0' }}>
+          {schema && (
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: schema.color, marginBottom: 12 }}>
+              {schema.name}
+            </div>
+          )}
+          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1.4, marginBottom: 32 }}>
+            {QUESTIONS[qIdx]}
+          </div>
+        </div>
+
+        {/* Answer cards */}
+        <div style={{ padding: '0 16px 32px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {ANSWER_LABELS.map((label, i) => {
+            const value = i + 1;
+            const selected = currentAnswer === value;
+            return (
+              <button
+                key={value}
+                onClick={() => {
+                  handleAnswer(qIdx, value);
+                  // Auto-advance after short delay
+                  setTimeout(() => {
+                    if (page < TOTAL_PAGES - 1) {
+                      const next = page + 1;
+                      setPage(next);
+                      saveProgress(answers.map((a, idx) => idx === qIdx ? value : a), next);
+                      api.saveYsqProgress(answers.map((a, idx) => idx === qIdx ? value : a), next).catch(() => {});
+                    } else {
+                      const newAnswers = answers.map((a, idx) => idx === qIdx ? value : a);
+                      const scores = computeScores(newAnswers);
+                      localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: new Date().toISOString(), scores, answers: newAnswers }));
+                      api.saveYsqResult(newAnswers).catch(() => {});
+                      api.deleteYsqProgress().catch(() => {});
+                      localStorage.removeItem(YSQ_PROGRESS_KEY);
+                      setAnswers(newAnswers);
+                      setPhase('result');
+                    }
+                  }, 150);
+                }}
+                style={{
+                  width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                  padding: '14px 16px', borderRadius: 16, border: `1px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)'}`,
+                  background: selected ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'var(--surface)',
+                  cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent',
+                  transition: 'all 0.15s ease',
+                }}
+              >
+                {/* Radio circle */}
+                <div style={{
+                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                  border: `2px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)'}`,
+                  background: selected ? 'var(--accent)' : 'transparent',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                }}>
+                  {selected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />}
+                </div>
+                <span style={{ fontSize: 15, color: selected ? 'var(--text)' : 'var(--text-sub)', fontWeight: selected ? 500 : 400 }}>
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BottomSheet onClose={onClose} zIndex={300}>
@@ -567,89 +670,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
         </div>
       )}
 
-      {phase === 'test' && (
-        <div style={{ padding: '8px 0 16px' }}>
-          {/* Progress bar */}
-          <div style={{ marginBottom: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-              <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>Страница {page + 1} из {TOTAL_PAGES}</span>
-              <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{Math.round(((page + 1) / TOTAL_PAGES) * 100)}%</span>
-            </div>
-            <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2 }}>
-              <div style={{ height: '100%', width: `${((page + 1) / TOTAL_PAGES) * 100}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.3s ease' }} />
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>
-              ~{Math.ceil((TOTAL_PAGES - page) * 0.4)} мин осталось
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 8, padding: '4px 10px' }}>
-              <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>1 — не про меня</span>
-              <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>·</span>
-              <span style={{ fontSize: 11, color: 'var(--accent)' }}>6 — полностью про меня</span>
-            </div>
-          </div>
-
-          {/* Questions */}
-          {pageQuestions.map((q, i) => {
-            const qIdx = pageStart + i;
-            const selected = answers[qIdx];
-            return (
-              <div key={qIdx} style={{ marginBottom: 20, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '14px 14px 12px' }}>
-                <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 6 }}>
-                  Вопрос {qIdx + 1}
-                </div>
-                <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.5, marginBottom: 12 }}>{q}</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {[1,2,3,4,5,6].map(n => (
-                    <button
-                      key={n}
-                      onClick={() => handleAnswer(qIdx, n)}
-                      style={{
-                        flex: 1, height: 36, border: 'none', borderRadius: 8, cursor: 'pointer',
-                        background: selected === n ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.09)',
-                        color: selected === n ? '#fff' : 'rgba(var(--fg-rgb),0.55)',
-                        fontSize: 14, fontWeight: selected === n ? 700 : 400,
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Navigation */}
-          <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-            <button
-              onClick={handleBack}
-              style={{ flex: 1, padding: '13px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
-            >
-              ← Назад
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={!pageAnswered}
-              style={{
-                flex: 2, padding: '13px 0', border: 'none', borderRadius: 14,
-                background: pageAnswered ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.07)',
-                color: pageAnswered ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
-                fontSize: 15, fontWeight: 600, cursor: pageAnswered ? 'pointer' : 'default',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {page < TOTAL_PAGES - 1 ? 'Далее →' : 'Завершить →'}
-            </button>
-          </div>
-          {page < TOTAL_PAGES - 1 && (
-            <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-faint)', marginTop: 8 }}>
-              Можно остановиться — прогресс сохранится
-            </div>
-          )}
-        </div>
-      )}
 
       {phase === 'result' && scores && (() => {
         const activeSchemas = sortedSchemas.filter(s => scores[s.name].pct5plus > 50);

@@ -184,7 +184,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Оформление */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ОФОРМЛЕНИЕ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+                <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
                   <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{ fontSize: 18 }}>{theme === 'dark' ? '🌙' : '☀️'}</span>
@@ -256,7 +256,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Имя */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>КАК ТЕБЯ ЗОВУТ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
+                <div className="card" style={{ borderRadius: 16, padding: '12px 16px', display: 'flex', gap: 8, alignItems: 'center' }}>
                   <input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
@@ -294,7 +294,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Уведомления */}
               <div style={{ marginBottom: 8 }}>
                 <SectionHeader onInfo={() => setShowNotifyInfo(true)}>УВЕДОМЛЕНИЯ</SectionHeader>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden', marginBottom: 8 }}>
+                <div className="card" style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 8 }}>
                   <Row label="Итоги дня" sub="Ежедневный отчёт по потребностям" right={<Toggle on={settings.notifyEnabled} onClick={() => patch({ notifyEnabled: !settings.notifyEnabled })} />} />
                   <Row label="Напоминание" sub="Заполнить трекер вечером" right={<Toggle on={!!settings.notifyReminderEnabled} onClick={() => patch({ notifyReminderEnabled: !settings.notifyReminderEnabled })} />} divider />
                   {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
@@ -316,7 +316,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {userRole !== 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
                   <SectionHeader onInfo={() => setShowTherapistInfo(true)}>МОЙ ТЕРАПЕВТ</SectionHeader>
-                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
+                  <div className="card" style={{ borderRadius: 16, padding: 16 }}>
                     {therapyRelation === undefined ? (
                       <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>Загрузка...</div>
                     ) : therapyRelation?.status === 'active' ? (
@@ -416,7 +416,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       <span>👨‍⚕️</span> Я психолог — войти как специалист
                     </button>
                   ) : (
-                    <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
+                    <div className="card" style={{ borderRadius: 16, padding: 16 }}>
                       <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>
                         Введи код специалиста
                       </div>
@@ -458,7 +458,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {userRole === 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
                   <SettingsLabel>КАБИНЕТ ТЕРАПЕВТА</SettingsLabel>
-                  <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+                  <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
                     <div
                       onClick={onOpenTherapistCabinet}
                       style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
@@ -495,7 +495,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Партнёр */}
               <div style={{ marginBottom: 8 }}>
                 <SectionHeader onInfo={() => setShowPairInfo(true)}>ПАРТНЁР</SectionHeader>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: 16 }}>
+                <div className="card" style={{ borderRadius: 16, padding: 16 }}>
                   {pairLoading && !pairData ? (
                     <div style={{ color: 'var(--text-sub)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>Загрузка...</div>
                   ) : pairData && pairData.partners.length > 0 ? (
@@ -563,7 +563,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Поделиться + Экспорт */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ПОДЕЛИТЬСЯ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+                <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
                   <Row label="Пригласить друга" sub="Поделиться ссылкой на бота" emoji="🔗" onClick={async () => {
                     const text = 'Трекер потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
                     try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
@@ -580,7 +580,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* О приложении */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>О ПРИЛОЖЕНИИ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, padding: '20px 16px' }}>
+                <div className="card" style={{ borderRadius: 16, padding: '20px 16px' }}>
                   <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 10 }}>СхемаЛаб</div>
                   <p style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, margin: '0 0 16px' }}>
                     Инструмент самопознания на основе схема-терапии: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
@@ -606,7 +606,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Конфиденциальность */}
               <div style={{ marginBottom: 8 }}>
                 <SettingsLabel>ДАННЫЕ</SettingsLabel>
-                <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
+                <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
                   <Row label="О данных и конфиденциальности" emoji="🔒" onClick={() => setShowPrivacy(true)} />
                   <Row label="Удалить все данные" emoji="🗑" divider color="#f87171" onClick={() => { setDeleteConfirm(false); setShowDeleteSheet(true); }} />
                 </div>
