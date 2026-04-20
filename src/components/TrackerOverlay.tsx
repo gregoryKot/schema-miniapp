@@ -31,6 +31,7 @@ interface Props {
   initialNeedId?: string | null;
   onOpenNote?: () => void;
   onOpenGoal?: () => void;
+  yesterdayRatings?: Record<string, number>;
 }
 
 const ONBOARDING_KEY = 'tracker_onboarding_v1';
@@ -70,7 +71,7 @@ function SummaryDonut({ avg }: { avg: number }) {
 export function TrackerOverlay({
   needs, ratings, saved, isOffline,
   onChange, onSaved, onClose, initialNeedId,
-  onOpenNote, onOpenGoal,
+  onOpenNote, onOpenGoal, yesterdayRatings = {},
 }: Props) {
   const safeTop = useSafeTop();
   const timers  = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -91,7 +92,7 @@ export function TrackerOverlay({
   const value    = ratings[need.id] ?? 0;
   const allRated = needs.every(n => ratings[n.id] !== undefined);
   const avg      = needs.length > 0 ? needs.reduce((s,n)=>s+(ratings[n.id]??0),0)/needs.length : 0;
-  const yval     = YESTERDAY[need.id];
+  const yval     = yesterdayRatings[need.id] ?? YESTERDAY[need.id];
   const delta    = (value > 0 && yval !== undefined) ? value - yval : null;
 
   const dismissOnb = useCallback(() => {
@@ -330,7 +331,7 @@ export function TrackerOverlay({
         <NeedTodaySheet
           need={detailNeed}
           value={ratings[detailNeed.id] ?? 0}
-          yesterdayValue={YESTERDAY[detailNeed.id]}
+          yesterdayValue={yesterdayRatings[detailNeed.id] ?? YESTERDAY[detailNeed.id]}
           onChange={v => handleChange(detailNeed.id, v)}
           onClose={() => setDetailNeed(null)}
         />

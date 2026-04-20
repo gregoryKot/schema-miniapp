@@ -36,6 +36,10 @@ html, body { height: 100%; overscroll-behavior: none; }
   --border-color:  rgba(255, 255, 255, 0.085);
   --track-color:   rgba(255, 255, 255, 0.07);
   --sheet-bg-2:    #0c0e28;
+
+  /* Ambient blobs */
+  --blob-1: rgba(42, 22, 128, 0.22);
+  --blob-2: rgba(14, 58, 110, 0.18);
 }
 
 /* ── Light theme ───────────────────────────────────────────────────────────── */
@@ -60,11 +64,16 @@ html[data-theme="light"] {
   --accent-red:    #dc2626;
   --accent-pink:   #be185d;
 
-  --surface:       rgba(255, 255, 255, 0.75);
+  /* More opaque surfaces so dark blobs don't bleed through */
+  --surface:       rgba(255, 255, 255, 0.92);
   --surface-2:     rgba(0, 0, 0, 0.05);
   --border-color:  rgba(0, 0, 0, 0.09);
   --track-color:   rgba(0, 0, 0, 0.09);
   --sheet-bg-2:    #f5f3ff;
+
+  /* Ambient blobs — soft light purples for light theme */
+  --blob-1: rgba(196, 181, 253, 0.55);
+  --blob-2: rgba(147, 197, 253, 0.45);
 }
 
 /* ── Base ──────────────────────────────────────────────────────────────────── */

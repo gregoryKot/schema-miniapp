@@ -46,17 +46,19 @@ function readLocalIds(key: string): string[] {
 
 // ── NeedMini ──────────────────────────────────────────────────────────────────
 
-function NeedMini({ need, value, onTap }: {
+function NeedMini({ need, value, yesterday, onTap }: {
   need: Need;
   value: number | undefined;
+  yesterday?: number;
   onTap: () => void;
 }) {
   const color  = COLORS[need.id] ?? '#888';
   const rgb    = hexToRgb(color);
   const filled = value !== undefined && value !== null;
+  const delta  = (filled && yesterday !== undefined) ? (value! - yesterday) : null;
 
   return (
-    <div onClick={e => { e.stopPropagation(); onTap(); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
+    <div onClick={e => { e.stopPropagation(); onTap(); }} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer', WebkitTapHighlightColor: 'transparent' }}>
       <div style={{
         width: 46, height: 46, borderRadius: 14,
         position: 'relative', overflow: 'hidden',
@@ -81,6 +83,18 @@ function NeedMini({ need, value, onTap }: {
         }}>
           {filled ? value : need.emoji}
         </span>
+        {/* Yesterday delta badge */}
+        {delta !== null && delta !== 0 && (
+          <div style={{
+            position: 'absolute', top: 2, right: 2,
+            fontSize: 7, fontWeight: 700, lineHeight: 1,
+            color: delta > 0 ? 'var(--accent-green)' : 'var(--accent-red)',
+            background: delta > 0 ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.18)',
+            borderRadius: 4, padding: '1px 3px',
+          }}>
+            {delta > 0 ? '+' : ''}{delta}
+          </div>
+        )}
       </div>
       <span style={{
         fontSize: 9, color: 'var(--text-faint)', fontWeight: 600,
@@ -118,6 +132,7 @@ function DiaryTypeBadge({ type }: { type: string }) {
 interface Props {
   needs: Need[];
   ratings: Record<string, number>;
+  yesterdayRatings?: Record<string, number>;
   onNavigate: (s: Section) => void;
   onOpenSchema: (opts?: { startTest?: boolean; tab?: 'needs'|'schemas'|'modes'; highlight?: string }) => void;
   onOpenAdvanced: () => void;
@@ -133,7 +148,7 @@ interface Props {
 // ── TodaySection ──────────────────────────────────────────────────────────────
 
 export function TodaySection({
-  needs, ratings,
+  needs, ratings, yesterdayRatings = {},
   onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt,
   onOpenDiaries, onOpenChildhoodWheel,
   refreshKey, userRole, onOpenTherapistCabinet,
@@ -263,7 +278,7 @@ export function TodaySection({
           {/* 5 mini indicators */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
             {needs.map(n => (
-              <NeedMini key={n.id} need={n} value={ratings[n.id]}
+              <NeedMini key={n.id} need={n} value={ratings[n.id]} yesterday={yesterdayRatings[n.id]}
                 onTap={() => onOpenTrackerAt ? onOpenTrackerAt(n.id) : onOpenTracker()}
               />
             ))}

@@ -69,11 +69,12 @@ export function SchemaDetailSheet({ schemaId, onClose, onOpenDiary }: Props) {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%',
-          background: 'var(--surface)',
+          background: 'var(--sheet-bg)',
           borderRadius: '24px 24px 0 0',
           padding: '8px 20px 40px',
           maxHeight: '80%',
           overflowY: 'auto',
+          animation: 'sheet-up 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
         }}
       >
         {/* Handle */}

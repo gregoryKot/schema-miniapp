@@ -311,6 +311,7 @@ export default function App() {
   const [needs, setNeeds] = useState<Need[]>([]);
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [yesterdayRatings, setYesterdayRatings] = useState<Record<string, number>>({});
   const [history, setHistory] = useState<DayHistory[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -350,15 +351,19 @@ export default function App() {
     Promise.all(NEED_IDS.map(id => api.getPractices(id)))
       .then(r => setHelpPracticeCount(r.reduce((s, a) => s + a.length, 0))).catch(() => setHelpPracticeCount(0));
     api.getPlanHistory(30).then(p => setHelpPlanCount(p.length)).catch(() => setHelpPlanCount(0));
-    Promise.all([api.needs(), api.ratings()])
-      .then(([n, r]) => {
+    Promise.all([api.needs(), api.ratings(), api.ratings(YESTERDAY_DATE)])
+      .then(([n, r, yR]) => {
         setNeeds(n);
         setRatings(r);
+        setYesterdayRatings(yR);
         const initialSaved: Record<string, boolean> = {};
         for (const key of Object.keys(r)) initialSaved[key] = true;
         setSaved(initialSaved);
         if (n.length > 0 && n.every(need => r[need.id] !== undefined)) {
           localStorage.setItem(TODAY_KEY, '1');
+        }
+        if (!yesterdayBannerDismissed && HAS_HISTORY && Object.keys(yR).length === 0) {
+          setShowYesterdayBanner(true);
         }
       })
       .catch((e) => setError(String(e)))
@@ -372,11 +377,6 @@ export default function App() {
       setPairCardDismissed(!!localStorage.getItem('pair_card_dismissed'));
     });
     api.getPendingPlans().then(setPendingPlans).catch(e => console.error('getPendingPlans failed', e));
-    if (!yesterdayBannerDismissed && HAS_HISTORY) {
-      api.ratings(YESTERDAY_DATE).then(r => {
-        if (Object.keys(r).length === 0) setShowYesterdayBanner(true);
-      }).catch(() => {});
-    }
     api.getChildhoodRatings().then(r => {
       if (Object.keys(r).length > 0) {
         setChildhoodRatings(r);
@@ -554,10 +554,10 @@ export default function App() {
 
   return (
     <div style={{ minHeight: '100vh', position: 'relative' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
-      {/* Ambient gradient blobs */}
+      {/* Ambient gradient blobs — colors adapt per theme via CSS vars */}
       <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
-        <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', top: -80, right: -60, background: '#2a1680', filter: 'blur(80px)', opacity: 0.22 }} />
-        <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', bottom: 120, left: -60, background: '#0e3a6e', filter: 'blur(70px)', opacity: 0.18 }} />
+        <div style={{ position: 'absolute', width: 280, height: 280, borderRadius: '50%', top: -90, right: -70, background: 'var(--blob-1)', filter: 'blur(90px)' }} />
+        <div style={{ position: 'absolute', width: 220, height: 220, borderRadius: '50%', bottom: 140, left: -70, background: 'var(--blob-2)', filter: 'blur(80px)' }} />
       </div>
       {isOffline && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
@@ -610,6 +610,7 @@ export default function App() {
         <TodaySection
           needs={needs}
           ratings={ratings}
+          yesterdayRatings={yesterdayRatings}
           onNavigate={setSection}
           onOpenSchema={(opts) => { setSchemaAutoStartTest(!!opts?.startTest); setSchemaInitialTab(opts?.tab ?? 'needs'); setSchemaHighlight(opts?.highlight); setShowSchemaInfo(true); }}
           onOpenAdvanced={() => setShowSettings(true)}
@@ -670,6 +671,7 @@ export default function App() {
           initialNeedId={trackerNeedId}
           onOpenNote={() => setShowTodayNote(true)}
           onOpenGoal={() => setShowTrackerGoal(true)}
+          yesterdayRatings={yesterdayRatings}
         />
       )}
 
