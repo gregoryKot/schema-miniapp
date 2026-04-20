@@ -119,7 +119,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop }}>
 
       {/* ── Header ── */}
       <div style={{ padding: '24px 20px 0' }}>

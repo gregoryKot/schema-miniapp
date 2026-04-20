@@ -551,7 +551,12 @@ export default function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+    <div style={{ minHeight: '100vh', position: 'relative' }} onTouchStart={handleSwipeStart} onTouchEnd={handleSwipeEnd}>
+      {/* Ambient gradient blobs */}
+      <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+        <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', top: -80, right: -60, background: '#2a1680', filter: 'blur(80px)', opacity: 0.22 }} />
+        <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', bottom: 120, left: -60, background: '#0e3a6e', filter: 'blur(70px)', opacity: 0.18 }} />
+      </div>
       {isOffline && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999, background: 'rgba(239,68,68,0.92)', backdropFilter: 'blur(8px)', padding: '10px 20px', textAlign: 'center', fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>
           Нет подключения — данные не сохраняются

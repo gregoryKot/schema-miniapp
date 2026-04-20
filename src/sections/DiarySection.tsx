@@ -58,7 +58,7 @@ export function DiarySection({ onClose }: Props = {}) {
   const todayGratitude = gratitudeEntries.find(e => e.date === TODAY);
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ minHeight: '100vh' }}>
       {activeDiary ? (
         <DiaryListView
           type={activeDiary}

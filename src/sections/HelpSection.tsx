@@ -167,7 +167,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
       {/* Header */}
       <div style={{ padding: '20px 20px 0' }}>

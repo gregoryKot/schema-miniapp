@@ -187,7 +187,7 @@ export function TodaySection({
   const hasSchemas   = [...new Set([...(profile?.ysq.activeSchemaIds ?? []), ...manualSchemaIds])].length > 0;
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', paddingBottom: 120, paddingTop: safeTop }}>
+    <div style={{ minHeight: '100vh', paddingBottom: 120, paddingTop: safeTop }}>
 
       {/* ── Header ── */}
       <div style={{ padding: '24px 20px 0' }}>
@@ -248,9 +248,8 @@ export function TodaySection({
         />
 
         {/* ── Needs card ── */}
-        <div onClick={onOpenTracker} style={{
-          background: 'var(--surface)', border: '1px solid var(--border-color)',
-          borderRadius: 20, padding: '18px 18px', cursor: 'pointer',
+        <div onClick={onOpenTracker} className="card" style={{
+          padding: '18px 18px', cursor: 'pointer',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
@@ -309,9 +308,8 @@ export function TodaySection({
         </div>
 
         {/* ── Diary card ── */}
-        <div onClick={onOpenDiaries} style={{
-          background: 'var(--surface)', border: '1px solid var(--border-color)',
-          borderRadius: 20, padding: '18px 18px 14px', cursor: 'pointer',
+        <div onClick={onOpenDiaries} className="card" style={{
+          padding: '18px 18px 14px', cursor: 'pointer',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
