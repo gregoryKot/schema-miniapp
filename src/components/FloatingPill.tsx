@@ -24,23 +24,24 @@ export function FloatingPill({ onOpenSchemaDiary, onOpenModeDiary, onOpenGratitu
         <button
           onClick={() => setShowPicker(true)}
           style={{
-            width: 56,
-            height: 56,
+            width: 60,
+            height: 60,
             borderRadius: '50%',
             border: 'none',
-            background: 'var(--accent)',
+            background: 'linear-gradient(135deg, #60a5fa, #7c72f8)',
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(167,139,250,0.45)',
+            boxShadow: '0 6px 24px rgba(96,165,250,0.45), 0 2px 8px rgba(124,114,248,0.3)',
             WebkitTapHighlightColor: 'transparent',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: 0,
+            transition: 'transform 120ms, box-shadow 120ms',
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-            <rect x="9" y="2" width="2" height="16" rx="1" fill="white"/>
-            <rect x="2" y="9" width="16" height="2" rx="1" fill="white"/>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect x="10" y="2" width="2" height="18" rx="1" fill="white"/>
+            <rect x="2" y="10" width="18" height="2" rx="1" fill="white"/>
           </svg>
         </button>
       </div>

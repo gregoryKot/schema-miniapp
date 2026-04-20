@@ -29,15 +29,31 @@ interface Props {
   onOpenTherapistCabinet?: () => void;
 }
 
-function ToolRow({ emoji, label, sub, divider, onClick, accent }: { emoji: string; label: string; sub?: string; divider?: boolean; onClick: () => void; accent?: string }) {
+function ToolCard({ emoji, label, sub, onClick, accentColor }: { emoji: string; label: string; sub?: string; onClick: () => void; accentColor?: string }) {
   return (
-    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', borderTop: divider ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined }}>
-      <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: accent ?? 'var(--text)' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{sub}</div>}
+    <div
+      onClick={onClick}
+      className="card"
+      style={{
+        cursor: 'pointer',
+        padding: '18px 14px',
+        borderRadius: 18,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
+      <span style={{
+        fontSize: 28,
+        width: 44, height: 44, borderRadius: 12,
+        background: accentColor ? `color-mix(in srgb, ${accentColor} 14%, transparent)` : 'rgba(var(--fg-rgb),0.06)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>{emoji}</span>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{sub}</div>}
       </div>
-      <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>›</span>
     </div>
   );
 }
@@ -170,10 +186,10 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
     <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
       {/* Header */}
-      <div style={{ padding: '20px 20px 0' }}>
+      <div style={{ padding: '20px 20px 12px' }}>
         <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>Помощь</div>
         <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 4, lineHeight: 1.5 }}>
-          Инструменты схема-терапии и твои задания
+          Инструменты и упражнения
         </div>
         {/* Next session banner for clients */}
         {relation?.role === 'client' && relation.nextSession && (() => {
@@ -196,17 +212,18 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
         })()}
       </div>
 
-      <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* Tasks card — always shown once relation is loaded */}
         {relation !== undefined && (
-          <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.18)', borderRadius: 16, overflow: 'hidden' }}>
-            <div style={{ padding: '14px 16px 4px' }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>🎯 Задания</div>
+          <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
+            <div style={{ padding: '14px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16 }}>🎯</span>
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Задания</div>
             </div>
 
             {tasks.length === 0 && (
-              <div style={{ padding: '8px 16px 12px', fontSize: 13, color: 'var(--text-sub)' }}>
+              <div style={{ padding: '8px 16px 14px', fontSize: 13, color: 'var(--text-sub)' }}>
                 Нет активных заданий
               </div>
             )}
@@ -252,42 +269,60 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           </div>
         )}
 
-        {/* Emergency */}
-        <div style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.18)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-red)' }}>🚨 Прямо сейчас</div>
-          </div>
-          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит — 5 шагов" onClick={() => setShowFlashcard(true)} accent="var(--accent-red)" />
+        {/* 2-column tool grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <ToolCard
+            emoji="🗂"
+            label="Практики"
+            sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Нет практик' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`}
+            accentColor="var(--accent)"
+            onClick={onOpenPractices}
+          />
+          <ToolCard
+            emoji="🗓"
+            label="Планы"
+            sub={planCount == null ? undefined : planCount === 0 ? 'История пуста' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')}`}
+            accentColor="var(--accent-blue)"
+            onClick={onOpenPlans}
+          />
+          <ToolCard
+            emoji="🔍"
+            label="Проверка убеждений"
+            sub="Правда ли это?"
+            accentColor="var(--accent-yellow)"
+            onClick={() => setShowBeliefCheck(true)}
+          />
+          <ToolCard
+            emoji="🏡"
+            label="Безопасное место"
+            sub="Ресурс в тревожный момент"
+            accentColor="var(--accent-green)"
+            onClick={() => setShowSafePlace(true)}
+          />
+          <ToolCard
+            emoji="✉️"
+            label="Письмо себе"
+            sub="Уязвимому Ребёнку"
+            accentColor="var(--accent-pink)"
+            onClick={() => setShowLetterToSelf(true)}
+          />
+          <ToolCard
+            emoji="🆘"
+            label="Мне плохо"
+            sub="Разобраться за 5 шагов"
+            accentColor="var(--accent-red)"
+            onClick={() => setShowFlashcard(true)}
+          />
+          <ToolCard
+            emoji="🌱"
+            label="Колесо детства"
+            sub={childhoodDone ? 'Паттерны из прошлого' : 'Займёт 2 минуты'}
+            accentColor="var(--accent-green)"
+            onClick={onOpenChildhoodWheel}
+          />
         </div>
 
-        {/* Работа с мыслями */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>💭 Работа с мыслями</div>
-          </div>
-          <ToolRow emoji="🔍" label="Проверить убеждение" sub="Правда ли это? Собрать доказательства за и против" onClick={() => setShowBeliefCheck(true)} />
-          <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
-        </div>
-
-        {/* Ресурс */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-green)' }}>🌿 Ресурс</div>
-          </div>
-          <ToolRow emoji="🏡" label="Безопасное место" sub="Описать и перечитывать в тревожный момент" onClick={() => setShowSafePlace(true)} />
-          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
-        </div>
-
-        {/* Отслеживание */}
-        <div style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 16, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-yellow)' }}>📊 Отслеживание</div>
-          </div>
-          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} onClick={onOpenPractices} />
-          <ToolRow emoji="🗓" label="История планов" sub={planCount == null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
-        </div>
-
-        <div style={{ padding: '4px 0 0' }}>
+        <div style={{ paddingBottom: 4 }}>
           <TherapyNote compact />
         </div>
 
