@@ -29,15 +29,22 @@ interface Props {
   onOpenTherapistCabinet?: () => void;
 }
 
-function ToolRow({ emoji, label, sub, divider, onClick, accent }: { emoji: string; label: string; sub?: string; divider?: boolean; onClick: () => void; accent?: string }) {
+function ToolCard({ emoji, label, sub, onClick, accentColor }: { emoji: string; label: string; sub?: string; onClick: () => void; accentColor?: string }) {
   return (
-    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 16px', cursor: 'pointer', borderTop: divider ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined, WebkitTapHighlightColor: 'transparent' }}>
-      <span style={{ fontSize: 18, width: 26, textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 14, fontWeight: 500, color: accent ?? 'var(--text)' }}>{label}</div>
-        {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{sub}</div>}
+    <div
+      onClick={onClick}
+      className="card"
+      style={{ cursor: 'pointer', padding: '16px 14px', borderRadius: 18, display: 'flex', flexDirection: 'column', gap: 10, WebkitTapHighlightColor: 'transparent' }}
+    >
+      <span style={{
+        fontSize: 26, width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+        background: accentColor ? `color-mix(in srgb, ${accentColor} 14%, transparent)` : 'rgba(var(--fg-rgb),0.06)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>{emoji}</span>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{label}</div>
+        {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{sub}</div>}
       </div>
-      <span style={{ color: 'var(--text-faint)', fontSize: 16 }}>›</span>
     </div>
   );
 }
@@ -253,39 +260,15 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           </div>
         )}
 
-        {/* Emergency */}
-        <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-red)' }}>🚨 Прямо сейчас</div>
-          </div>
-          <ToolRow emoji="🆘" label="Мне сейчас плохо" sub="Разобрать что происходит — 5 шагов" onClick={() => setShowFlashcard(true)} accent="var(--accent-red)" />
-        </div>
-
-        {/* Работа с мыслями */}
-        <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent)' }}>💭 Работа с мыслями</div>
-          </div>
-          <ToolRow emoji="🔍" label="Проверить убеждение" sub="Правда ли это? Собрать доказательства за и против" onClick={() => setShowBeliefCheck(true)} />
-          <ToolRow emoji="✉️" label="Письмо Уязвимому Ребёнку" sub="Написать себе из прошлого" divider onClick={() => setShowLetterToSelf(true)} />
-        </div>
-
-        {/* Ресурс */}
-        <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-green)' }}>🌿 Ресурс</div>
-          </div>
-          <ToolRow emoji="🏡" label="Безопасное место" sub="Описать и перечитывать в тревожный момент" onClick={() => setShowSafePlace(true)} />
-          <ToolRow emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из детства' : 'Не заполнено — займёт 2 минуты'} divider onClick={onOpenChildhoodWheel} />
-        </div>
-
-        {/* Отслеживание */}
-        <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 16px 4px' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: 'var(--accent-yellow)' }}>📊 Отслеживание</div>
-          </div>
-          <ToolRow emoji="🗂" label="Мои практики" sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Привычки для каждой потребности' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} onClick={onOpenPractices} />
-          <ToolRow emoji="🗓" label="История планов" sub={planCount == null ? undefined : planCount === 0 ? 'Создаются в трекере потребностей' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')} за 30 дней`} divider onClick={onOpenPlans} />
+        {/* 2-column tool grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <ToolCard emoji="🗂" label="Практики" sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Нет практик' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} accentColor="var(--accent)" onClick={onOpenPractices} />
+          <ToolCard emoji="🗓" label="Планы" sub={planCount == null ? undefined : planCount === 0 ? 'История пуста' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')}`} accentColor="var(--accent-blue)" onClick={onOpenPlans} />
+          <ToolCard emoji="🔍" label="Проверка убеждений" sub="Правда ли это?" accentColor="var(--accent-yellow)" onClick={() => setShowBeliefCheck(true)} />
+          <ToolCard emoji="🏡" label="Безопасное место" sub="Ресурс в тревожный момент" accentColor="var(--accent-green)" onClick={() => setShowSafePlace(true)} />
+          <ToolCard emoji="✉️" label="Письмо себе" sub="Уязвимому Ребёнку" accentColor="var(--accent-pink)" onClick={() => setShowLetterToSelf(true)} />
+          <ToolCard emoji="🆘" label="Мне плохо" sub="5 шагов чтобы разобраться" accentColor="var(--accent-red)" onClick={() => setShowFlashcard(true)} />
+          <ToolCard emoji="🌱" label="Колесо детства" sub={childhoodDone ? 'Паттерны из прошлого' : 'Займёт 2 минуты'} accentColor="var(--accent-green)" onClick={onOpenChildhoodWheel} />
         </div>
 
         <div style={{ paddingBottom: 4 }}>
