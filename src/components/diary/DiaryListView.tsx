@@ -4,6 +4,10 @@ import { EMOTIONS, getModeById, getSchemaById } from '../../schemaTherapyData';
 import { useSafeTop } from '../../utils/safezone';
 import { loadDraft, clearDraft, formatDraftAge } from '../../utils/drafts';
 
+/** color-mix helper: works with CSS variables AND hex strings */
+const cm = (color: string, pct: number) =>
+  `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+
 interface Props {
   type: DiaryType;
   schemaEntries: SchemaDiaryEntry[];
@@ -39,7 +43,7 @@ function DeleteBtn({ color, onClick }: { color: string; onClick: () => void }) {
   const [confirm, setConfirm] = useState(false);
   if (!confirm) {
     return (
-      <button onClick={() => setConfirm(true)} style={{ marginTop: 8, background: `${color}22`, border: 'none', borderRadius: 8, padding: '6px 12px', color, fontSize: 12, cursor: 'pointer' }}>
+      <button onClick={() => setConfirm(true)} style={{ marginTop: 8, background: cm(color, 13), border: 'none', borderRadius: 8, padding: '6px 12px', color, fontSize: 12, cursor: 'pointer' }}>
         Удалить
       </button>
     );
@@ -74,7 +78,7 @@ function SchemaCard({ entry, color, onDelete }: { entry: SchemaDiaryEntry; color
         {!open && (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {emotionMetas.slice(0, 3).map(e => <span key={e.id} style={{ fontSize: 12, color: 'var(--text-sub)' }}>{e.emoji}</span>)}
-            {schemas.slice(0, 2).map(s => s && <span key={s.id} style={{ fontSize: 11, padding: '2px 7px', borderRadius: 8, background: `${color}22`, color }}>{s.name}</span>)}
+            {schemas.slice(0, 2).map(s => s && <span key={s.id} style={{ fontSize: 11, padding: '2px 7px', borderRadius: 8, background: cm(color, 13), color }}>{s.name}</span>)}
           </div>
         )}
       </div>
@@ -178,14 +182,14 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
   return (
     <div style={{
       borderRadius: 16, padding: '14px 16px', marginBottom: 14,
-      background: `${color}0a`,
-      border: `1px dashed ${color}44`,
+      background: cm(color, 5),
+      border: `1px dashed ${cm(color, 30)}`,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{
             fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-            padding: '3px 7px', borderRadius: 6, background: `${color}22`, color,
+            padding: '3px 7px', borderRadius: 6, background: cm(color, 13), color,
           }}>Черновик</span>
           <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>{formatDraftAge(draft.startedAt)}</span>
         </div>

@@ -11,6 +11,11 @@ import { SchemaDetailSheet } from '../components/SchemaDetailSheet';
 import { NeedDetailSheet } from '../components/NeedDetailSheet';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
 
+/** color-mix: works with CSS vars AND hex. Replaces the old hex-alpha hack. */
+function cm(color: string, pct: number) {
+  return `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+}
+/** Keep hex() for dot/icon backgrounds where we need a solid resolved color */
 const VAR_HEX: Record<string, string> = {
   'var(--accent-red)':    '#f87171',
   'var(--accent-orange)': '#fb923c',
@@ -187,12 +192,12 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                     const domain = SCHEMA_DOMAINS.find(d => d.schemas.some(s => s.id === id));
                     const schema = domain?.schemas.find(s => s.id === id);
                     if (!schema || !domain) return null;
-                    const c = hex(domain.color);
+                    const c = domain.color; // CSS variable — use directly
                     return (
                       <button key={id} onClick={() => setDetailSchemaId(id)} style={{
                         padding: '6px 13px', borderRadius: 20,
-                        border: `1.5px solid ${c}55`,
-                        background: `${c}12`,
+                        border: `1.5px solid ${cm(c, 35)}`,
+                        background: cm(c, 9),
                         color: c, fontSize: 13, fontWeight: 600,
                         cursor: 'pointer', fontFamily: 'inherit',
                         WebkitTapHighlightColor: 'transparent',
@@ -231,7 +236,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
               </div>
               <button onClick={() => onOpenSchema({ startTest: true })} style={{
                 padding: '9px 20px', borderRadius: 12, border: 'none',
-                background: '#60a5fa', color: '#fff',
+                background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff',
                 fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               }}>
                 Начать
@@ -246,7 +251,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {SCHEMA_DOMAINS.map(domain => {
                   const isOpen = expandedDomains.has(domain.id);
-                  const c = hex(domain.color);
+                  const c = domain.color; // CSS variable
                   return (
                     <div key={domain.id} style={{
                       background: 'var(--surface)', border: '1px solid var(--border-color)',
@@ -257,7 +262,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                         padding: '14px 16px', cursor: 'pointer',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: c, flexShrink: 0 }} />
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: hex(c), flexShrink: 0 }} />
                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
                             {domain.domain}
                           </span>
@@ -281,8 +286,8 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                             return (
                               <button key={s.id} onClick={() => setDetailSchemaId(s.id)} style={{
                                 padding: '6px 13px', borderRadius: 20,
-                                border: `1.5px solid ${active ? c + '66' : c + '28'}`,
-                                background: active ? `${c}18` : `${c}08`,
+                                border: `1.5px solid ${cm(c, active ? 42 : 18)}`,
+                                background: cm(c, active ? 11 : 5),
                                 color: active ? c : 'var(--text-sub)',
                                 fontSize: 13, fontWeight: active ? 600 : 400,
                                 cursor: 'pointer', fontFamily: 'inherit',
@@ -321,12 +326,12 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
               ) : (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {myModes.map(m => {
-                    const c = hex(m.groupColor);
+                    const c = m.groupColor; // CSS variable
                     return (
                       <button key={m.id} onClick={() => setIntroModeId(m.id)} style={{
                         padding: '6px 13px', borderRadius: 20,
-                        border: `1.5px solid ${c}55`,
-                        background: `${c}12`,
+                        border: `1.5px solid ${cm(c, 35)}`,
+                        background: cm(c, 9),
                         color: c, fontSize: 13, fontWeight: 600,
                         cursor: 'pointer', fontFamily: 'inherit',
                         WebkitTapHighlightColor: 'transparent',
@@ -359,7 +364,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {MODE_GROUPS.map(group => {
                   const isOpen = expandedModeGroups.has(group.id);
-                  const c = hex(group.color);
+                  const c = group.color; // CSS variable
                   return (
                     <div key={group.id} style={{
                       background: 'var(--surface)', border: '1px solid var(--border-color)',
@@ -370,7 +375,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                         padding: '14px 16px', cursor: 'pointer',
                       }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: c, flexShrink: 0 }} />
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: hex(c), flexShrink: 0 }} />
                           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
                             {group.group}
                           </span>
@@ -394,8 +399,8 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                             return (
                               <button key={m.id} onClick={() => setIntroModeId(m.id)} style={{
                                 padding: '6px 12px', borderRadius: 20,
-                                border: `1.5px solid ${active ? c + '66' : c + '28'}`,
-                                background: active ? `${c}18` : `${c}08`,
+                                border: `1.5px solid ${cm(c, active ? 42 : 18)}`,
+                                background: cm(c, active ? 11 : 5),
                                 color: active ? c : 'var(--text-sub)',
                                 fontSize: 13, fontWeight: active ? 600 : 400,
                                 cursor: 'pointer', fontFamily: 'inherit',
@@ -593,9 +598,9 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
               const mode = ALL_MODES.find(m => m.id === id);
               if (!mode) return null;
               const active = ids.includes(id);
-              const c = hex(mode.groupColor);
+              const c = mode.groupColor; // CSS variable
               return (
-                <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${c}12` : 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${active ? `${c}30` : 'rgba(var(--fg-rgb),0.08)'}`, transition: 'all 0.15s' }}>
+                <div key={id} onClick={() => toggle(id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? cm(c, 9) : 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${active ? cm(c, 20) : 'rgba(var(--fg-rgb),0.08)'}`, transition: 'all 0.15s' }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{mode.emoji}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{mode.name}</div>
@@ -612,7 +617,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14 }}>Все режимы</div>
 
         {MODE_GROUPS.map(group => {
-          const c = hex(group.color);
+          const c = group.color; // CSS variable
           return (
             <div key={group.id} style={{ marginBottom: 18 }}>
               <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: c, marginBottom: 8, opacity: 0.8 }}>
@@ -622,7 +627,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
                 {group.items.filter(m => !POPULAR_MODE_IDS.includes(m.id)).map(m => {
                   const active = ids.includes(m.id);
                   return (
-                    <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? `${c}12` : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${active ? `${c}30` : 'rgba(var(--fg-rgb),0.06)'}`, transition: 'all 0.15s' }}>
+                    <div key={m.id} onClick={() => toggle(m.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 12, cursor: 'pointer', background: active ? cm(c, 9) : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${active ? cm(c, 20) : 'rgba(var(--fg-rgb),0.06)'}`, transition: 'all 0.15s' }}>
                       <span style={{ fontSize: 18, flexShrink: 0 }}>{m.emoji}</span>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: 14, color: active ? 'var(--text)' : 'var(--text-sub)', fontWeight: active ? 500 : 400 }}>{m.name}</div>
@@ -637,7 +642,7 @@ function ModePickerSheet({ selected, onSave, onClose }: { selected: string[]; on
           );
         })}
 
-        <button onClick={() => { onSave(ids); onClose(); }} style={{ width: '100%', padding: '14px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, #a78bfa, #60a5fa)', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 8 }}>
+        <button onClick={() => { onSave(ids); onClose(); }} style={{ width: '100%', padding: '14px', borderRadius: 14, border: 'none', background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 8 }}>
           Сохранить{ids.length > 0 ? ` (${ids.length})` : ''}
         </button>
       </div>
