@@ -29,6 +29,8 @@ interface Props {
   onSaved: (needId: string, streak?: StreakData) => void;
   onClose: () => void;
   initialNeedId?: string | null;
+  onOpenNote?: () => void;
+  onOpenGoal?: () => void;
 }
 
 const ONBOARDING_KEY = 'tracker_onboarding_v1';
@@ -68,6 +70,7 @@ function SummaryDonut({ avg }: { avg: number }) {
 export function TrackerOverlay({
   needs, ratings, saved, isOffline,
   onChange, onSaved, onClose, initialNeedId,
+  onOpenNote, onOpenGoal,
 }: Props) {
   const safeTop = useSafeTop();
   const timers  = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -282,13 +285,13 @@ export function TrackerOverlay({
 
         {/* Note + goal */}
         <div style={{ display:'flex', gap:8 }}>
-          <button style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
+          <button onClick={onOpenNote} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
             background:'var(--surface)', border:'1px solid var(--border-color)',
             color:'var(--text-sub)', fontSize:12, cursor:'pointer',
             display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
             ✏️ Заметка
           </button>
-          <button style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
+          <button onClick={onOpenGoal} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
             background:'var(--surface)', border:'1px solid var(--border-color)',
             color:'var(--accent)', fontSize:12, cursor:'pointer',
             display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>

@@ -50,6 +50,7 @@ const YESTERDAY_DATE = (() => {
   return `${prev.getFullYear()}-${String(prev.getMonth() + 1).padStart(2, '0')}-${String(prev.getDate()).padStart(2, '0')}`;
 })();
 
+import { TaskCreateSheet } from './components/TaskCreateSheet';
 import { ABOUT_TEXT, NEEDS_EXPLAINER } from './aboutData';
 
 type TrackerTab = 'today' | 'history';
@@ -320,6 +321,7 @@ export default function App() {
   const [showTracker, setShowTracker] = useState(false);
   const [showTrackerOverlay, setShowTrackerOverlay] = useState(false);
   const [trackerNeedId, setTrackerNeedId] = useState<string | null>(null);
+  const [showTrackerGoal, setShowTrackerGoal] = useState(false);
   const [showDiaries, setShowDiaries] = useState(false);
   const [newDiaryEntry, setNewDiaryEntry] = useState<'schema' | 'mode' | 'gratitude' | null>(null);
   const [diaryActiveSchemaIds, setDiaryActiveSchemaIds] = useState<string[] | undefined>(undefined);
@@ -416,7 +418,7 @@ export default function App() {
       })).catch(e => console.error('joinPair failed', e));
     }
     if (startParam === 'diaries') setShowDiaries(true);
-    if (startParam === 'tracker') setShowTracker(true);
+    if (startParam === 'tracker') { setTrackerNeedId(null); setShowTrackerOverlay(true); }
     if (startParam?.startsWith('therapy_')) {
       const code = startParam.replace('therapy_', '');
       api.joinTherapy(code).catch(() => {});
@@ -634,7 +636,7 @@ export default function App() {
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           onOpenPractices={() => setShowPractices(true)}
           onOpenPlans={() => setShowPlans(true)}
-          onOpenTracker={() => setShowTracker(true)}
+          onOpenTracker={() => { setTrackerNeedId(null); setShowTrackerOverlay(true); }}
           onOpenDiaries={() => setShowDiaries(true)}
           practiceCount={helpPracticeCount}
           planCount={helpPlanCount}
@@ -649,7 +651,7 @@ export default function App() {
       {!therapistMode && section === 'profile' && (
         <ProfileSection
           onOpenSettings={() => setShowSettings(true)}
-          onOpenTracker={() => setShowTracker(true)}
+          onOpenTracker={() => { setTrackerNeedId(null); setShowTrackerOverlay(true); }}
           refreshKey={profileRefreshKey}
           displayName={displayName}
         />
@@ -666,6 +668,8 @@ export default function App() {
           onSaved={handleSaved}
           onClose={() => { setShowTrackerOverlay(false); setTrackerNeedId(null); }}
           initialNeedId={trackerNeedId}
+          onOpenNote={() => setShowTodayNote(true)}
+          onOpenGoal={() => setShowTrackerGoal(true)}
         />
       )}
 
@@ -917,6 +921,14 @@ export default function App() {
         }} />
       )}
 
+      {showTrackerGoal && (
+        <TaskCreateSheet
+          defaultType="tracker_streak"
+          onCreated={() => setShowTrackerGoal(false)}
+          onClose={() => setShowTrackerGoal(false)}
+        />
+      )}
+
       {showPracticesOnboarding && needs.length > 0 && (
         <PracticesOnboarding needs={needs} onDone={() => {
           setShowPracticesOnboarding(false);
@@ -979,8 +991,8 @@ export default function App() {
 
       {showSettings && <SettingsSheet onClose={() => setShowSettings(false)} userRole={userRole} displayName={displayName} onNameChanged={setDisplayName} onOpenTherapistCabinet={() => { setShowSettings(false); setTherapistMode(true); }} therapistMode={therapistMode} onToggleTherapistMode={() => switchTherapistMode(!therapistMode)} />}
       {/* therapistMode renders inline in main flow, not as overlay — see below */}
-      {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setShowTracker(true); }} />}
-      {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setShowTracker(true); }} />}
+      {showPractices && <PracticesScreen onClose={() => setShowPractices(false)} onOpenTracker={() => { setShowPractices(false); setTrackerNeedId(null); setShowTrackerOverlay(true); }} />}
+      {showPlans && <PlansScreen onClose={() => setShowPlans(false)} onOpenTracker={() => { setShowPlans(false); setTrackerNeedId(null); setShowTrackerOverlay(true); }} />}
       {showSchemaInfo && <SchemaInfoSheet onClose={() => { setShowSchemaInfo(false); setSchemaAutoStartTest(false); setSchemaHighlight(undefined); }} ratings={ratings} autoStartTest={schemaAutoStartTest} initialTab={schemaInitialTab} highlightSchema={schemaHighlight} />}
 
       {/* ── Diary entry sheets (from FloatingPill) ── */}
@@ -1008,7 +1020,7 @@ export default function App() {
       {/* ── Floating pill (always above bottom bar) ── */}
       {!therapistMode && !showTracker && !showDiaries && !showSchemaInfo && !showSettings && !showPractices && !showPlans && !showChildhoodWheel && !newDiaryEntry && (
         <FloatingPill
-          onOpenTracker={() => setShowTracker(true)}
+          onOpenTracker={() => { setTrackerNeedId(null); setShowTrackerOverlay(true); }}
           onOpenSchemaDiary={() => setNewDiaryEntry('schema')}
           onOpenModeDiary={() => setNewDiaryEntry('mode')}
           onOpenGratitude={() => setNewDiaryEntry('gratitude')}
