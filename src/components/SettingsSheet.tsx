@@ -307,7 +307,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 {(settings.notifyEnabled || settings.notifyReminderEnabled) && (
                   <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8, padding: '0 4px' }}>
                     Приходят через{' '}
-                    <a href="https://t.me/Emotional_Needs_bot" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@Emotional_Needs_bot</a>
+                    <a href="https://t.me/SchemaLabBot" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>@SchemaLabBot</a>
                   </div>
                 )}
               </div>
@@ -565,7 +565,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 <SettingsLabel>ПОДЕЛИТЬСЯ</SettingsLabel>
                 <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
                   <Row label="Пригласить друга" sub="Поделиться ссылкой на бота" emoji="🔗" onClick={async () => {
-                    const text = 'Трекер потребностей — отслеживай своё состояние каждый день. t.me/Emotional_Needs_bot';
+                    const text = 'Трекер потребностей — отслеживай своё состояние каждый день. t.me/SchemaLabBot';
                     try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
                   }} />
                   <Row label="Для терапевта" sub="Сводка за 30 дней" emoji="📤" divider onClick={async () => {

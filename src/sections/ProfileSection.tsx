@@ -4,6 +4,7 @@ import { useSafeTop } from '../utils/safezone';
 import { BottomSheet } from '../components/BottomSheet';
 import { TherapyNote } from '../components/TherapyNote';
 import { MyNotesSheet } from '../components/MyNotesSheet';
+import { ALL_SCHEMAS, ALL_MODES } from '../schemaTherapyData';
 
 export const DEFAULT_SECTION_KEY = 'default_section';
 
@@ -54,10 +55,12 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [activeDates, setActiveDates]   = useState<Set<string>>(new Set());
 
   const [notesCount, setNotesCount] = useState<{ schema: number; mode: number } | null>(null);
+  const [schemaNoteIds, setSchemaNotesIds] = useState<string[]>([]);
+  const [modeNoteIds, setModeNoteIds] = useState<string[]>([]);
   const [notesOpen, setNotesOpen] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
-  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [insightsOpen] = useState(false); // kept for future use
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
   const [homeBannerDismissed, setHomeBannerDismissed] = useState(
     () => sessionStorage.getItem('home_banner_dismissed') === '1'
@@ -81,7 +84,11 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
       api.getAchievements().then(setAchievements).catch(() => {}),
       api.getInsights().then(setInsights).catch(() => {}),
       Promise.all([api.getSchemaNotes(), api.getModeNotes()])
-        .then(([sn, mn]) => setNotesCount({ schema: sn.length, mode: mn.length }))
+        .then(([sn, mn]) => {
+          setNotesCount({ schema: sn.length, mode: mn.length });
+          setSchemaNotesIds(sn.map(n => n.schemaId));
+          setModeNoteIds(mn.map(n => n.modeId));
+        })
         .catch(() => {}),
       api.history(112).then(h => setActiveDates(new Set(h.map(d => d.date)))).catch(() => {}),
     ]).finally(() => setReady(true));
@@ -384,70 +391,101 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
         {/* ── Паттерны (инсайты) ── */}
         {ready && hasInsights && (
-          <div className="card" style={{ borderRadius: 20, overflow: 'hidden' }}>
-            <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
-              <div>
-                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 4 }}>Паттерны</div>
-                <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)' }}>{insightSummary}</span>
-              </div>
-              <span style={{ fontSize: 16, color: 'var(--text-faint)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
-            </div>
-            {insightsOpen && (
-              <div style={{ padding: '0 16px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.05)' }}>
-                {(insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7 && (
-                  <div style={{ display: 'flex', gap: 12, marginTop: 12, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-                    {insights?.bestDayOfWeek && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-                          Лучше всего — <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{insights.bestDayOfWeek}</span>
-                        </span>
-                        <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 8, fontWeight: 600, cursor: 'pointer' }}>?</span>
-                      </div>
-                    )}
-                    {insights?.worstDayOfWeek && (
-                      <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>
-                        Тяжелее — <span style={{ color: 'var(--accent-red)', fontWeight: 600 }}>{insights.worstDayOfWeek}</span>
-                      </span>
-                    )}
+          <div className="card" style={{ borderRadius: 20, padding: '16px 16px 18px' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14 }}>Паттерны</div>
+
+            {/* Best / worst day pills */}
+            {((insights?.bestDayOfWeek || insights?.worstDayOfWeek) && (insights?.totalDays ?? 0) >= 7) && (
+              <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                {insights?.bestDayOfWeek && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 10, background: 'color-mix(in srgb, var(--accent-yellow) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-yellow) 25%, transparent)' }}>
+                    <span style={{ fontSize: 13 }}>☀️</span>
+                    <div>
+                      <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 1 }}>лучший день</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-yellow)' }}>{insights.bestDayOfWeek}</div>
+                    </div>
+                    <span onClick={e => { e.stopPropagation(); setShowBestDayInfo(true); }} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 8, fontWeight: 600, cursor: 'pointer', marginLeft: 2 }}>?</span>
                   </div>
                 )}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 4 }}>
-                  {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
-                    const trendColor = s.trend === '↑' ? 'var(--accent-green)' : s.trend === '↓' ? 'var(--accent-red)' : 'var(--text-faint)';
-                    const barW = Math.round(((s.avg ?? 0) / 10) * 100);
-                    return (
-                      <div key={s.needId}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                          <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{NEED_NAMES[s.needId]}</span>
-                          <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
-                        </div>
-                        <div style={{ height: 3, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.07)' }}>
-                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'color-mix(in srgb, var(--accent) 50%, transparent)' }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                {insights?.worstDayOfWeek && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 10, background: 'color-mix(in srgb, var(--accent-red) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 20%, transparent)' }}>
+                    <span style={{ fontSize: 13 }}>🌧</span>
+                    <div>
+                      <div style={{ fontSize: 10, color: 'var(--text-faint)', marginBottom: 1 }}>тяжелее</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent-red)' }}>{insights.worstDayOfWeek}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
+
+            {/* Need bars */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {insights?.weeklyStats.filter(s => s.avg !== null).map(s => {
+                const isUp = s.trend === '↑';
+                const isDown = s.trend === '↓';
+                const barColor = isUp ? 'var(--accent-green)' : isDown ? 'var(--accent-red)' : 'var(--accent)';
+                const barW = Math.round(((s.avg ?? 0) / 10) * 100);
+                return (
+                  <div key={s.needId}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                      <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{NEED_NAMES[s.needId]}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: barColor }}>{(s.avg ?? 0).toFixed(1)} <span style={{ fontSize: 11 }}>{s.trend}</span></span>
+                    </div>
+                    <div style={{ height: 6, borderRadius: 4, background: 'rgba(var(--fg-rgb),0.07)', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', borderRadius: 4, width: `${barW}%`, background: barColor, opacity: 0.7, transition: 'width 0.4s ease' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
         {/* ── Мои записи ── */}
         {ready && notesCount !== null && (
-          <div onClick={() => setNotesOpen(true)} className="card" style={{ borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 4 }}>Мои записи</div>
-              {notesCount.schema + notesCount.mode === 0 ? (
-                <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>Карточки схем и режимов</div>
-              ) : (
-                <div style={{ display: 'flex', gap: 12 }}>
-                  {notesCount.schema > 0 && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🧩 Схемы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.schema}</span></span>}
-                  {notesCount.mode > 0   && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🔄 Режимы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.mode}</span></span>}
-                </div>
-              )}
+          <div onClick={() => setNotesOpen(true)} className="card" style={{ borderRadius: 20, padding: '16px 16px', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Мои записи</div>
+              <span style={{ fontSize: 15, color: 'var(--text-faint)' }}>›</span>
             </div>
-            <span style={{ fontSize: 15, color: 'var(--text-faint)' }}>›</span>
+
+            {notesCount.schema + notesCount.mode === 0 ? (
+              <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>Личные карточки схем и режимов</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {schemaNoteIds.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 6 }}>🧩 Схемы</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {schemaNoteIds.map(id => {
+                        const schema = ALL_SCHEMAS.find(s => s.id === id);
+                        return (
+                          <span key={id} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 8, background: 'color-mix(in srgb, var(--accent) 10%, transparent)', color: 'var(--accent)', fontWeight: 500 }}>
+                            {schema?.name ?? id}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                {modeNoteIds.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 6 }}>🔄 Режимы</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {modeNoteIds.map(id => {
+                        const mode = ALL_MODES.find(m => m.id === id);
+                        return (
+                          <span key={id} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 8, background: 'color-mix(in srgb, var(--accent-blue) 10%, transparent)', color: 'var(--accent-blue)', fontWeight: 500 }}>
+                            {mode?.name ?? id}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -517,7 +555,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{m.title}</div>
               <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 28 }}>{m.desc}</div>
               <button onClick={async () => {
-                const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/Emotional_Needs_bot`;
+                const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/SchemaLabBot`;
                 try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch {}
               }} className="btn-primary">
                 Поделиться

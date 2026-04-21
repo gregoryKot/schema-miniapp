@@ -113,7 +113,7 @@ export function Celebration({ streak, onDone }: Props) {
         <button
           onClick={async (e) => {
             e.stopPropagation();
-            const text = `🔥 ${streak} ${streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней'} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
+            const text = `🔥 ${streak} ${streak === 1 ? 'день' : streak < 5 ? 'дня' : 'дней'} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/SchemaLabBot`;
             try {
               if (navigator.share) { await navigator.share({ text }); }
               else { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); }

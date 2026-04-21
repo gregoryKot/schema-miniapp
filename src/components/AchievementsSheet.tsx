@@ -30,7 +30,7 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
 
   async function shareOne() {
     if (!meta || !selected) return;
-    const text = `${meta.emoji} Получил достижение «${meta.title}» в дневнике потребностей!\n\nt.me/Emotional_Needs_bot`;
+    const text = `${meta.emoji} Получил достижение «${meta.title}» в дневнике потребностей!\n\nt.me/SchemaLabBot`;
     try {
       try { if (navigator.share) { await navigator.share({ text }); return; } } catch {}
       try { await navigator.clipboard.writeText(text); } catch {}

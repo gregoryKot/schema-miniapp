@@ -81,7 +81,7 @@ export function PairSheet({ onClose }: Props) {
   }
 
   const pendingUrl = data?.pendingCode
-    ? `https://t.me/Emotional_Needs_bot/diary?startapp=pair_${data.pendingCode}`
+    ? `https://t.me/SchemaLabBot/diary?startapp=pair_${data.pendingCode}`
     : '';
 
   return (
