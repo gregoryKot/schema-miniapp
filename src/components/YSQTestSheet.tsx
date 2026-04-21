@@ -512,17 +512,27 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
       <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
         {/* Header */}
         <div style={{ flexShrink: 0, padding: '16px 20px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            {/* ← Back to previous question */}
             <button
               onClick={() => handleBack()}
+              disabled={page === 0}
+              style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: page === 0 ? 'transparent' : 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 15, cursor: page === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0 : 1 }}
+            >←</button>
+            <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>{page + 1} / {TOTAL_PAGES}</span>
+            {/* ✕ Exit test — progress is saved */}
+            <button
+              onClick={() => setPhase('intro')}
               style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >✕</button>
-            <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>{page + 1} / {TOTAL_PAGES}</span>
-            <div style={{ width: 32 }} />
           </div>
           {/* Progress bar */}
-          <div style={{ height: 2, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2 }}>
+          <div style={{ height: 2, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2, marginBottom: 6 }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s ease' }} />
+          </div>
+          {/* Save reminder */}
+          <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center' }}>
+            Прогресс сохраняется — можно выйти и вернуться позже
           </div>
         </div>
 
