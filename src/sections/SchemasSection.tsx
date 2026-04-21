@@ -129,13 +129,20 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
     <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop }}>
 
       {/* ── Header ── */}
-      <div style={{ padding: '24px 20px 0' }}>
-        <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
-          Паттерны
+      <div style={{ padding: '24px 20px 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{ fontSize: 28, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.15 }}>
+            Паттерны
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 3 }}>
+            Схемы, режимы, потребности
+          </div>
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 3 }}>
-          Схемы, режимы, потребности
-        </div>
+        <button
+          onClick={() => onOpenSchema()}
+          style={{ width: 38, height: 38, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 4 }}
+          title="Библиотека схема-терапии"
+        >📖</button>
       </div>
 
       {/* ── Tab switcher ── */}
