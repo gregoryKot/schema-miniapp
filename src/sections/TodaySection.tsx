@@ -234,20 +234,24 @@ export function TodaySection({
 
         {/* ── Therapist cabinet banner ── */}
         {userRole === 'THERAPIST' && onOpenTherapistCabinet && (
-          <div onClick={onOpenTherapistCabinet} style={{
-            background: 'rgba(167,139,250,0.07)', border: '1px solid rgba(167,139,250,0.25)',
-            borderRadius: 18, padding: '14px 18px', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          <div onClick={onOpenTherapistCabinet} className="card" style={{
+            borderRadius: 18, padding: '12px 16px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 14,
           }}>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--accent)', marginBottom: 2 }}>
+            <div style={{
+              width: 42, height: 42, borderRadius: 13, flexShrink: 0,
+              background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+            }}>🧑‍⚕️</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
                 Кабинет терапевта
               </div>
               <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>
                 Клиенты · Задания · Концептуализация
               </div>
             </div>
-            <span style={{ fontSize: 20, color: 'var(--accent)', fontWeight: 300 }}>›</span>
+            <span style={{ fontSize: 18, color: 'var(--text-faint)' }}>›</span>
           </div>
         )}
 

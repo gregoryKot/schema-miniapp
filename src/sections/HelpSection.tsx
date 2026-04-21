@@ -34,15 +34,11 @@ function ToolCard({ emoji, label, sub, onClick, accentColor }: { emoji: string; 
     <div
       onClick={onClick}
       className="card"
-      style={{ cursor: 'pointer', padding: '16px 14px', borderRadius: 18, display: 'flex', flexDirection: 'column', gap: 10, WebkitTapHighlightColor: 'transparent' }}
+      style={{ cursor: 'pointer', padding: '18px 16px', borderRadius: 18, display: 'flex', flexDirection: 'column', gap: 8, WebkitTapHighlightColor: 'transparent' }}
     >
-      <span style={{
-        fontSize: 26, width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-        background: accentColor ? `color-mix(in srgb, ${accentColor} 14%, transparent)` : 'rgba(var(--fg-rgb),0.06)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>{emoji}</span>
+      <span style={{ fontSize: 30, lineHeight: 1 }}>{emoji}</span>
       <div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 700, color: accentColor || 'var(--text)', lineHeight: 1.3 }}>{label}</div>
         {sub && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 3, lineHeight: 1.4 }}>{sub}</div>}
       </div>
     </div>
@@ -205,55 +201,69 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-        {/* Tasks card — always shown once relation is loaded */}
-        {relation !== undefined && (
-          <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
-            <div style={{ padding: '14px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 16 }}>🎯</span>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)' }}>Задания</div>
-            </div>
-
-            {tasks.length === 0 && (
-              <div style={{ padding: '8px 16px 14px', fontSize: 13, color: 'var(--text-sub)' }}>
-                Нет активных заданий
+        {/* Featured therapist task banner */}
+        {therapistTasks.length > 0 && (() => {
+          const featured = therapistTasks[0];
+          const progress = featured.progress ?? 0;
+          const target = featured.targetDays ?? 0;
+          const segments = target > 0 ? target : 3;
+          const filled = target > 0 ? Math.min(progress, target) : (featured.doneToday ? 1 : 0);
+          return (
+            <div
+              onClick={() => openTask(featured)}
+              style={{
+                borderRadius: 18, padding: '16px 18px', cursor: 'pointer',
+                background: 'color-mix(in srgb, var(--accent) 7%, var(--surface))',
+                border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+              }}
+            >
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--accent)', marginBottom: 8 }}>
+                ЗАДАНИЕ ОТ ТЕРАПЕВТА
               </div>
-            )}
+              <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 14, lineHeight: 1.4 }}>
+                {getTaskDisplayText(featured.type, featured.text)}
+              </div>
+              {target > 0 && (
+                <>
+                  <div style={{ display: 'flex', gap: 4, marginBottom: 6 }}>
+                    {Array.from({ length: Math.min(segments, 7) }).map((_, i) => (
+                      <div key={i} style={{ flex: 1, height: 5, borderRadius: 3, background: i < filled ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 18%, transparent)', transition: 'background 0.2s' }} />
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>{filled} из {target} выполнено</div>
+                </>
+              )}
+              {therapistTasks.length > 1 && (
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 6 }}>+ ещё {therapistTasks.length - 1} задани{therapistTasks.length === 2 ? 'е' : 'я'}</div>
+              )}
+            </div>
+          );
+        })()}
 
-            {myTasks.slice(0, 3).map(task => (
-              <TaskRow
-                key={task.id} task={task}
-                onOpen={() => openTask(task)}
-              />
-            ))}
-
-            {therapistTasks.length > 0 && (
+        {/* My tasks + create goal */}
+        {relation !== undefined && (myTasks.length > 0 || therapistTasks.length === 0) && (
+          <div className="card" style={{ borderRadius: 18, overflow: 'hidden' }}>
+            {myTasks.length > 0 && (
               <>
-                <div style={{ padding: '10px 16px 4px', borderTop: '1px solid rgba(var(--fg-rgb),0.04)' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent-yellow)' }}>👨‍⚕️ ОТ ТЕРАПЕВТА</div>
+                <div style={{ padding: '12px 16px 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 14 }}>🎯</span>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-faint)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Мои цели</div>
                 </div>
-                {therapistTasks.slice(0, 2).map(task => (
-                  <TaskRow
-                    key={task.id} task={task}
-                    onOpen={() => openTask(task)}
-                    onComplete={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
-                  />
+                {myTasks.slice(0, 3).map(task => (
+                  <TaskRow key={task.id} task={task} onOpen={() => openTask(task)} />
                 ))}
               </>
             )}
-
+            {tasks.length === 0 && (
+              <div style={{ padding: '12px 16px 4px', fontSize: 13, color: 'var(--text-sub)' }}>Нет активных заданий</div>
+            )}
             <div style={{ padding: '4px 8px 10px', display: 'flex', gap: 8 }}>
               {tasks.length > 0 && (
-                <div
-                  onClick={() => setShowAllTasks(true)}
-                  style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'rgba(167,139,250,0.08)' }}
-                >
+                <div onClick={() => setShowAllTasks(true)} style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}>
                   Все задания
                 </div>
               )}
-              <div
-                onClick={() => setShowTaskCreate(true)}
-                style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'rgba(167,139,250,0.08)' }}
-              >
+              <div onClick={() => setShowTaskCreate(true)} style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}>
                 + Поставить цель
               </div>
             </div>
@@ -339,7 +349,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           )}
           <button
             onClick={() => { setShowAllTasks(false); setShowTaskCreate(true); }}
-            style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
+            style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
           >
             + Поставить цель
           </button>
