@@ -396,6 +396,10 @@ export default function App() {
       if (p.role === 'THERAPIST' && localStorage.getItem('therapist_mode') === null) {
         switchTherapistMode(true);
       }
+      // Safety: CLIENT can never be in therapist mode
+      if (p.role !== 'THERAPIST') {
+        switchTherapistMode(false);
+      }
       if (p.name) setDisplayName(p.name);
       const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
       if (p.role === 'THERAPIST') {

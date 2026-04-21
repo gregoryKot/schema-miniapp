@@ -481,19 +481,33 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>Клиенты · Задания · Концептуализация</div>
               </div>
-              <button
-                onClick={() => openAddMode(addMode ? null : 'invite')}
-                style={{
-                  width: 36, height: 36, borderRadius: 18, border: 'none',
-                  background: addMode ? 'rgba(var(--fg-rgb),0.08)' : 'color-mix(in srgb, var(--accent) 20%, transparent)',
-                  color: addMode ? 'rgba(var(--fg-rgb),0.5)' : 'var(--accent)',
-                  fontSize: addMode ? 18 : 22, fontWeight: 300, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s ease', marginTop: 4,
-                }}
-              >
-                {addMode ? '✕' : '+'}
-              </button>
+              <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                {/* Exit therapist mode — always visible escape hatch */}
+                <button
+                  onClick={onClose}
+                  title="Вернуться в приложение"
+                  style={{
+                    width: 36, height: 36, borderRadius: 18, border: 'none',
+                    background: 'rgba(var(--fg-rgb),0.07)',
+                    color: 'var(--text-faint)',
+                    fontSize: 16, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}
+                >✕</button>
+                <button
+                  onClick={() => openAddMode(addMode ? null : 'invite')}
+                  style={{
+                    width: 36, height: 36, borderRadius: 18, border: 'none',
+                    background: addMode ? 'rgba(var(--fg-rgb),0.08)' : 'color-mix(in srgb, var(--accent) 20%, transparent)',
+                    color: addMode ? 'rgba(var(--fg-rgb),0.5)' : 'var(--accent)',
+                    fontSize: addMode ? 18 : 22, fontWeight: 300, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {addMode ? '✕' : '+'}
+                </button>
+              </div>
             </div>
 
             {/* Stat cards */}
