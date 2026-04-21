@@ -59,6 +59,9 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen, setInsightsOpen] = useState(false);
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
+  const [homeBannerDismissed, setHomeBannerDismissed] = useState(
+    () => sessionStorage.getItem('home_banner_dismissed') === '1'
+  );
   const [homeScreenStatus, setHomeScreenStatus] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,23 +103,34 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
     return 'Заполняй дневник каждый день';
   })();
 
+  // Show home screen suggestion only if streak ≥ 3, not added, not dismissed
+  const showHomeSuggestion = ready
+    && currentStreak >= 3
+    && homeScreenStatus !== 'added'
+    && !homeBannerDismissed
+    && !!(window as any).Telegram?.WebApp?.addToHomeScreen;
+
+  function dismissHomeBanner() {
+    sessionStorage.setItem('home_banner_dismissed', '1');
+    setHomeBannerDismissed(true);
+  }
+
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
 
       {/* ── Хедер ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* Avatar */}
           <div style={{
-            width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
+            width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
             background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 22, fontWeight: 700, color: '#fff',
+            fontSize: 20, fontWeight: 700, color: '#fff',
           }}>
             {(firstName || 'Я')[0].toUpperCase()}
           </div>
           <div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px' }}>
               {firstName || 'Я'}
             </div>
             {totalDays > 0 && (
@@ -133,142 +147,121 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
 
       <div style={{ padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* ── Скелетон всего раздела ── */}
+        {/* ── Скелетон ── */}
         {!ready && (
           <>
-            {[120, 72, 80, 90].map((h, i) => (
-              <div key={i} style={{ height: h, borderRadius: 16, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
+            {[110, 80, 72].map((h, i) => (
+              <div key={i} style={{ height: h, borderRadius: 20, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.03) 25%,rgba(var(--fg-rgb),0.07) 50%,rgba(var(--fg-rgb),0.03) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
             ))}
           </>
         )}
 
-        {/* ── 3 stat cards ── */}
+        {/* ── Стрик ── */}
         {ready && streak !== null && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-            {[
-              { value: currentStreak, label: 'Стрик', sub: 'ДНЕЙ' },
-              { value: totalDays,     label: 'Всего', sub: 'ДНЕЙ' },
-              { value: longestStreak, label: 'Рекорд', sub: 'ДНЕЙ' },
-            ].map(({ value, label, sub }) => (
-              <div key={label} className="card" style={{ borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.5px' }}>{value}</div>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>{sub}</div>
-                <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>{label}</div>
+          <div className="card" style={{ borderRadius: 20, padding: '20px 20px 18px' }}>
+            {/* Top row: big number + secondary stats */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                <div style={{
+                  fontSize: 56, fontWeight: 900, lineHeight: 1, letterSpacing: '-3px',
+                  color: currentStreak > 0
+                    ? (todayDone ? 'var(--accent)' : 'var(--text)')
+                    : 'rgba(var(--fg-rgb),0.2)',
+                }}>
+                  {currentStreak > 0 ? currentStreak : '—'}
+                </div>
+                <div style={{ paddingBottom: 4 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: currentStreak > 0 ? 'var(--text-sub)' : 'rgba(var(--fg-rgb),0.35)', lineHeight: 1.2 }}>
+                    {currentStreak > 0
+                      ? (currentStreak === 1 ? 'день\nподряд' : currentStreak < 5 ? 'дня\nподряд' : 'дней\nподряд')
+                      : totalDays === 0 ? 'пока\nне начато' : 'серия\nпрервалась'}
+                  </div>
+                </div>
               </div>
-            ))}
+
+              {/* Secondary stats */}
+              <div style={{ display: 'flex', gap: 16, paddingBottom: 4 }}>
+                {longestStreak > 0 && (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>{longestStreak}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 3 }}>рекорд</div>
+                  </div>
+                )}
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>{totalDays}</div>
+                  <div style={{ fontSize: 10, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginTop: 3 }}>всего</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Week bars */}
+            {weekDots.length > 0 && (
+              <div style={{ display: 'flex', gap: 5 }}>
+                {weekDots.map((done, i) => {
+                  const isToday = i === TODAY_DOW_IDX;
+                  return (
+                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                      <div style={{
+                        width: '100%', height: 5, borderRadius: 3,
+                        background: done
+                          ? (isToday ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 60%, transparent)')
+                          : 'rgba(var(--fg-rgb),0.08)',
+                        boxShadow: done && isToday ? '0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent)' : 'none',
+                      }} />
+                      <div style={{ fontSize: 9, color: isToday ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontWeight: isToday ? 700 : 400 }}>
+                        {DOW[i]}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* CTA to fill today (streak broken) */}
+            {currentStreak === 0 && totalDays > 0 && onOpenTracker && (
+              <button onClick={onOpenTracker} style={{ marginTop: 14, width: '100%', padding: '10px 0', border: 'none', borderRadius: 12, background: 'rgba(var(--fg-rgb),0.06)', color: 'var(--text-sub)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+                Заполнить сегодня →
+              </button>
+            )}
           </div>
         )}
 
-        {/* ── Стрик ── */}
-        {ready && <div className="card" style={{ borderRadius: 16, padding: '20px' }}>
-          {streak === null ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ width: '40%', height: 36, borderRadius: 8, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.05) 25%,rgba(var(--fg-rgb),0.1) 50%,rgba(var(--fg-rgb),0.05) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                  <div style={{ width: '55%', height: 12, borderRadius: 4, background: 'linear-gradient(90deg,rgba(var(--fg-rgb),0.04) 25%,rgba(var(--fg-rgb),0.08) 50%,rgba(var(--fg-rgb),0.04) 75%)', backgroundSize: '200% auto', animation: 'shimmer 1.5s linear infinite' }} />
-                </div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                {[0,1,2,3,4,5,6].map(i => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(var(--fg-rgb),0.05)' }} />
-                    <div style={{ width: 14, height: 8, borderRadius: 3, background: 'rgba(var(--fg-rgb),0.04)' }} />
-                  </div>
-                ))}
-              </div>
+        {/* ── Предложение добавить на экран (dismissible) ── */}
+        {showHomeSuggestion && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '12px 14px',
+            background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+            borderRadius: 16,
+          }}>
+            <span style={{ fontSize: 22, flexShrink: 0 }}>📲</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Добавить на главный экран?</div>
+              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 1 }}>Чтобы дневник всегда был под рукой</div>
             </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16 }}>
-                <div style={{ fontSize: 44, lineHeight: 1 }}>
-                  {todayDone ? '🔥' : currentStreak > 0 ? '🫥' : '🌱'}
-                </div>
-                <div style={{ flex: 1 }}>
-                  {currentStreak > 0 ? (
-                    <>
-                      <div style={{ fontSize: 40, fontWeight: 800, color: 'var(--text)', lineHeight: 1 }}>{currentStreak}</div>
-                      <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>
-                        {currentStreak === 1 ? 'день подряд' : currentStreak < 5 ? 'дня подряд' : 'дней подряд'}
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div style={{ fontSize: 20, fontWeight: 700, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.2 }}>
-                        {totalDays === 0 ? 'Начни сегодня' : 'Серия прервалась'}
-                      </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 4 }}>
-                        {totalDays === 0
-                          ? 'Первая запись — самая важная'
-                          : 'Заполни сегодня — серия начнётся снова'}
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end', flexShrink: 0 }}>
-                  {longestStreak > 0 && <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>Рекорд: <span style={{ color: 'var(--accent-yellow)', fontWeight: 600 }}>{longestStreak}</span></div>}
-                  <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>Всего: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{totalDays}</span></div>
-                </div>
-              </div>
-
-              {weekDots.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: currentStreak > 0 ? 12 : 0 }}>
-                  {weekDots.map((done, i) => {
-                    const isToday = i === TODAY_DOW_IDX;
-                    return (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                        <div style={{
-                          width: 28, height: 28, borderRadius: '50%',
-                          background: done ? (i === 6 ? 'var(--accent-yellow)' : 'var(--accent)') : 'rgba(var(--fg-rgb),0.07)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: done ? 13 : 0,
-                          color: 'var(--on-accent)',
-                          outline: isToday ? '2px solid var(--accent)' : 'none',
-                          outlineOffset: 2,
-                        }}>
-                          {done && '✓'}
-                        </div>
-                        <div style={{ fontSize: 10, color: isToday ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontWeight: isToday ? 600 : 400 }}>{DOW[i]}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {currentStreak === 0 && totalDays > 0 && onOpenTracker && (
-                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                  Заполнить сегодня →
-                </button>
-              )}
-              {currentStreak >= 3 && (
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button onClick={async () => {
-                    const n = currentStreak;
-                    const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
-                    const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
-                    try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
-                  }} style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-                    Поделиться серией
-                  </button>
-                  {homeScreenStatus !== 'added' && (window as any).Telegram?.WebApp?.addToHomeScreen && (
-                    <button onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()} style={{ padding: '9px 14px', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                      На экран 📲
-                    </button>
-                  )}
-                </div>
-              )}
-            </>
-          )}
-        </div>}
+            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+              <button
+                onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()}
+                style={{ padding: '7px 12px', border: 'none', borderRadius: 10, background: 'var(--accent)', color: 'var(--on-accent)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Да
+              </button>
+              <button
+                onClick={dismissHomeBanner}
+                style={{ padding: '7px 10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-faint)', fontSize: 12, cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ── Activity heatmap ── */}
         {ready && activeDates.size > 0 && (() => {
-          // Build 16 weeks of cells ending today
           const WEEKS = 16;
           const today = new Date();
-          const todayDow = (today.getDay() + 6) % 7; // 0=пн
-          // Start from Monday of (WEEKS) weeks ago
+          const todayDow = (today.getDay() + 6) % 7;
           const startDate = new Date(today);
           startDate.setDate(today.getDate() - todayDow - (WEEKS - 1) * 7);
 
@@ -287,19 +280,17 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           const MONTH_RU = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
           return (
-            <div className="card" style={{ borderRadius: 16, padding: '14px 16px' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+            <div className="card" style={{ borderRadius: 20, padding: '16px 16px 14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 12 }}>
                 Активность
               </div>
-              <div style={{ overflowX: 'auto', paddingBottom: 4 }}>
+              <div style={{ overflowX: 'auto' }}>
                 <div style={{ display: 'flex', gap: 3, minWidth: 'max-content' }}>
-                  {/* Day labels */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingTop: 16 }}>
                     {['пн','','ср','','пт','','вс'].map((d, i) => (
                       <div key={i} style={{ height: 10, fontSize: 8, color: 'var(--text-faint)', lineHeight: '10px', width: 14, textAlign: 'right', paddingRight: 3 }}>{d}</div>
                     ))}
                   </div>
-                  {/* Week columns */}
                   {weeks.map((week, wi) => {
                     const firstOfMonth = week.find(c => c.date.getDate() <= 7 && c.date.getDay() === 1);
                     const monthLabel = firstOfMonth ? MONTH_RU[firstOfMonth.date.getMonth()] : '';
@@ -312,12 +303,8 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                           return (
                             <div key={dateStr} style={{
                               width: 10, height: 10, borderRadius: 3,
-                              background: isFuture
-                                ? 'transparent'
-                                : isActive
-                                  ? 'var(--accent)'
-                                  : 'rgba(var(--fg-rgb),0.07)',
-                              opacity: isActive ? 1 : isFuture ? 0 : 0.9,
+                              background: isFuture ? 'transparent' : isActive ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.07)',
+                              opacity: isFuture ? 0 : 1,
                             }} />
                           );
                         })}
@@ -326,24 +313,62 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   })}
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6, marginTop: 8 }}>
-                <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>меньше</span>
-                {[0.07, 0.3, 0.6, 1].map((o, i) => (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5, marginTop: 8 }}>
+                <span style={{ fontSize: 9, color: 'var(--text-faint)' }}>меньше</span>
+                {[0, 0.35, 0.65, 1].map((o, i) => (
                   <div key={i} style={{ width: 10, height: 10, borderRadius: 3, background: i === 0 ? 'rgba(var(--fg-rgb),0.07)' : `color-mix(in srgb, var(--accent) ${Math.round(o * 100)}%, transparent)` }} />
                 ))}
-                <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>больше</span>
+                <span style={{ fontSize: 9, color: 'var(--text-faint)' }}>больше</span>
               </div>
             </div>
           );
         })()}
 
+        {/* ── Достижения ── */}
+        {ready && achievements && (
+          <div onClick={() => setShowAchievements(true)} className="card" style={{ borderRadius: 20, padding: '16px 16px', cursor: 'pointer' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: earnedList.length > 0 ? 12 : 0 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+                Достижения
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-sub)' }}>{earnedList.length}/{achievements.length}</span>
+                <span style={{ fontSize: 15, color: 'var(--text-faint)' }}>›</span>
+              </div>
+            </div>
+
+            {earnedList.length === 0 ? (
+              <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>Первое — за первую запись в дневник</div>
+            ) : (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {achievements.map(a => {
+                  const m = ACHIEVEMENT_META[a.id];
+                  if (!m) return null;
+                  return (
+                    <div key={a.id} style={{
+                      width: 40, height: 40, borderRadius: 12,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 20,
+                      background: a.earned ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'rgba(var(--fg-rgb),0.04)',
+                      border: `1px solid ${a.earned ? 'color-mix(in srgb, var(--accent) 22%, transparent)' : 'rgba(var(--fg-rgb),0.05)'}`,
+                      filter: a.earned ? 'none' : 'grayscale(1) opacity(0.2)',
+                    }}>
+                      {m.emoji}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── Паттерны (инсайты) ── */}
         {ready && hasInsights && (
-          <div className="card" style={{ borderRadius: 16, overflow: 'hidden' }}>
+          <div className="card" style={{ borderRadius: 20, overflow: 'hidden' }}>
             <div onClick={() => setInsightsOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}>
               <div>
-                <SectionLabel style={{ marginBottom: 2 }}>ПАТТЕРНЫ</SectionLabel>
-                <span style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)' }}>{insightSummary}</span>
+                <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 4 }}>Паттерны</div>
+                <span style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)' }}>{insightSummary}</span>
               </div>
               <span style={{ fontSize: 16, color: 'var(--text-faint)', display: 'inline-block', transform: insightsOpen ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>›</span>
             </div>
@@ -388,48 +413,21 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           </div>
         )}
 
-        {/* ── Достижения ── */}
-        {ready && achievements && (
-          <div onClick={() => setShowAchievements(true)} className="card" style={{ borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <SectionLabel>ДОСТИЖЕНИЯ</SectionLabel>
-              {achievements.length > 0 ? (
-                <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 2 }}>
-                  {achievements.slice(0, 8).map(a => (
-                    <span key={a.id} style={{ fontSize: 22, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.25)' }}>
-                      {(ACHIEVEMENT_META[a.id] ?? {}).emoji}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>
-                  Первое — за первую запись в дневник
-                </div>
-              )}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0, marginLeft: 12 }}>
-              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earnedList.length}/{achievements.length}</span>
-              <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>
-            </div>
-          </div>
-        )}
-
-
         {/* ── Мои записи ── */}
         {ready && notesCount !== null && (
-          <div onClick={() => setNotesOpen(true)} className="card" style={{ borderRadius: 16, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div onClick={() => setNotesOpen(true)} className="card" style={{ borderRadius: 20, padding: '14px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
-              <SectionLabel>МОИ ЗАПИСИ</SectionLabel>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 4 }}>Мои записи</div>
               {notesCount.schema + notesCount.mode === 0 ? (
-                <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 2 }}>Карточки схем и режимов</div>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)' }}>Карточки схем и режимов</div>
               ) : (
-                <div style={{ display: 'flex', gap: 12, marginTop: 2 }}>
+                <div style={{ display: 'flex', gap: 12 }}>
                   {notesCount.schema > 0 && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🧩 Схемы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.schema}</span></span>}
                   {notesCount.mode > 0   && <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>🔄 Режимы: <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{notesCount.mode}</span></span>}
                 </div>
               )}
             </div>
-            <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>
+            <span style={{ fontSize: 15, color: 'var(--text-faint)' }}>›</span>
           </div>
         )}
 
@@ -442,11 +440,11 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
       {showAchievements && achievements && (
         <BottomSheet onClose={() => { setShowAchievements(false); setSelectedAchievement(null); }}>
           <div style={{ paddingTop: 4 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <span style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>Достижения</span>
-              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earnedList.length}/{achievements.length}</span>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)' }}>Достижения</span>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{earnedList.length} из {achievements.length}</span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
               {achievements.map(a => {
                 const m = ACHIEVEMENT_META[a.id];
                 if (!m) return null;
@@ -463,12 +461,23 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                   }
                 })() : null;
                 return (
-                  <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
-                    style={{ background: a.earned ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${a.earned ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'rgba(var(--fg-rgb),0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
-                    <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? 'var(--text)' : 'var(--text-faint)', marginBottom: 4 }}>{m.title}</div>
-                    <div style={{ fontSize: 11, color: a.earned ? 'var(--text-sub)' : 'var(--text-faint)', lineHeight: 1.4, opacity: a.earned ? 1 : 0.5 }}>{m.desc}</div>
-                    {progress && <div style={{ fontSize: 11, color: 'var(--accent)', marginTop: 6, fontWeight: 600 }}>{progress} дней</div>}
+                  <div
+                    key={a.id}
+                    onClick={() => a.earned && setSelectedAchievement(a.id)}
+                    style={{
+                      background: a.earned ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+                      border: `1px solid ${a.earned ? 'color-mix(in srgb, var(--accent) 22%, transparent)' : 'rgba(var(--fg-rgb),0.06)'}`,
+                      borderRadius: 16, padding: '14px 10px 12px',
+                      textAlign: 'center',
+                      cursor: a.earned ? 'pointer' : 'default',
+                    }}
+                  >
+                    <div style={{ fontSize: 26, marginBottom: 6, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.25)' }}>{m.emoji}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: a.earned ? 'var(--text)' : 'var(--text-faint)', marginBottom: 3, lineHeight: 1.3 }}>{m.title}</div>
+                    {progress
+                      ? <div style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 600 }}>{progress}</div>
+                      : <div style={{ fontSize: 10, color: a.earned ? 'var(--text-sub)' : 'var(--text-faint)', opacity: a.earned ? 1 : 0.5, lineHeight: 1.4 }}>{m.desc}</div>
+                    }
                   </div>
                 );
               })}
@@ -483,14 +492,14 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         if (!m) return null;
         return (
           <div onClick={() => setSelectedAchievement(null)} style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, animation: 'fade-in 0.18s ease' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: 'linear-gradient(145deg, color-mix(in srgb, var(--accent) 20%, transparent), rgba(79,163,247,0.1))', border: '1px solid color-mix(in srgb, var(--accent) 40%, transparent)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: 'var(--sheet-bg)', borderRadius: 28, padding: '36px 28px 28px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
               <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{m.emoji}</div>
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{m.title}</div>
-              <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>
+              <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 28 }}>{m.desc}</div>
               <button onClick={async () => {
                 const text = `${m.emoji} Получил достижение «${m.title}»!\n\nt.me/Emotional_Needs_bot`;
                 try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch {}
-              }} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}>
+              }} className="btn-primary">
                 Поделиться
               </button>
             </div>
@@ -513,12 +522,3 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
     </div>
   );
 }
-
-function SectionLabel({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
-  return (
-    <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 8, ...style }}>
-      {children}
-    </div>
-  );
-}
-
