@@ -223,10 +223,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
           {customText.trim() && (
             <button
               onClick={handleCustomSubmit}
-              style={{
-                width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
-                background: color, color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer',
-              }}
+              className="btn-primary"
             >
               Продолжить →
             </button>

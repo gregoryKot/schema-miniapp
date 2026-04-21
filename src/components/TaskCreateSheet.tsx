@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { SectionLabel } from './SectionLabel';
 import { api } from '../api';
@@ -51,6 +51,13 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
   const [dueDate, setDueDate] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const configRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if ((type === 'schema_intro' || type === 'mode_intro') && configRef.current) {
+      setTimeout(() => configRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }, [type]);
 
   const selected = TASK_OPTIONS.find(o => o.type === type)!;
 
@@ -124,17 +131,19 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
 
       {/* Schema picker */}
       {type === 'schema_intro' && (
-        <div style={{ marginBottom: 20 }}>
-          <SectionLabel mb={8}>Какую схему изучить?</SectionLabel>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div ref={configRef} style={{ marginBottom: 20 }}>
+          <SectionLabel mb={10}>Какую схему изучить?</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {ALL_SCHEMAS_FLAT.map(s => (
               <div key={s.id} onClick={() => setSelectedSchemaId(s.id)} style={{
-                padding: '6px 10px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                background: selectedSchemaId === s.id ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
-                border: `1px solid ${selectedSchemaId === s.id ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
-                color: selectedSchemaId === s.id ? 'var(--accent)' : 'var(--text-sub)',
+                padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
+                background: selectedSchemaId === s.id ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+                border: `1px solid ${selectedSchemaId === s.id ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'rgba(var(--fg-rgb),0.07)'}`,
+                display: 'flex', alignItems: 'center', gap: 10,
               }}>
-                {s.emoji} {s.name}
+                <span style={{ fontSize: 16, flexShrink: 0 }}>{s.emoji}</span>
+                <div style={{ fontSize: 13, fontWeight: 500, color: selectedSchemaId === s.id ? 'var(--accent)' : 'var(--text)' }}>{s.name}</div>
+                {selectedSchemaId === s.id && <span style={{ marginLeft: 'auto', fontSize: 14, color: 'var(--accent)' }}>✓</span>}
               </div>
             ))}
           </div>
@@ -143,17 +152,19 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
 
       {/* Mode picker */}
       {type === 'mode_intro' && (
-        <div style={{ marginBottom: 20 }}>
-          <SectionLabel mb={8}>Какой режим изучить?</SectionLabel>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        <div ref={configRef} style={{ marginBottom: 20 }}>
+          <SectionLabel mb={10}>Какой режим изучить?</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {ALL_MODES.map(m => (
               <div key={m.id} onClick={() => setSelectedModeId(m.id)} style={{
-                padding: '6px 10px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                background: selectedModeId === m.id ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
-                border: `1px solid ${selectedModeId === m.id ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
-                color: selectedModeId === m.id ? 'var(--accent)' : 'var(--text-sub)',
+                padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
+                background: selectedModeId === m.id ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+                border: `1px solid ${selectedModeId === m.id ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'rgba(var(--fg-rgb),0.07)'}`,
+                display: 'flex', alignItems: 'center', gap: 10,
               }}>
-                {m.emoji} {m.name}
+                <span style={{ fontSize: 16, flexShrink: 0 }}>{m.emoji}</span>
+                <div style={{ fontSize: 13, fontWeight: 500, color: selectedModeId === m.id ? 'var(--accent)' : 'var(--text)' }}>{m.name}</div>
+                {selectedModeId === m.id && <span style={{ marginLeft: 'auto', fontSize: 14, color: 'var(--accent)' }}>✓</span>}
               </div>
             ))}
           </div>
@@ -182,11 +193,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
 
       {error && <div style={{ fontSize: 13, color: 'var(--accent-red)', marginBottom: 12 }}>{error}</div>}
 
-      <button onClick={handleCreate} disabled={saving} style={{
-        width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
-        background: saving ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'var(--accent)',
-        color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
-      }}>
+      <button onClick={handleCreate} disabled={saving} className="btn-primary">
         {saving ? 'Сохраняю...' : 'Создать задание'}
       </button>
     </BottomSheet>

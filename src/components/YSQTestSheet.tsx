@@ -631,7 +631,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             <>
               <button
                 onClick={handleContinue}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+                className="btn-primary" style={{ marginBottom: 10 }}
               >
                 Продолжить ({progressAnswered} из 116 ответов)
               </button>
@@ -645,7 +645,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           ) : (
             <button
               onClick={() => { userStartedRef.current = true; setPhase('test'); setPage(0); }}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+              className="btn-primary" style={{ marginBottom: 10 }}
             >
               Начать
             </button>
@@ -834,7 +834,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
             <button
               onClick={onClose}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 16, fontWeight: 600, cursor: 'pointer', marginTop: 4, marginBottom: 10 }}
+              className="btn-primary" style={{ marginTop: 4, marginBottom: 10 }}
             >
               Сохранить и закрыть
             </button>

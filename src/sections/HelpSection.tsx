@@ -13,6 +13,7 @@ import { api, UserTask, TherapyRelationInfo } from '../api';
 import { BottomSheet } from '../components/BottomSheet';
 import { SectionLabel } from '../components/SectionLabel';
 import { fmtDate } from '../utils/format';
+import { ALL_SCHEMAS, ALL_MODES } from '../schemaTherapyData';
 
 interface Props {
   onOpenChildhoodWheel: () => void;
@@ -60,6 +61,27 @@ const TASK_EMOJI: Record<string, string> = {
   flashcard: '🆘', schema_intro: '🧩', mode_intro: '🔄', custom: '✏️',
 };
 
+// Resolve display text for tasks that may have raw IDs as text
+function resolveTaskDisplayText(task: UserTask): string {
+  const text = getTaskDisplayText(task.type, task.text);
+  // If still raw (didn't resolve via type), try ID lookup
+  if (text === task.text) {
+    const schema = ALL_SCHEMAS.find(s => s.id === task.text);
+    if (schema) return `Карточка схемы: ${schema.name}`;
+    const mode = ALL_MODES.find(m => m.id === task.text);
+    if (mode) return `Карточка режима: ${mode.name}`;
+  }
+  return text;
+}
+
+function resolveTaskEmoji(task: UserTask): string {
+  if (TASK_EMOJI[task.type]) return TASK_EMOJI[task.type];
+  // Fallback: check if text is a schema or mode ID
+  if (ALL_SCHEMAS.some(s => s.id === task.text)) return '🧩';
+  if (ALL_MODES.some(m => m.id === task.text)) return '🔄';
+  return '⏳';
+}
+
 function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
   const isStreakTask = task.type === 'diary_streak' || task.type === 'tracker_streak';
   const [completing, setCompleting] = useState(false);
@@ -68,9 +90,9 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
       onClick={task.doneToday ? undefined : onOpen}
       style={{ padding: '10px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.04)', display: 'flex', alignItems: 'flex-start', gap: 10, cursor: task.doneToday ? 'default' : 'pointer', opacity: task.doneToday ? 0.6 : 1 }}
     >
-      <span style={{ fontSize: 15, flexShrink: 0 }}>{task.doneToday ? '✅' : (TASK_EMOJI[task.type] ?? '⏳')}</span>
+      <span style={{ fontSize: 15, flexShrink: 0 }}>{task.doneToday ? '✅' : resolveTaskEmoji(task)}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--text)' }}>{getTaskDisplayText(task.type, task.text)}</div>
+        <div style={{ fontSize: 13, color: 'var(--text)' }}>{resolveTaskDisplayText(task)}</div>
         {task.doneToday && isStreakTask && (
           <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
@@ -155,7 +177,11 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       case 'flashcard':       setShowFlashcard(true); break;
       case 'schema_intro':    if (task.text) setIntroSchemaId(task.text); break;
       case 'mode_intro':      if (task.text) setIntroModeId(task.text); break;
-      default: break;
+      default:
+        // Fallback: if text is a raw schema/mode ID (old task format)
+        if (ALL_SCHEMAS.some(s => s.id === task.text)) { setIntroSchemaId(task.text); break; }
+        if (ALL_MODES.some(m => m.id === task.text)) { setIntroModeId(task.text); break; }
+        break;
     }
   }
 
@@ -259,11 +285,11 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
             )}
             <div style={{ padding: '4px 8px 10px', display: 'flex', gap: 8 }}>
               {tasks.length > 0 && (
-                <div onClick={() => setShowAllTasks(true)} style={{ flex: 1, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}>
+                <div onClick={() => setShowAllTasks(true)} className="btn-ghost" style={{ flex: 1 }}>
                   Все задания
                 </div>
               )}
-              <div onClick={() => setShowTaskCreate(true)} style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined, textAlign: 'center', padding: '9px 0', borderRadius: 10, cursor: 'pointer', fontSize: 12, color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 8%, transparent)' }}>
+              <div onClick={() => setShowTaskCreate(true)} className="btn-ghost" style={{ flex: tasks.length > 0 ? 1 : undefined, width: tasks.length === 0 ? '100%' : undefined }}>
                 + Поставить цель
               </div>
             </div>

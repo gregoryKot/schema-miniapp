@@ -225,7 +225,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         {step < TOTAL - 1 ? (
           <button
             onClick={() => setStep(s => s + 1)}
-            style={{ flex: 2, padding: '14px 0', borderRadius: 14, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+            className="btn-primary" style={{ flex: 2 }}
           >
             Далее →
           </button>
