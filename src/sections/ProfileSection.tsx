@@ -51,6 +51,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [achievements, setAchievements] = useState<Achievement[] | null>(null);
   const [insights, setInsights]         = useState<InsightsData | null>(null);
   const [ready, setReady]               = useState(false);
+  const [activeDates, setActiveDates]   = useState<Set<string>>(new Set());
 
   const [notesCount, setNotesCount] = useState<{ schema: number; mode: number } | null>(null);
   const [notesOpen, setNotesOpen] = useState(false);
@@ -79,6 +80,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
       Promise.all([api.getSchemaNotes(), api.getModeNotes()])
         .then(([sn, mn]) => setNotesCount({ schema: sn.length, mode: mn.length }))
         .catch(() => {}),
+      api.history(112).then(h => setActiveDates(new Set(h.map(d => d.date)))).catch(() => {}),
     ]).finally(() => setReady(true));
   }, [refreshKey]);
 
@@ -259,6 +261,81 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
             </>
           )}
         </div>}
+
+        {/* ── Activity heatmap ── */}
+        {ready && activeDates.size > 0 && (() => {
+          // Build 16 weeks of cells ending today
+          const WEEKS = 16;
+          const today = new Date();
+          const todayDow = (today.getDay() + 6) % 7; // 0=пн
+          // Start from Monday of (WEEKS) weeks ago
+          const startDate = new Date(today);
+          startDate.setDate(today.getDate() - todayDow - (WEEKS - 1) * 7);
+
+          const weeks: { date: Date; dateStr: string }[][] = [];
+          const cur = new Date(startDate);
+          for (let w = 0; w < WEEKS; w++) {
+            const week: { date: Date; dateStr: string }[] = [];
+            for (let d = 0; d < 7; d++) {
+              const dateStr = cur.toISOString().slice(0, 10);
+              week.push({ date: new Date(cur), dateStr });
+              cur.setDate(cur.getDate() + 1);
+            }
+            weeks.push(week);
+          }
+
+          const MONTH_RU = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+          return (
+            <div className="card" style={{ borderRadius: 16, padding: '14px 16px' }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 10 }}>
+                Активность
+              </div>
+              <div style={{ overflowX: 'auto', paddingBottom: 4 }}>
+                <div style={{ display: 'flex', gap: 3, minWidth: 'max-content' }}>
+                  {/* Day labels */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 3, paddingTop: 16 }}>
+                    {['пн','','ср','','пт','','вс'].map((d, i) => (
+                      <div key={i} style={{ height: 10, fontSize: 8, color: 'var(--text-faint)', lineHeight: '10px', width: 14, textAlign: 'right', paddingRight: 3 }}>{d}</div>
+                    ))}
+                  </div>
+                  {/* Week columns */}
+                  {weeks.map((week, wi) => {
+                    const firstOfMonth = week.find(c => c.date.getDate() <= 7 && c.date.getDay() === 1);
+                    const monthLabel = firstOfMonth ? MONTH_RU[firstOfMonth.date.getMonth()] : '';
+                    return (
+                      <div key={wi} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <div style={{ height: 13, fontSize: 8, color: 'var(--text-faint)', lineHeight: '13px', whiteSpace: 'nowrap' }}>{monthLabel}</div>
+                        {week.map(({ dateStr, date }) => {
+                          const isActive = activeDates.has(dateStr);
+                          const isFuture = date > today;
+                          return (
+                            <div key={dateStr} style={{
+                              width: 10, height: 10, borderRadius: 3,
+                              background: isFuture
+                                ? 'transparent'
+                                : isActive
+                                  ? 'var(--accent)'
+                                  : 'rgba(var(--fg-rgb),0.07)',
+                              opacity: isActive ? 1 : isFuture ? 0 : 0.9,
+                            }} />
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6, marginTop: 8 }}>
+                <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>меньше</span>
+                {[0.07, 0.3, 0.6, 1].map((o, i) => (
+                  <div key={i} style={{ width: 10, height: 10, borderRadius: 3, background: i === 0 ? 'rgba(var(--fg-rgb),0.07)' : `color-mix(in srgb, var(--accent) ${Math.round(o * 100)}%, transparent)` }} />
+                ))}
+                <span style={{ fontSize: 10, color: 'var(--text-faint)' }}>больше</span>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── Паттерны (инсайты) ── */}
         {ready && hasInsights && (

@@ -119,12 +119,8 @@ export function NoteSheet({ date, onClose }: Props) {
         <button
           onClick={handleSave}
           disabled={!hasContent || saving}
-          style={{
-            width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-            background: hasContent ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)',
-            color: hasContent ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
-            fontSize: 15, fontWeight: 600, cursor: hasContent ? 'pointer' : 'default',
-          }}
+          className="btn-primary"
+          style={{ borderRadius: 12, opacity: hasContent ? 1 : 0.35 }}
         >
           {saving ? 'Сохранение...' : 'Сохранить'}
         </button>

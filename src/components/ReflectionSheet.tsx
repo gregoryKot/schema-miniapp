@@ -98,12 +98,8 @@ export function ReflectionSheet({ date, needs, ratings, onClose }: Props) {
           <button
             onClick={handleSave}
             disabled={saving}
-            style={{
-              flex: 2, padding: '13px 0', border: 'none', borderRadius: 12,
-              background: text.trim() ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 40%, transparent)',
-              color: 'var(--text)',
-              fontSize: 15, fontWeight: 600, cursor: 'pointer',
-            }}
+            className="btn-primary"
+            style={{ flex: 2, borderRadius: 12 }}
           >
             {saving ? 'Сохранение...' : 'Сохранить'}
           </button>

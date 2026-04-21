@@ -87,9 +87,10 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
         }}>Пропустить</button>
         <button onClick={handleSave} disabled={!text.trim() || saving} style={{
           flex: 2, padding: '9px 0', border: 'none', borderRadius: 10,
-          background: text.trim() ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(var(--fg-rgb),0.06)',
-          color: text.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)',
+          background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+          color: 'var(--accent)',
           fontSize: 12, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
+          opacity: text.trim() ? 1 : 0.35,
         }}>Сохранить</button>
       </div>
     </div>
