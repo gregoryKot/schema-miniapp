@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
 import { getTherapistContact } from '../utils/therapistContact';
-import { api } from '../api';
+import { api, YsqHistoryEntry } from '../api';
 
 export const YSQ_RESULT_KEY = 'ysq_result';
 export const YSQ_PROGRESS_KEY = 'ysq_progress';
@@ -359,6 +359,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   const [slideKey, setSlideKey] = useState(0);
   const [slideDir, setSlideDir] = useState<'forward' | 'back'>('forward');
   const [completedAt, setCompletedAt] = useState<string | null>(null);
+  const [history, setHistory] = useState<YsqHistoryEntry[]>([]);
   const userStartedRef = useRef(false);
   const [hasProgress, setHasProgress] = useState(false);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
@@ -400,6 +401,8 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     } catch { /* ignore */ }
 
     if (!autoResume) {
+      api.getYsqHistory().then(h => { if (h) setHistory(h); }).catch(() => {});
+
       Promise.all([api.getYsqResult(), api.getYsqProgress()]).then(([serverResult, serverProgress]) => {
         if (userStartedRef.current) return;
         if (serverResult?.answers && Array.isArray(serverResult.answers) && serverResult.answers.length === QUESTIONS.length) {
@@ -699,6 +702,38 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           ? 'Активных схем не найдено'
           : `${activeCount} ${activeCount === 1 ? 'выраженная схема' : activeCount < 5 ? 'выраженные схемы' : 'выраженных схем'}`;
 
+        const prevEntry = history.length >= 2 ? history[1] : null;
+        const SCHEMA_NAME_TO_ID: Record<string, string> = {
+          'Эмоциональная депривация': 'emotional_deprivation',
+          'Покинутость/Нестабильность': 'abandonment',
+          'Недоверие/Ожидание жестокого обращения': 'mistrust',
+          'Социальная отчужденность': 'social_isolation',
+          'Дефективность/Стыд': 'defectiveness',
+          'Неуспешность': 'failure',
+          'Зависимость/Беспомощность': 'dependence',
+          'Уязвимость': 'vulnerability',
+          'Спутанность/Неразвитая идентичность': 'enmeshment',
+          'Покорность': 'subjugation',
+          'Самопожертвование': 'self_sacrifice',
+          'Страх потери контроля над эмоциями': 'emotion_inhibition_fear',
+          'Эмоциональная скованность': 'emotional_inhibition',
+          'Жёсткие стандарты/Придирчивость': 'unrelenting_standards',
+          'Привилегированность/Грандиозность': 'entitlement',
+          'Недостаточность самоконтроля': 'insufficient_self_control',
+          'Поиск одобрения': 'approval_seeking',
+          'Негативизм/Пессимизм': 'negativity',
+          'Пунитивность (на себя)': 'punitiveness_self',
+          'Пунитивность (на других)': 'punitiveness_others',
+        };
+        const getSchemaDelta = (schemaName: string): number | null => {
+          if (!prevEntry) return null;
+          const id = SCHEMA_NAME_TO_ID[schemaName];
+          if (!id) return null;
+          const prev = prevEntry.scores.find(s => s.id === id);
+          if (prev == null) return null;
+          return (scores[schemaName]?.pct5plus ?? 0) - prev.pct5plus;
+        };
+
         return (
           <div style={{ padding: '8px 0 16px' }}>
             {/* Header */}
@@ -732,6 +767,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   const color = schema.color;
                   const diaryRating = ratings?.[schema.needId];
                   const showDiaryHint = diaryRating !== undefined && diaryRating <= 4;
+                  const delta = getSchemaDelta(schema.name);
                   return (
                     <div key={schema.name} style={{
                       marginBottom: 10,
@@ -745,7 +781,14 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                           <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 3 }} />
                           <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.35 }}>{schema.name}</div>
                         </div>
-                        <div style={{ fontSize: 15, fontWeight: 700, color, flexShrink: 0 }}>{s.pct5plus}%</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                          {delta !== null && Math.abs(delta) >= 5 && (
+                            <span style={{ fontSize: 12, fontWeight: 600, color: delta < 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                              {delta > 0 ? '+' : ''}{delta}%
+                            </span>
+                          )}
+                          <div style={{ fontSize: 15, fontWeight: 700, color }}>{s.pct5plus}%</div>
+                        </div>
                       </div>
 
                       <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2, marginBottom: 10 }}>
@@ -840,6 +883,42 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                 >
                   {getTherapistContact().name === 'автору' ? 'Поговорить с психологом →' : `Написать ${getTherapistContact().name} →`}
                 </a>
+              </div>
+            )}
+
+            {/* History timeline */}
+            {history.length >= 2 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>
+                  История прохождений
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {history.map((entry, idx) => {
+                    const entryActive = entry.scores.filter(s => s.pct5plus > 50).length;
+                    const prevEntryItem = history[idx + 1];
+                    const entryDelta = prevEntryItem
+                      ? entryActive - prevEntryItem.scores.filter(s => s.pct5plus > 50).length
+                      : null;
+                    const entryDate = new Date(entry.completedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' });
+                    return (
+                      <div key={entry.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12 }}>
+                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: idx === 0 ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)', flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, color: idx === 0 ? 'var(--text)' : 'var(--text-sub)', fontWeight: idx === 0 ? 600 : 400 }}>
+                            {entryActive} {entryActive === 1 ? 'схема' : entryActive < 5 ? 'схемы' : 'схем'}
+                            {idx === 0 && <span style={{ fontSize: 11, color: 'var(--accent)', marginLeft: 6 }}>сейчас</span>}
+                          </div>
+                        </div>
+                        {entryDelta !== null && Math.abs(entryDelta) > 0 && (
+                          <span style={{ fontSize: 12, fontWeight: 600, color: entryDelta < 0 ? 'var(--accent-green)' : 'var(--accent-red)' }}>
+                            {entryDelta > 0 ? '+' : ''}{entryDelta}
+                          </span>
+                        )}
+                        <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>{entryDate}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 

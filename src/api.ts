@@ -187,12 +187,19 @@ export interface ClientConceptualization {
   updatedAt: string;
 }
 
+export interface YsqHistoryEntry {
+  id: number;
+  completedAt: string;
+  scores: { id: string; pct5plus: number }[];
+}
+
 export interface ClientData {
   name: string | null;
   mySchemaIds: string[];
   myModeIds: string[];
   ysqCompletedAt: string | null;
   ysqActiveSchemaIds: string[];
+  ysqHistory: YsqHistoryEntry[];
 }
 
 export const api = {
@@ -255,6 +262,7 @@ export const api = {
     const res = await fetch(`${BASE}/api/ysq-result`, { method: 'DELETE', headers: authHeaders() });
     if (!res.ok) throw new Error(`API error: ${res.status}`);
   },
+  getYsqHistory: () => get<YsqHistoryEntry[]>('/api/ysq-history'),
 
   // ─── Profile ────────────────────────────────────────────────────────────────
   getProfile: () => get<import('./types').UserProfile>('/api/profile'),
