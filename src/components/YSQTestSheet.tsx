@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { BottomSheet } from './BottomSheet';
-import { SCHEMA_DOMAINS } from '../schemaTherapyData';
 import { getTherapistContact } from '../utils/therapistContact';
 import { api } from '../api';
 
@@ -313,6 +312,8 @@ const NEED_LABELS: Record<string, string> = {
   limits: 'Границы',
 };
 
+const DOMAIN_ORDER = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
+
 const PAGE_SIZE = 1;
 const TOTAL_PAGES = Math.ceil(QUESTIONS.length / PAGE_SIZE);
 
@@ -355,17 +356,23 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   const [phase, setPhase] = useState<Phase>('intro');
   const [answers, setAnswers] = useState<number[]>(Array(QUESTIONS.length).fill(0));
   const [page, setPage] = useState(0);
+  const [slideKey, setSlideKey] = useState(0);
+  const [slideDir, setSlideDir] = useState<'forward' | 'back'>('forward');
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
   const userStartedRef = useRef(false);
   const [hasProgress, setHasProgress] = useState(false);
   const [inactiveExpanded, setInactiveExpanded] = useState(false);
   const [retakeConfirm, setRetakeConfirm] = useState(false);
 
-  // Always computed from current answers — never stale
   const progressAnswered = answers.filter(a => a > 0).length;
 
-  // Check for saved result or in-progress test on mount
+  const goToPage = (newPage: number, dir: 'forward' | 'back') => {
+    setSlideDir(dir);
+    setSlideKey(k => k + 1);
+    setPage(newPage);
+  };
+
   useEffect(() => {
-    // Load from localStorage immediately (offline/fast path)
     try {
       if (!autoResume) {
         const result = localStorage.getItem(YSQ_RESULT_KEY);
@@ -374,6 +381,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
           if (parsed.answers && Array.isArray(parsed.answers) && parsed.answers.length === QUESTIONS.length) {
             setAnswers(parsed.answers);
             setPhase('result');
+            if (parsed.date) setCompletedAt(parsed.date);
           }
         }
       }
@@ -391,13 +399,14 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
       }
     } catch { /* ignore */ }
 
-    // Fetch from server — takes priority (syncs across devices)
     if (!autoResume) {
       Promise.all([api.getYsqResult(), api.getYsqProgress()]).then(([serverResult, serverProgress]) => {
-        if (userStartedRef.current) return; // user already started test, don't overwrite
+        if (userStartedRef.current) return;
         if (serverResult?.answers && Array.isArray(serverResult.answers) && serverResult.answers.length === QUESTIONS.length) {
-          localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: serverResult.completedAt, answers: serverResult.answers }));
+          const dateStr = serverResult.completedAt ?? new Date().toISOString();
+          localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: dateStr, answers: serverResult.answers }));
           setAnswers(serverResult.answers);
+          setCompletedAt(dateStr);
           setPhase('result');
         } else if (serverProgress?.answers && Array.isArray(serverProgress.answers) && serverProgress.answers.length === QUESTIONS.length) {
           localStorage.setItem(YSQ_PROGRESS_KEY, JSON.stringify({ answers: serverProgress.answers, page: serverProgress.page }));
@@ -444,30 +453,10 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     saveProgress(next, page);
   };
 
-  const handleNext = () => {
-    if (page < TOTAL_PAGES - 1) {
-      const next = page + 1;
-      setPage(next);
-      saveProgress(answers, next);
-      api.saveYsqProgress(answers, next).catch(() => {});
-    } else {
-      const scores = computeScores(answers);
-      localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({
-        date: new Date().toISOString(),
-        scores,
-        answers,
-      }));
-      api.saveYsqResult(answers).catch(() => {});
-      api.deleteYsqProgress().catch(() => {});
-      localStorage.removeItem(YSQ_PROGRESS_KEY);
-      setPhase('result');
-    }
-  };
-
   const handleBack = () => {
     if (page > 0) {
       const prev = page - 1;
-      setPage(prev);
+      goToPage(prev, 'back');
       saveProgress(answers, prev);
       api.saveYsqProgress(answers, prev).catch(() => {});
     } else {
@@ -478,10 +467,14 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
   const handleRetake = () => {
     localStorage.removeItem(YSQ_RESULT_KEY);
     localStorage.removeItem(YSQ_PROGRESS_KEY);
+    api.deleteYsqResult().catch(() => {});
+    api.deleteYsqProgress().catch(() => {});
     setAnswers(Array(QUESTIONS.length).fill(0));
     setPage(0);
     setHasProgress(false);
     setInactiveExpanded(false);
+    setCompletedAt(null);
+    setRetakeConfirm(false);
     setPhase('intro');
   };
 
@@ -490,18 +483,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     ? [...SCHEMAS].sort((a, b) => scores[b.name].pct5plus - scores[a.name].pct5plus)
     : [];
 
-  const getColor = (schemaName: string): string => {
-    for (const domain of SCHEMA_DOMAINS) {
-      if (domain.schemas.some((s: { name: string }) => schemaName.includes(s.name.split('/')[0].split(' ')[0]) || s.name.includes(schemaName.split('/')[0]))) {
-        return domain.color;
-      }
-    }
-    return 'var(--accent-indigo)';
-  };
-
-  const schemaColor = (s: SchemaInfo) => getColor(s.name) || s.color;
-
-  // Full-screen test phase
+  // ── Full-screen test phase ────────────────────────────────────────────────────
   if (phase === 'test') {
     const qIdx = page;
     const currentAnswer = answers[qIdx];
@@ -509,123 +491,156 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
     const progressPct = ((page + 1) / TOTAL_PAGES) * 100;
 
     return (
-      <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'var(--bg)', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-        {/* Header */}
-        <div style={{ flexShrink: 0, padding: '16px 20px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            {/* ← Back to previous question */}
-            <button
-              onClick={() => handleBack()}
-              disabled={page === 0}
-              style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: page === 0 ? 'transparent' : 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 15, cursor: page === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0 : 1 }}
-            >←</button>
-            <span style={{ fontSize: 13, color: 'var(--text-faint)' }}>{page + 1} / {TOTAL_PAGES}</span>
-            {/* ✕ Exit test — progress is saved */}
-            <button
-              onClick={() => setPhase('intro')}
-              style={{ width: 32, height: 32, borderRadius: 10, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >✕</button>
-          </div>
-          {/* Progress bar */}
-          <div style={{ height: 2, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2, marginBottom: 6 }}>
-            <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--accent)', borderRadius: 2, transition: 'width 0.2s ease' }} />
-          </div>
-          {/* Save reminder */}
-          <div style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center' }}>
-            Прогресс сохраняется — можно выйти и вернуться позже
-          </div>
-        </div>
-
-        {/* Question */}
-        <div style={{ flex: 1, padding: '24px 20px 0' }}>
-          {schema && (
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: schema.color, marginBottom: 12 }}>
-              {schema.name}
-            </div>
-          )}
-          <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1.4, marginBottom: 32 }}>
-            {QUESTIONS[qIdx]}
-          </div>
-        </div>
-
-        {/* Answer cards */}
-        <div style={{ padding: '0 16px 32px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {ANSWER_LABELS.map((label, i) => {
-            const value = i + 1;
-            const selected = currentAnswer === value;
-            return (
+      <>
+        <style>{`
+          @keyframes slideFromRight { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
+          @keyframes slideFromLeft  { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: translateX(0); } }
+        `}</style>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+          {/* Header */}
+          <div style={{ flexShrink: 0, padding: '16px 20px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <button
-                key={value}
-                onClick={() => {
-                  handleAnswer(qIdx, value);
-                  // Auto-advance after short delay
-                  setTimeout(() => {
-                    if (page < TOTAL_PAGES - 1) {
-                      const next = page + 1;
-                      setPage(next);
-                      saveProgress(answers.map((a, idx) => idx === qIdx ? value : a), next);
-                      api.saveYsqProgress(answers.map((a, idx) => idx === qIdx ? value : a), next).catch(() => {});
-                    } else {
+                onClick={handleBack}
+                disabled={page === 0}
+                style={{ width: 36, height: 36, borderRadius: 12, border: 'none', background: page === 0 ? 'transparent' : 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 16, cursor: page === 0 ? 'default' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: page === 0 ? 0 : 1, transition: 'opacity 0.15s' }}
+              >←</button>
+              <span style={{ fontSize: 13, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>{page + 1} / {TOTAL_PAGES}</span>
+              <button
+                onClick={() => setPhase('intro')}
+                style={{ width: 36, height: 36, borderRadius: 12, border: 'none', background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 17, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >✕</button>
+            </div>
+            <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 3 }}>
+              <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--accent)', borderRadius: 3, transition: 'width 0.25s ease' }} />
+            </div>
+          </div>
+
+          {/* Question — animated on page change */}
+          <div
+            key={slideKey}
+            style={{
+              flex: 1,
+              padding: '24px 20px 16px',
+              overflowY: 'auto',
+              animation: `${slideDir === 'forward' ? 'slideFromRight' : 'slideFromLeft'} 0.22s cubic-bezier(0.25,0.46,0.45,0.94)`,
+            }}
+          >
+            {schema && (
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: schema.color, marginBottom: 12 }}>
+                {schema.name}
+              </div>
+            )}
+            <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', lineHeight: 1.45 }}>
+              {QUESTIONS[qIdx]}
+            </div>
+          </div>
+
+          {/* Answer buttons */}
+          <div style={{ padding: '0 16px 32px', display: 'flex', flexDirection: 'column', gap: 8, flexShrink: 0 }}>
+            {ANSWER_LABELS.map((label, i) => {
+              const value = i + 1;
+              const selected = currentAnswer === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => {
+                    handleAnswer(qIdx, value);
+                    setTimeout(() => {
                       const newAnswers = answers.map((a, idx) => idx === qIdx ? value : a);
-                      const scores = computeScores(newAnswers);
-                      localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: new Date().toISOString(), scores, answers: newAnswers }));
-                      api.saveYsqResult(newAnswers).catch(() => {});
-                      api.deleteYsqProgress().catch(() => {});
-                      localStorage.removeItem(YSQ_PROGRESS_KEY);
-                      setAnswers(newAnswers);
-                      setPhase('result');
-                    }
-                  }, 150);
-                }}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center', gap: 14,
-                  padding: '14px 16px', borderRadius: 16, border: `1px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)'}`,
-                  background: selected ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'var(--surface)',
-                  cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent',
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {/* Radio circle */}
-                <div style={{
-                  width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-                  border: `2px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)'}`,
-                  background: selected ? 'var(--accent)' : 'transparent',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.15s ease',
-                }}>
-                  {selected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />}
-                </div>
-                <span style={{ fontSize: 15, color: selected ? 'var(--text)' : 'var(--text-sub)', fontWeight: selected ? 500 : 400 }}>
-                  {label}
-                </span>
-              </button>
-            );
-          })}
+                      if (page < TOTAL_PAGES - 1) {
+                        const next = page + 1;
+                        goToPage(next, 'forward');
+                        saveProgress(newAnswers, next);
+                        api.saveYsqProgress(newAnswers, next).catch(() => {});
+                      } else {
+                        const dateStr = new Date().toISOString();
+                        localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: dateStr, answers: newAnswers }));
+                        api.saveYsqResult(newAnswers).catch(() => {});
+                        api.deleteYsqProgress().catch(() => {});
+                        localStorage.removeItem(YSQ_PROGRESS_KEY);
+                        setAnswers(newAnswers);
+                        setCompletedAt(dateStr);
+                        setPhase('result');
+                      }
+                    }, 160);
+                  }}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '13px 16px', borderRadius: 16,
+                    border: `1.5px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.08)'}`,
+                    background: selected ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'var(--surface)',
+                    cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent',
+                    transition: 'background 0.12s, border-color 0.12s',
+                  }}
+                >
+                  <div style={{
+                    width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
+                    border: `2px solid ${selected ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)'}`,
+                    background: selected ? 'var(--accent)' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'all 0.12s',
+                  }}>
+                    {selected && <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />}
+                  </div>
+                  <span style={{ fontSize: 15, color: selected ? 'var(--text)' : 'var(--text-sub)', fontWeight: selected ? 500 : 400 }}>
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  // ── Intro + Result in BottomSheet ─────────────────────────────────────────────
   return (
     <BottomSheet onClose={onClose} zIndex={300}>
+      {/* INTRO */}
       {phase === 'intro' && (
         <div style={{ padding: '8px 0 16px' }}>
-          <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 12 }}>
-            Опросник схем YSQ-R
+          <div style={{ textAlign: 'center', marginBottom: 20 }}>
+            <div style={{ fontSize: 40, marginBottom: 10 }}>🧠</div>
+            <div style={{ fontSize: 23, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 6 }}>
+              Опросник схем YSQ-R
+            </div>
+            <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5 }}>
+              Паттерны мышления и поведения, сложившиеся в детстве
+            </div>
           </div>
-          <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 12 }}>
-            116 утверждений. Оцени каждое от 1 до 6 — насколько это про тебя. Занимает ~10 минут.
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+            {[
+              ['📋', '116 утверждений', 'Оцени каждое от 1 до 6'],
+              ['⏱️', '~10 минут', 'Можно прервать — прогресс сохраняется'],
+              ['🔍', '20 схем', 'Результат с описанием и советом для каждой'],
+            ].map(([emoji, title, desc]) => (
+              <div key={title} style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 14, padding: '12px 16px' }}>
+                <span style={{ fontSize: 20, flexShrink: 0 }}>{emoji}</span>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{title}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', marginTop: 1 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
-            Можно остановиться в любой момент и вернуться позже — прогресс сохраняется автоматически.
-          </div>
-          <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 14, padding: '12px 16px', marginBottom: 24 }}>
-            <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 8 }}>Шкала оценок:</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+
+          <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 14, padding: '12px 16px', marginBottom: 20 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-sub)', fontWeight: 600, marginBottom: 10 }}>Шкала ответов:</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 4 }}>
               {[1,2,3,4,5,6].map(n => (
-                <div key={n} style={{ textAlign: 'center' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(var(--fg-rgb),0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{n}</div>
-                  <div style={{ fontSize: 9, color: 'var(--text-sub)', maxWidth: 36 }}>
+                <div key={n} style={{ textAlign: 'center', flex: 1 }}>
+                  <div style={{
+                    height: 34, borderRadius: 10,
+                    background: `color-mix(in srgb, var(--accent) ${6 + n * 13}%, rgba(var(--fg-rgb),0.06))`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 15, fontWeight: 700,
+                    color: n >= 4 ? 'var(--accent)' : 'var(--text-sub)',
+                    marginBottom: 5,
+                  }}>{n}</div>
+                  <div style={{ fontSize: 9, color: 'var(--text-faint)', lineHeight: 1.3 }}>
                     {n === 1 ? 'Совсем не про меня' : n === 6 ? 'Полностью про меня' : ''}
                   </div>
                 </div>
@@ -639,133 +654,135 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
 
           {hasProgress ? (
             <>
-              <button
-                onClick={handleContinue}
-                className="btn-primary" style={{ marginBottom: 10 }}
-              >
-                Продолжить ({progressAnswered} из 116 ответов)
+              <button onClick={handleContinue} className="btn-primary" style={{ marginBottom: 10 }}>
+                Продолжить ({progressAnswered} из 116)
               </button>
-              <button
-                onClick={handleStartFresh}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer', marginBottom: 10 }}
-              >
+              <button onClick={handleStartFresh} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer', marginBottom: 10 }}>
                 Начать заново
               </button>
             </>
           ) : (
-            <button
-              onClick={() => { userStartedRef.current = true; setPhase('test'); setPage(0); }}
-              className="btn-primary" style={{ marginBottom: 10 }}
-            >
-              Начать
+            <button onClick={() => { userStartedRef.current = true; setPhase('test'); setPage(0); }} className="btn-primary" style={{ marginBottom: 10 }}>
+              Начать тест
             </button>
           )}
 
-          <button
-            onClick={onClose}
-            style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
-          >
+          <button onClick={onClose} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
             Отмена
           </button>
 
           <div style={{ marginTop: 20, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, textAlign: 'center' }}>
-            Основан на опроснике YSQ-R (Young Schema Questionnaire, пересмотренная версия).{' '}
-            © Jeffrey Young, Schema Therapy Institute.{' '}
-            Все права на методику принадлежат{' '}
-            <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
-              Jeffrey Young
-            </a>
-            . Используется в образовательных целях.
+            Основан на YSQ-R (Young Schema Questionnaire). © Jeffrey Young, Schema Therapy Institute. Используется в образовательных целях.
           </div>
         </div>
       )}
 
-
+      {/* RESULT */}
       {phase === 'result' && scores && (() => {
         const activeSchemas = sortedSchemas.filter(s => scores[s.name].pct5plus > 50);
         const inactiveSchemas = sortedSchemas.filter(s => scores[s.name].pct5plus <= 50);
 
+        const activeByDomain = DOMAIN_ORDER
+          .map(needId => ({
+            needId,
+            label: NEED_LABELS[needId],
+            schemas: activeSchemas.filter(s => s.needId === needId),
+          }))
+          .filter(d => d.schemas.length > 0);
+
+        const dateLabel = completedAt
+          ? new Date(completedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+          : null;
+
+        const activeCount = activeSchemas.length;
+        const activeLabel = activeCount === 0
+          ? 'Активных схем не найдено'
+          : `${activeCount} ${activeCount === 1 ? 'выраженная схема' : activeCount < 5 ? 'выраженные схемы' : 'выраженных схем'}`;
+
         return (
           <div style={{ padding: '8px 0 16px' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>
-              Схемы, которые могут быть актуальны
-            </div>
-            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8 }}>
-              Схема считается выраженной если больше половины ответов — 5 или 6
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 20, fontStyle: 'italic' }}>
-              Это инструмент самоисследования, не клиническое заключение. Результаты могут быть отправной точкой для разговора с психологом.
+            {/* Header */}
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px', marginBottom: 4 }}>
+                {activeLabel}
+              </div>
+              {dateLabel && (
+                <div style={{ fontSize: 12, color: 'var(--text-faint)' }}>Пройдено {dateLabel}</div>
+              )}
             </div>
 
-            {/* Active schemas */}
-            {activeSchemas.length === 0 && (
-              <div style={{ fontSize: 14, color: 'var(--text-sub)', marginBottom: 20, textAlign: 'center', padding: '20px 0' }}>
-                Активных схем не обнаружено
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 20, fontStyle: 'italic' }}>
+              Схема считается выраженной если больше половины ответов — 5 или 6. Это инструмент самоисследования, не диагноз.
+            </div>
+
+            {activeCount === 0 && (
+              <div style={{ textAlign: 'center', padding: '28px 0', fontSize: 14, color: 'var(--text-sub)' }}>
+                Выраженных схем не обнаружено — отличный результат.
               </div>
             )}
 
-            {activeSchemas.map(schema => {
-              const s = scores[schema.name];
-              const color = schemaColor(schema);
-              const rgb = hexToRgb(color);
-              const diaryRating = ratings?.[schema.needId];
-              const showDiaryHint = diaryRating !== undefined && diaryRating <= 4;
-              const needLabel = NEED_LABELS[schema.needId] ?? schema.needId;
-
-              return (
-                <div key={schema.name} style={{
-                  marginBottom: 12,
-                  background: `rgba(${rgb},0.1)`,
-                  borderRadius: 14,
-                  padding: '14px 16px',
-                  border: `1px solid rgba(${rgb},0.3)`,
-                }}>
-                  {/* Header row */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, paddingRight: 8 }}>
-                      <div style={{ width: 10, height: 10, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.3 }}>
-                        {schema.name}
-                      </div>
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: color, flexShrink: 0 }}>
-                      {s.pct5plus}%
-                    </div>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2, marginBottom: 10 }}>
-                    <div style={{ height: '100%', width: `${s.pct5plus}%`, background: color, borderRadius: 2 }} />
-                  </div>
-
-                  {/* Desc */}
-                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 8 }}>
-                    {schema.desc}
-                  </div>
-
-                  {/* Link to schema card */}
-                  <div
-                    onClick={() => onViewSchemas ? onViewSchemas(schema.name) : onClose()}
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', marginBottom: showDiaryHint ? 8 : 0, padding: '4px 0' }}
-                  >
-                    <span style={{ fontSize: 13, color: 'var(--accent)' }}>Читать карточку схемы</span>
-                    <span style={{ fontSize: 16, color: 'var(--accent)' }}>›</span>
-                  </div>
-
-                  {/* Diary connection */}
-                  {showDiaryHint && (
-                    <div style={{ fontSize: 12, color: 'var(--accent-yellow)', lineHeight: 1.4, padding: '6px 10px', background: 'rgba(250,204,21,0.1)', borderRadius: 8 }}>
-                      <span style={{ marginRight: 4 }}>⚡</span>
-                      Совпадает с дневником: «{needLabel}» стабильно низкая
-                    </div>
-                  )}
+            {/* Active schemas grouped by domain */}
+            {activeByDomain.map(domain => (
+              <div key={domain.needId} style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-sub)', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: 10 }}>
+                  {domain.label}
                 </div>
-              );
-            })}
+                {domain.schemas.map(schema => {
+                  const s = scores[schema.name];
+                  const color = schema.color;
+                  const diaryRating = ratings?.[schema.needId];
+                  const showDiaryHint = diaryRating !== undefined && diaryRating <= 4;
+                  return (
+                    <div key={schema.name} style={{
+                      marginBottom: 10,
+                      background: `color-mix(in srgb, ${color} 10%, transparent)`,
+                      borderRadius: 16,
+                      padding: '14px 16px',
+                      border: `1px solid color-mix(in srgb, ${color} 28%, transparent)`,
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, paddingRight: 8 }}>
+                          <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0, marginTop: 3 }} />
+                          <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', lineHeight: 1.35 }}>{schema.name}</div>
+                        </div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color, flexShrink: 0 }}>{s.pct5plus}%</div>
+                      </div>
 
-            {/* Inactive schemas — collapsed section */}
+                      <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2, marginBottom: 10 }}>
+                        <div style={{ height: '100%', width: `${s.pct5plus}%`, background: color, borderRadius: 2 }} />
+                      </div>
+
+                      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 8 }}>
+                        {schema.desc}
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 8, background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 10, padding: '8px 12px', marginBottom: 10 }}>
+                        <span style={{ fontSize: 14, flexShrink: 0 }}>💡</span>
+                        <span style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>{schema.tip}</span>
+                      </div>
+
+                      <div
+                        onClick={() => onViewSchemas ? onViewSchemas(schema.name) : onClose()}
+                        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '4px 0', marginBottom: showDiaryHint ? 8 : 0 }}
+                      >
+                        <span style={{ fontSize: 13, color: 'var(--accent)' }}>Читать карточку схемы</span>
+                        <span style={{ fontSize: 16, color: 'var(--accent)' }}>›</span>
+                      </div>
+
+                      {showDiaryHint && (
+                        <div style={{ fontSize: 12, color: 'var(--accent-yellow)', lineHeight: 1.4, padding: '6px 10px', background: 'rgba(250,204,21,0.1)', borderRadius: 8 }}>
+                          ⚡ Совпадает с дневником: «{NEED_LABELS[schema.needId]}» стабильно низкая
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+
+            {/* Inactive schemas — collapsed */}
             {inactiveSchemas.length > 0 && (
-              <div style={{ marginTop: 8, marginBottom: 12 }}>
+              <div style={{ marginTop: 4, marginBottom: 12 }}>
                 <button
                   onClick={() => setInactiveExpanded(prev => !prev)}
                   style={{
@@ -778,7 +795,6 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   <span>Остальные схемы ({inactiveSchemas.length})</span>
                   <span style={{ fontSize: 12 }}>{inactiveExpanded ? '▲' : '▼'}</span>
                 </button>
-
                 {inactiveExpanded && (
                   <div style={{ marginTop: 8 }}>
                     {inactiveSchemas.map(schema => {
@@ -786,20 +802,10 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                       const mid = s.pct5plus >= 30 && s.pct5plus <= 50;
                       const barColor = mid ? 'var(--accent-yellow)' : 'rgba(var(--fg-rgb),0.2)';
                       return (
-                        <div key={schema.name} style={{
-                          marginBottom: 8,
-                          background: 'rgba(var(--fg-rgb),0.04)',
-                          borderRadius: 12,
-                          padding: '12px 14px',
-                          border: '1px solid transparent',
-                        }}>
+                        <div key={schema.name} style={{ marginBottom: 8, background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, alignItems: 'center' }}>
-                            <div style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-sub)', flex: 1, paddingRight: 8, lineHeight: 1.3 }}>
-                              {schema.name}
-                            </div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: barColor, flexShrink: 0 }}>
-                              {s.pct5plus}%
-                            </div>
+                            <div style={{ fontSize: 13, color: 'var(--text-sub)', flex: 1, paddingRight: 8, lineHeight: 1.3 }}>{schema.name}</div>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: barColor, flexShrink: 0 }}>{s.pct5plus}%</div>
                           </div>
                           <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.1)', borderRadius: 2 }}>
                             <div style={{ height: '100%', width: `${s.pct5plus}%`, background: barColor, borderRadius: 2 }} />
@@ -812,7 +818,8 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
               </div>
             )}
 
-            {activeSchemas.length > 0 && (
+            {/* CTA */}
+            {activeCount > 0 && (
               <div style={{
                 marginTop: 8, marginBottom: 16,
                 background: 'color-mix(in srgb, var(--accent) 7%, transparent)',
@@ -823,66 +830,44 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   Хочешь разобраться глубже?
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
-                  Схемы — это паттерны, сформировавшиеся давно. Их можно менять, но это требует времени и поддержки. Схема-терапия — один из самых эффективных методов для этой работы.
+                  Схемы — паттерны, сложившиеся давно. Их можно менять, но это требует времени и поддержки. Схема-терапия — один из самых эффективных методов для этой работы.
                 </div>
                 <a
                   href={getTherapistContact().url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    display: 'block', textAlign: 'center',
-                    padding: '11px 0', borderRadius: 12,
-                    background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
-                    color: 'var(--accent)', fontSize: 14, fontWeight: 500,
-                    textDecoration: 'none',
-                  }}
+                  style={{ display: 'block', textAlign: 'center', padding: '11px 0', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 500, textDecoration: 'none' }}
                 >
                   {getTherapistContact().name === 'автору' ? 'Поговорить с психологом →' : `Написать ${getTherapistContact().name} →`}
                 </a>
               </div>
             )}
 
-            <button
-              onClick={onClose}
-              className="btn-primary" style={{ marginTop: 4, marginBottom: 10 }}
-            >
+            <button onClick={onClose} className="btn-primary" style={{ marginTop: 4, marginBottom: 10 }}>
               Сохранить и закрыть
             </button>
+
             {retakeConfirm ? (
               <div style={{ background: 'rgba(255,100,100,0.08)', borderRadius: 12, padding: '14px 16px' }}>
-                <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.7)', marginBottom: 12 }}>Результаты будут удалены. Точно начать заново?</div>
+                <div style={{ fontSize: 14, color: 'var(--text-sub)', marginBottom: 12 }}>Результаты будут удалены. Точно начать заново?</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button onClick={() => setRetakeConfirm(false)} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.08)', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer' }}>Отмена</button>
                   <button onClick={handleRetake} style={{ flex: 1, padding: '10px', border: 'none', borderRadius: 10, background: 'rgba(255,100,100,0.2)', color: 'var(--accent-red)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Начать заново</button>
                 </div>
               </div>
             ) : (
-              <button
-                onClick={() => setRetakeConfirm(true)}
-                style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}
-              >
+              <button onClick={() => setRetakeConfirm(true)} style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, fontWeight: 500, cursor: 'pointer' }}>
                 Пройти заново
               </button>
             )}
 
             <div style={{ marginTop: 16, fontSize: 11, color: 'var(--text-faint)', lineHeight: 1.7, textAlign: 'center' }}>
-              © Jeffrey Young, Schema Therapy Institute.{' '}
-              Все права на методику YSQ-R принадлежат{' '}
-              <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>
-                Jeffrey Young
-              </a>
-              . Используется в образовательных целях.
+              © Jeffrey Young, Schema Therapy Institute. Используется в образовательных целях.{' '}
+              <a href="https://schematherapy.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none' }}>schematherapy.com</a>
             </div>
           </div>
         );
       })()}
     </BottomSheet>
   );
-}
-
-function hexToRgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r},${g},${b}`;
 }
