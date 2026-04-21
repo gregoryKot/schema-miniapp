@@ -408,7 +408,7 @@ function SkeletonLines() {
   );
 }
 
-// ── Onboarding widget (unchanged logic, new visual) ───────────────────────────
+// ── Onboarding widget ────────────────────────────────────────────────────────
 
 const ONBOARDING_DONE_KEY    = 'onboarding_done';
 const ONBOARDING_SKIPPED_KEY = 'onboarding_skipped';
@@ -416,29 +416,68 @@ const ONBOARDING_SKIPPED_KEY = 'onboarding_skipped';
 interface StepDef {
   id: string;
   emoji: string;
+  color: string;
   title: string;
   description: string;
+  detail: string; // short feature preview line
   actionLabel: string;
   isDone: (profile: UserProfile | null, ctx?: { hasSchemas: boolean }) => boolean;
 }
 
 const STEPS: StepDef[] = [
-  { id: 'ysq',      emoji: '🧪', title: 'Пройди YSQ-тест',           actionLabel: 'Начать тест',
-    description: 'Узнай какие схемы активны именно у тебя — это основа всей работы в приложении',
+  { id: 'ysq', emoji: '🧪', color: 'var(--accent)',
+    title: 'Пройди тест на схемы',
+    description: 'YSQ-R — 116 вопросов, 10 минут. Узнаешь какие ранние паттерны управляют тобой.',
+    detail: '20 схем · история результатов · советы для каждой',
+    actionLabel: 'Начать тест',
     isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas) },
-  { id: 'tracker',  emoji: '📅', title: 'Оцени потребности сегодня', actionLabel: 'Перейти в трекер',
-    description: 'Посмотри на свой день через пять ключевых потребностей — займёт 2 минуты',
+  { id: 'tracker', emoji: '📊', color: 'var(--accent-blue)',
+    title: 'Оцени потребности сегодня',
+    description: 'Пять оценок — и ты видишь индекс дня. Через неделю паттерн начнёт проявляться.',
+    detail: 'Привязанность · Автономия · Выражение · Радость · Границы',
+    actionLabel: 'Перейти в трекер',
     isDone: p => !!(p?.lastActivity.needsTracker) },
-  { id: 'diary',    emoji: '📔', title: 'Сделай первую запись',       actionLabel: 'Открыть дневник',
-    description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии',
+  { id: 'diary', emoji: '📔', color: 'var(--accent-indigo)',
+    title: 'Сделай первую запись в дневник',
+    description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии.',
+    detail: 'Дневник схем · режимов · благодарности',
+    actionLabel: 'Открыть дневник',
     isDone: p => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary) },
-  { id: 'notify',   emoji: '🔔', title: 'Включи напоминание',         actionLabel: 'Настроить',
-    description: 'Без регулярности привычка не формируется. Одно уведомление в день — всё что нужно',
+  { id: 'notify', emoji: '🔔', color: 'var(--accent-orange)',
+    title: 'Включи ежедневное напоминание',
+    description: 'Без регулярности привычка не формируется. Одно уведомление в день — всё что нужно.',
+    detail: 'Настраиваемое время · часовой пояс · серии',
+    actionLabel: 'Настроить',
     isDone: p => !!(p?.notifications.enabled) },
-  { id: 'childhood',emoji: '🌀', title: 'Исследуй колесо детства',    actionLabel: 'Открыть',
-    description: 'Оцени как удовлетворялись потребности в детстве — откуда пришли твои паттерны',
+  { id: 'childhood', emoji: '🌀', color: 'var(--accent-green)',
+    title: 'Исследуй колесо детства',
+    description: 'Оцени как удовлетворялись потребности в детстве — откуда пришли твои паттерны.',
+    detail: '5 областей · связь с активными схемами',
+    actionLabel: 'Открыть',
     isDone: () => !!localStorage.getItem('childhood_wheel_done') },
 ];
+
+function CelebrationCard({ onDismiss, completedCount }: { onDismiss: () => void; completedCount: number }) {
+  return (
+    <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), color-mix(in srgb, var(--accent-green) 8%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 20, padding: '28px 20px', textAlign: 'center' }}>
+      <div style={{ fontSize: 52, marginBottom: 12 }}>🎉</div>
+      <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: 8 }}>
+        Ты готов к работе!
+      </div>
+      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
+        Все {completedCount} шагов пройдены. Теперь ты знаешь приложение достаточно — пора начать настоящую практику.
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: 20 }}>
+        {['YSQ тест ✓', 'Трекер ✓', 'Дневник ✓', 'Уведомления ✓', 'Колесо детства ✓'].map(t => (
+          <span key={t} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)', fontWeight: 600 }}>{t}</span>
+        ))}
+      </div>
+      <button onClick={onDismiss} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+        Начать →
+      </button>
+    </div>
+  );
+}
 
 function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
   profile: UserProfile | null;
@@ -454,15 +493,17 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   });
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [slideKey, setSlideKey] = useState(0);
 
   if (done || profile === null) return null;
 
   const ctx = { hasSchemas };
+  const completedCount = STEPS.filter(s => s.isDone(profile, ctx)).length;
   const autoStep = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
+
   if (!autoStep) {
     if (!localStorage.getItem(ONBOARDING_DONE_KEY)) {
-      localStorage.setItem(ONBOARDING_DONE_KEY, '1');
-      setDone(true);
+      return <CelebrationCard completedCount={completedCount} onDismiss={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} />;
     }
     return null;
   }
@@ -470,6 +511,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
   const isCurrentDone    = current.isDone(profile, ctx);
   const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
+  const progressPct = Math.round((completedCount / STEPS.length) * 100);
 
   function handleAction() {
     switch (current.id) {
@@ -487,68 +529,83 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
     localStorage.setItem(ONBOARDING_SKIPPED_KEY, JSON.stringify(next));
     setSkipped(next);
     setSelectedId(null);
+    setSlideKey(k => k + 1);
+  }
+
+  function selectStep(id: string) {
+    setSelectedId(id === current.id ? null : id);
+    setSlideKey(k => k + 1);
   }
 
   return (
-    <div style={{
-      background: 'rgba(var(--fg-rgb),0.04)',
-      border: '1px solid rgba(var(--fg-rgb),0.08)',
-      borderRadius: 20, padding: '16px 18px',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 20, padding: '16px 18px', overflow: 'hidden' }}>
+      <style>{`@keyframes obSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
+
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)' }}>
           С чего начать
         </div>
-        <div style={{ display: 'flex', gap: 5 }}>
-          {STEPS.map(s => {
-            const d = s.isDone(profile, ctx);
-            const sk = skipped.includes(s.id) && !d;
-            const cur = s.id === current.id;
-            return (
-              <div key={s.id} onClick={() => setSelectedId(s.id === current.id ? null : s.id)} style={{
-                width: cur ? 18 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
-                background: d ? 'color-mix(in srgb, var(--accent-green) 60%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 35%, transparent)' : cur ? 'var(--accent)' : 'var(--surface-2)',
-                transition: 'all 0.3s ease',
-              }}/>
-            );
-          })}
+        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)' }}>
+          {completedCount} / {STEPS.length}
         </div>
       </div>
 
-      <div style={{ fontSize: 26, marginBottom: 6 }}>{current.emoji}</div>
-      <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 6 }}>
-        {current.title}
-      </div>
-      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55, marginBottom: 14 }}>
-        {current.description}
+      {/* Progress bar */}
+      <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2, marginBottom: 16, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, var(--accent), var(--accent-blue))', borderRadius: 2, transition: 'width 0.5s cubic-bezier(0.34,1.56,0.64,1)' }} />
       </div>
 
-      <div style={{ display: 'flex', gap: 8 }}>
+      {/* Current step card — animated */}
+      <div key={slideKey} style={{ animation: 'obSlide 0.22s ease-out' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <div style={{ width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, background: `color-mix(in srgb, ${current.color} 15%, transparent)`, border: `1.5px solid color-mix(in srgb, ${current.color} 30%, transparent)` }}>
+            {isCurrentDone ? '✅' : current.emoji}
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 2 }}>
+              {current.title}
+            </div>
+            <div style={{ fontSize: 11, color: current.color, fontWeight: 500 }}>
+              {current.detail}
+            </div>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 14 }}>
+          {current.description}
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {isCurrentDone ? (
-          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center',
-            background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)',
-            fontSize: 13, fontWeight: 600, color: 'var(--accent-green)' }}>
+          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center', background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)', fontSize: 13, fontWeight: 600, color: 'var(--accent-green)' }}>
             ✓ Выполнено
           </div>
         ) : (
-          <button onClick={handleAction} style={{
-            flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit',
-            background: 'linear-gradient(135deg, var(--accent), #60a5fa)',
-            color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>
+          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: `linear-gradient(135deg, ${current.color}, color-mix(in srgb, ${current.color} 70%, var(--accent-blue)))`, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             {current.actionLabel} →
           </button>
         )}
         {!isCurrentDone && (
-          <button onClick={handleSkip} style={{
-            padding: '11px 14px', borderRadius: 12, border: 'none', fontFamily: 'inherit',
-            background: 'var(--surface-2)',
-            color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-faint)',
-            fontSize: 13, cursor: 'pointer',
-          }}>
+          <button onClick={handleSkip} style={{ padding: '11px 14px', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: 'rgba(var(--fg-rgb),0.06)', color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-faint)', fontSize: 13, cursor: 'pointer' }}>
             {isCurrentSkipped ? 'Вернуть' : 'Позже'}
           </button>
         )}
+      </div>
+
+      {/* Step dots — clickable */}
+      <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+        {STEPS.map(s => {
+          const d = s.isDone(profile, ctx);
+          const sk = skipped.includes(s.id) && !d;
+          const cur = s.id === current.id;
+          return (
+            <div key={s.id} onClick={() => selectStep(s.id)} style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+              <div style={{ width: cur ? 24 : 8, height: 8, borderRadius: 4, transition: 'all 0.3s ease', background: d ? 'color-mix(in srgb, var(--accent-green) 70%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 40%, transparent)' : cur ? `color-mix(in srgb, ${current.color} 90%, transparent)` : 'rgba(var(--fg-rgb),0.12)' }} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
