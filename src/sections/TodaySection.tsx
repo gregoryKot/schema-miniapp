@@ -9,7 +9,7 @@
 //  – Onboarding step card with dot progress
 //  – All colors via CSS tokens (light/dark theme ready)
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
 import { api, StreakData } from '../api';
 import { Section } from '../components/BottomNav';
@@ -419,37 +419,38 @@ interface StepDef {
   color: string;
   title: string;
   description: string;
-  detail: string; // short feature preview line
+  detail: string;
   actionLabel: string;
+  xp: number;
   isDone: (profile: UserProfile | null, ctx?: { hasSchemas: boolean }) => boolean;
 }
 
 const STEPS: StepDef[] = [
-  { id: 'ysq', emoji: '🧪', color: 'var(--accent)',
+  { id: 'ysq', emoji: '🧪', color: 'var(--accent)', xp: 100,
     title: 'Пройди тест на схемы',
-    description: 'YSQ-R — 116 вопросов, 10 минут. Узнаешь какие ранние паттерны управляют тобой.',
-    detail: '20 схем · история результатов · советы для каждой',
+    description: 'YSQ-R — 116 вопросов, 10 минут. Узнаешь какие ранние паттерны управляют твоими реакциями.',
+    detail: '20 схем · история прохождений · советы',
     actionLabel: 'Начать тест',
     isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas) },
-  { id: 'tracker', emoji: '📊', color: 'var(--accent-blue)',
+  { id: 'tracker', emoji: '📊', color: 'var(--accent-blue)', xp: 50,
     title: 'Оцени потребности сегодня',
-    description: 'Пять оценок — и ты видишь индекс дня. Через неделю паттерн начнёт проявляться.',
+    description: 'Пять оценок — и ты видишь индекс дня. Через неделю паттерн начнёт проявляться в графике.',
     detail: 'Привязанность · Автономия · Выражение · Радость · Границы',
     actionLabel: 'Перейти в трекер',
     isDone: p => !!(p?.lastActivity.needsTracker) },
-  { id: 'diary', emoji: '📔', color: 'var(--accent-indigo)',
-    title: 'Сделай первую запись в дневник',
-    description: 'Зафикси момент когда схема сработала. Это главная практика схема-терапии.',
+  { id: 'diary', emoji: '📔', color: 'var(--accent-indigo)', xp: 60,
+    title: 'Сделай первую запись',
+    description: 'Зафикси момент когда схема сработала — это главная практика схема-терапии.',
     detail: 'Дневник схем · режимов · благодарности',
     actionLabel: 'Открыть дневник',
     isDone: p => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary) },
-  { id: 'notify', emoji: '🔔', color: 'var(--accent-orange)',
+  { id: 'notify', emoji: '🔔', color: 'var(--accent-orange)', xp: 30,
     title: 'Включи ежедневное напоминание',
-    description: 'Без регулярности привычка не формируется. Одно уведомление в день — всё что нужно.',
-    detail: 'Настраиваемое время · часовой пояс · серии',
+    description: 'Без регулярности ничего не выйдет. Одно уведомление в нужное время — всё что нужно.',
+    detail: 'Время · часовой пояс · серии дней',
     actionLabel: 'Настроить',
     isDone: p => !!(p?.notifications.enabled) },
-  { id: 'childhood', emoji: '🌀', color: 'var(--accent-green)',
+  { id: 'childhood', emoji: '🌀', color: 'var(--accent-green)', xp: 50,
     title: 'Исследуй колесо детства',
     description: 'Оцени как удовлетворялись потребности в детстве — откуда пришли твои паттерны.',
     detail: '5 областей · связь с активными схемами',
@@ -457,26 +458,13 @@ const STEPS: StepDef[] = [
     isDone: () => !!localStorage.getItem('childhood_wheel_done') },
 ];
 
-function CelebrationCard({ onDismiss, completedCount }: { onDismiss: () => void; completedCount: number }) {
-  return (
-    <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), color-mix(in srgb, var(--accent-green) 8%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 20, padding: '28px 20px', textAlign: 'center' }}>
-      <div style={{ fontSize: 52, marginBottom: 12 }}>🎉</div>
-      <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: 8 }}>
-        Ты готов к работе!
-      </div>
-      <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
-        Все {completedCount} шагов пройдены. Теперь ты знаешь приложение достаточно — пора начать настоящую практику.
-      </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginBottom: 20 }}>
-        {['YSQ тест ✓', 'Трекер ✓', 'Дневник ✓', 'Уведомления ✓', 'Колесо детства ✓'].map(t => (
-          <span key={t} style={{ fontSize: 11, padding: '4px 10px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)', fontWeight: 600 }}>{t}</span>
-        ))}
-      </div>
-      <button onClick={onDismiss} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-        Начать →
-      </button>
-    </div>
-  );
+const TOTAL_XP = STEPS.reduce((s, st) => s + st.xp, 0);
+
+function getLevel(xp: number): { label: string; emoji: string; next: number } {
+  if (xp >= TOTAL_XP) return { label: 'Мастер',        emoji: '🏆', next: TOTAL_XP };
+  if (xp >= 200)       return { label: 'Исследователь', emoji: '⭐', next: TOTAL_XP };
+  if (xp >= 100)       return { label: 'Практик',       emoji: '🔥', next: 200 };
+  return                      { label: 'Новичок',        emoji: '🌱', next: 100 };
 }
 
 function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
@@ -494,24 +482,72 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [slideKey, setSlideKey] = useState(0);
+  const [xpGain, setXpGain] = useState<number | null>(null);
+  const prevXpRef = useRef<number | null>(null);
 
   if (done || profile === null) return null;
 
   const ctx = { hasSchemas };
-  const completedCount = STEPS.filter(s => s.isDone(profile, ctx)).length;
+  const earnedXp = STEPS.filter(s => s.isDone(profile, ctx)).reduce((sum, s) => sum + s.xp, 0);
+
+  // Detect XP gain
+  if (prevXpRef.current !== null && earnedXp > prevXpRef.current) {
+    const gain = earnedXp - prevXpRef.current;
+    if (xpGain === null) {
+      setXpGain(gain);
+      setTimeout(() => setXpGain(null), 1800);
+    }
+  }
+  prevXpRef.current = earnedXp;
+
+  const level = getLevel(earnedXp);
+  const allDone = STEPS.every(s => s.isDone(profile, ctx));
   const autoStep = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
+  // All steps done → celebration
+  if (allDone) {
+    return (
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), color-mix(in srgb, var(--accent-green) 8%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)', borderRadius: 20, padding: '24px 20px', textAlign: 'center' }}>
+        <style>{`@keyframes obPop { 0%{transform:scale(0.6);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }`}</style>
+        <div style={{ fontSize: 48, marginBottom: 10, animation: 'obPop 0.5s ease-out' }}>🏆</div>
+        <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: 6 }}>Уровень: Мастер</div>
+        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 16 }}>
+          {TOTAL_XP} XP заработано. Все инструменты изучены — теперь начинается настоящая работа.
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: 'center', marginBottom: 18 }}>
+          {STEPS.map(s => <span key={s.id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontWeight: 600 }}>{s.emoji} +{s.xp} XP</span>)}
+        </div>
+        <button onClick={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+          Начать работу →
+        </button>
+      </div>
+    );
+  }
+
+  // All non-done steps postponed → collapsed "resume" state
   if (!autoStep) {
-    if (!localStorage.getItem(ONBOARDING_DONE_KEY)) {
-      return <CelebrationCard completedCount={completedCount} onDismiss={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} />;
-    }
-    return null;
+    const postponedCount = STEPS.filter(s => !s.isDone(profile, ctx)).length;
+    const remainingXp = TOTAL_XP - earnedXp;
+    return (
+      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ fontSize: 24 }}>📋</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
+            {postponedCount} {postponedCount === 1 ? 'шаг отложен' : 'шага отложено'}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>ещё +{remainingXp} XP можно заработать</div>
+        </div>
+        <button onClick={() => { setSkipped([]); localStorage.removeItem(ONBOARDING_SKIPPED_KEY); setSlideKey(k => k+1); }} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', fontFamily: 'inherit', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+          Продолжить
+        </button>
+      </div>
+    );
   }
 
   const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
   const isCurrentDone    = current.isDone(profile, ctx);
   const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
-  const progressPct = Math.round((completedCount / STEPS.length) * 100);
+  const xpBarPct = Math.round((earnedXp / (level.next || TOTAL_XP)) * 100);
 
   function handleAction() {
     switch (current.id) {
@@ -532,42 +568,45 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
     setSlideKey(k => k + 1);
   }
 
-  function selectStep(id: string) {
-    setSelectedId(id === current.id ? null : id);
-    setSlideKey(k => k + 1);
-  }
-
   return (
-    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 20, padding: '16px 18px', overflow: 'hidden' }}>
-      <style>{`@keyframes obSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 20, padding: '16px 18px', overflow: 'hidden', position: 'relative' }}>
+      <style>{`
+        @keyframes obSlide { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes obXp    { 0%{opacity:0;transform:translateY(0) scale(0.8)} 20%{opacity:1;transform:translateY(-8px) scale(1.1)} 80%{opacity:1;transform:translateY(-12px)} 100%{opacity:0;transform:translateY(-18px)} }
+      `}</style>
 
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--accent)' }}>
-          С чего начать
+      {/* XP gain toast */}
+      {xpGain !== null && (
+        <div style={{ position: 'absolute', top: 12, right: 16, fontSize: 15, fontWeight: 800, color: 'var(--accent-green)', animation: 'obXp 1.8s ease-out forwards', pointerEvents: 'none' }}>
+          +{xpGain} XP ✨
         </div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-sub)' }}>
-          {completedCount} / {STEPS.length}
+      )}
+
+      {/* Level + XP bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-sub)' }}>
+          {level.emoji} {level.label}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
+          {earnedXp} / {level.next === TOTAL_XP ? TOTAL_XP : level.next} XP
         </div>
       </div>
-
-      {/* Progress bar */}
-      <div style={{ height: 4, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 2, marginBottom: 16, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${progressPct}%`, background: 'linear-gradient(90deg, var(--accent), var(--accent-blue))', borderRadius: 2, transition: 'width 0.5s cubic-bezier(0.34,1.56,0.64,1)' }} />
+      <div style={{ height: 5, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 3, marginBottom: 16, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${xpBarPct}%`, background: 'linear-gradient(90deg, var(--accent), var(--accent-blue))', borderRadius: 3, transition: 'width 0.6s cubic-bezier(0.34,1.56,0.64,1)' }} />
       </div>
 
-      {/* Current step card — animated */}
+      {/* Current step — animated */}
       <div key={slideKey} style={{ animation: 'obSlide 0.22s ease-out' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, background: `color-mix(in srgb, ${current.color} 15%, transparent)`, border: `1.5px solid color-mix(in srgb, ${current.color} 30%, transparent)` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+          <div style={{ width: 50, height: 50, borderRadius: 15, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, background: `color-mix(in srgb, ${current.color} 14%, transparent)`, border: `1.5px solid color-mix(in srgb, ${current.color} 28%, transparent)` }}>
             {isCurrentDone ? '✅' : current.emoji}
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 2 }}>
               {current.title}
             </div>
-            <div style={{ fontSize: 11, color: current.color, fontWeight: 500 }}>
-              {current.detail}
+            <div style={{ fontSize: 11, color: current.color, fontWeight: 600 }}>
+              +{current.xp} XP · {current.detail}
             </div>
           </div>
         </div>
@@ -576,15 +615,15 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
         </div>
       </div>
 
-      {/* Action buttons */}
+      {/* Buttons */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {isCurrentDone ? (
           <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center', background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)', fontSize: 13, fontWeight: 600, color: 'var(--accent-green)' }}>
-            ✓ Выполнено
+            ✓ Выполнено · +{current.xp} XP
           </div>
         ) : (
-          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: `linear-gradient(135deg, ${current.color}, color-mix(in srgb, ${current.color} 70%, var(--accent-blue)))`, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-            {current.actionLabel} →
+          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: `linear-gradient(135deg, ${current.color}, color-mix(in srgb, ${current.color} 65%, var(--accent-blue)))`, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            {current.actionLabel} → +{current.xp} XP
           </button>
         )}
         {!isCurrentDone && (
@@ -594,15 +633,15 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
         )}
       </div>
 
-      {/* Step dots — clickable */}
+      {/* Step dots */}
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
         {STEPS.map(s => {
           const d = s.isDone(profile, ctx);
           const sk = skipped.includes(s.id) && !d;
           const cur = s.id === current.id;
           return (
-            <div key={s.id} onClick={() => selectStep(s.id)} style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-              <div style={{ width: cur ? 24 : 8, height: 8, borderRadius: 4, transition: 'all 0.3s ease', background: d ? 'color-mix(in srgb, var(--accent-green) 70%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 40%, transparent)' : cur ? `color-mix(in srgb, ${current.color} 90%, transparent)` : 'rgba(var(--fg-rgb),0.12)' }} />
+            <div key={s.id} onClick={() => { setSelectedId(s.id === current.id ? null : s.id); setSlideKey(k=>k+1); }} style={{ cursor: 'pointer' }}>
+              <div style={{ width: cur ? 22 : 8, height: 8, borderRadius: 4, transition: 'all 0.3s ease', background: d ? 'color-mix(in srgb, var(--accent-green) 70%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 40%, transparent)' : cur ? `color-mix(in srgb, ${current.color} 90%, transparent)` : 'rgba(var(--fg-rgb),0.12)' }} />
             </div>
           );
         })}
