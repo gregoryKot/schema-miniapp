@@ -42,7 +42,7 @@ const BADGE_NEUTRAL: React.CSSProperties = {
 };
 const BADGE_POSITIVE: React.CSSProperties = {
   fontSize: 11, fontWeight: 500, padding: '2px 6px', borderRadius: 20,
-  background: 'rgba(6,214,160,0.15)', color: '#06d6a0',
+  background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: '#06d6a0',
 };
 
 function DeltaBadge({ delta }: { delta: number }) {

@@ -181,7 +181,7 @@ export function PairSheet({ onClose }: Props) {
                 </div>
                 <button
                   onClick={() => handleCopyPending(pendingUrl)}
-                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedPending ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedPending ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedPending ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'color-mix(in srgb, var(--accent) 20%, transparent)', color: copiedPending ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                 >
                   {copiedPending ? '✓ Скопировано' : 'Скопировать ссылку'}
                 </button>
@@ -215,7 +215,7 @@ export function PairSheet({ onClose }: Props) {
                   <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px', marginBottom: 10 }}>
                     <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                     <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{inviteUrl}</div>
-                    <button onClick={() => handleCopyInvite(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedInvite ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: copiedInvite ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    <button onClick={() => handleCopyInvite(inviteUrl)} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: copiedInvite ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'color-mix(in srgb, var(--accent) 20%, transparent)', color: copiedInvite ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                       {copiedInvite ? '✓ Скопировано' : 'Скопировать ссылку'}
                     </button>
                   </div>
@@ -244,7 +244,7 @@ export function PairSheet({ onClose }: Props) {
                 <button
                   onClick={handleJoin}
                   disabled={!joinCode.trim() || loading}
-                  style={{ width: '100%', padding: '14px', border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                  style={{ width: '100%', padding: '14px', border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 30%, transparent)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
                 >
                   Присоединиться
                 </button>

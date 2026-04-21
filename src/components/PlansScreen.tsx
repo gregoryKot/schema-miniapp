@@ -37,7 +37,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
               Планы создаются в трекере — выбери потребность и нажми «Запланировать практику»
             </div>
             {onOpenTracker && (
-              <button onClick={() => { onClose(); onOpenTracker(); }} style={{ display: 'block', margin: '0 auto', padding: '12px 28px', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => { onClose(); onOpenTracker(); }} style={{ display: 'block', margin: '0 auto', padding: '12px 28px', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                 Открыть трекер
               </button>
             )}
@@ -48,8 +48,8 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
               const isPending = plan.done === null;
               return (
                 <div key={plan.id} style={{
-                  background: plan.done === true ? 'rgba(6,214,160,0.07)' : plan.done === false ? 'rgba(248,113,113,0.05)' : 'rgba(var(--fg-rgb),0.03)',
-                  border: `1px solid ${plan.done === true ? 'rgba(6,214,160,0.2)' : plan.done === false ? 'rgba(248,113,113,0.15)' : 'rgba(var(--fg-rgb),0.07)'}`,
+                  background: plan.done === true ? 'color-mix(in srgb, var(--accent-green) 7%, transparent)' : plan.done === false ? 'color-mix(in srgb, var(--accent-red) 5%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+                  border: `1px solid ${plan.done === true ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : plan.done === false ? 'color-mix(in srgb, var(--accent-red) 15%, transparent)' : 'rgba(var(--fg-rgb),0.07)'}`,
                   borderRadius: 14, padding: '13px 14px',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -65,7 +65,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                           setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: true } : p));
                           api.checkinPlan(plan.id, true).catch(() => setPlans(snapshot));
                         }}
-                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(6,214,160,0.15)', color: '#06d6a0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: '#06d6a0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
                       >
                         ✓ Выполнено
                       </button>
@@ -75,7 +75,7 @@ export function PlansScreen({ onClose, onOpenTracker }: Props) {
                           setPlans(prev => prev!.map(p => p.id === plan.id ? { ...p, done: false } : p));
                           api.checkinPlan(plan.id, false).catch(() => setPlans(snapshot));
                         }}
-                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'rgba(248,113,113,0.1)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                        style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: 10, background: 'color-mix(in srgb, var(--accent-red) 10%, transparent)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
                       >
                         Не вышло
                       </button>

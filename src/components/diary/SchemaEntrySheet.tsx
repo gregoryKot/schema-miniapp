@@ -30,7 +30,7 @@ function StepLabel({ step, title, hint, required }: { step: number; title: strin
     <div style={{ marginTop: 22, marginBottom: 9, display: 'flex', alignItems: 'flex-start', gap: 10 }}>
       <div style={{
         width: 22, height: 22, borderRadius: '50%', flexShrink: 0,
-        background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.3)',
+        background: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 30%, transparent)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 11, fontWeight: 700, color: 'var(--accent-red)', marginTop: 1,
       }}>

@@ -31,8 +31,8 @@ export function TherapyNote({ compact }: { compact?: boolean }) {
 
   return (
     <div style={{
-      background: 'rgba(167,139,250,0.05)',
-      border: '1px solid rgba(167,139,250,0.12)',
+      background: 'color-mix(in srgb, var(--accent) 5%, transparent)',
+      border: '1px solid color-mix(in srgb, var(--accent) 12%, transparent)',
       borderRadius: 14, padding: '12px 14px',
       display: 'flex', gap: 10, alignItems: 'flex-start',
     }}>

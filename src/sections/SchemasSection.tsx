@@ -427,7 +427,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
           <>
             {!hasChildhood && (
               <div onClick={() => onOpenChildhoodWheel?.()} style={{
-                background: 'rgba(124,114,248,0.07)', border: '1px solid rgba(124,114,248,0.2)',
+                background: 'color-mix(in srgb, var(--accent) 7%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
                 borderRadius: 18, padding: '14px 16px', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               }}>

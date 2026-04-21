@@ -54,8 +54,8 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
                 key={a.id}
                 onClick={() => a.earned && setSelected(a.id)}
                 style={{
-                  background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(var(--fg-rgb),0.03)',
-                  border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)'}`,
+                  background: a.earned ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+                  border: `1px solid ${a.earned ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'rgba(var(--fg-rgb),0.06)'}`,
                   borderRadius: 16, padding: '14px 12px',
                   cursor: a.earned ? 'pointer' : 'default',
                 }}
@@ -90,8 +90,8 @@ export function AchievementsSheet({ achievements, onClose }: Props) {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: 'linear-gradient(145deg, rgba(167,139,250,0.2), rgba(79,163,247,0.1))',
-              border: '1px solid rgba(167,139,250,0.4)',
+              background: 'linear-gradient(145deg, color-mix(in srgb, var(--accent) 20%, transparent), rgba(79,163,247,0.1))',
+              border: '1px solid color-mix(in srgb, var(--accent) 40%, transparent)',
               borderRadius: 24,
               padding: '36px 28px 24px',
               width: '100%',

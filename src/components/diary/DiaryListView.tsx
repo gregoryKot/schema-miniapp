@@ -216,7 +216,7 @@ function DraftCard({ type, color, onContinue, onDelete }: { type: DiaryType; col
         ) : (
           <button
             onClick={onDelete}
-            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.2)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'color-mix(in srgb, var(--accent-red) 20%, transparent)', color: 'var(--accent-red)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
             Да, удалить
           </button>

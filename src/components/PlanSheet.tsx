@@ -355,7 +355,7 @@ export function PlanSheet({ needId, needEmoji, needLabel, color, onClose, onSave
               disabled={saving || savedOk}
               style={{
                 flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-                background: savedOk ? 'rgba(52,211,153,0.2)' : saving ? 'rgba(var(--fg-rgb),0.1)' : color,
+                background: savedOk ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : saving ? 'rgba(var(--fg-rgb),0.1)' : color,
                 color: savedOk ? 'var(--accent-green)' : '#fff', fontSize: 15, fontWeight: 600, cursor: (saving || savedOk) ? 'default' : 'pointer',
                 transition: 'all 0.3s',
               }}

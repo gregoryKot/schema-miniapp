@@ -81,7 +81,7 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
         <button
           disabled={completing}
           onClick={e => { e.stopPropagation(); setCompleting(true); onComplete(); }}
-          style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
+          style={{ background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
         >
           {completing ? '...' : 'Сделал'}
         </button>
@@ -188,7 +188,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
           const label = `${DAYS[date.getDay()]}, ${d} ${MONTHS[m - 1]}${timePart ? ` · ${timePart}` : ''}`;
           const isToday = datePart === new Date().toISOString().slice(0, 10);
           return (
-            <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 7, background: isToday ? 'rgba(52,211,153,0.1)' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${isToday ? 'rgba(52,211,153,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 20, padding: '5px 12px' }}>
+            <div style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 7, background: isToday ? 'color-mix(in srgb, var(--accent-green) 10%, transparent)' : 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${isToday ? 'color-mix(in srgb, var(--accent-green) 25%, transparent)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 20, padding: '5px 12px' }}>
               <span style={{ fontSize: 13 }}>📅</span>
               <span style={{ fontSize: 12, fontWeight: 600, color: isToday ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.6)' }}>
                 {isToday ? 'Сегодня встреча' : `Встреча: ${label}`}
@@ -323,7 +323,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
                 <button
                   onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
-                  style={{ background: 'rgba(52,211,153,0.15)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+                  style={{ background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
                 >
                   Сделал
                 </button>

@@ -92,8 +92,8 @@ export function PracticesOnboarding({ needs, onDone }: Props) {
           </div>
 
           <div style={{
-            background: 'rgba(167,139,250,0.08)',
-            border: '1px solid rgba(167,139,250,0.15)',
+            background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)',
             borderRadius: 14, padding: '14px 16px', marginBottom: 24,
           }}>
             <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>

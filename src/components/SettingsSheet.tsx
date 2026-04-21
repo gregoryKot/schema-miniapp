@@ -171,7 +171,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                 const active = tz.iana === settings.notifyTimezone;
                 return (
                   <div key={tz.iana} onClick={async () => { await patch({ notifyTimezone: tz.iana }); setView('main'); }}
-                    style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.04)', color: active ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
+                    style={{ padding: '13px 16px', borderRadius: 12, background: active ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(var(--fg-rgb),0.04)', color: active ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: active ? 600 : 400, cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}
                   >{tz.label}{active && <span>✓</span>}</div>
                 );
               })}
@@ -204,7 +204,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       onClick={() => setTheme(toggleTheme())}
                       style={{
                         width: 46, height: 26, borderRadius: 13,
-                        background: theme === 'light' ? 'var(--accent)' : 'rgba(167,139,250,0.3)',
+                        background: theme === 'light' ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 30%, transparent)',
                         position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
                         flexShrink: 0,
                       }}
@@ -234,7 +234,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         onClick={onToggleTherapistMode}
                         style={{
                           width: 46, height: 26, borderRadius: 13,
-                          background: therapistMode ? 'var(--accent)' : 'rgba(167,139,250,0.3)',
+                          background: therapistMode ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 30%, transparent)',
                           position: 'relative', cursor: 'pointer', transition: 'background 0.2s',
                           flexShrink: 0,
                         }}
@@ -278,7 +278,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                           setTimeout(() => setSavedToast(false), 1800);
                         } catch {} finally { setNameSaving(false); }
                       }}
-                      style={{ background: 'rgba(167,139,250,0.2)', border: 'none', borderRadius: 10, padding: '6px 14px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
+                      style={{ background: 'color-mix(in srgb, var(--accent) 20%, transparent)', border: 'none', borderRadius: 10, padding: '6px 14px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
                     >
                       {nameSaving ? '...' : 'Сохранить'}
                     </button>
@@ -358,7 +358,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
 
                         <button
                           onClick={() => { api.leaveTherapy().then(() => setTherapyRelation(null)).catch(() => {}); }}
-                          style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent-red)', fontSize: 13, cursor: 'pointer' }}
+                          style={{ background: 'color-mix(in srgb, var(--accent-red) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 25%, transparent)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent-red)', fontSize: 13, cursor: 'pointer' }}
                         >
                           Отключиться
                         </button>
@@ -407,8 +407,8 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                       onClick={() => setShowBecomeTherapist(true)}
                       style={{
                         width: '100%', padding: '11px 16px', borderRadius: 14,
-                        border: '1px solid rgba(167,139,250,0.2)',
-                        background: 'rgba(167,139,250,0.06)',
+                        border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+                        background: 'color-mix(in srgb, var(--accent) 6%, transparent)',
                         color: 'var(--accent)', fontSize: 13, fontWeight: 500,
                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       }}
@@ -478,7 +478,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                             try { await navigator.clipboard.writeText(url); } catch { /* ignore */ }
                           } catch { /* ignore */ }
                         }}
-                        style={{ background: 'rgba(167,139,250,0.12)', border: '1px solid rgba(167,139,250,0.25)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent)', fontSize: 13, cursor: 'pointer' }}
+                        style={{ background: 'color-mix(in srgb, var(--accent) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)', borderRadius: 10, padding: '8px 16px', color: 'var(--accent)', fontSize: 13, cursor: 'pointer' }}
                       >
                         + Создать приглашение клиенту
                       </button>
@@ -528,7 +528,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 12, padding: '12px 14px' }}>
                           <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>Скопируй и отправь другу:</div>
                           <div style={{ fontSize: 12, color: 'rgba(var(--fg-rgb),0.7)', wordBreak: 'break-all', lineHeight: 1.5, marginBottom: 10, userSelect: 'all' }}>{pairInviteUrl}</div>
-                          <button onClick={handleCopyPairInvite} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'rgba(6,214,160,0.2)' : 'rgba(167,139,250,0.2)', color: pairInviteCopied ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                          <button onClick={handleCopyPairInvite} style={{ width: '100%', padding: '10px', border: 'none', borderRadius: 10, background: pairInviteCopied ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'color-mix(in srgb, var(--accent) 20%, transparent)', color: pairInviteCopied ? '#06d6a0' : 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             {pairInviteCopied ? '✓ Скопировано' : 'Скопировать ссылку'}
                           </button>
                         </div>
@@ -552,7 +552,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         </div>
                       )}
                       <button onClick={handleJoin} disabled={!joinCode.trim() || pairLoading}
-                        style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'rgba(167,139,250,0.3)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+                        style={{ width: '100%', padding: 14, border: 'none', borderRadius: 12, background: joinCode.trim() ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 30%, transparent)', color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
                         Присоединиться
                       </button>
                     </div>
@@ -625,7 +625,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {exportText}
             </pre>
             <button onClick={async () => { try { await navigator.clipboard.writeText(exportText); setExportCopied(true); setTimeout(() => setExportCopied(false), 2000); } catch {} }}
-              style={{ width: '100%', padding: '13px 0', border: 'none', borderRadius: 12, background: exportCopied ? 'rgba(6,214,160,0.2)' : 'rgba(var(--fg-rgb),0.08)', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              style={{ width: '100%', padding: '13px 0', border: 'none', borderRadius: 12, background: exportCopied ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'rgba(var(--fg-rgb),0.08)', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.7)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               {exportCopied ? '✓ Скопировано' : 'Скопировать'}
             </button>
           </div>

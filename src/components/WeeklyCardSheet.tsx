@@ -291,7 +291,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
               style={{
                 width: '100%', padding: '15px 0', borderRadius: 14, border: 'none',
                 background: copied
-                  ? 'rgba(6,214,160,0.2)'
+                  ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)'
                   : 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
                 color: copied ? '#06d6a0' : '#fff',
                 fontSize: 16, fontWeight: 600, cursor: 'pointer',
@@ -325,7 +325,7 @@ export function WeeklyCardSheet({ needs, history, onClose }: Props) {
             }}
             style={{
               width: '100%', padding: '13px 0', border: 'none', borderRadius: 12,
-              background: fallbackCopied ? 'rgba(6,214,160,0.2)' : 'rgba(var(--fg-rgb),0.08)',
+              background: fallbackCopied ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'rgba(var(--fg-rgb),0.08)',
               color: fallbackCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.7)',
               fontSize: 14, fontWeight: 600, cursor: 'pointer',
             }}

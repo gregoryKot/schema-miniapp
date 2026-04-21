@@ -66,7 +66,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
         <div style={{ paddingTop: 4 }}>
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 20%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
               🏡
             </div>
             <div>
@@ -75,7 +75,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
             </div>
           </div>
 
-          <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--accent-green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 12%, transparent)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
             <div style={{ fontSize: 15, color: 'rgba(var(--fg-rgb),0.85)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{saved.text}</div>
           </div>
 
@@ -87,7 +87,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
             <button onClick={() => { setText(saved.text); setEditing(true); }} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Изменить
             </button>
-            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Готово
             </button>
           </div>
@@ -103,7 +103,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
       <div style={{ paddingTop: 4 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'rgba(52,211,153,0.12)', border: '1px solid rgba(52,211,153,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 14, background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 20%, transparent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
             🏡
           </div>
           <div>
@@ -113,7 +113,7 @@ export function SafePlace({ onClose, onComplete }: Props) {
         </div>
 
         {/* Prompts */}
-        <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
+        <div style={{ background: 'color-mix(in srgb, var(--accent-green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 12%, transparent)', borderRadius: 14, padding: '12px 14px', marginBottom: 16 }}>
           {PROMPTS.map((p, i) => (
             <div key={i} style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: i < PROMPTS.length - 1 ? 8 : 0 }}>
               {p}
@@ -126,13 +126,13 @@ export function SafePlace({ onClose, onComplete }: Props) {
           onChange={e => setText(e.target.value)}
           placeholder="Это небольшой уютный лес недалеко от дома. Я слышу птиц..."
           rows={8}
-          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${text.trim() ? 'rgba(52,211,153,0.25)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
+          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${text.trim() ? 'color-mix(in srgb, var(--accent-green) 25%, transparent)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
         />
 
         <button
           onClick={handleSave}
           disabled={!text.trim()}
-          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'rgba(52,211,153,0.15)' : 'rgba(var(--fg-rgb),0.06)', color: text.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
+          style={{ width: '100%', padding: '14px 0', borderRadius: 14, border: 'none', background: text.trim() ? 'color-mix(in srgb, var(--accent-green) 15%, transparent)' : 'rgba(var(--fg-rgb),0.06)', color: text.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default', transition: 'all 0.25s', marginBottom: 16 }}
         >
           Сохранить
         </button>

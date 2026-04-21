@@ -132,8 +132,8 @@ export function NeedHistorySheet({ need, value, history, childhoodValue, onClose
       {childhoodValue !== undefined && (
         <div style={{ marginBottom: 24 }}>
           <div style={{
-            background: childhoodValue <= 4 ? 'rgba(248,113,113,0.08)' : 'rgba(52,211,153,0.08)',
-            border: `1px solid ${childhoodValue <= 4 ? 'rgba(248,113,113,0.2)' : 'rgba(52,211,153,0.2)'}`,
+            background: childhoodValue <= 4 ? 'color-mix(in srgb, var(--accent-red) 8%, transparent)' : 'color-mix(in srgb, var(--accent-green) 8%, transparent)',
+            border: `1px solid ${childhoodValue <= 4 ? 'color-mix(in srgb, var(--accent-red) 20%, transparent)' : 'color-mix(in srgb, var(--accent-green) 20%, transparent)'}`,
             borderRadius: 14, padding: '12px 14px',
             display: 'flex', alignItems: 'center', gap: 12,
           }}>

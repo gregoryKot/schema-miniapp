@@ -141,8 +141,8 @@ export function SchemaDetailSheet({ schemaId, onClose, onOpenDiary }: Props) {
             style={{
               flex: 1, padding: '13px', borderRadius: 14, border: 'none',
               fontFamily: 'inherit',
-              background: isAdded ? 'var(--surface-2)' : 'rgba(167,139,250,0.12)',
-              outline: `1px solid ${isAdded ? 'var(--border-color)' : 'rgba(167,139,250,0.3)'}`,
+              background: isAdded ? 'var(--surface-2)' : 'color-mix(in srgb, var(--accent) 12%, transparent)',
+              outline: `1px solid ${isAdded ? 'var(--border-color)' : 'color-mix(in srgb, var(--accent) 30%, transparent)'}`,
               color: isAdded ? 'var(--text-faint)' : 'var(--accent)',
               fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s',
             }}

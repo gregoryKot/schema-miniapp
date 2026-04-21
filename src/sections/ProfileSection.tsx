@@ -235,7 +235,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
               )}
 
               {currentStreak === 0 && totalDays > 0 && onOpenTracker && (
-                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={onOpenTracker} style={{ width: '100%', padding: '9px 0', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   Заполнить сегодня →
                 </button>
               )}
@@ -246,11 +246,11 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                     const d = n === 1 ? 'день' : n < 5 ? 'дня' : 'дней';
                     const text = `🔥 ${n} ${d} подряд в дневнике потребностей!\n\nОтслеживаю своё состояние каждый день. t.me/Emotional_Needs_bot`;
                     try { if (navigator.share) await navigator.share({ text }); else await navigator.clipboard.writeText(text); } catch { try { await navigator.clipboard.writeText(text); } catch {} }
-                  }} style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                  }} style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                     Поделиться серией
                   </button>
                   {homeScreenStatus !== 'added' && (window as any).Telegram?.WebApp?.addToHomeScreen && (
-                    <button onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()} style={{ padding: '9px 14px', border: 'none', borderRadius: 12, background: 'rgba(167,139,250,0.12)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    <button onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()} style={{ padding: '9px 14px', border: 'none', borderRadius: 12, background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
                       На экран 📲
                     </button>
                   )}
@@ -300,7 +300,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                           <span style={{ fontSize: 12, color: trendColor, fontWeight: 600 }}>{(s.avg ?? 0).toFixed(1)} {s.trend}</span>
                         </div>
                         <div style={{ height: 3, borderRadius: 2, background: 'rgba(var(--fg-rgb),0.07)' }}>
-                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'rgba(167,139,250,0.5)' }} />
+                          <div style={{ height: '100%', borderRadius: 2, width: `${barW}%`, background: 'color-mix(in srgb, var(--accent) 50%, transparent)' }} />
                         </div>
                       </div>
                     );
@@ -387,7 +387,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
                 })() : null;
                 return (
                   <div key={a.id} onClick={() => a.earned && setSelectedAchievement(a.id)}
-                    style={{ background: a.earned ? 'rgba(167,139,250,0.1)' : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${a.earned ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
+                    style={{ background: a.earned ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'rgba(var(--fg-rgb),0.03)', border: `1px solid ${a.earned ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'rgba(var(--fg-rgb),0.06)'}`, borderRadius: 16, padding: '14px 12px', cursor: a.earned ? 'pointer' : 'default' }}>
                     <div style={{ fontSize: 28, marginBottom: 8, filter: a.earned ? 'none' : 'grayscale(1) opacity(0.3)' }}>{m.emoji}</div>
                     <div style={{ fontSize: 13, fontWeight: 600, color: a.earned ? 'var(--text)' : 'var(--text-faint)', marginBottom: 4 }}>{m.title}</div>
                     <div style={{ fontSize: 11, color: a.earned ? 'var(--text-sub)' : 'var(--text-faint)', lineHeight: 1.4, opacity: a.earned ? 1 : 0.5 }}>{m.desc}</div>
@@ -406,7 +406,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
         if (!m) return null;
         return (
           <div onClick={() => setSelectedAchievement(null)} style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, animation: 'fade-in 0.18s ease' }}>
-            <div onClick={e => e.stopPropagation()} style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.2), rgba(79,163,247,0.1))', border: '1px solid rgba(167,139,250,0.4)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
+            <div onClick={e => e.stopPropagation()} style={{ background: 'linear-gradient(145deg, color-mix(in srgb, var(--accent) 20%, transparent), rgba(79,163,247,0.1))', border: '1px solid color-mix(in srgb, var(--accent) 40%, transparent)', borderRadius: 24, padding: '36px 28px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}>
               <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>{m.emoji}</div>
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>{m.title}</div>
               <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.5, marginBottom: 28 }}>{m.desc}</div>

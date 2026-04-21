@@ -134,7 +134,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
       <BottomSheet onClose={() => setViewing(null)} zIndex={300}>
         <div style={{ paddingTop: 4 }}>
           <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 14 }}>{viewing.date}</div>
-          <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)', borderRadius: 16, padding: '14px 16px' }}>
+          <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)', borderRadius: 16, padding: '14px 16px' }}>
             <div style={{ marginBottom: 12 }}>
               <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>Режим</div>
               <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)' }}>{modeInfo?.emoji ?? '🧩'} {modeInfo?.label ?? viewing.mode}</div>
@@ -208,7 +208,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
               Ты сделал шаг навстречу себе. Это уже немало.
             </div>
           </div>
-          <div style={{ background: 'rgba(167,139,250,0.08)', border: '1px solid rgba(167,139,250,0.15)', borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)', borderRadius: 16, padding: '14px 16px', marginBottom: 16 }}>
             <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.8 }}>
               <span style={{ color: 'var(--text-sub)' }}>Режим: </span>{modeInfo?.emoji} {modeInfo?.label}<br />
               {needInfo ? <><span style={{ color: 'var(--text-sub)' }}>Потребность: </span>{needInfo.emoji} {needInfo.label}<br /></> : null}
@@ -218,7 +218,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           {onOpenTracker && (
             <button
               onClick={() => { onClose(); setTimeout(onOpenTracker!, 100); }}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: '1px solid rgba(167,139,250,0.2)', background: 'transparent', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', background: 'transparent', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginBottom: 10 }}
             >
               Открыть трекер потребностей →
             </button>
@@ -227,7 +227,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
             <button onClick={handleNew} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Ещё одну
             </button>
-            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={onClose} style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Готово
             </button>
           </div>
@@ -348,7 +348,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
 
           {progressBar}
 
-          <div style={{ background: 'rgba(52,211,153,0.07)', border: '1px solid rgba(52,211,153,0.15)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
+          <div style={{ background: 'color-mix(in srgb, var(--accent-green) 7%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 15%, transparent)', borderRadius: 16, padding: '16px', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--accent-green)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
               🌿 Говорит тебе
             </div>
@@ -372,7 +372,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
             </button>
             <button
               onClick={() => setStep('need')}
-              style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.2)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 20%, transparent)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >
               Дальше →
             </button>
@@ -408,8 +408,8 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
                 onClick={() => { setSelectedNeed(n.id); setStep('action'); }}
                 style={{
                   textAlign: 'left', padding: '13px 15px', borderRadius: 14,
-                  border: `1px solid ${selectedNeed === n.id ? 'rgba(167,139,250,0.4)' : 'rgba(var(--fg-rgb),0.08)'}`,
-                  background: selectedNeed === n.id ? 'rgba(167,139,250,0.12)' : 'rgba(var(--fg-rgb),0.03)',
+                  border: `1px solid ${selectedNeed === n.id ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'rgba(var(--fg-rgb),0.08)'}`,
+                  background: selectedNeed === n.id ? 'color-mix(in srgb, var(--accent) 12%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
                   cursor: 'pointer', color: 'var(--text)', fontSize: 14, fontWeight: 500,
                 }}
               >
@@ -442,7 +442,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
         {progressBar}
 
         {needInfo && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.12)', borderRadius: 12, padding: '10px 14px', marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'color-mix(in srgb, var(--accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 12%, transparent)', borderRadius: 12, padding: '10px 14px', marginBottom: 16 }}>
             <span style={{ fontSize: 20 }}>{needInfo.emoji}</span>
             <div>
               <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 2 }}>Потребность</div>
@@ -459,7 +459,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           onChange={e => setAction(e.target.value)}
           placeholder="Например: написать другу, выйти подышать, обнять подушку..."
           rows={3}
-          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${action.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.55, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 16 }}
+          style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.05)', border: `1px solid ${action.trim() ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '12px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.55, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 16 }}
         />
 
         <div style={{ display: 'flex', gap: 10 }}>
@@ -469,7 +469,7 @@ export function SchemaFlashcard({ onClose, onOpenTracker, onComplete }: Props) {
           <button
             onClick={save}
             disabled={!action.trim()}
-            style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: action.trim() ? 'rgba(52,211,153,0.2)' : 'rgba(var(--fg-rgb),0.07)', color: action.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: action.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}
+            style={{ flex: 1, padding: '13px 0', borderRadius: 14, border: 'none', background: action.trim() ? 'color-mix(in srgb, var(--accent-green) 20%, transparent)' : 'rgba(var(--fg-rgb),0.07)', color: action.trim() ? 'var(--accent-green)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 15, fontWeight: 600, cursor: action.trim() ? 'pointer' : 'default', transition: 'all 0.2s' }}
           >
             Сохранить
           </button>

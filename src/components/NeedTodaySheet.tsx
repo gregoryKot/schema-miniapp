@@ -241,8 +241,8 @@ export function NeedTodaySheet({ need, value, yesterdayValue, onChange, onClose,
               onClick={() => { onClose(); onOpenHelp(); }}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: 'rgba(248,113,113,0.08)',
-                border: '1px solid rgba(248,113,113,0.2)',
+                background: 'color-mix(in srgb, var(--accent-red) 8%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--accent-red) 20%, transparent)',
                 borderRadius: 12, padding: '12px 16px', cursor: 'pointer',
               }}
             >

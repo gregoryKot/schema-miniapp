@@ -133,7 +133,7 @@ export function MyNotesSheet({ onClose }: Props) {
           {TABS.map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{
               flex: 1, padding: '7px 4px', borderRadius: 10, border: 'none', cursor: 'pointer',
-              background: tab === t.id ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.04)',
+              background: tab === t.id ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(var(--fg-rgb),0.04)',
               color: tab === t.id ? 'var(--accent)' : 'var(--text-sub)',
               fontSize: 12, fontWeight: tab === t.id ? 600 : 400,
             }}>
@@ -281,7 +281,7 @@ export function MyNotesSheet({ onClose }: Props) {
               ) : (
                 <>
                   {safePlace && (
-                    <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
+                    <div style={{ background: 'color-mix(in srgb, var(--accent-green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 12%, transparent)', borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--accent-green)' }}>🏡 Безопасное место</span>
                         <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>{new Date(safePlace.updatedAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}</span>

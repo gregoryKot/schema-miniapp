@@ -57,8 +57,8 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(79,163,247,0.08))',
-      border: '1px solid rgba(167,139,250,0.25)',
+      background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), rgba(79,163,247,0.08))',
+      border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
       borderRadius: 16, padding: '16px 18px', marginBottom: 20,
     }}>
       <SectionLabel purple>Вопрос недели</SectionLabel>
@@ -87,7 +87,7 @@ export function WeeklyQuestion({ date, onDismiss }: Props) {
         }}>Пропустить</button>
         <button onClick={handleSave} disabled={!text.trim() || saving} style={{
           flex: 2, padding: '9px 0', border: 'none', borderRadius: 10,
-          background: text.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.06)',
+          background: text.trim() ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(var(--fg-rgb),0.06)',
           color: text.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)',
           fontSize: 12, fontWeight: 600, cursor: text.trim() ? 'pointer' : 'default',
         }}>Сохранить</button>

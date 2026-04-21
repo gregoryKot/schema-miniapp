@@ -171,7 +171,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
 
         {step === 'for' && (
           <>
-            <div style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent-red) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-red) 12%, transparent)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
               <div style={{ fontSize: 12, color: 'var(--accent-red)', fontWeight: 600, marginBottom: 4 }}>Доказательства ЗА</div>
               <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>«{belief}» — что подтверждает эту мысль? Будь честен.</div>
             </div>
@@ -193,7 +193,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
                 placeholder="Добавить..."
                 style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
               />
-              <button onClick={addFor} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(248,113,113,0.15)', color: 'var(--accent-red)', fontSize: 16, cursor: 'pointer' }}>+</button>
+              <button onClick={addFor} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'color-mix(in srgb, var(--accent-red) 15%, transparent)', color: 'var(--accent-red)', fontSize: 16, cursor: 'pointer' }}>+</button>
             </div>
             <button onClick={() => setStep('against')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
               Дальше →
@@ -203,7 +203,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
 
         {step === 'against' && (
           <>
-            <div style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent-green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 12%, transparent)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
               <div style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600, marginBottom: 4 }}>Доказательства ПРОТИВ</div>
               <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>Что опровергает «{belief}»? Вспомни факты, исключения, другие точки зрения.</div>
             </div>
@@ -225,7 +225,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
                 placeholder="Добавить..."
                 style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }}
               />
-              <button onClick={addAgainst} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 16, cursor: 'pointer' }}>+</button>
+              <button onClick={addAgainst} style={{ padding: '10px 14px', borderRadius: 10, border: 'none', background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)', fontSize: 16, cursor: 'pointer' }}>+</button>
             </div>
             <button onClick={() => setStep('reframe')} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(96,165,250,0.15)', color: 'var(--accent-blue)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}>
               Дальше →
@@ -235,7 +235,7 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
 
         {step === 'reframe' && (
           <>
-            <div style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.12)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
+            <div style={{ background: 'color-mix(in srgb, var(--accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 12%, transparent)', borderRadius: 14, padding: '10px 14px', marginBottom: 14 }}>
               <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600, marginBottom: 4 }}>Переформулировка</div>
               <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>
                 Посмотрев на оба списка — как можно сформулировать эту мысль точнее и добрее к себе?
@@ -246,9 +246,9 @@ export function BeliefCheck({ onClose, onComplete }: Props) {
               onChange={e => setReframe(e.target.value)}
               placeholder="Например: иногда я ошибаюсь, но это не значит что я всегда всё порчу..."
               rows={4}
-              style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${reframe.trim() ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
+              style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(var(--fg-rgb),0.04)', border: `1px solid ${reframe.trim() ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(var(--fg-rgb),0.1)'}`, borderRadius: 14, padding: '13px 14px', color: 'var(--text)', fontSize: 14, lineHeight: 1.7, resize: 'none', outline: 'none', fontFamily: 'inherit', marginBottom: 14 }}
             />
-            <button onClick={handleSave} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(52,211,153,0.15)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 16 }}>
+            <button onClick={handleSave} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', marginBottom: 16 }}>
               Сохранить
             </button>
           </>

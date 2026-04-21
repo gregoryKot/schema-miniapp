@@ -89,7 +89,7 @@ function NeedMini({ need, value, yesterday, onTap }: {
             position: 'absolute', top: 2, right: 2,
             fontSize: 7, fontWeight: 700, lineHeight: 1,
             color: delta > 0 ? 'var(--accent-green)' : 'var(--accent-red)',
-            background: delta > 0 ? 'rgba(74,222,128,0.18)' : 'rgba(248,113,113,0.18)',
+            background: delta > 0 ? 'color-mix(in srgb, var(--accent-green) 18%, transparent)' : 'color-mix(in srgb, var(--accent-red) 18%, transparent)',
             borderRadius: 4, padding: '1px 3px',
           }}>
             {delta > 0 ? '+' : ''}{delta}
@@ -507,7 +507,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
             return (
               <div key={s.id} onClick={() => setSelectedId(s.id === current.id ? null : s.id)} style={{
                 width: cur ? 18 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
-                background: d ? 'rgba(74,222,128,0.6)' : sk ? 'rgba(255,180,0,0.35)' : cur ? 'var(--accent)' : 'var(--surface-2)',
+                background: d ? 'color-mix(in srgb, var(--accent-green) 60%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 35%, transparent)' : cur ? 'var(--accent)' : 'var(--surface-2)',
                 transition: 'all 0.3s ease',
               }}/>
             );
@@ -526,8 +526,8 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
       <div style={{ display: 'flex', gap: 8 }}>
         {isCurrentDone ? (
           <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center',
-            background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.25)',
-            fontSize: 13, fontWeight: 600, color: 'rgba(74,222,128,0.9)' }}>
+            background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)',
+            fontSize: 13, fontWeight: 600, color: 'var(--accent-green)' }}>
             ✓ Выполнено
           </div>
         ) : (

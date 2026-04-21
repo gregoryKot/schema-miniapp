@@ -94,9 +94,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
   const isLast = step === total - 1;
 
   return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
-      border: '1px solid rgba(167,139,250,0.2)',
+    <div className="card" style={{
       borderRadius: 16, padding: '16px 18px', marginBottom: 24,
     }}>
       {/* Step dots */}
@@ -125,7 +123,7 @@ function OnboardingCard({ onDismiss }: { onDismiss: () => void }) {
         </button>
         <button
           onClick={() => isLast ? onDismiss() : setStep(s => s + 1)}
-          style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 10, background: 'rgba(167,139,250,0.18)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          style={{ flex: 1, padding: '9px 0', border: 'none', borderRadius: 10, background: 'color-mix(in srgb, var(--accent) 14%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
         >
           {isLast ? 'Понятно, начнём' : 'Далее →'}
         </button>
@@ -336,8 +334,8 @@ export function TodayView({ needs, ratings, saved, isOffline, onChange, onSaved,
       {practicesCardVisible && onOpenPractices && (
         <div style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          background: 'rgba(167,139,250,0.08)',
-          border: '1px solid rgba(167,139,250,0.18)',
+          background: 'color-mix(in srgb, var(--accent) 7%, transparent)',
+          border: '1px solid color-mix(in srgb, var(--accent) 16%, transparent)',
           borderRadius: 14, padding: '12px 14px',
           marginTop: 16, cursor: 'pointer',
         }}

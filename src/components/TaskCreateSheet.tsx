@@ -92,8 +92,8 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
         {TASK_OPTIONS.map(opt => (
           <div key={opt.type} onClick={() => setType(opt.type)} style={{
             padding: '10px 14px', borderRadius: 12, cursor: 'pointer',
-            background: type === opt.type ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.03)',
-            border: `1px solid ${type === opt.type ? 'rgba(167,139,250,0.4)' : 'rgba(var(--fg-rgb),0.07)'}`,
+            background: type === opt.type ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(var(--fg-rgb),0.03)',
+            border: `1px solid ${type === opt.type ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'rgba(var(--fg-rgb),0.07)'}`,
             display: 'flex', alignItems: 'center', gap: 10,
           }}>
             <span style={{ fontSize: 16, flexShrink: 0 }}>{opt.emoji}</span>
@@ -113,7 +113,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             {STREAK_OPTIONS.map(d => (
               <div key={d} onClick={() => setTargetDays(d)} style={{
                 flex: 1, textAlign: 'center', padding: '8px 0', borderRadius: 10, cursor: 'pointer',
-                background: targetDays === d ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                background: targetDays === d ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
                 border: `1px solid ${targetDays === d ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
                 fontSize: 14, fontWeight: 600, color: targetDays === d ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.5)',
               }}>{d}</div>
@@ -130,7 +130,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             {ALL_SCHEMAS_FLAT.map(s => (
               <div key={s.id} onClick={() => setSelectedSchemaId(s.id)} style={{
                 padding: '6px 10px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                background: selectedSchemaId === s.id ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                background: selectedSchemaId === s.id ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
                 border: `1px solid ${selectedSchemaId === s.id ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
                 color: selectedSchemaId === s.id ? 'var(--accent)' : 'var(--text-sub)',
               }}>
@@ -149,7 +149,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
             {ALL_MODES.map(m => (
               <div key={m.id} onClick={() => setSelectedModeId(m.id)} style={{
                 padding: '6px 10px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 500,
-                background: selectedModeId === m.id ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                background: selectedModeId === m.id ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
                 border: `1px solid ${selectedModeId === m.id ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.1)'}`,
                 color: selectedModeId === m.id ? 'var(--accent)' : 'var(--text-sub)',
               }}>
@@ -184,7 +184,7 @@ export function TaskCreateSheet({ clientId, clientName, defaultType, onCreated, 
 
       <button onClick={handleCreate} disabled={saving} style={{
         width: '100%', padding: '14px 0', borderRadius: 14, border: 'none',
-        background: saving ? 'rgba(167,139,250,0.3)' : 'var(--accent)',
+        background: saving ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'var(--accent)',
         color: '#fff', fontSize: 15, fontWeight: 600, cursor: saving ? 'default' : 'pointer',
       }}>
         {saving ? 'Сохраняю...' : 'Создать задание'}

@@ -805,8 +805,8 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
             {activeSchemas.length > 0 && (
               <div style={{
                 marginTop: 8, marginBottom: 16,
-                background: 'rgba(167,139,250,0.07)',
-                border: '1px solid rgba(167,139,250,0.2)',
+                background: 'color-mix(in srgb, var(--accent) 7%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
                 borderRadius: 16, padding: '16px 18px',
               }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)', marginBottom: 8 }}>
@@ -822,7 +822,7 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                   style={{
                     display: 'block', textAlign: 'center',
                     padding: '11px 0', borderRadius: 12,
-                    background: 'rgba(167,139,250,0.15)',
+                    background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
                     color: 'var(--accent)', fontSize: 14, fontWeight: 500,
                     textDecoration: 'none',
                   }}

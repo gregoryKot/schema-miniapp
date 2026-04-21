@@ -268,8 +268,8 @@ function ModesTab() {
       <div
         onClick={() => setShowCheckin(true)}
         style={{
-          background: 'linear-gradient(135deg, rgba(167,139,250,0.15), rgba(79,163,247,0.1))',
-          border: '1px solid rgba(167,139,250,0.2)',
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 15%, transparent), rgba(79,163,247,0.1))',
+          border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
           borderRadius: 16, padding: '14px 16px', marginBottom: 20, cursor: 'pointer',
         }}
       >
@@ -340,7 +340,7 @@ function ModesTab() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: 'linear-gradient(145deg, rgba(167,139,250,0.18), rgba(79,163,247,0.08))', border: '1px solid rgba(167,139,250,0.3)', borderRadius: 24, padding: '32px 24px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}
+            style={{ background: 'linear-gradient(145deg, color-mix(in srgb, var(--accent) 18%, transparent), rgba(79,163,247,0.08))', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', borderRadius: 24, padding: '32px 24px 24px', width: '100%', maxWidth: 320, textAlign: 'center', animation: 'sheet-up 0.2s cubic-bezier(0.34,1.56,0.64,1)' }}
           >
             <div style={{ fontSize: 56, marginBottom: 12 }}>{checkinMode.emoji}</div>
             <SectionLabel purple mb={8}>Режим</SectionLabel>
@@ -351,7 +351,7 @@ function ModesTab() {
             </div>
             <button
               onClick={() => { setCheckinMode(null); setShowCheckin(false); }}
-              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'rgba(167,139,250,0.25)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+              style={{ width: '100%', padding: '14px 0', border: 'none', borderRadius: 14, background: 'color-mix(in srgb, var(--accent) 25%, transparent)', color: 'var(--accent)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
             >Понятно</button>
           </div>
         </div>
@@ -440,7 +440,7 @@ export function SchemaInfoSheet({ onClose, ratings, autoStartTest, initialTab, h
               onClick={() => setShowTest(true)}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)',
+                background: 'color-mix(in srgb, var(--accent) 10%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
                 borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
               }}
             >

@@ -627,8 +627,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                 const label = needs_low[0].chartLabel;
                 return (
                   <div style={{
-                    background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
-                    border: '1px solid rgba(167,139,250,0.2)',
+                    background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), rgba(79,163,247,0.06))',
+                    border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
                     borderRadius: 16, padding: '14px 16px', marginBottom: 16,
                   }}>
                     <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>
@@ -672,8 +672,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   {noteTags.map(tag => (
                     <span key={tag} style={{
                       fontSize: 11, padding: '3px 10px', borderRadius: 20,
-                      background: 'rgba(167,139,250,0.15)',
-                      border: '1px solid rgba(167,139,250,0.3)',
+                      background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
+                      border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
                       color: 'var(--accent)',
                     }}>{tag}</span>
                   ))}
@@ -720,8 +720,8 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               const label = needs_low[0].chartLabel;
               return (
                 <div style={{
-                  background: 'linear-gradient(135deg, rgba(167,139,250,0.1), rgba(79,163,247,0.06))',
-                  border: '1px solid rgba(167,139,250,0.2)',
+                  background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), rgba(79,163,247,0.06))',
+                  border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
                   borderRadius: 16, padding: '14px 16px', marginTop: 16,
                 }}>
                   <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>

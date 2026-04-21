@@ -221,7 +221,7 @@ export function TrackerOverlay({
             <span style={{
               fontSize:11, fontWeight:600,
               color:delta>0?'var(--accent-green)':'var(--accent-red)',
-              background:delta>0?'rgba(74,222,128,0.12)':'rgba(248,113,113,0.12)',
+              background:delta>0?'color-mix(in srgb, var(--accent-green) 12%, transparent)':'color-mix(in srgb, var(--accent-red) 12%, transparent)',
               borderRadius:10, padding:'1px 7px',
             }}>
               {delta>0?'+':''}{delta}
@@ -276,8 +276,8 @@ export function TrackerOverlay({
 
         {allRated && (
           <button onClick={onClose} style={{
-            width:'100%', padding:'14px', borderRadius:16, border:'1px solid rgba(74,222,128,0.25)',
-            background:'rgba(74,222,128,0.12)', color:'var(--accent-green)',
+            width:'100%', padding:'14px', borderRadius:16, border:'1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)',
+            background:'color-mix(in srgb, var(--accent-green) 12%, transparent)', color:'var(--accent-green)',
             fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
           }}>
             Готово — сохранить всё ✓

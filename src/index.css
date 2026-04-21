@@ -55,14 +55,14 @@ html[data-theme="light"] {
   --on-accent:     #ffffff;
 
   /* Darker accents for WCAG AA on light bg */
-  --accent:        #6d28d9;
+  --accent:        #4f46e5;
   --accent-indigo: #4338ca;
   --accent-orange: #c2410c;
-  --accent-blue:   #1d4ed8;
+  --accent-blue:   #2563eb;
   --accent-green:  #059669;
   --accent-yellow: #92400e;
   --accent-red:    #dc2626;
-  --accent-pink:   #be185d;
+  --accent-pink:   #db2777;
 
   /* Pure white surfaces — cards pop against lavender background */
   --surface:       #ffffff;

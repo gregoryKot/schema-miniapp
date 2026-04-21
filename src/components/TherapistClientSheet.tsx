@@ -477,7 +477,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                   <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.5px' }}>Кабинет</div>
-                  <div style={{ background: 'rgba(167,139,250,0.2)', border: '1px solid rgba(167,139,250,0.35)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.03em' }}>психолог</div>
+                  <div style={{ background: 'color-mix(in srgb, var(--accent) 20%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 35%, transparent)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.03em' }}>психолог</div>
                 </div>
                 <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.4 }}>Клиенты · Задания · Концептуализация</div>
               </div>
@@ -485,7 +485,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 onClick={() => openAddMode(addMode ? null : 'invite')}
                 style={{
                   width: 36, height: 36, borderRadius: 18, border: 'none',
-                  background: addMode ? 'rgba(var(--fg-rgb),0.08)' : 'rgba(167,139,250,0.2)',
+                  background: addMode ? 'rgba(var(--fg-rgb),0.08)' : 'color-mix(in srgb, var(--accent) 20%, transparent)',
                   color: addMode ? 'rgba(var(--fg-rgb),0.5)' : 'var(--accent)',
                   fontSize: addMode ? 18 : 22, fontWeight: 300, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -527,7 +527,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                       onClick={() => { setAddMode(mode); setAddInput(''); setAddError(''); }}
                       style={{
                         flex: 1, padding: '9px 4px', borderRadius: 12, border: 'none',
-                        background: addMode === mode ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
+                        background: addMode === mode ? 'color-mix(in srgb, var(--accent) 20%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
                         color: addMode === mode ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)',
                         fontSize: 12, fontWeight: addMode === mode ? 600 : 400, cursor: 'pointer',
                         transition: 'all 0.15s ease',
@@ -544,7 +544,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     {!inviteUrl ? (
                       <button
                         onClick={createInvite} disabled={inviteLoading}
-                        style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', background: 'rgba(167,139,250,0.2)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
+                        style={{ width: '100%', padding: '12px 0', borderRadius: 12, border: 'none', background: 'color-mix(in srgb, var(--accent) 20%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: inviteLoading ? 0.6 : 1 }}
                       >
                         {inviteLoading ? 'Создаю...' : 'Создать ссылку'}
                       </button>
@@ -556,10 +556,10 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                           style={{ width: '100%', boxSizing: 'border-box', marginBottom: 10, background: 'rgba(var(--fg-rgb),0.05)', border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 10, padding: '9px 12px', outline: 'none', cursor: 'text', color: 'var(--text-sub)', fontSize: 12, fontFamily: 'monospace' }}
                         />
                         <div style={{ display: 'flex', gap: 8 }}>
-                          <button onClick={copyInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'rgba(6,214,160,0.15)' : 'rgba(var(--fg-rgb),0.07)', color: inviteCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                          <button onClick={copyInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: inviteCopied ? 'color-mix(in srgb, var(--accent-green) 15%, transparent)' : 'rgba(var(--fg-rgb),0.07)', color: inviteCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.6)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             {inviteCopied ? '✓ Скопировано' : 'Скопировать'}
                           </button>
-                          <button onClick={shareInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                          <button onClick={shareInvite} style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                             Поделиться
                           </button>
                         </div>
@@ -773,7 +773,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                     </div>
                     {/* Activity badge */}
                     {selectedClient.telegramId > 0 && selectedClient.lastActiveDate && (
-                      <span style={{ fontSize: 11, color: selectedClient.lastActiveDate === today ? '#06d6a0' : 'rgba(var(--fg-rgb),0.3)', background: selectedClient.lastActiveDate === today ? 'rgba(6,214,160,0.1)' : 'rgba(var(--fg-rgb),0.05)', padding: '3px 8px', borderRadius: 20 }}>
+                      <span style={{ fontSize: 11, color: selectedClient.lastActiveDate === today ? '#06d6a0' : 'rgba(var(--fg-rgb),0.3)', background: selectedClient.lastActiveDate === today ? 'color-mix(in srgb, var(--accent-green) 10%, transparent)' : 'rgba(var(--fg-rgb),0.05)', padding: '3px 8px', borderRadius: 20 }}>
                         {selectedClient.lastActiveDate === today ? '● сегодня' : fmtDate(selectedClient.lastActiveDate)}
                       </span>
                     )}
@@ -787,7 +787,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         {[1,2,3,4,5,6,0].map(d => (
                           <button key={d}
                             onClick={() => setLocalMeetingDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d])}
-                            style={{ padding: '4px 9px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, background: localMeetingDays.includes(d) ? 'rgba(167,139,250,0.3)' : 'rgba(var(--fg-rgb),0.07)', color: localMeetingDays.includes(d) ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)' }}
+                            style={{ padding: '4px 9px', borderRadius: 20, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 600, background: localMeetingDays.includes(d) ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(var(--fg-rgb),0.07)', color: localMeetingDays.includes(d) ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.4)' }}
                           >{DAY_NAMES[d]}</button>
                         ))}
                         <button onClick={async () => { await saveSessionInfo({ meetingDays: localMeetingDays }); setEditingDays(false); }} disabled={sessionInfoSaving} style={{ padding: '4px 10px', borderRadius: 20, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>✓</button>
@@ -800,7 +800,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         ) : (
                           <>
                             {[1,2,3,4,5,6,0].filter(d => displayDays.includes(d)).map(d => (
-                              <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'rgba(167,139,250,0.15)', color: 'var(--accent)' }}>{DAY_NAMES[d]}</span>
+                              <span key={d} style={{ fontSize: 12, fontWeight: 600, padding: '3px 8px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)' }}>{DAY_NAMES[d]}</span>
                             ))}
                             <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>✎</span>
                           </>
@@ -904,7 +904,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                   ) : (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>Концептуализация не заполнена</div>
-                      <button onClick={() => setShowConceptSheet(true)} style={{ background: 'rgba(167,139,250,0.15)', border: 'none', borderRadius: 12, padding: '9px 18px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                      <button onClick={() => setShowConceptSheet(true)} style={{ background: 'color-mix(in srgb, var(--accent) 15%, transparent)', border: 'none', borderRadius: 12, padding: '9px 18px', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                         Заполнить концептуализацию
                       </button>
                     </div>
@@ -986,7 +986,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             </div>
             <button
               onClick={() => setShowAssign(true)}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'rgba(167,139,250,0.15)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
             >
               + Назначить задание
             </button>
@@ -1021,7 +1021,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 {noteError ? <div style={{ fontSize: 12, color: 'var(--accent-red)' }}>{noteError}</div> : <div />}
                 <button
                   onClick={addNote} disabled={noteSaving || !newNoteText.trim()}
-                  style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'rgba(167,139,250,0.25)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
+                  style={{ padding: '8px 18px', borderRadius: 10, border: 'none', background: newNoteText.trim() ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'rgba(var(--fg-rgb),0.06)', color: newNoteText.trim() ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 13, fontWeight: 600, cursor: newNoteText.trim() ? 'pointer' : 'default', opacity: noteSaving ? 0.6 : 1 }}
                 >
                   {noteSaving ? 'Сохраняю...' : 'Добавить заметку'}
                 </button>
@@ -1040,7 +1040,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
               {concept && (concept.history as unknown[])?.length > 0 && (
                 <button
                   onClick={() => setShowHistory(h => !h)}
-                  style={{ background: showHistory ? 'rgba(167,139,250,0.15)' : 'rgba(var(--fg-rgb),0.06)', border: 'none', borderRadius: 10, padding: '5px 10px', color: showHistory ? 'var(--accent)' : 'var(--text-sub)', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+                  style={{ background: showHistory ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(var(--fg-rgb),0.06)', border: 'none', borderRadius: 10, padding: '5px 10px', color: showHistory ? 'var(--accent)' : 'var(--text-sub)', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
                 >
                   🕐 История ({(concept.history as unknown[]).length})
                 </button>
@@ -1070,7 +1070,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                           <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-sub)' }}>{fmtDate(snap.savedAt.slice(0, 10))}</span>
                           <button
                             onClick={() => { setLocalConcept({ schemaIds: snap.schemaIds ?? [], modeIds: snap.modeIds ?? [], earlyExperience: snap.earlyExperience ?? '', unmetNeeds: snap.unmetNeeds ?? '', triggers: snap.triggers ?? '', copingStyles: snap.copingStyles ?? '', goals: snap.goals ?? '', currentProblems: snap.currentProblems ?? '', modeTransitions: snap.modeTransitions ?? '' }); setConceptDirty(true); setShowHistory(false); }}
-                            style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(167,139,250,0.1)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
+                            style={{ fontSize: 11, color: 'var(--accent)', background: 'color-mix(in srgb, var(--accent) 10%, transparent)', border: 'none', borderRadius: 8, padding: '4px 10px', cursor: 'pointer' }}
                           >Восстановить</button>
                         </div>
                         {snapSchemas.length > 0 && (
@@ -1189,7 +1189,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             </div>
             <button
               onClick={saveConcept} disabled={conceptSaving || !conceptDirty}
-              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: conceptDirty ? 'linear-gradient(135deg, rgba(167,139,250,0.3), rgba(79,163,247,0.2))' : 'rgba(var(--fg-rgb),0.05)', color: conceptDirty ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 14, fontWeight: 600, cursor: conceptDirty ? 'pointer' : 'default', opacity: conceptSaving ? 0.6 : 1 }}
+              style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: conceptDirty ? 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, transparent), rgba(79,163,247,0.2))' : 'rgba(var(--fg-rgb),0.05)', color: conceptDirty ? 'var(--text)' : 'rgba(var(--fg-rgb),0.25)', fontSize: 14, fontWeight: 600, cursor: conceptDirty ? 'pointer' : 'default', opacity: conceptSaving ? 0.6 : 1 }}
             >
               {conceptSaving ? 'Сохраняю...' : conceptDirty ? 'Сохранить концептуализацию' : concept ? `✓ Сохранено ${fmtDate(concept.updatedAt.slice(0, 10))}` : 'Нет изменений'}
             </button>
@@ -1197,7 +1197,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
             {concept && (
               <button
                 onClick={handleExport}
-                style={{ width: '100%', marginTop: 8, padding: '11px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: exportCopied ? 'rgba(6,214,160,0.1)' : 'transparent', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
+                style={{ width: '100%', marginTop: 8, padding: '11px 0', borderRadius: 14, border: '1px solid rgba(var(--fg-rgb),0.1)', background: exportCopied ? 'color-mix(in srgb, var(--accent-green) 10%, transparent)' : 'transparent', color: exportCopied ? '#06d6a0' : 'rgba(var(--fg-rgb),0.4)', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
               >
                 {exportCopied ? '✓ Скопировано' : '↗ Экспорт / Поделиться'}
               </button>

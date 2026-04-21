@@ -78,8 +78,8 @@ export function NoteSheet({ date, onClose }: Props) {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5,
                   padding: '6px 12px', borderRadius: 20, cursor: 'pointer',
-                  background: on ? 'rgba(167,139,250,0.2)' : 'rgba(var(--fg-rgb),0.05)',
-                  border: `1px solid ${on ? 'rgba(167,139,250,0.5)' : 'rgba(var(--fg-rgb),0.07)'}`,
+                  background: on ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'rgba(var(--fg-rgb),0.05)',
+                  border: `1px solid ${on ? 'color-mix(in srgb, var(--accent) 40%, transparent)' : 'rgba(var(--fg-rgb),0.07)'}`,
                   color: on ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.5)',
                   fontSize: 12, fontWeight: on ? 600 : 400,
                   transition: 'all 0.15s',

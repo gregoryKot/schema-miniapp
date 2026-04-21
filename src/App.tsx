@@ -122,12 +122,12 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           БЕТА-ВЕРСИЯ
         </div>
       </div>
-      <div style={{ background: 'rgba(var(--fg-rgb),0.05)', borderRadius: 16, padding: '16px 18px', marginBottom: 12 }}>
+      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 12 }}>
         <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.7 }}>
           Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
         </div>
       </div>
-      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+      <div className='card' style={{ borderRadius: 16, padding: '16px 18px' }}>
         <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
           СхемаЛаб — инструмент самопознания: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
           <br /><br />
@@ -139,7 +139,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     // Step 1: Data & Privacy
     <div key={1}>
       <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Данные и конфиденциальность</div>
-      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
           Все данные хранятся на защищённом сервере, <strong style={{ color: 'var(--text)' }}>зашифрованы</strong> и привязаны к Telegram-аккаунту. Не передаются третьим лицам.
           <br /><br />
@@ -156,7 +156,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     // Step 2: Not therapy
     <div key={2}>
       <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Важно знать</div>
-      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
           СхемаЛаб — инструмент самоисследования. Оценки, тесты и упражнения внутри <strong style={{ color: 'var(--text)' }}>не являются клинической диагностикой</strong> и не заменяют работу с психологом.
         </div>
@@ -171,7 +171,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
     // Step 3: Author + Start
     <div key={3}>
       <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Об авторе</div>
-      <div style={{ background: 'rgba(var(--fg-rgb),0.04)', borderRadius: 16, padding: '16px 18px', marginBottom: 16, border: '1px solid rgba(var(--fg-rgb),0.07)' }}>
+      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
         <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 10 }}>
           Канал о схема-терапии —{' '}
           <a href="https://t.me/SchemeHappens" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
@@ -833,7 +833,7 @@ export default function App() {
             <div style={{ position: 'sticky', bottom: 0, padding: '12px 20px 28px', background: 'linear-gradient(to top, var(--bg) 65%, transparent)', zIndex: 5 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
-                style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'rgba(52,211,153,0.14)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
               >
                 Готово — закрыть трекер ✓
               </button>
@@ -974,7 +974,7 @@ export default function App() {
             <div
               onClick={() => { setShowAbout(false); setShowSchemaInfo(true); }}
               style={{
-                background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.2)',
+                background: 'color-mix(in srgb, var(--accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
                 borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               }}
@@ -983,7 +983,7 @@ export default function App() {
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent)' }}>Схема-терапия</div>
                 <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Схемы, режимы, потребности</div>
               </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,0.7)" strokeWidth="2" strokeLinecap="round">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </div>
