@@ -559,7 +559,9 @@ export function YSQTestSheet({ onClose, ratings, autoResume, onViewSchemas }: Pr
                       } else {
                         const dateStr = new Date().toISOString();
                         localStorage.setItem(YSQ_RESULT_KEY, JSON.stringify({ date: dateStr, answers: newAnswers }));
-                        api.saveYsqResult(newAnswers).catch(() => {});
+                        api.saveYsqResult(newAnswers)
+                          .then(() => api.getYsqHistory().then(h => { if (h) setHistory(h); }).catch(() => {}))
+                          .catch(() => {});
                         api.deleteYsqProgress().catch(() => {});
                         localStorage.removeItem(YSQ_PROGRESS_KEY);
                         setAnswers(newAnswers);
