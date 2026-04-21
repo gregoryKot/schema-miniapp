@@ -247,7 +247,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
                 ЗАДАНИЕ ОТ ТЕРАПЕВТА
               </div>
               <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 14, lineHeight: 1.4 }}>
-                {getTaskDisplayText(featured.type, featured.text)}
+                {resolveTaskDisplayText(featured)}
               </div>
               {target > 0 && (
                 <>
@@ -341,7 +341,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, color: 'var(--text)' }}>
                   {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
-                  {task.text}
+                  {resolveTaskDisplayText(task)}
                 </div>
                 <TaskProgressBar task={task} />
                 {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
@@ -365,7 +365,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.4 }}>
                       {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
-                      {task.text}
+                      {resolveTaskDisplayText(task)}
                     </div>
                     {task.completedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
                   </div>
