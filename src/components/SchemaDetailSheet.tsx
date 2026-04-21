@@ -158,7 +158,7 @@ export function SchemaDetailSheet({ schemaId, onClose, onOpenDiary }: Props) {
               color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
-            Личная карточка →
+            Познакомиться →
           </button>
         </div>
       </div>
