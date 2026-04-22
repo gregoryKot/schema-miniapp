@@ -62,17 +62,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
   const [insightsOpen] = useState(false); // kept for future use
   const [showBestDayInfo, setShowBestDayInfo] = useState(false);
-  const [homeBannerDismissed, setHomeBannerDismissed] = useState(
-    () => sessionStorage.getItem('home_banner_dismissed') === '1'
-  );
-  const [homeScreenStatus, setHomeScreenStatus] = useState<string | null>(null);
-
-  useEffect(() => {
-    const tg = (window as any).Telegram?.WebApp;
-    if (tg?.checkHomeScreenStatus) {
-      tg.checkHomeScreenStatus((status: string) => setHomeScreenStatus(status));
-    }
-  }, []);
+  const [homeScreenStatus] = useState<string | null>(null);
 
   useEffect(() => {
     setReady(false);
@@ -110,17 +100,7 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
     return 'Заполняй дневник каждый день';
   })();
 
-  // Show home screen suggestion only if streak ≥ 3, not added, not dismissed
-  const showHomeSuggestion = ready
-    && currentStreak >= 3
-    && homeScreenStatus !== 'added'
-    && !homeBannerDismissed
-    && !!(window as any).Telegram?.WebApp?.addToHomeScreen;
-
-  function dismissHomeBanner() {
-    sessionStorage.setItem('home_banner_dismissed', '1');
-    setHomeBannerDismissed(true);
-  }
+  const showHomeSuggestion = false; // moved to onboarding
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: 140, paddingTop: safeTop, animation: 'fade-in 0.25s ease', overflowX: 'hidden' }}>
@@ -233,36 +213,6 @@ export function ProfileSection({ onOpenSettings, onOpenTracker, refreshKey, disp
           </div>
         )}
 
-        {/* ── Предложение добавить на экран (dismissible) ── */}
-        {showHomeSuggestion && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '12px 14px',
-            background: 'color-mix(in srgb, var(--accent) 8%, transparent)',
-            border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
-            borderRadius: 16,
-          }}>
-            <span style={{ fontSize: 22, flexShrink: 0 }}>📲</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Добавить на главный экран?</div>
-              <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 1 }}>Чтобы дневник всегда был под рукой</div>
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-              <button
-                onClick={() => (window as any).Telegram.WebApp.addToHomeScreen()}
-                style={{ padding: '7px 12px', border: 'none', borderRadius: 10, background: 'var(--accent)', color: 'var(--on-accent)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Да
-              </button>
-              <button
-                onClick={dismissHomeBanner}
-                style={{ padding: '7px 10px', border: 'none', borderRadius: 10, background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-faint)', fontSize: 12, cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* ── Activity heatmap ── */}
         {ready && activeDates.size > 0 && (() => {

@@ -91,7 +91,8 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
   const [step, setStep] = useState(0);
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
-  const TOTAL = 4;
+  const canAddToHome = !!(window as any).Telegram?.WebApp?.addToHomeScreen;
+  const TOTAL = canAddToHome ? 5 : 4;
   const ready = c1 && c2;
 
   const Checkbox = ({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) => (
@@ -168,7 +169,7 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
       </div>
     </div>,
 
-    // Step 3: Author + Start
+    // Step 3: Author
     <div key={3}>
       <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Об авторе</div>
       <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
@@ -186,6 +187,22 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           {!c2 && !c1 ? 'Вернись к шагам 2 и 3 и подтверди согласие' : !c2 ? 'Вернись к шагу 2 и подтверди согласие' : 'Вернись к шагу 3 и подтверди согласие'}
         </div>
       )}
+    </div>,
+
+    // Step 4: Add to home screen (only shown if canAddToHome)
+    <div key={4} style={{ textAlign: 'center', paddingTop: 8 }}>
+      <div style={{ fontSize: 64, marginBottom: 20, lineHeight: 1 }}>📲</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 10 }}>Добавь на главный экран</div>
+      <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 28 }}>
+        Так дневник будет всегда под рукой — как обычное приложение. Займёт две секунды.
+      </div>
+      <button
+        onClick={() => { (window as any).Telegram?.WebApp?.addToHomeScreen(); }}
+        className="btn-primary"
+        style={{ marginBottom: 10 }}
+      >
+        Добавить на экран
+      </button>
     </div>,
   ];
 
@@ -224,25 +241,17 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
         )}
         {step < TOTAL - 1 ? (
           <button
-            onClick={() => setStep(s => s + 1)}
-            className="btn-primary" style={{ flex: 2 }}
+            onClick={() => { if (step === 3 && !ready) return; setStep(s => s + 1); }}
+            className="btn-primary" style={{ flex: 2, opacity: step === 3 && !ready ? 0.35 : 1 }}
           >
             Далее →
           </button>
         ) : (
           <button
             onClick={onAccept}
-            disabled={!ready}
-            style={{
-              flex: 2, padding: '14px 0', borderRadius: 14, border: 'none',
-              background: ready ? 'linear-gradient(135deg, var(--accent), #4fa3f7)' : 'rgba(var(--fg-rgb),0.08)',
-              color: ready ? '#fff' : 'rgba(var(--fg-rgb),0.25)',
-              fontSize: 15, fontWeight: 600,
-              cursor: ready ? 'pointer' : 'default',
-              transition: 'all 0.2s',
-            }}
+            className="btn-primary" style={{ flex: 2 }}
           >
-            Начать
+            {canAddToHome ? 'Пропустить и начать' : 'Начать'}
           </button>
         )}
       </div>

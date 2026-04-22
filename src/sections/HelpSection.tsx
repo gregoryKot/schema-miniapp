@@ -84,31 +84,63 @@ function resolveTaskEmoji(task: UserTask): string {
 
 function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => void; onComplete?: () => void }) {
   const isStreakTask = task.type === 'diary_streak' || task.type === 'tracker_streak';
+  const isAssigned = task.assignedBy !== null;
   const [completing, setCompleting] = useState(false);
+  const emoji = task.doneToday ? '✅' : resolveTaskEmoji(task);
+
   return (
     <div
       onClick={task.doneToday ? undefined : onOpen}
-      style={{ padding: '10px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.04)', display: 'flex', alignItems: 'flex-start', gap: 10, cursor: task.doneToday ? 'default' : 'pointer', opacity: task.doneToday ? 0.6 : 1 }}
+      style={{
+        padding: '12px 16px',
+        borderTop: '1px solid rgba(var(--fg-rgb),0.04)',
+        display: 'flex', alignItems: 'center', gap: 12,
+        cursor: task.doneToday ? 'default' : 'pointer',
+        opacity: task.doneToday ? 0.55 : 1,
+      }}
     >
-      <span style={{ fontSize: 15, flexShrink: 0 }}>{task.doneToday ? '✅' : resolveTaskEmoji(task)}</span>
+      {/* Icon */}
+      <div style={{
+        width: 38, height: 38, borderRadius: 11, flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 18,
+        background: task.doneToday
+          ? 'color-mix(in srgb, var(--accent-green) 12%, transparent)'
+          : isAssigned
+            ? 'color-mix(in srgb, var(--accent) 10%, transparent)'
+            : 'rgba(var(--fg-rgb),0.06)',
+      }}>
+        {emoji}
+      </div>
+
+      {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, color: 'var(--text)' }}>{resolveTaskDisplayText(task)}</div>
+        {isAssigned && !task.doneToday && (
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 2 }}>
+            от терапевта
+          </div>
+        )}
+        <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>
+          {resolveTaskDisplayText(task)}
+        </div>
         {task.doneToday && isStreakTask && (
           <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
         )}
         <TaskProgressBar task={task} />
-        {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
+        {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
       </div>
+
+      {/* Action */}
       {!task.doneToday && task.done === null && task.type === 'custom' && onComplete ? (
         <button
           disabled={completing}
           onClick={e => { e.stopPropagation(); setCompleting(true); onComplete(); }}
-          style={{ background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 11, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
+          style={{ background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', border: 'none', borderRadius: 10, padding: '6px 12px', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
         >
-          {completing ? '...' : 'Сделал'}
+          {completing ? '...' : 'Готово'}
         </button>
       ) : !task.doneToday && task.type !== 'custom' ? (
-        <span style={{ color: 'var(--accent)', fontSize: 12, flexShrink: 0 }}>открыть ›</span>
+        <span style={{ color: 'var(--accent)', fontSize: 16, flexShrink: 0, opacity: 0.5 }}>›</span>
       ) : null}
     </div>
   );
@@ -336,22 +368,26 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
               Нет активных заданий
             </div>
           ) : tasks.map(task => (
-            <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
-              <span style={{ fontSize: 15, flexShrink: 0 }}>{task.done === true ? '✅' : task.done === false ? '❌' : '⏳'}</span>
+            <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: 'rgba(var(--fg-rgb),0.05)' }}>
+                {task.done === true ? '✅' : task.done === false ? '❌' : resolveTaskEmoji(task)}
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, color: 'var(--text)' }}>
-                  {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
+                {task.assignedBy !== null && (
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 1 }}>от терапевта</div>
+                )}
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>
                   {resolveTaskDisplayText(task)}
                 </div>
                 <TaskProgressBar task={task} />
-                {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>Срок: {fmtDate(task.dueDate)}</div>}
+                {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
               </div>
               {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
                 <button
                   onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
-                  style={{ background: 'color-mix(in srgb, var(--accent-green) 15%, transparent)', border: 'none', borderRadius: 8, padding: '5px 10px', color: 'var(--accent-green)', fontSize: 12, cursor: 'pointer', flexShrink: 0 }}
+                  style={{ background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', border: 'none', borderRadius: 10, padding: '6px 12px', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
                 >
-                  Сделал
+                  Готово
                 </button>
               )}
             </div>
@@ -360,14 +396,15 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
             <>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
               {taskHistory.map(task => (
-                <div key={task.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.55 }}>
-                  <span style={{ fontSize: 14, flexShrink: 0 }}>{task.done === true ? '✅' : '❌'}</span>
+                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.5 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, background: 'rgba(var(--fg-rgb),0.04)' }}>
+                    {task.done === true ? '✅' : '❌'}
+                  </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.4 }}>
-                      {task.assignedBy !== null && <span style={{ color: 'var(--accent-yellow)', marginRight: 4 }}>👨‍⚕️</span>}
+                    <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.35 }}>
                       {resolveTaskDisplayText(task)}
                     </div>
-                    {task.completedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                    {task.completedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
                   </div>
                 </div>
               ))}
