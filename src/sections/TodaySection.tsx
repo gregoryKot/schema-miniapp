@@ -11,11 +11,55 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
-import { api, StreakData } from '../api';
+import { api, StreakData, UserTask } from '../api';
 import { Section } from '../components/BottomNav';
 import { useSafeTop } from '../utils/safezone';
 import { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY } from '../utils/storageKeys';
-import { TaskCreateSheet } from '../components/TaskCreateSheet';
+import { TaskCreateSheet, getTaskDisplayText } from '../components/TaskCreateSheet';
+import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
+import { ModeIntroSheet } from '../components/ModeIntroSheet';
+import { BottomSheet } from '../components/BottomSheet';
+import { ALL_SCHEMAS, ALL_MODES } from '../schemaTherapyData';
+import { fmtDate } from '../utils/format';
+
+const TASK_EMOJI: Record<string, string> = {
+  diary_streak: '📔', tracker_streak: '📊', belief_check: '🔍',
+  letter_to_self: '✉️', safe_place: '🏡', childhood_wheel: '🌱',
+  flashcard: '🆘', schema_intro: '🧩', mode_intro: '🔄', custom: '🎯',
+};
+
+function resolveTaskDisplayText(task: UserTask): string {
+  const text = getTaskDisplayText(task.type, task.text);
+  if (text === task.text) {
+    const schema = ALL_SCHEMAS.find(s => s.id === task.text);
+    if (schema) return schema.name;
+    const mode = ALL_MODES.find(m => m.id === task.text);
+    if (mode) return mode.name;
+  }
+  return text;
+}
+
+function resolveTaskEmoji(task: UserTask): string {
+  if (TASK_EMOJI[task.type]) return TASK_EMOJI[task.type];
+  if (ALL_SCHEMAS.some(s => s.id === task.text)) return '🧩';
+  if (ALL_MODES.some(m => m.id === task.text)) return '🔄';
+  return '🎯';
+}
+
+function TaskProgressBar({ task }: { task: UserTask }) {
+  if (task.type === 'custom' || !task.targetDays) return null;
+  const target = task.targetDays;
+  const progress = task.progress !== undefined ? Math.min(task.progress, target) : 0;
+  const pct = target > 0 ? (progress / target) * 100 : 0;
+  return (
+    <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ flex: 1, height: 3, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: 'var(--accent)', borderRadius: 3, transition: 'width 0.3s ease' }} />
+      </div>
+      <span style={{ fontSize: 10, color: 'var(--text-sub)' }}>{progress}/{target}</span>
+    </div>
+  );
+}
 
 export { MY_SCHEMA_IDS_KEY, MY_MODE_IDS_KEY };
 
@@ -143,21 +187,29 @@ interface Props {
   refreshKey?: number;
   userRole?: 'CLIENT' | 'THERAPIST';
   onOpenTherapistCabinet?: () => void;
+  onTasksChanged?: () => void;
 }
 
 // ── TodaySection ──────────────────────────────────────────────────────────────
 
 export function TodaySection({
   needs, ratings, yesterdayRatings = {},
-  onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt,
+  onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt,
   onOpenDiaries, onOpenChildhoodWheel,
-  refreshKey, userRole, onOpenTherapistCabinet,
+  refreshKey, userRole, onOpenTherapistCabinet, onTasksChanged,
 }: Props) {
   const [profile,       setProfile]       = useState<UserProfile | null>(null);
   const [manualSchemaIds, setManualSchemaIds] = useState<string[]>(() => readLocalIds(MY_SCHEMA_IDS_KEY));
   const [recentDiaries, setRecentDiaries] = useState<Array<{ type: string; label: string; time: string; dateStr: string }>>([]);
   const [diariesLoaded, setDiariesLoaded] = useState(false);
   const [showDiaryTask, setShowDiaryTask] = useState(false);
+  const [tasks,         setTasks]         = useState<UserTask[]>([]);
+  const [taskHistory,   setTaskHistory]   = useState<UserTask[]>([]);
+  const [showAllTasks,  setShowAllTasks]  = useState(false);
+  const [showTaskCreate, setShowTaskCreate] = useState(false);
+  const [introSchemaId, setIntroSchemaId] = useState<string | null>(null);
+  const [introModeId,   setIntroModeId]   = useState<string | null>(null);
+  const [activeTaskId,  setActiveTaskId]  = useState<number | null>(null);
   const safeTop = useSafeTop();
 
   const firstName = (window as any).Telegram?.WebApp?.initDataUnsafe?.user?.first_name ?? '';
@@ -192,6 +244,41 @@ export function TodaySection({
 
     return () => { ignore = true; };
   }, [refreshKey]);
+
+  useEffect(() => {
+    Promise.all([api.getTasks(), api.getTaskHistory()])
+      .then(([t, h]) => { setTasks(t); setTaskHistory(h); })
+      .catch(() => {});
+  }, [refreshKey]);
+
+  function openTask(task: UserTask) {
+    if (task.assignedBy !== null && task.type !== 'custom') setActiveTaskId(task.id);
+    switch (task.type) {
+      case 'diary_streak':    onOpenDiaries(); break;
+      case 'tracker_streak':  onOpenTracker(); break;
+      case 'schema_intro':    if (task.text) setIntroSchemaId(task.text); break;
+      case 'mode_intro':      if (task.text) setIntroModeId(task.text); break;
+      default:
+        if (ALL_SCHEMAS.some(s => s.id === task.text)) { setIntroSchemaId(task.text); break; }
+        if (ALL_MODES.some(m => m.id === task.text))   { setIntroModeId(task.text);   break; }
+        // belief_check, letter_to_self etc — navigate to Help
+        onNavigate('help');
+    }
+  }
+
+  function handleTaskComplete() {
+    if (activeTaskId === null) return;
+    const id = activeTaskId;
+    setActiveTaskId(null);
+    api.completeTask(id, true)
+      .then(() => Promise.all([api.getTasks(), api.getTaskHistory()]))
+      .then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })
+      .catch(() => {});
+  }
+
+  const myTasks        = tasks.filter(t => t.assignedBy === null);
+  const therapistTasks = tasks.filter(t => t.assignedBy !== null);
+  const hasAnyTask     = tasks.length > 0;
 
   const streak       = profile?.streak ?? 0;
   const ratedCount   = needs.filter(n => ratings[n.id] !== undefined).length;
@@ -252,6 +339,87 @@ export function TodaySection({
               </div>
             </div>
             <span style={{ fontSize: 18, color: 'var(--text-faint)' }}>›</span>
+          </div>
+        )}
+
+        {/* ── Задания ── */}
+        {hasAnyTask && (
+          <div className="card" style={{ borderRadius: 20, overflow: 'hidden' }}>
+            {/* Featured therapist task */}
+            {therapistTasks.length > 0 && (() => {
+              const featured = therapistTasks[0];
+              const progress = featured.progress ?? 0;
+              const target   = featured.targetDays ?? 0;
+              const filled   = target > 0 ? Math.min(progress, target) : (featured.doneToday ? 1 : 0);
+              return (
+                <div
+                  onClick={() => openTask(featured)}
+                  style={{ padding: '14px 16px', borderBottom: myTasks.length > 0 ? '1px solid rgba(var(--fg-rgb),0.05)' : undefined, cursor: 'pointer', background: 'color-mix(in srgb, var(--accent) 5%, transparent)' }}
+                >
+                  <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', color: 'var(--accent)', marginBottom: 6 }}>ЗАДАНИЕ ОТ ТЕРАПЕВТА</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: target > 0 ? 10 : 0, lineHeight: 1.4 }}>{resolveTaskDisplayText(featured)}</div>
+                  {target > 0 && (
+                    <>
+                      <div style={{ display: 'flex', gap: 3, marginBottom: 4 }}>
+                        {Array.from({ length: Math.min(target, 7) }).map((_, i) => (
+                          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < filled ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 15%, transparent)' }} />
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>{filled} из {target}</div>
+                    </>
+                  )}
+                  {therapistTasks.length > 1 && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 4 }}>+ ещё {therapistTasks.length - 1}</div>}
+                </div>
+              );
+            })()}
+
+            {/* My tasks */}
+            {myTasks.length > 0 && (
+              <>
+                <div style={{ padding: '10px 16px 2px', display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>Мои цели</div>
+                </div>
+                {myTasks.slice(0, 3).map(task => {
+                  const emoji = task.doneToday ? '✅' : resolveTaskEmoji(task);
+                  return (
+                    <div key={task.id} onClick={task.doneToday ? undefined : () => openTask(task)}
+                      style={{ padding: '10px 16px', borderTop: '1px solid rgba(var(--fg-rgb),0.04)', display: 'flex', alignItems: 'center', gap: 10, cursor: task.doneToday ? 'default' : 'pointer', opacity: task.doneToday ? 0.55 : 1 }}>
+                      <span style={{ fontSize: 18, flexShrink: 0, width: 22, textAlign: 'center' }}>{emoji}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.3 }}>{resolveTaskDisplayText(task)}</div>
+                        <TaskProgressBar task={task} />
+                        {task.dueDate && <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
+                      </div>
+                      {!task.doneToday && task.type !== 'custom' && <span style={{ fontSize: 15, color: 'var(--accent)', opacity: 0.45, flexShrink: 0 }}>›</span>}
+                      {!task.doneToday && task.done === null && task.type === 'custom' && (
+                        <button onClick={e => { e.stopPropagation(); api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })).catch(() => {}); }}
+                          style={{ padding: '5px 11px', border: 'none', borderRadius: 9, background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                          Готово
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </>
+            )}
+
+            {/* Bottom buttons */}
+            <div style={{ padding: '6px 8px 10px', display: 'flex', gap: 8 }}>
+              {tasks.length > 0 && (
+                <div onClick={() => setShowAllTasks(true)} className="btn-ghost" style={{ flex: 1 }}>Все задания</div>
+              )}
+              <div onClick={() => setShowTaskCreate(true)} className="btn-ghost" style={{ flex: 1 }}>+ Цель</div>
+            </div>
+          </div>
+        )}
+
+        {!hasAnyTask && (
+          <div onClick={() => setShowTaskCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderRadius: 16, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', cursor: 'pointer' }}>
+            <span style={{ fontSize: 20 }}>🎯</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>Поставить цель</div>
+              <div style={{ fontSize: 11, color: 'var(--text-sub)' }}>Дневник, трекер или своя задача</div>
+            </div>
           </div>
         )}
 
@@ -381,11 +549,56 @@ export function TodaySection({
       </div>
 
       {showDiaryTask && (
-        <TaskCreateSheet
-          defaultType="diary_streak"
-          onCreated={() => setShowDiaryTask(false)}
-          onClose={() => setShowDiaryTask(false)}
-        />
+        <TaskCreateSheet defaultType="diary_streak" onCreated={() => setShowDiaryTask(false)} onClose={() => setShowDiaryTask(false)} />
+      )}
+      {showTaskCreate && (
+        <TaskCreateSheet onCreated={() => { setShowTaskCreate(false); Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); }).catch(() => {}); }} onClose={() => setShowTaskCreate(false)} />
+      )}
+      {introSchemaId && <SchemaIntroSheet schemaId={introSchemaId} onClose={() => setIntroSchemaId(null)} onComplete={() => { setIntroSchemaId(null); handleTaskComplete(); }} />}
+      {introModeId   && <ModeIntroSheet   modeId={introModeId}     onClose={() => setIntroModeId(null)}   onComplete={() => { setIntroModeId(null);   handleTaskComplete(); }} />}
+
+      {/* All tasks sheet */}
+      {showAllTasks && (
+        <BottomSheet onClose={() => setShowAllTasks(false)} zIndex={200}>
+          <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 20 }}>Все задания</div>
+          {tasks.map(task => {
+            const emoji = task.done === true ? '✅' : task.done === false ? '❌' : resolveTaskEmoji(task);
+            return (
+              <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
+                <span style={{ fontSize: 18, flexShrink: 0, width: 22, textAlign: 'center' }}>{emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  {task.assignedBy !== null && <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 1 }}>от терапевта</div>}
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>{resolveTaskDisplayText(task)}</div>
+                  <TaskProgressBar task={task} />
+                  {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
+                </div>
+                {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
+                  <button onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); })).catch(() => {})}
+                    style={{ padding: '6px 12px', border: 'none', borderRadius: 10, background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                    Готово
+                  </button>
+                )}
+              </div>
+            );
+          })}
+          {taskHistory.length > 0 && (
+            <>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
+              {taskHistory.map(task => (
+                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.5 }}>
+                  <span style={{ fontSize: 16, flexShrink: 0, width: 22, textAlign: 'center' }}>{task.done === true ? '✅' : '❌'}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.35 }}>{resolveTaskDisplayText(task)}</div>
+                    {task.completedAt && <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 1 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+          <button onClick={() => { setShowAllTasks(false); setShowTaskCreate(true); }} style={{ marginTop: 16, width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 12%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            + Поставить цель
+          </button>
+        </BottomSheet>
       )}
     </div>
   );
