@@ -629,6 +629,7 @@ export default function App() {
           onOpenAdvanced={() => setShowSettings(true)}
           onOpenTracker={() => { setTrackerNeedId(null); setShowTrackerOverlay(true); }}
           onOpenTrackerAt={(needId) => { setTrackerNeedId(needId); setShowTrackerOverlay(true); }}
+          onOpenTrackerHistory={() => { setTrackerTab('history'); setShowTracker(true); }}
           onOpenDiaries={() => setShowDiaries(true)}
           onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
           refreshKey={todayRefreshKey}

@@ -182,6 +182,7 @@ interface Props {
   onOpenAdvanced: () => void;
   onOpenTracker: () => void;
   onOpenTrackerAt?: (needId: string) => void;
+  onOpenTrackerHistory?: () => void;
   onOpenDiaries: () => void;
   onOpenChildhoodWheel: () => void;
   refreshKey?: number;
@@ -194,7 +195,7 @@ interface Props {
 
 export function TodaySection({
   needs, ratings, yesterdayRatings = {},
-  onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt,
+  onNavigate, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenTrackerAt, onOpenTrackerHistory,
   onOpenDiaries, onOpenChildhoodWheel,
   refreshKey, userRole, onOpenTherapistCabinet, onTasksChanged,
 }: Props) {
@@ -361,9 +362,19 @@ export function TodaySection({
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
               Потребности
             </div>
-            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-              {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+                {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
+              </span>
+              {onOpenTrackerHistory && (
+                <span
+                  onClick={e => { e.stopPropagation(); onOpenTrackerHistory(); }}
+                  style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, cursor: 'pointer' }}
+                >
+                  История →
+                </span>
+              )}
+            </div>
           </div>
 
           {/* 5 mini indicators */}

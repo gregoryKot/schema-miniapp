@@ -119,14 +119,16 @@ export function TrackerOverlay({
     }, 500);
   }, [onChange, onSaved, isOffline]);
 
-  // Swipe between needs
-  const touchRef = useRef<number | null>(null);
-  function onTS(e: React.TouchEvent) { touchRef.current = e.touches[0].clientX; }
+  // Swipe between needs — high threshold to avoid accidental triggers
+  const touchRef = useRef<{ x: number; y: number } | null>(null);
+  function onTS(e: React.TouchEvent) { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }
   function onTE(e: React.TouchEvent) {
     if (touchRef.current === null || detailNeed) return;
-    const dx = e.changedTouches[0].clientX - touchRef.current;
+    const dx = e.changedTouches[0].clientX - touchRef.current.x;
+    const dy = e.changedTouches[0].clientY - touchRef.current.y;
     touchRef.current = null;
-    if (Math.abs(dx) < 50) return;
+    // Only swipe if clearly horizontal (dx much larger than dy) and long enough
+    if (Math.abs(dx) < 90 || Math.abs(dy) > Math.abs(dx) * 0.5) return;
     if (dx < 0 && idx < needs.length - 1) setIdx(idx + 1);
     if (dx > 0 && idx > 0) setIdx(idx - 1);
   }
