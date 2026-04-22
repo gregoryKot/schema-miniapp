@@ -100,18 +100,9 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
       }}
     >
       {/* Icon */}
-      <div style={{
-        width: 38, height: 38, borderRadius: 11, flexShrink: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 18,
-        background: task.doneToday
-          ? 'color-mix(in srgb, var(--accent-green) 12%, transparent)'
-          : isAssigned
-            ? 'color-mix(in srgb, var(--accent) 10%, transparent)'
-            : 'rgba(var(--fg-rgb),0.06)',
-      }}>
+      <span style={{ fontSize: 20, flexShrink: 0, width: 24, textAlign: 'center' }}>
         {emoji}
-      </div>
+      </span>
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
