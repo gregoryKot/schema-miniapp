@@ -85,6 +85,7 @@ export function NeedDial({ need, color, value, onChange, size = DEFAULT_SIZE }: 
   const isDragging = useRef(false);
   const handleTouchStart = useCallback((e: React.TouchEvent<SVGSVGElement>) => {
     isDragging.current = true;
+    e.stopPropagation(); // prevent outer swipe handler from capturing this touch
     if (!svgRef.current) return;
     const t = e.touches[0];
     handleInteraction(t.clientX, t.clientY, svgRef.current.getBoundingClientRect());
@@ -92,10 +93,14 @@ export function NeedDial({ need, color, value, onChange, size = DEFAULT_SIZE }: 
   const handleTouchMove = useCallback((e: React.TouchEvent<SVGSVGElement>) => {
     if (!isDragging.current || !svgRef.current) return;
     e.preventDefault();
+    e.stopPropagation();
     const t = e.touches[0];
     handleInteraction(t.clientX, t.clientY, svgRef.current.getBoundingClientRect());
   }, [handleInteraction]);
-  const handleTouchEnd = useCallback(() => { isDragging.current = false; }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent<SVGSVGElement>) => {
+    isDragging.current = false;
+    e.stopPropagation(); // prevent outer swipe handler from firing on dial release
+  }, []);
 
   const W = size, H = size + 16;
 
