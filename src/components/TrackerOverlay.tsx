@@ -308,14 +308,15 @@ export function TrackerOverlay({
             color:idx===0?'var(--text-faint)':'var(--text-sub)',
             fontSize:14, cursor:idx===0?'default':'pointer',
           }}>← Назад</button>
-          <button onClick={() => idx<needs.length-1 && setIdx(idx+1)} style={{
-            flex:2, padding:'13px', borderRadius:14, border:'none', fontFamily:'inherit',
-            background:idx===needs.length-1?'var(--surface)':'linear-gradient(135deg,var(--accent),var(--accent-blue))',
-            color:idx===needs.length-1?'var(--text-faint)':'#fff',
-            fontSize:14, fontWeight:600, cursor:idx===needs.length-1?'default':'pointer',
-          }}>
-            {idx===needs.length-1 ? '— конец —' : 'Далее →'}
-          </button>
+          {idx < needs.length - 1 && (
+            <button onClick={() => setIdx(idx+1)} style={{
+              flex:2, padding:'13px', borderRadius:14, border:'none', fontFamily:'inherit',
+              background:'linear-gradient(135deg,var(--accent),var(--accent-blue))',
+              color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer',
+            }}>
+              Далее →
+            </button>
+          )}
         </div>
 
         {/* Autosave status */}
