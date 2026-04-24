@@ -55,7 +55,7 @@ function arcPath(cx: number, cy: number, r: number, centerAngle: number, halfSpr
   return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r.toFixed(2)} ${r.toFixed(2)} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
 }
 
-// ─── Wheel (no labels) ─────────────────────────────────────────────────────────
+// ─── Wheel ────────────────────────────────────────────────────────────────────
 
 function NeedsWheel({
   needs, ratings, prevRatings = {}, childhoodRatings = {}, onClickNeed, onClickCenter,
@@ -68,12 +68,12 @@ function NeedsWheel({
   onClickCenter?: () => void;
 }) {
   const W = 360, H = 280;
-  const cx = W / 2;       // 180
-  const cy = H / 2;       // 140
-  const R = cy - 20;      // 120 — fills height minus 20px padding each side
-  const SPREAD = (34 * Math.PI) / 180; // 68° per sector, 4° gap between sectors
+  const cx = W / 2;
+  const cy = H / 2;
+  const R = cy - 20;
+  const SPREAD = (34 * Math.PI) / 180;
   const n = needs.length;
-  const CENTER_R = 41; // 36 * 1.15
+  const CENTER_R = 41;
 
   const avg = needs.length > 0
     ? needs.reduce((s, nd) => s + (ratings[nd.id] ?? 0), 0) / needs.length
@@ -82,11 +82,9 @@ function NeedsWheel({
   const prevAvg = hasPrev
     ? needs.reduce((s, nd) => s + (prevRatings[nd.id] ?? 0), 0) / needs.length
     : null;
+
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      style={{ display: 'block', width: '100%', height: 280 }}
-    >
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', width: '100%', height: 280 }}>
       <defs>
         <linearGradient id="center-score-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff6b9d" />
@@ -94,65 +92,42 @@ function NeedsWheel({
         </linearGradient>
       </defs>
 
-      {/* Scale rings */}
       {[2, 5, 8, 10].map((ring) => (
-        <circle
-          key={ring}
-          cx={cx} cy={cy}
-          r={R * ring / 10}
-          fill="none"
-          stroke="rgba(var(--fg-rgb),0.04)"
-          strokeWidth={ring === 10 ? 1.5 : 1}
-        />
+        <circle key={ring} cx={cx} cy={cy} r={R * ring / 10}
+          fill="none" stroke="rgba(var(--fg-rgb),0.04)"
+          strokeWidth={ring === 10 ? 1.5 : 1} />
       ))}
 
-      {/* Ghost sectors — same angle 72°, full radius, rgba white 8% */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const d = petalPath(cx, cy, R, angle, SPREAD);
         if (!d) return null;
-        return (
-          <path key={`ghost-${need.id}`} d={d}
-            fill="rgba(var(--fg-rgb),0.08)"
-          />
-        );
+        return <path key={`ghost-${need.id}`} d={d} fill="rgba(var(--fg-rgb),0.06)" />;
       })}
 
-      {/* Filled sectors — proportional radius, 90% opacity, animated */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const value = ratings[need.id] ?? 0;
-        const r = Math.sqrt(value / 10) * R; // sqrt → area-proportional, score 5 = visually half full
+        const r = Math.sqrt(value / 10) * R;
         const color = COLORS[need.id] ?? '#888';
         const d = petalPath(cx, cy, r, angle, SPREAD);
         if (!d) return null;
         return (
-          <path key={need.id} d={d}
-            fill={color} fillOpacity={0.9}
+          <path key={need.id} d={d} fill={color} fillOpacity={0.9}
             stroke={color} strokeWidth={1} strokeOpacity={0.4} strokeLinejoin="round"
-            style={{
-              transformOrigin: `${cx}px ${cy}px`,
-              animation: `sector-in 400ms ${SPRING} ${i * 80}ms both`,
-            }}
-          />
+            style={{ transformOrigin: `${cx}px ${cy}px`, animation: `sector-in 400ms ${SPRING} ${i * 80}ms both` }} />
         );
       })}
 
-      {/* Scale arcs — 3 concentric arcs per sector at 25/50/75% of R */}
       {needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         return [0.25, 0.5, 0.75].map((frac) => (
-          <path
-            key={`arc-${need.id}-${frac}`}
+          <path key={`arc-${need.id}-${frac}`}
             d={arcPath(cx, cy, R * frac, angle, SPREAD)}
-            fill="none"
-            stroke="rgba(var(--fg-rgb),0.15)"
-            strokeWidth={1}
-          />
+            fill="none" stroke="rgba(var(--fg-rgb),0.12)" strokeWidth={1} />
         ));
       })}
 
-      {/* Childhood ghost sectors — shown if childhood data exists */}
       {Object.keys(childhoodRatings).length > 0 && needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const cValue = childhoodRatings[need.id] ?? 0;
@@ -161,98 +136,74 @@ function NeedsWheel({
         if (!d) return null;
         return (
           <path key={`childhood-${need.id}`} d={d}
-            fill="none"
-            stroke="rgba(var(--fg-rgb),0.55)"
-            strokeWidth={2}
-            strokeDasharray="4 3"
-            strokeLinejoin="round"
-          />
+            fill="none" stroke="rgba(var(--fg-rgb),0.45)"
+            strokeWidth={2} strokeDasharray="4 3" strokeLinejoin="round" />
         );
       })}
 
-      {/* Center cutout */}
       <circle cx={cx} cy={cy} r={CENTER_R} fill="var(--bg)" stroke="rgba(var(--fg-rgb),0.06)" strokeWidth={1} />
-
-      {/* Center text */}
-      <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.5)">
-        индекс
-      </text>
-      <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="var(--text)">
-        {avg.toFixed(1)}
-      </text>
+      <text x={cx} y={cy - 20} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.45)">индекс</text>
+      <text x={cx} y={cy + 8} textAnchor="middle" fontSize={32} fontWeight={700} fill="var(--text)">{avg.toFixed(1)}</text>
       {prevAvg !== null && prevAvg > 0 && (
-        <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.4)">
+        <text x={cx} y={cy + 24} textAnchor="middle" fontSize={11} fill="rgba(var(--fg-rgb),0.35)">
           {avg >= prevAvg ? '↑' : '↓'} вчера {prevAvg.toFixed(1)}
         </text>
       )}
 
-      {/* Clickable sector hit areas */}
       {onClickNeed && needs.map((need, i) => {
         const angle = -Math.PI / 2 + (2 * Math.PI * i) / n;
         const d = petalPath(cx, cy, R, angle, SPREAD);
         if (!d) return null;
-        return (
-          <path key={`hit-${need.id}`} d={d} fill="transparent"
-            onClick={() => onClickNeed(need)} style={{ cursor: 'pointer' }} />
-        );
+        return <path key={`hit-${need.id}`} d={d} fill="transparent" onClick={() => onClickNeed(need)} style={{ cursor: 'pointer' }} />;
       })}
 
-      {/* Clickable center */}
       {onClickCenter && (
-        <circle cx={cx} cy={cy} r={CENTER_R} fill="transparent"
-          onClick={onClickCenter} style={{ cursor: 'pointer' }} />
+        <circle cx={cx} cy={cy} r={CENTER_R} fill="transparent" onClick={onClickCenter} style={{ cursor: 'pointer' }} />
       )}
     </svg>
   );
 }
 
-// ─── Legend grid ───────────────────────────────────────────────────────────────
+// ─── Need row (replaces old 2-col grid) ───────────────────────────────────────
 
-function LegendGrid({ needs, ratings, onTapNeed }: { needs: Need[]; ratings: Record<string, number>; onTapNeed?: (need: Need) => void }) {
+function NeedRow({ need, value, onTap }: { need: Need; value: number; onTap?: () => void }) {
+  const color = COLORS[need.id] ?? '#888';
+  const pct = (value / 10) * 100;
+  const levelLabel = value === 0 ? '—' : value <= 3 ? 'низко' : value <= 6 ? 'средне' : 'хорошо';
+  const levelColor = value === 0 ? 'var(--text-faint)' : value <= 3 ? 'var(--accent-red)' : value <= 6 ? 'var(--accent-yellow)' : 'var(--accent-green)';
+
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-      {needs.map((need) => {
-        const color = COLORS[need.id] ?? '#888';
-        const value = ratings[need.id] ?? 0;
-        return (
-          <div
-            key={need.id}
-            onClick={() => onTapNeed?.(need)}
-            style={{
-              background: 'rgba(var(--fg-rgb),0.04)',
-              borderRadius: 12,
-              padding: '8px 10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              cursor: onTapNeed ? 'pointer' : 'default',
-            }}
-          >
-            <div style={{
-              width: 8, height: 8, borderRadius: '50%',
-              background: color, flexShrink: 0,
-            }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 10, color: 'var(--text-sub)', fontWeight: 400, lineHeight: 1.2 }}>
-                {need.chartLabel}
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color, lineHeight: 1.2 }}>
-                {value}
-              </div>
-            </div>
-            <span style={{ fontSize: 16, color: 'var(--text-faint)', flexShrink: 0 }}>›</span>
+    <div onClick={onTap} style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      background: 'var(--surface)', border: '1px solid var(--border-color)',
+      borderRadius: 14, padding: '12px 14px', cursor: onTap ? 'pointer' : 'default',
+    }}>
+      <div style={{
+        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+        background: `color-mix(in srgb, ${color} 15%, transparent)`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
+      }}>
+        {need.emoji}
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{need.chartLabel}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 11, color: levelColor, fontWeight: 600 }}>{levelLabel}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color, minWidth: 20, textAlign: 'right' }}>{value}</span>
           </div>
-        );
-      })}
+        </div>
+        <div style={{ height: 4, background: 'var(--surface-2)', borderRadius: 4, overflow: 'hidden' }}>
+          <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 0.3s ease' }} />
+        </div>
+      </div>
     </div>
   );
 }
 
 // ─── Sparkline row ─────────────────────────────────────────────────────────────
 
-function SparklineRow({
-  need, history, selectedIdx, selectedRatings, onClick,
-}: {
+function SparklineRow({ need, history, selectedIdx, selectedRatings, onClick }: {
   need: Need;
   history: DayHistory[];
   selectedIdx: number;
@@ -277,91 +228,92 @@ function SparklineRow({
 
   const score = selectedRatings[need.id] ?? 0;
   const prevScore = history[selectedIdx + 1]?.ratings[need.id] ?? score;
-  const trend = score > prevScore ? '↑' : score < prevScore ? '↓' : '—';
-  const trendColor = score > prevScore ? '#06d6a0' : 'rgba(var(--fg-rgb),0.3)';
+  const delta = score - prevScore;
+  const trendColor = delta > 0 ? 'var(--accent-green)' : delta < 0 ? 'var(--accent-red)' : 'var(--text-faint)';
+  const trendArrow = delta > 0 ? '↑' : delta < 0 ? '↓' : '—';
 
   const linePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
   const areaPath = `${linePath} L ${pts[n - 1].x.toFixed(1)} ${H} L 0 ${H} Z`;
   const polyStr = pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
 
   return (
-    <div onClick={onClick} style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: onClick ? 'pointer' : 'default' }}>
+    <div onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      background: 'var(--surface)', border: '1px solid var(--border-color)',
+      borderRadius: 14, padding: '12px 14px', cursor: onClick ? 'pointer' : 'default',
+    }}>
       <div style={{
-        width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-        background: color + '26',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 13,
+        width: 32, height: 32, borderRadius: 9, flexShrink: 0,
+        background: `color-mix(in srgb, ${color} 15%, transparent)`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14,
       }}>
         {need.emoji}
       </div>
-      <div style={{
-        fontSize: 13, fontWeight: 500, color: 'rgba(var(--fg-rgb),0.7)',
-        width: 100, flexShrink: 0, lineHeight: 1.2,
-      }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', width: 88, flexShrink: 0, lineHeight: 1.2 }}>
         {need.chartLabel}
       </div>
-      <svg
-        style={{ flex: 1, height: 28, display: 'block', overflow: 'visible' }}
-        viewBox="0 0 120 28"
-        preserveAspectRatio="none"
-      >
+      <svg style={{ flex: 1, height: 28, display: 'block', overflow: 'visible' }}
+        viewBox="0 0 120 28" preserveAspectRatio="none">
         <defs>
           <linearGradient id={`area-${need.id}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.25} />
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         </defs>
         <path d={areaPath} fill={`url(#area-${need.id})`} />
         <polyline points={polyStr} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx={dot.x} cy={dot.y} r={3} fill={color}
-          style={{ transition: 'cx 150ms ease, cy 150ms ease' }} />
+        <circle cx={dot.x} cy={dot.y} r={3.5} fill={color} style={{ transition: 'cx 150ms ease, cy 150ms ease' }} />
       </svg>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-        <span style={{ fontSize: 15, fontWeight: 700, color, width: 20, textAlign: 'right', display: 'block' }}>
-          {score}
-        </span>
-        <span style={{ fontSize: 11, color: trendColor }}>{trend}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color, minWidth: 18, textAlign: 'right' }}>{score}</span>
+        <span style={{ fontSize: 11, color: trendColor, fontWeight: 600 }}>{trendArrow}</span>
       </div>
     </div>
   );
 }
 
-// ─── Insight card ─────────────────────────────────────────────────────────────
+// ─── Insight card ──────────────────────────────────────────────────────────────
 
 function InsightCard({ needs, ratings, onTap }: { needs: Need[]; ratings: Record<string, number>; onTap?: (n: Need) => void }) {
   if (needs.length === 0) return null;
-  const lowest = needs.reduce((min, n) =>
-    (ratings[n.id] ?? 0) < (ratings[min.id] ?? 0) ? n : min
-  );
+  const rated = needs.filter(n => (ratings[n.id] ?? 0) > 0);
+  if (rated.length === 0) return null;
+  const lowest = rated.reduce((min, n) => (ratings[n.id] ?? 0) < (ratings[min.id] ?? 0) ? n : min);
   const color = COLORS[lowest.id] ?? '#888';
+  const value = ratings[lowest.id] ?? 0;
 
   return (
-    <div
-      onClick={() => onTap?.(lowest)}
-      style={{
-        background: 'rgba(var(--fg-rgb),0.05)',
-        borderRadius: 16,
-        padding: '12px 14px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        cursor: onTap ? 'pointer' : 'default',
-      }}
-    >
-      <div>
-        <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 3 }}>
-          Стоит уделить внимание
-        </div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>
-          {lowest.chartLabel}
-        </div>
+    <div onClick={() => onTap?.(lowest)} style={{
+      background: `color-mix(in srgb, ${color} 8%, var(--surface))`,
+      border: `1px solid color-mix(in srgb, ${color} 25%, var(--border-color))`,
+      borderRadius: 16, padding: '14px 16px',
+      display: 'flex', alignItems: 'center', gap: 12,
+      cursor: onTap ? 'pointer' : 'default',
+    }}>
+      <div style={{
+        width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+        background: `color-mix(in srgb, ${color} 20%, transparent)`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
+      }}>
+        {lowest.emoji}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 16, fontWeight: 700, color }}>{ratings[lowest.id] ?? 0}</span>
-        {onTap && <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>}
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 2 }}>Стоит уделить внимание</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{lowest.chartLabel}</div>
+        <div style={{ fontSize: 12, color, fontWeight: 600, marginTop: 1 }}>оценка {value} из 10</div>
       </div>
+      {onTap && <span style={{ fontSize: 16, color: 'var(--text-faint)' }}>›</span>}
     </div>
   );
+}
+
+// ─── Day summary dot for date picker ──────────────────────────────────────────
+
+function dayAvg(day: DayHistory, needs: Need[]): number {
+  if (needs.length === 0) return 0;
+  const vals = needs.map(n => day.ratings[n.id] ?? 0).filter(v => v > 0);
+  if (vals.length === 0) return 0;
+  return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -379,14 +331,10 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   const [noteText, setNoteText] = useState<string | null>(null);
   const [noteTags, setNoteTags] = useState<string[]>([]);
   const [showWeekCard, setShowWeekCard] = useState(false);
-  const [showHint, setShowHint] = useState(
-    () => !localStorage.getItem(HISTORY_HINT_KEY)
-  );
+  const [showHint, setShowHint] = useState(() => !localStorage.getItem(HISTORY_HINT_KEY));
 
   useEffect(() => {
-    if (history.length > 0 && selectedIdx >= history.length) {
-      setSelectedIdx(history.length - 1);
-    }
+    if (history.length > 0 && selectedIdx >= history.length) setSelectedIdx(history.length - 1);
   }, [history.length, selectedIdx]);
 
   useEffect(() => {
@@ -400,32 +348,23 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   }, [selectedIdx, history]);
 
   const handleTapNeed = useCallback((n: Need) => {
-    if (showHint) {
-      localStorage.setItem(HISTORY_HINT_KEY, '1');
-      setShowHint(false);
-    }
+    if (showHint) { localStorage.setItem(HISTORY_HINT_KEY, '1'); setShowHint(false); }
     setActiveNeed(n);
   }, [showHint]);
 
+  // Empty state
   if (history.length === 0) {
     return (
-      <div style={{ padding: '48px 32px', textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16 }}>🌱</div>
-        <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)', marginBottom: 10 }}>
+      <div style={{ padding: '48px 24px', textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🌱</div>
+        <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 10 }}>
           История пока пуста
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 24 }}>
-          Заполни дневник сегодня — и через 3–5 дней здесь начнёт проявляться твой паттерн: что тебя питает, что истощает
+        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 28 }}>
+          Заполни трекер сегодня — через 3–5 дней здесь начнёт проявляться паттерн: что тебя питает, что истощает
         </div>
         {onGoToToday && (
-          <button
-            onClick={onGoToToday}
-            style={{
-              padding: '12px 28px', border: 'none', borderRadius: 12,
-              background: 'linear-gradient(135deg, #a78bfa, #4fa3f7)',
-              color: 'var(--text)', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            }}
-          >
+          <button onClick={onGoToToday} className="btn-primary" style={{ width: '100%' }}>
             Заполнить сегодня
           </button>
         )}
@@ -437,101 +376,129 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
   const selectedRatings = selected.date === TODAY_STR ? currentRatings : selected.ratings;
   const prevRatings = history[selectedIdx + 1]?.ratings ?? {};
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', padding: '8px 0 80px' }}>
+  // Low-need therapist insight
+  const needsLow = history.length >= 3
+    ? needs.filter(n => history.slice(0, 3).every(d => (d.ratings[n.id] ?? 10) <= 4))
+    : [];
 
-      {/* Date picker */}
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', padding: '4px 0 80px' }}>
+
+      {/* ── Date picker ── */}
       <div ref={dateScrollRef} style={{
-        display: 'flex', gap: 8, overflowX: 'auto',
-        width: '100%', padding: '0 24px 12px',
-        scrollbarWidth: 'none',
+        display: 'flex', gap: 6, overflowX: 'auto',
+        padding: '0 20px 16px', scrollbarWidth: 'none',
       }}>
         {history.map((day, i) => {
           const active = i === selectedIdx;
+          const avg = dayAvg(day, needs);
+          const hasData = avg > 0;
+          const dotColor = hasData
+            ? avg >= 7 ? 'var(--accent-green)' : avg >= 4 ? 'var(--accent-yellow)' : 'var(--accent-red)'
+            : 'var(--surface-2)';
+
           return (
-            <button
-              key={day.date}
+            <button key={day.date}
               ref={el => { dateBtnRefs.current[i] = el; }}
               onClick={() => setSelectedIdx(i)}
               style={{
-                flexShrink: 0,
-                padding: '8px 14px',
-                borderRadius: 20,
-                border: 'none',
-                cursor: 'pointer',
-                background: active ? '#fff' : 'transparent',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-                transition: 'background 0.15s ease',
-              }}
-            >
+                flexShrink: 0, padding: '8px 12px', borderRadius: 14, border: 'none',
+                cursor: 'pointer', fontFamily: 'inherit',
+                background: active ? 'var(--surface)' : 'transparent',
+                boxShadow: active ? '0 0 0 1.5px var(--accent)' : 'none',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+                transition: 'all 0.15s ease',
+              }}>
               <span style={{
                 fontSize: 11, fontWeight: 500,
-                color: active ? 'rgba(0,0,0,0.5)' : 'rgba(var(--fg-rgb),0.4)',
+                color: active ? 'var(--accent)' : 'var(--text-faint)',
+                textTransform: 'uppercase', letterSpacing: '0.04em',
               }}>
                 {getDayAbbr(day.date)}
               </span>
               <span style={{
-                fontSize: 15, fontWeight: 600,
-                color: active ? '#000' : 'var(--text-faint)',
-                lineHeight: 1,
+                fontSize: 16, fontWeight: 700, lineHeight: 1,
+                color: active ? 'var(--text)' : 'var(--text-sub)',
               }}>
                 {getDayNum(day.date)}
               </span>
-              <div style={{
-                width: 4, height: 4, borderRadius: '50%',
-                background: active ? 'rgba(0,0,0,0.2)' : 'rgba(var(--fg-rgb),0.2)',
-              }} />
+              <div style={{ width: 5, height: 5, borderRadius: '50%', background: dotColor }} />
             </button>
           );
         })}
       </div>
 
-      {/* View toggle + days selector */}
-      <div style={{ padding: '0 24px 4px', display: 'flex', gap: 8 }}>
-        <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 10, padding: 3, flex: 1 }}>
+      {/* ── Controls row ── */}
+      <div style={{ padding: '0 20px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* View toggle */}
+        <div style={{
+          display: 'flex', flex: 1,
+          background: 'var(--surface-2)', borderRadius: 12, padding: 3,
+        }}>
           {(['day', 'week'] as const).map((v) => {
             const active = subView === v;
             return (
-              <button key={v} onClick={() => setSubView(v)} style={{ flex: 1, padding: '5px 14px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease' }}>
+              <button key={v} onClick={() => setSubView(v)} style={{
+                flex: 1, padding: '7px 0', border: 'none', borderRadius: 10,
+                fontFamily: 'inherit',
+                background: active ? 'var(--surface)' : 'transparent',
+                boxShadow: active ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                color: active ? 'var(--text)' : 'var(--text-faint)',
+                fontSize: 13, fontWeight: active ? 600 : 400,
+                cursor: 'pointer', transition: 'all 0.15s ease',
+              }}>
                 {v === 'day' ? 'День' : 'Неделя'}
               </button>
             );
           })}
         </div>
+
+        {/* Depth selector */}
         {onChangeDays && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, color: 'var(--text-sub)', whiteSpace: 'nowrap' }}>глубина</span>
-            <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 10, padding: 3 }}>
+          <div style={{ display: 'flex', background: 'var(--surface-2)', borderRadius: 12, padding: 3 }}>
             {DAYS_OPTIONS.map(d => {
               const active = days === d;
               return (
-                <button key={d} onClick={() => onChangeDays(d)} style={{ padding: '5px 10px', border: 'none', borderRadius: 8, background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent', color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)', fontSize: 12, fontWeight: active ? 500 : 400, cursor: 'pointer', transition: 'all 0.15s ease', whiteSpace: 'nowrap' }}>
+                <button key={d} onClick={() => onChangeDays(d)} style={{
+                  padding: '7px 10px', border: 'none', borderRadius: 10,
+                  fontFamily: 'inherit',
+                  background: active ? 'var(--surface)' : 'transparent',
+                  boxShadow: active ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                  color: active ? 'var(--text)' : 'var(--text-faint)',
+                  fontSize: 12, fontWeight: active ? 600 : 400,
+                  cursor: 'pointer', transition: 'all 0.15s ease',
+                }}>
                   {d}д
                 </button>
               );
             })}
-            </div>
           </div>
         )}
       </div>
 
-      {/* Early-days nudge */}
+      {/* ── Early-days nudge ── */}
       {history.length < 3 && (
-        <div style={{ margin: '0 20px 8px', padding: '8px 14px', borderRadius: 10, fontSize: 12, color: 'var(--text-sub)', textAlign: 'center' }}>
-          Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
+        <div style={{ margin: '0 20px 12px' }}>
+          <div style={{
+            background: 'var(--surface)', border: '1px solid var(--border-color)',
+            borderRadius: 14, padding: '10px 14px',
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ fontSize: 18 }}>📈</span>
+            <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>
+              Ещё {3 - history.length} {3 - history.length === 1 ? 'день' : 'дня'} — и паттерн начнёт проявляться
+            </span>
+          </div>
         </div>
       )}
 
-      {/* Content — fade on view switch */}
+      {/* ── Content ── */}
       <div key={subView} style={{ animation: 'fade-in 200ms ease' }}>
+
         {subView === 'day' ? (
-          /* ── День ── */
           <>
-            {/* Chart */}
-            <div style={{ width: '100%', marginTop: 12, marginBottom: showHint ? 4 : 12 }}>
+            {/* Wheel */}
+            <div style={{ width: '100%', marginBottom: 4 }}>
               <div key={selected.date}>
                 <NeedsWheel
                   needs={needs} ratings={selectedRatings} prevRatings={prevRatings}
@@ -542,127 +509,94 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
               </div>
             </div>
 
-            {/* Childhood legend */}
-            {Object.keys(childhoodRatings).length > 0 ? (
-              <div
-                onClick={onOpenChildhoodWheel}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginBottom: 6, cursor: onOpenChildhoodWheel ? 'pointer' : 'default' }}
-              >
-                <svg width={20} height={8}><line x1={0} y1={4} x2={20} y2={4} stroke="rgba(var(--fg-rgb),0.35)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
-                <span style={{ fontSize: 11, color: 'var(--text-sub)' }}>детство</span>
-                {onOpenChildhoodWheel && <span style={{ fontSize: 11, color: 'var(--accent)' }}>→</span>}
-              </div>
-            ) : onOpenChildhoodWheel ? (
-              <div
-                onClick={onOpenChildhoodWheel}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginBottom: 6, cursor: 'pointer' }}
-              >
-                <span style={{ fontSize: 11, color: 'var(--accent)' }}>🌱 Оценить детство</span>
-                <span style={{ fontSize: 11, color: 'var(--accent)' }}>→</span>
-              </div>
-            ) : null}
+            {/* Childhood / schemas links */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginBottom: 12 }}>
+              {Object.keys(childhoodRatings).length > 0 ? (
+                <div onClick={onOpenChildhoodWheel} style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: onOpenChildhoodWheel ? 'pointer' : 'default' }}>
+                  <svg width={16} height={6}><line x1={0} y1={3} x2={16} y2={3} stroke="rgba(var(--fg-rgb),0.3)" strokeWidth={1.5} strokeDasharray="3 3" /></svg>
+                  <span style={{ fontSize: 12, color: 'var(--text-faint)' }}>детство</span>
+                  {onOpenChildhoodWheel && <span style={{ fontSize: 12, color: 'var(--accent)' }}>→</span>}
+                </div>
+              ) : onOpenChildhoodWheel ? (
+                <div onClick={onOpenChildhoodWheel} style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                  <span style={{ fontSize: 12, color: 'var(--accent)' }}>🌱 Оценить детство →</span>
+                </div>
+              ) : null}
 
-            {/* Schema nudge */}
-            {onOpenSchemas && (
-              <div
-                onClick={onOpenSchemas}
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  marginBottom: 10, cursor: 'pointer',
-                }}
-              >
-                <span style={{ fontSize: 12, color: 'var(--accent)' }}>Понять что за этим стоит</span>
-                <span style={{ fontSize: 12, color: 'var(--accent)' }}>→</span>
-              </div>
-            )}
+              {onOpenSchemas && (
+                <div onClick={onOpenSchemas} style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer' }}>
+                  <span style={{ fontSize: 12, color: 'var(--accent)' }}>Что за этим стоит →</span>
+                </div>
+              )}
+            </div>
 
-            {/* Hint text — only before first legend tap */}
-            {showHint && (
-              <div style={{
-                textAlign: 'center',
-                fontSize: 11,
-                color: 'var(--text-faint)',
-                marginBottom: 10,
-              }}>
-                Нажми на категорию чтобы узнать что делать
-              </div>
-            )}
-
-            {/* Backfill CTA for past days with no ratings */}
+            {/* Backfill CTA */}
             {onBackfill && selected.date !== TODAY_STR && Object.keys(selected.ratings).length === 0 && (
-              <div style={{ padding: '0 20px', marginBottom: 16 }}>
-                <div style={{
+              <div style={{ padding: '0 20px', marginBottom: 12 }}>
+                <div onClick={() => onBackfill(selected.date)} style={{
                   display: 'flex', alignItems: 'center', gap: 12,
-                  background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)',
-                  borderRadius: 14, padding: '12px 16px', cursor: 'pointer',
-                }} onClick={() => onBackfill(selected.date)}>
-                  <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
+                  background: 'color-mix(in srgb, var(--accent-blue) 8%, var(--surface))',
+                  border: '1px solid color-mix(in srgb, var(--accent-blue) 20%, var(--border-color))',
+                  borderRadius: 16, padding: '14px 16px', cursor: 'pointer',
+                }}>
+                  <span style={{ fontSize: 22, flexShrink: 0 }}>📅</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить этот день</div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить этот день</div>
                     <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Оценки за {selected.date} не заполнены</div>
                   </div>
+                  <span style={{ marginLeft: 'auto', fontSize: 16, color: 'var(--text-faint)' }}>›</span>
                 </div>
               </div>
             )}
 
-            {/* Legend */}
-            <div style={{ padding: '0 20px', marginBottom: 16 }}>
-              <LegendGrid needs={needs} ratings={selectedRatings} onTapNeed={handleTapNeed} />
+            {/* Hint */}
+            {showHint && (
+              <div style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-faint)', marginBottom: 8 }}>
+                Нажми на потребность чтобы узнать что делать
+              </div>
+            )}
+
+            {/* Need rows */}
+            <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+              {needs.map(n => (
+                <NeedRow key={n.id} need={n} value={selectedRatings[n.id] ?? 0} onTap={() => handleTapNeed(n)} />
+              ))}
             </div>
 
-            {/* Insight card */}
-            <div style={{ padding: '0 20px' }}>
+            {/* Insight */}
+            <div style={{ padding: '0 20px', marginBottom: 12 }}>
               <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
 
-            {/* Therapist CTA — show if any need consistently low */}
-            <div style={{ padding: '0 20px', marginTop: 12 }}>
-              {(() => {
-                if (history.length < 3) return null;
-                const needs_low = needs.filter(n => {
-                  const last3 = history.slice(0, 3);
-                  return last3.every(d => (d.ratings[n.id] ?? 10) <= 4);
-                });
-                if (needs_low.length === 0) return null;
-                const label = needs_low[0].chartLabel;
-                return (
-                  <div style={{
-                    background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), rgba(79,163,247,0.06))',
-                    border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
-                    borderRadius: 16, padding: '14px 16px', marginBottom: 16,
-                  }}>
-                    <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>
-                      {label} несколько дней невысокая. Иногда за этим стоит что-то важное. Терапевт поможет разобраться — и сводка из приложения сэкономит вам обоим час разговора.
-                    </div>
-                    <a
-                      href={getTherapistContact().bookingUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{
-                        display: 'inline-block', fontSize: 13, color: 'var(--accent)',
-                        textDecoration: 'none', fontWeight: 500,
-                      }}
-                    >
-                      Записаться и взять сводку →
-                    </a>
+            {/* Therapist CTA */}
+            {needsLow.length > 0 && (
+              <div style={{ padding: '0 20px', marginBottom: 12 }}>
+                <div style={{
+                  background: 'color-mix(in srgb, var(--accent) 6%, var(--surface))',
+                  border: '1px solid color-mix(in srgb, var(--accent) 18%, var(--border-color))',
+                  borderRadius: 16, padding: '16px',
+                }}>
+                  <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
+                    <strong style={{ color: 'var(--text)' }}>{needsLow[0].chartLabel}</strong> остаётся низкой несколько дней. Иногда за этим стоит что-то важное — терапевт поможет разобраться.
                   </div>
-                );
-              })()}
-            </div>
+                  <a href={getTherapistContact().bookingUrl} target="_blank" rel="noreferrer"
+                    style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+                    Записаться и взять сводку →
+                  </a>
+                </div>
+              </div>
+            )}
 
             {/* Note */}
-            <div style={{ padding: '12px 20px 0' }}>
-              <div
-                onClick={() => setShowNote(true)}
-                style={{
-                  padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
-                  background: noteText ? 'rgba(var(--fg-rgb),0.04)' : 'transparent',
-                  border: `1px dashed ${noteText ? 'rgba(var(--fg-rgb),0.08)' : 'rgba(var(--fg-rgb),0.12)'}`,
-                  display: 'flex', alignItems: 'center', gap: 10,
-                }}
-              >
+            <div style={{ padding: '0 20px' }}>
+              <div onClick={() => setShowNote(true)} style={{
+                padding: '12px 14px', borderRadius: 14, cursor: 'pointer',
+                background: noteText ? 'var(--surface)' : 'transparent',
+                border: `1px ${noteText ? 'solid' : 'dashed'} ${noteText ? 'var(--border-color)' : 'rgba(var(--fg-rgb),0.12)'}`,
+                display: 'flex', alignItems: 'center', gap: 10,
+              }}>
                 <span style={{ fontSize: 16 }}>📝</span>
-                <span style={{ fontSize: 13, color: noteText ? 'rgba(var(--fg-rgb),0.7)' : 'rgba(var(--fg-rgb),0.3)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 13, color: noteText ? 'var(--text-sub)' : 'var(--text-faint)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {noteText || 'Добавить заметку к этому дню'}
                 </span>
                 {noteText && <span style={{ fontSize: 14, color: 'var(--text-faint)' }}>›</span>}
@@ -672,9 +606,9 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
                   {noteTags.map(tag => (
                     <span key={tag} style={{
                       fontSize: 11, padding: '3px 10px', borderRadius: 20,
-                      background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
-                      border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
-                      color: 'var(--accent)',
+                      background: 'color-mix(in srgb, var(--accent) 12%, transparent)',
+                      border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)',
+                      color: 'var(--accent)', fontWeight: 500,
                     }}>{tag}</span>
                   ))}
                 </div>
@@ -683,76 +617,50 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
           </>
         ) : (
           /* ── Неделя ── */
-          <div style={{ padding: '0 24px' }}>
+          <div style={{ padding: '0 20px' }}>
             <div style={{
-              fontSize: 11, fontWeight: 500,
-              color: 'var(--text-sub)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              marginBottom: 14,
+              fontSize: 11, fontWeight: 600, color: 'var(--text-faint)',
+              textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12,
             }}>
-              За 7 дней
+              За {days} дней
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {needs.map((need) => (
-                <SparklineRow
-                  key={need.id}
-                  need={need}
-                  history={history}
-                  selectedIdx={selectedIdx}
-                  selectedRatings={selectedRatings}
-                  onClick={() => handleTapNeed(need)}
-                />
+                <SparklineRow key={need.id} need={need} history={history}
+                  selectedIdx={selectedIdx} selectedRatings={selectedRatings}
+                  onClick={() => handleTapNeed(need)} />
               ))}
             </div>
-            <div style={{ marginTop: 28 }}>
+
+            <div style={{ marginTop: 16 }}>
               <InsightCard needs={needs} ratings={selectedRatings} onTap={handleTapNeed} />
             </div>
 
-            {/* Therapist CTA — show if any need consistently low */}
-            {(() => {
-              if (history.length < 3) return null;
-              const needs_low = needs.filter(n => {
-                const last3 = history.slice(0, 3);
-                return last3.every(d => (d.ratings[n.id] ?? 10) <= 4);
-              });
-              if (needs_low.length === 0) return null;
-              const label = needs_low[0].chartLabel;
-              return (
-                <div style={{
-                  background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), rgba(79,163,247,0.06))',
-                  border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
-                  borderRadius: 16, padding: '14px 16px', marginTop: 16,
-                }}>
-                  <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.6, marginBottom: 10 }}>
-                    {label} несколько дней невысокая. Иногда за этим стоит что-то важное — и разобраться с живым человеком рядом бывает легче.
-                  </div>
-                  <a
-                    href={getTherapistContact().bookingUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: 'inline-block', fontSize: 13, color: 'var(--accent)',
-                      textDecoration: 'none', fontWeight: 500,
-                    }}
-                  >
-                    Записаться на сессию →
-                  </a>
+            {needsLow.length > 0 && (
+              <div style={{
+                marginTop: 12,
+                background: 'color-mix(in srgb, var(--accent) 6%, var(--surface))',
+                border: '1px solid color-mix(in srgb, var(--accent) 18%, var(--border-color))',
+                borderRadius: 16, padding: '16px',
+              }}>
+                <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 12 }}>
+                  <strong style={{ color: 'var(--text)' }}>{needsLow[0].chartLabel}</strong> остаётся низкой несколько дней — разобраться с живым человеком рядом бывает легче.
                 </div>
-              );
-            })()}
+                <a href={getTherapistContact().bookingUrl} target="_blank" rel="noreferrer"
+                  style={{ fontSize: 13, color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>
+                  Записаться на сессию →
+                </a>
+              </div>
+            )}
 
-            {/* Weekly card share */}
-            <button
-              onClick={() => setShowWeekCard(true)}
-              style={{
-                width: '100%', marginTop: 20, padding: '13px 0',
-                border: '1px solid rgba(var(--fg-rgb),0.1)', borderRadius: 14,
-                background: 'rgba(var(--fg-rgb),0.04)', color: 'var(--text-sub)',
-                fontSize: 14, fontWeight: 500, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}
-            >
+            <button onClick={() => setShowWeekCard(true)} style={{
+              width: '100%', marginTop: 16, padding: '14px 0',
+              border: '1px solid var(--border-color)', borderRadius: 14, fontFamily: 'inherit',
+              background: 'var(--surface)', color: 'var(--text-sub)',
+              fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}>
               <span style={{ fontSize: 16 }}>🪄</span>
               Карточка недели
             </button>
@@ -760,34 +668,25 @@ export function HistoryView({ needs, history, currentRatings, childhoodRatings =
         )}
       </div>
 
+      {/* ── Sheets ── */}
       {showNote && history[selectedIdx] && (
-        <NoteSheet
-          date={history[selectedIdx].date}
-          onClose={() => {
-            api.getNote(history[selectedIdx].date).then(r => { setNoteText(r.text); setNoteTags(r.tags ?? []); });
-            setShowNote(false);
-          }}
-        />
+        <NoteSheet date={history[selectedIdx].date} onClose={() => {
+          api.getNote(history[selectedIdx].date).then(r => { setNoteText(r.text); setNoteTags(r.tags ?? []); });
+          setShowNote(false);
+        }} />
       )}
 
       {showIndexInfo && <IndexInfoSheet onClose={() => setShowIndexInfo(false)} />}
 
       {showWeekCard && (
-        <WeeklyCardSheet
-          needs={needs}
-          history={history.slice(0, 7)}
-          onClose={() => setShowWeekCard(false)}
-        />
+        <WeeklyCardSheet needs={needs} history={history.slice(0, 7)} onClose={() => setShowWeekCard(false)} />
       )}
 
       {activeNeed && (
         <NeedHistorySheet
-          need={activeNeed}
-          value={selectedRatings[activeNeed.id] ?? 0}
-          history={history}
-          childhoodValue={childhoodRatings[activeNeed.id]}
-          onClose={() => setActiveNeed(null)}
-        />
+          need={activeNeed} value={selectedRatings[activeNeed.id] ?? 0}
+          history={history} childhoodValue={childhoodRatings[activeNeed.id]}
+          onClose={() => setActiveNeed(null)} />
       )}
     </div>
   );
