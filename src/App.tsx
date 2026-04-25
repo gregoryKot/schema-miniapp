@@ -25,7 +25,6 @@ import { NoteSheet } from './components/NoteSheet';
 import { Loader } from './components/Loader';
 import { SchemaInfoSheet } from './components/SchemaInfoSheet';
 import { YSQ_PROGRESS_KEY, YSQ_RESULT_KEY } from './components/YSQTestSheet';
-import { YesterdaySheet } from './components/YesterdaySheet';
 import { WeeklyQuestion, shouldShowWeeklyQuestion } from './components/WeeklyQuestion';
 import { SectionLabel } from './components/SectionLabel';
 import { PairCard } from './components/PairCard';
@@ -763,20 +762,30 @@ export default function App() {
           })()}
 
           {showYesterdaySheet && (
-            <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
-              setShowYesterdaySheet(false);
-              if (showTracker) {
+            <TrackerOverlay
+              needs={needs} ratings={{}} saved={{}}
+              onChange={() => {}} onSaved={() => {}}
+              date={YESTERDAY_DATE}
+              onClose={() => { setShowYesterdaySheet(false); }}
+              onDone={() => {
+                setShowYesterdaySheet(false);
                 setHistoryLoading(true);
                 api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
-              }
-            }} />
+              }}
+            />
           )}
           {backfillDate && (
-            <YesterdaySheet needs={needs} date={backfillDate} onClose={() => {
-              setBackfillDate(null);
-              setHistoryLoading(true);
-              api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
-            }} />
+            <TrackerOverlay
+              needs={needs} ratings={{}} saved={{}}
+              onChange={() => {}} onSaved={() => {}}
+              date={backfillDate}
+              onClose={() => { setBackfillDate(null); }}
+              onDone={() => {
+                setBackfillDate(null);
+                setHistoryLoading(true);
+                api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
+              }}
+            />
           )}
         </div>
       )}

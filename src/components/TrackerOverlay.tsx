@@ -13,7 +13,7 @@
 //     />
 //   )}
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Need, COLORS, YESTERDAY } from '../types';
 import { NeedDial } from './NeedDial';
 import { NeedTodaySheet } from './NeedTodaySheet';
@@ -33,6 +33,9 @@ interface Props {
   onOpenGoal?: () => void;
   onOpenHistory?: () => void;
   yesterdayRatings?: Record<string, number>;
+  /** When set, enables backfill mode: saves to this past date, loads existing ratings */
+  date?: string;
+  onDone?: () => void;
 }
 
 const ONBOARDING_KEY = 'tracker_onboarding_v1';
@@ -73,28 +76,44 @@ export function TrackerOverlay({
   needs, ratings, saved, isOffline,
   onChange, onSaved, onClose, initialNeedId,
   onOpenNote, onOpenGoal, onOpenHistory, yesterdayRatings = {},
+  date, onDone,
 }: Props) {
   const safeTop = useSafeTop();
   const timers  = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const unlockTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
+  // Backfill mode: own ratings state loaded from API for the given date
+  const isBackfill = !!date;
+  const [localRatings, setLocalRatings] = useState<Record<string, number>>({});
+  const [localLoading, setLocalLoading] = useState(isBackfill);
+
+  useEffect(() => {
+    if (!isBackfill) return;
+    api.ratings(date).then(r => setLocalRatings(r)).finally(() => setLocalLoading(false));
+  }, [date, isBackfill]);
+
+  const effectiveRatings = isBackfill ? localRatings : ratings;
+
   const [idx, setIdx] = useState(() => {
     if (initialNeedId) { const i = needs.findIndex(n => n.id === initialNeedId); if (i >= 0) return i; }
-    const f = needs.findIndex(n => ratings[n.id] === undefined);
-    return f >= 0 ? f : 0;
+    if (!isBackfill) {
+      const f = needs.findIndex(n => ratings[n.id] === undefined);
+      return f >= 0 ? f : 0;
+    }
+    return 0;
   });
   const [unlocked,    setUnlocked]    = useState<Set<string>>(new Set());
   const [detailNeed,  setDetailNeed]  = useState<Need | null>(null);
   const [onbStep,     setOnbStep]     = useState(0);
-  const [showOnb,     setShowOnb]     = useState(() => !localStorage.getItem(ONBOARDING_KEY));
+  const [showOnb,     setShowOnb]     = useState(() => !isBackfill && !localStorage.getItem(ONBOARDING_KEY));
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
 
   const need     = needs[idx];
-  const value    = ratings[need.id] ?? 0;
-  const allRated = needs.every(n => ratings[n.id] !== undefined);
-  const avg      = needs.length > 0 ? needs.reduce((s,n)=>s+(ratings[n.id]??0),0)/needs.length : 0;
+  const value    = effectiveRatings[need.id] ?? 0;
+  const allRated = needs.every(n => effectiveRatings[n.id] !== undefined && effectiveRatings[n.id] > 0);
+  const avg      = needs.length > 0 ? needs.reduce((s,n)=>s+(effectiveRatings[n.id]??0),0)/needs.length : 0;
   const yval     = yesterdayRatings[need.id] ?? YESTERDAY[need.id];
-  const delta    = (value > 0 && yval !== undefined) ? value - yval : null;
+  const delta    = (!isBackfill && value > 0 && yval !== undefined) ? value - yval : null;
 
   const dismissOnb = useCallback(() => {
     localStorage.setItem(ONBOARDING_KEY, '1');
@@ -102,6 +121,15 @@ export function TrackerOverlay({
   }, []);
 
   const handleChange = useCallback((needId: string, v: number) => {
+    if (isBackfill) {
+      setLocalRatings(prev => ({ ...prev, [needId]: v }));
+      clearTimeout(timers.current[needId]);
+      timers.current[needId] = setTimeout(async () => {
+        if (v === 0) return;
+        try { await api.saveRating(needId, v, date); setLastSavedAt(new Date()); } catch { /* offline */ }
+      }, 500);
+      return;
+    }
     onChange(needId, v);
     if (isOffline) return;
     setUnlocked(p => new Set([...p, needId]));
@@ -118,7 +146,7 @@ export function TrackerOverlay({
         setLastSavedAt(new Date());
       } catch { /* handle offline */ }
     }, 500);
-  }, [onChange, onSaved, isOffline]);
+  }, [onChange, onSaved, isOffline, isBackfill, date]);
 
   // Swipe between needs — high threshold to avoid accidental triggers
   const touchRef = useRef<{ x: number; y: number } | null>(null);
@@ -132,6 +160,15 @@ export function TrackerOverlay({
     if (Math.abs(dx) < 90 || Math.abs(dy) > Math.abs(dx) * 0.5) return;
     if (dx < 0 && idx < needs.length - 1) setIdx(idx + 1);
     if (dx > 0 && idx > 0) setIdx(idx - 1);
+  }
+
+  if (localLoading) {
+    return (
+      <div style={{ position:'fixed', inset:0, zIndex:80, background:'var(--bg)',
+        display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ fontSize:14, color:'var(--text-sub)' }}>Загрузка...</div>
+      </div>
+    );
   }
 
   return (
@@ -153,11 +190,15 @@ export function TrackerOverlay({
           </svg>
         </button>
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>Трекер потребностей</div>
-          <div style={{ fontSize:11, color:'var(--text-faint)', marginTop:2 }}>свайп · тап по шкале · +/−</div>
+          <div style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>
+            {isBackfill ? 'Оценки за день' : 'Трекер потребностей'}
+          </div>
+          <div style={{ fontSize:11, color:'var(--text-faint)', marginTop:2 }}>
+            {isBackfill ? date : 'свайп · тап по шкале · +/−'}
+          </div>
         </div>
         {/* История кнопка */}
-        {onOpenHistory ? (
+        {!isBackfill && onOpenHistory ? (
           <button onClick={() => { onClose(); onOpenHistory(); }} style={{
             display:'flex', flexDirection:'column', alignItems:'center', gap:2,
             border:'none', background:'var(--surface-2)', borderRadius:10,
@@ -280,7 +321,7 @@ export function TrackerOverlay({
         )}
 
         {allRated && (
-          <button onClick={onClose} style={{
+          <button onClick={isBackfill ? (onDone ?? onClose) : onClose} style={{
             width:'100%', padding:'14px', borderRadius:16, border:'1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)',
             background:'color-mix(in srgb, var(--accent-green) 12%, transparent)', color:'var(--accent-green)',
             fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:'inherit',
@@ -289,21 +330,23 @@ export function TrackerOverlay({
           </button>
         )}
 
-        {/* Note + goal */}
-        <div style={{ display:'flex', gap:8 }}>
-          <button onClick={onOpenNote} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
-            background:'var(--surface)', border:'1px solid var(--border-color)',
-            color:'var(--text-sub)', fontSize:12, cursor:'pointer',
-            display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
-            ✏️ Заметка
-          </button>
-          <button onClick={onOpenGoal} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
-            background:'var(--surface)', border:'1px solid var(--border-color)',
-            color:'var(--accent)', fontSize:12, cursor:'pointer',
-            display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
-            🎯 Цель
-          </button>
-        </div>
+        {/* Note + goal — not applicable in backfill mode */}
+        {!isBackfill && (
+          <div style={{ display:'flex', gap:8 }}>
+            <button onClick={onOpenNote} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
+              background:'var(--surface)', border:'1px solid var(--border-color)',
+              color:'var(--text-sub)', fontSize:12, cursor:'pointer',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
+              ✏️ Заметка
+            </button>
+            <button onClick={onOpenGoal} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
+              background:'var(--surface)', border:'1px solid var(--border-color)',
+              color:'var(--accent)', fontSize:12, cursor:'pointer',
+              display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
+              🎯 Цель
+            </button>
+          </div>
+        )}
 
         {/* Nav */}
         <div style={{ display:'flex', gap:10 }}>
@@ -336,7 +379,7 @@ export function TrackerOverlay({
       {detailNeed && (
         <NeedTodaySheet
           need={detailNeed}
-          value={ratings[detailNeed.id] ?? 0}
+          value={effectiveRatings[detailNeed.id] ?? 0}
           yesterdayValue={yesterdayRatings[detailNeed.id] ?? YESTERDAY[detailNeed.id]}
           onChange={v => handleChange(detailNeed.id, v)}
           onClose={() => setDetailNeed(null)}
