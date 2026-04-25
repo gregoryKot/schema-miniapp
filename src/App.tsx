@@ -690,171 +690,43 @@ export default function App() {
         />
       )}
 
-      {/* ── Tracker overlay ── */}
+      {/* ── История потребностей ── */}
       {showTracker && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 80, background: 'var(--bg)', overflowY: 'auto' }}>
           {/* Sticky header */}
           <div style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
+            position: 'sticky', top: 0, zIndex: 10,
             background: 'var(--nav-bg)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
             padding: `${safeTop + 16}px 20px 14px`,
             borderBottom: '1px solid rgba(var(--fg-rgb),0.04)',
           }}>
-            {/* Back + date row */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
               <button
                 onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
                 style={{ background: 'none', border: 'none', color: 'var(--text-sub)', fontSize: 14, cursor: 'pointer', padding: '0 4px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}
               >
                 ‹ Назад
               </button>
-              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>
-                {formatHeaderDate()}
-              </span>
-            </div>
-
-            <h1
-              style={{
-                fontSize: 26, fontWeight: 600, letterSpacing: '-0.5px',
-                color: 'var(--text)', marginBottom: 3, lineHeight: 1.1,
-                display: 'flex', alignItems: 'center', gap: 8,
-              }}
-            >
-              Трекер потребностей
-              <span onClick={() => setShowAbout(true)} style={{ fontSize: 18, color: 'var(--text-sub)', fontWeight: 400, lineHeight: 1, cursor: 'pointer' }}>ⓘ</span>
-            </h1>
-            <p style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 14 }}>
-              {trackerTab === 'today' ? 'Как ты сегодня?' : 'Твоя история потребностей'}
-            </p>
-
-            {/* Pill tabs */}
-            <div style={{ display: 'flex', background: 'rgba(var(--fg-rgb),0.06)', borderRadius: 12, padding: 3 }}>
-              {(['today', 'history'] as TrackerTab[]).map((t) => {
-                const active = trackerTab === t;
-                return (
-                  <button
-                    key={t}
-                    onClick={() => {
-                      tabScrollPositions.current[trackerTab] = window.scrollY;
-                      setTrackerTab(t);
-                      requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current[t]));
-                    }}
-                    style={{
-                      flex: 1, padding: '8px 0', border: 'none', borderRadius: 10,
-                      background: active ? 'rgba(var(--fg-rgb),0.12)' : 'transparent',
-                      color: active ? 'var(--text)' : 'rgba(var(--fg-rgb),0.4)',
-                      fontSize: 14, fontWeight: active ? 500 : 400,
-                      cursor: 'pointer', transition: 'all 0.15s ease',
-                    }}
-                  >
-                    {t === 'today' ? 'Сейчас' : 'История'}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {trackerTab === 'today' && showYesterdayBanner && (
-            <div style={{ padding: '12px 20px 0' }}>
-              <div
-                onClick={() => { setShowYesterdaySheet(true); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(96,165,250,0.08)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 14, padding: '12px 14px', cursor: 'pointer' }}
-              >
-                <span style={{ fontSize: 20, flexShrink: 0 }}>📅</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-blue)' }}>Заполнить вчера</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Вчера не было оценок — можно добавить сейчас</div>
-                </div>
-                <button
-                  onClick={e => { e.stopPropagation(); setShowYesterdayBanner(false); localStorage.setItem('yesterday_banner_' + YESTERDAY_DATE, '1'); }}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}
-                >×</button>
-              </div>
-            </div>
-          )}
-          {trackerTab === 'today' && showYsqBanner && (
-            <div style={{ padding: '12px 20px 0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 14, padding: '12px 14px' }}>
-                <span style={{ fontSize: 20, flexShrink: 0 }}>⏸</span>
-                <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => { localStorage.removeItem(YSQ_BANNER_DISMISSED_KEY); setShowYsqBanner(false); setSchemaAutoStartTest(true); setShowSchemaInfo(true); }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-yellow)' }}>Незаконченный тест схем</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-sub)', marginTop: 2 }}>Нажми, чтобы продолжить с места остановки</div>
-                </div>
-                <button onClick={() => { localStorage.setItem(YSQ_BANNER_DISMISSED_KEY, '1'); setShowYsqBanner(false); }} style={{ background: 'none', border: 'none', color: 'var(--text-faint)', fontSize: 18, cursor: 'pointer', padding: '0 4px', flexShrink: 0 }}>×</button>
-              </div>
-            </div>
-          )}
-          {trackerTab === 'today' && showWeeklyQ && (
-            <div style={{ padding: '16px 20px 0' }}>
-              <WeeklyQuestion date={TODAY_DATE} onDismiss={() => setShowWeeklyQ(false)} />
-            </div>
-          )}
-          {trackerTab === 'today' && pairData !== null && (pairData.partners.length > 0 || pairData.pendingCode || (pairCardDismissed === false && HAS_HISTORY)) && (
-            <div style={{ padding: '8px 20px 0' }}>
-              <PairCard
-                partners={pairData.partners}
-                pendingCode={pairData.pendingCode}
-                showInvite={pairData.partners.length === 0 && !pairData.pendingCode && pairCardDismissed === false && HAS_HISTORY}
-                onOpen={() => setShowPairSheet(true)}
-                onDismissInvite={() => {
-                  localStorage.setItem('pair_card_dismissed', '1');
-                  setPairCardDismissed(true);
-                  api.updateSettings({ pairCardDismissed: true }).catch(() => {});
-                }}
-              />
-            </div>
-          )}
-          {trackerTab === 'today' && (() => {
-            const upcoming = pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE);
-            return upcoming.length > 0 ? (
-              <div style={{ padding: '8px 20px 0' }}>
-                {upcoming.map(plan => {
-                  const color = COLORS[plan.needId] ?? '#888';
-                  const isToday = plan.scheduledDate === TODAY_DATE;
-                  return (
-                    <div key={plan.id} style={{ display: 'flex', alignItems: 'center', gap: 10, background: color + '12', border: `1px solid ${color}28`, borderRadius: 14, padding: '10px 14px', marginBottom: 6 }}>
-                      <span style={{ fontSize: 18, flexShrink: 0 }}>🎯</span>
-                      <div>
-                        <div style={{ fontSize: 11, color, fontWeight: 600, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{isToday ? 'Твой план на сегодня' : 'Твой план на завтра'}</div>
-                        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.75)', lineHeight: 1.4 }}>{plan.practiceText}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : null;
-          })()}
-          {trackerTab === 'today' && (
-            <TodayView
-              needs={needs}
-              ratings={ratings}
-              saved={saved}
-              isOffline={isOffline}
-              onChange={handleChange}
-              onSaved={handleSaved}
-              onNote={() => setShowTodayNote(true)}
-              onOpenPractices={() => setShowPracticesOnboarding(true)}
-              onPlanCreated={() => api.getPendingPlans().then(setPendingPlans).catch(() => {})}
-              plannedNeedIds={new Set(pendingPlans.filter(p => p.scheduledDate >= TODAY_DATE).map(p => p.needId))}
-              onClose={() => { setShowTracker(false); setTrackerTab('today'); }}
-              onOpenHelp={() => { setShowTracker(false); setTrackerTab('today'); setSection('help'); }}
-            />
-          )}
-          {trackerTab === 'today' && needs.length > 0 && needs.every(n => saved[n.id]) && (
-            <div style={{ position: 'sticky', bottom: 0, padding: '12px 20px 28px', background: 'linear-gradient(to top, var(--bg) 65%, transparent)', zIndex: 5 }}>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)' }}>{formatHeaderDate()}</span>
               <button
-                onClick={() => { setShowTracker(false); setTrackerTab('today'); }}
-                style={{ width: '100%', padding: '14px 0', borderRadius: 16, border: 'none', background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+                onClick={() => { setShowTracker(false); setTrackerTab('today'); setTrackerNeedId(null); setShowTrackerOverlay(true); }}
+                style={{
+                  background: 'color-mix(in srgb, var(--accent) 10%, var(--surface-2))',
+                  border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+                  borderRadius: 10, padding: '6px 12px', cursor: 'pointer',
+                  fontSize: 12, fontWeight: 600, color: 'var(--accent)', fontFamily: 'inherit',
+                }}
               >
-                Готово — закрыть трекер ✓
+                Оценить →
               </button>
             </div>
-          )}
-          {trackerTab === 'history' && (
+            <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: '-0.4px', color: 'var(--text)', lineHeight: 1.1 }}>
+              История потребностей
+            </h1>
+          </div>
+
+          {(
             historyLoading
               ? <Loader minHeight="60vh" />
               : <HistoryView
@@ -865,9 +737,9 @@ export default function App() {
                   onOpenSchemas={() => setShowSchemaInfo(true)}
                   onOpenChildhoodWheel={() => setShowChildhoodWheel(true)}
                   onGoToToday={() => {
-                    tabScrollPositions.current['history'] = window.scrollY;
-                    setTrackerTab('today');
-                    requestAnimationFrame(() => window.scrollTo(0, tabScrollPositions.current['today']));
+                    setShowTracker(false);
+                    setTrackerNeedId(null);
+                    setShowTrackerOverlay(true);
                   }}
                   onBackfill={(date) => setBackfillDate(date)}
                 />
@@ -893,7 +765,7 @@ export default function App() {
           {showYesterdaySheet && (
             <YesterdaySheet needs={needs} date={YESTERDAY_DATE} onClose={() => {
               setShowYesterdaySheet(false);
-              if (trackerTab === 'history') {
+              if (showTracker) {
                 setHistoryLoading(true);
                 api.history(historyDays).then(h => setHistory(fillHistoryGaps(h))).finally(() => setHistoryLoading(false));
               }

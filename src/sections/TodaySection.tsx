@@ -374,50 +374,51 @@ export function TodaySection({
             ))}
           </div>
 
-          {/* Action row: primary CTA + История square */}
-          <div style={{ display: 'flex', gap: 8 }}>
-            {allRated && avgScore ? (
-              <div onClick={onOpenTracker} style={{
-                flex: 1, background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-              }}>
-                <div>
-                  <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
-                    Средний индекс
-                  </div>
-                  <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1.5px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
-                    {avgScore}
-                  </div>
+          {/* Primary CTA */}
+          {allRated && avgScore ? (
+            <div onClick={onOpenTracker} style={{
+              background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+            }}>
+              <div>
+                <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                  Средний индекс
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено ✓</div>
-              </div>
-            ) : (
-              <div onClick={onOpenTracker} style={{
-                flex: 1, borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
-                background: 'color-mix(in srgb, var(--accent) 8%, var(--surface-2))',
-                border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Оценить потребности</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
+                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1.5px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                  {avgScore}
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round">
-                  <path d="M9 18l6-6-6-6"/>
-                </svg>
               </div>
-            )}
-            {onOpenTrackerHistory && (
-              <div onClick={onOpenTrackerHistory} style={{
-                width: 54, borderRadius: 14, background: 'var(--surface-2)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                gap: 4, cursor: 'pointer', flexShrink: 0,
-              }}>
-                <span style={{ fontSize: 18 }}>📊</span>
-                <span style={{ fontSize: 9, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>История</span>
+              <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено ✓</div>
+            </div>
+          ) : (
+            <div onClick={onOpenTracker} style={{
+              borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
+              background: 'color-mix(in srgb, var(--accent) 8%, var(--surface-2))',
+              border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Оценить потребности</div>
+                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
               </div>
-            )}
-          </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          )}
+          {/* История — slim secondary row */}
+          {onOpenTrackerHistory && (
+            <div onClick={onOpenTrackerHistory} style={{
+              marginTop: 8, borderRadius: 12, padding: '9px 14px', cursor: 'pointer',
+              background: 'var(--surface-2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <span style={{ fontSize: 13, color: 'var(--text-sub)', fontWeight: 500 }}>История потребностей</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2" strokeLinecap="round">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* ── Diary card ── */}
