@@ -685,6 +685,7 @@ export default function App() {
           initialNeedId={trackerNeedId}
           onOpenNote={() => setShowTodayNote(true)}
           onOpenGoal={() => setShowTrackerGoal(true)}
+          onOpenHistory={() => { setShowTrackerOverlay(false); setTrackerNeedId(null); setTrackerTab('history'); setShowTracker(true); }}
           yesterdayRatings={yesterdayRatings}
         />
       )}

@@ -31,6 +31,7 @@ interface Props {
   initialNeedId?: string | null;
   onOpenNote?: () => void;
   onOpenGoal?: () => void;
+  onOpenHistory?: () => void;
   yesterdayRatings?: Record<string, number>;
 }
 
@@ -71,7 +72,7 @@ function SummaryDonut({ avg }: { avg: number }) {
 export function TrackerOverlay({
   needs, ratings, saved, isOffline,
   onChange, onSaved, onClose, initialNeedId,
-  onOpenNote, onOpenGoal, yesterdayRatings = {},
+  onOpenNote, onOpenGoal, onOpenHistory, yesterdayRatings = {},
 }: Props) {
   const safeTop = useSafeTop();
   const timers  = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -155,17 +156,19 @@ export function TrackerOverlay({
           <div style={{ fontSize:13, fontWeight:600, color:'var(--text)' }}>Трекер потребностей</div>
           <div style={{ fontSize:11, color:'var(--text-faint)', marginTop:2 }}>свайп · тап по шкале · +/−</div>
         </div>
-        {/* Progress dots */}
-        <div style={{ display:'flex', gap:5 }}>
-          {needs.map((n, i) => (
-            <div key={n.id} onClick={() => setIdx(i)} style={{
-              width: i===idx ? 20 : 8, height:8, borderRadius:4, cursor:'pointer',
-              background: ratings[n.id] !== undefined ? COLORS[n.id]??'#888'
-                : i===idx ? 'rgba(var(--fg-rgb),0.4)' : 'var(--surface-2)',
-              transition: 'all 0.25s ease',
-            }}/>
-          ))}
-        </div>
+        {/* История кнопка */}
+        {onOpenHistory ? (
+          <button onClick={() => { onClose(); onOpenHistory(); }} style={{
+            display:'flex', flexDirection:'column', alignItems:'center', gap:2,
+            border:'none', background:'var(--surface-2)', borderRadius:10,
+            padding:'6px 10px', cursor:'pointer', color:'var(--text-faint)',
+          }}>
+            <span style={{ fontSize:14 }}>📊</span>
+            <span style={{ fontSize:9, fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>История</span>
+          </button>
+        ) : (
+          <div style={{ width:34 }} />
+        )}
       </div>
 
       {/* Onboarding */}
@@ -313,7 +316,7 @@ export function TrackerOverlay({
           {idx < needs.length - 1 && (
             <button onClick={() => setIdx(idx+1)} style={{
               flex:2, padding:'13px', borderRadius:14, border:'none', fontFamily:'inherit',
-              background:'linear-gradient(135deg,var(--accent),var(--accent-blue))',
+              background:'var(--accent)',
               color:'#fff', fontSize:14, fontWeight:600, cursor:'pointer',
             }}>
               Далее →

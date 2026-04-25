@@ -355,30 +355,18 @@ export function TodaySection({
         />
 
         {/* ── Needs card ── */}
-        <div onClick={onOpenTracker} className="card" style={{
-          padding: '18px 18px', cursor: 'pointer',
-        }}>
+        <div className="card" style={{ padding: '18px 18px 14px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
               Потребности
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-                {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
-              </span>
-              {onOpenTrackerHistory && (
-                <span
-                  onClick={e => { e.stopPropagation(); onOpenTrackerHistory(); }}
-                  style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500, cursor: 'pointer' }}
-                >
-                  История →
-                </span>
-              )}
-            </div>
+            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+              {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
+            </span>
           </div>
 
           {/* 5 mini indicators */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
             {needs.map(n => (
               <NeedMini key={n.id} need={n} value={ratings[n.id]} yesterday={yesterdayRatings[n.id]}
                 onTap={() => onOpenTrackerAt ? onOpenTrackerAt(n.id) : onOpenTracker()}
@@ -386,42 +374,50 @@ export function TodaySection({
             ))}
           </div>
 
-          {allRated && avgScore ? (
-            <div style={{
-              background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div>
-                <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700,
-                  letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 3 }}>
-                  Средний индекс
+          {/* Action row: primary CTA + История square */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            {allRated && avgScore ? (
+              <div onClick={onOpenTracker} style={{
+                flex: 1, background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+              }}>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                    Средний индекс
+                  </div>
+                  <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1.5px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                    {avgScore}
+                  </div>
                 </div>
-                <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: '-1.5px',
-                  color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
-                  {avgScore}
-                </div>
+                <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено ✓</div>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено</div>
-            </div>
-          ) : (
-            <div style={{
-              background: 'rgba(var(--fg-rgb),0.04)',
-              borderRadius: 14, padding: '12px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              border: '1px solid var(--border-color)',
-            }}>
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>
-                  Оценить потребности
+            ) : (
+              <div onClick={onOpenTracker} style={{
+                flex: 1, borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
+                background: 'color-mix(in srgb, var(--accent) 8%, var(--surface-2))',
+                border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Оценить потребности</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
               </div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="var(--accent)" strokeWidth="2" strokeLinecap="round">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-            </div>
-          )}
+            )}
+            {onOpenTrackerHistory && (
+              <div onClick={onOpenTrackerHistory} style={{
+                width: 54, borderRadius: 14, background: 'var(--surface-2)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                gap: 4, cursor: 'pointer', flexShrink: 0,
+              }}>
+                <span style={{ fontSize: 18 }}>📊</span>
+                <span style={{ fontSize: 9, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase' }}>История</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* ── Diary card ── */}
