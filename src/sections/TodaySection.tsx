@@ -354,15 +354,26 @@ export function TodaySection({
           onOpenChildhoodWheel={onOpenChildhoodWheel}
         />
 
-        {/* ── Needs card ── */}
-        <div className="card" style={{ padding: '18px 18px 14px' }}>
+        {/* ── Needs card — tap card = history, tap need = tracker ── */}
+        <div
+          className="card"
+          onClick={onOpenTrackerHistory}
+          style={{ padding: '18px 18px 14px', cursor: onOpenTrackerHistory ? 'pointer' : undefined, WebkitTapHighlightColor: 'transparent' }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
               Потребности
             </div>
-            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-              {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>
+                {allRated ? 'Готово ✓' : `${ratedCount} / ${needs.length}`}
+              </span>
+              {onOpenTrackerHistory && (
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2.5" strokeLinecap="round">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              )}
+            </div>
           </div>
 
           {/* 5 mini indicators */}
@@ -376,9 +387,9 @@ export function TodaySection({
 
           {/* Primary CTA */}
           {allRated && avgScore ? (
-            <div onClick={onOpenTracker} style={{
+            <div style={{
               background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             }}>
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
@@ -391,30 +402,20 @@ export function TodaySection({
               <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено ✓</div>
             </div>
           ) : (
-            <div onClick={onOpenTracker} style={{
-              borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
-              background: 'color-mix(in srgb, var(--accent) 8%, var(--surface-2))',
-              border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
+            <div
+              onClick={e => { e.stopPropagation(); onOpenTracker(); }}
+              style={{
+                borderRadius: 14, padding: '12px 14px', cursor: 'pointer',
+                background: 'color-mix(in srgb, var(--accent) 8%, var(--surface-2))',
+                border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}
+            >
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Оценить потребности</div>
                 <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 2 }}>Займёт 2 минуты</div>
               </div>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-            </div>
-          )}
-          {/* История — slim secondary row */}
-          {onOpenTrackerHistory && (
-            <div onClick={onOpenTrackerHistory} style={{
-              marginTop: 8, borderRadius: 12, padding: '9px 14px', cursor: 'pointer',
-              background: 'var(--surface-2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <span style={{ fontSize: 13, color: 'var(--text-sub)', fontWeight: 500 }}>История потребностей</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" strokeWidth="2" strokeLinecap="round">
                 <path d="M9 18l6-6-6-6"/>
               </svg>
             </div>
