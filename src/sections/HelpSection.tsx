@@ -187,6 +187,7 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
   const therapistTasks = tasks.filter(t => t.assignedBy !== null);
 
   function openTask(task: UserTask) {
+    setShowAllTasks(false);
     if (task.assignedBy !== null && task.type !== 'custom') {
       setActiveTaskId(task.id);
     }
