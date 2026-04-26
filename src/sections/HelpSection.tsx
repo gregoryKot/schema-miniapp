@@ -253,9 +253,9 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
         {/* 2-column tool grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <ToolCard emoji="🎯" label="Мои цели" sub={tasks.length === 0 ? 'Нет активных' : `${tasks.length} ${plural(tasks.length, 'цель', 'цели', 'целей')}`} accentColor="var(--accent-orange)" onClick={() => setShowAllTasks(true)} />
           <ToolCard emoji="🗂" label="Практики" sub={practiceCount == null ? undefined : practiceCount === 0 ? 'Нет практик' : `${practiceCount} ${plural(practiceCount, 'практика', 'практики', 'практик')}`} accentColor="var(--accent)" onClick={onOpenPractices} />
           <ToolCard emoji="🗓" label="Планы" sub={planCount == null ? undefined : planCount === 0 ? 'История пуста' : `${planCount} ${plural(planCount, 'план', 'плана', 'планов')}`} accentColor="var(--accent-blue)" onClick={onOpenPlans} />
-          <ToolCard emoji="🎯" label="Мои цели" sub={tasks.length === 0 ? 'Нет активных' : `${tasks.length} ${plural(tasks.length, 'цель', 'цели', 'целей')}`} accentColor="var(--accent-orange)" onClick={() => setShowAllTasks(true)} />
           <ToolCard emoji="🔍" label="Проверка убеждений" sub="Правда ли это?" accentColor="var(--accent-yellow)" onClick={() => setShowBeliefCheck(true)} />
           <ToolCard emoji="🏡" label="Безопасное место" sub="Ресурс в тревожный момент" accentColor="var(--accent-green)" onClick={() => setShowSafePlace(true)} />
           <ToolCard emoji="✉️" label="Письмо себе" sub="Уязвимому Ребёнку" accentColor="var(--accent-pink)" onClick={() => setShowLetterToSelf(true)} />
@@ -286,49 +286,33 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       )}
       {showAllTasks && (
         <BottomSheet onClose={() => setShowAllTasks(false)} zIndex={200}>
-          <SectionLabel purple mb={16}>Все задания</SectionLabel>
+          <SectionLabel purple mb={16}>Мои цели</SectionLabel>
           {tasks.length === 0 ? (
             <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
-              Нет активных заданий
+              Нет активных целей
             </div>
           ) : tasks.map(task => (
-            <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.05)' }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, background: 'rgba(var(--fg-rgb),0.05)' }}>
-                {task.done === true ? '✅' : task.done === false ? '❌' : resolveTaskEmoji(task)}
-              </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                {task.assignedBy !== null && (
-                  <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 1 }}>от терапевта</div>
-                )}
-                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.35 }}>
-                  {resolveTaskDisplayText(task)}
-                </div>
-                <TaskProgressBar task={task} />
-                {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
-              </div>
-              {task.done === null && task.assignedBy !== null && task.type === 'custom' && (
-                <button
-                  onClick={() => api.completeTask(task.id, true).then(() => Promise.all([api.getTasks(), api.getTaskHistory()]).then(([t, h]) => { setTasks(t); setTaskHistory(h); }).catch(() => {})).catch(() => {})}
-                  style={{ background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', border: 'none', borderRadius: 10, padding: '6px 12px', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}
-                >
-                  Готово
-                </button>
-              )}
-            </div>
+            <TaskRow
+              key={task.id}
+              task={task}
+              onOpen={() => openTask(task)}
+              onComplete={task.done === null && task.type === 'custom'
+                ? () => api.completeTask(task.id, true)
+                    .then(() => Promise.all([api.getTasks(), api.getTaskHistory()]))
+                    .then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })
+                    .catch(() => {})
+                : undefined}
+            />
           ))}
           {taskHistory.length > 0 && (
             <>
               <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
               {taskHistory.map(task => (
                 <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.5 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, background: 'rgba(var(--fg-rgb),0.04)' }}>
-                    {task.done === true ? '✅' : '❌'}
-                  </div>
+                  <span style={{ fontSize: 16, flexShrink: 0, width: 22, textAlign: 'center' }}>{task.done === true ? '✅' : '❌'}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.35 }}>
-                      {resolveTaskDisplayText(task)}
-                    </div>
-                    {task.completedAt && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 1 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.35 }}>{resolveTaskDisplayText(task)}</div>
+                    {task.completedAt && <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 1 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
                   </div>
                 </div>
               ))}
