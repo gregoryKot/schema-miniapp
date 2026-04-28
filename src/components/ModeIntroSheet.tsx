@@ -6,44 +6,6 @@ import { api } from '../api';
 
 const STORAGE_KEY = (modeId: string) => `mode_intro_${modeId}`;
 
-const MODE_DESC: Record<string, string> = {
-  vulnerable_child:      'Ощущение беспомощности, грусти, страха — нуждается в защите и утешении',
-  lonely_child:          'Одиночество и непонятость даже среди людей',
-  abandoned_child:       'Страх быть брошенным, тревога при угрозе близким отношениям',
-  humiliated_child:      'Стыд и ощущение дефективности, страх осуждения',
-  dependent_child:       'Нужна постоянная поддержка, страх самостоятельных решений',
-  angry_child:           'Злость из-за неудовлетворённых потребностей',
-  stubborn_child:        'Упрямое сопротивление требованиям и контролю',
-  enraged_child:         'Неконтролируемая ярость при угрозе или несправедливости',
-  impulsive_child:       'Действует не думая, следует желаниям без учёта последствий',
-  undisciplined_child:   'Избегает скучного, быстро теряет интерес и бросает',
-  compliant_surrenderer: 'Соглашается со всем, чтобы избежать конфликта',
-  helpless_surrenderer:  'Ощущает себя беспомощным, ждёт что другие всё решат',
-  detached_protector:    'Отключается эмоционально, уходит в себя чтобы не чувствовать',
-  detached_self_soother: 'Успокаивает себя через еду, экраны, привычки',
-  avoidant_protector:    'Избегает ситуаций и людей, которые могут причинить боль',
-  angry_protector:       'Отталкивает других злостью, защищаясь от уязвимости',
-  self_aggrandiser:      'Ощущение особости и превосходства над другими',
-  overcontroller:        'Стремится всё контролировать, тревожится от неопределённости',
-  perfectionistic_oc:    'Недостижимые стандарты, страх малейшей ошибки',
-  suspicious_oc:         'Постоянная настороженность, ищет скрытые угрозы',
-  invincible_oc:         'Отрицает слабость — должен быть сильным всегда',
-  flagellating_oc:       'Наказывает себя за ошибки строже чем нужно',
-  compulsive_oc:         'Навязчивые ритуалы и действия для снижения тревоги',
-  worrying_oc:           'Хроническое беспокойство о будущих катастрофах',
-  bully_attack:          'Добивается своего через запугивание и агрессию',
-  manipulative:          'Влияет на людей косвенно, скрывая истинные намерения',
-  predator:              'Использует других в своих интересах без сочувствия',
-  attention_seeker:      'Постоянно ищет признания и похвалы от окружающих',
-  pollyanna:             'Отрицает проблемы, видит всё в розовом цвете',
-  demanding_critic:      'Внутренний голос завышенных требований и критики',
-  punitive_critic:       'Жёсткое внутреннее осуждение и приговоры себе',
-  guilt_critic:          'Постоянное чувство вины и самообвинения',
-  happy_child:           'Спонтанность, радость и игривость без тревоги',
-  healthy_adult:         'Взвешенные решения, забота о себе и других',
-  good_parent:           'Внутренний поддерживающий голос, ободряет и успокаивает',
-};
-
 interface IntroData {
   triggers: string;
   feelings: string;
@@ -59,31 +21,31 @@ const QUESTIONS: { key: keyof IntroData; label: string; hint: string; placeholde
     key: 'triggers',
     label: 'Когда активируется',
     hint: 'Ситуации, люди, слова — что запускает этот режим?',
-    placeholder: 'Например: когда меня критикуют, когда нужно выступить...',
+    placeholder: 'Когда меня критикуют, когда нужно выступить...',
   },
   {
     key: 'feelings',
     label: 'Что чувствую',
     hint: 'Эмоции и ощущения в теле',
-    placeholder: 'Например: тревога, комок в горле, напряжение в плечах...',
+    placeholder: 'Тревога, комок в горле, напряжение в плечах...',
   },
   {
     key: 'thoughts',
     label: 'Что говорит внутри',
     hint: 'Убеждения, голос, монолог этого режима',
-    placeholder: 'Например: «Я недостаточно хорош», «Лучше не рисковать»...',
+    placeholder: '«Я недостаточно хорош», «Лучше не рисковать»...',
   },
   {
     key: 'needs',
     label: 'Чего на самом деле хочет',
     hint: 'Глубинная потребность за этим режимом',
-    placeholder: 'Например: безопасности, признания, контакта...',
+    placeholder: 'Безопасности, признания, контакта...',
   },
   {
     key: 'behavior',
     label: 'Как проявляется в поведении',
-    hint: 'Что ты делаешь (или перестаёшь делать) в этом режиме',
-    placeholder: 'Например: замолкаю, избегаю, злюсь, переусердствую...',
+    hint: 'Что делаешь (или перестаёшь делать) в этом режиме',
+    placeholder: 'Замолкаю, избегаю, злюсь, переусердствую...',
   },
 ];
 
@@ -95,20 +57,21 @@ interface Props {
 
 export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
   const mode = getModeById(modeId);
-  const [data, setData] = useState<IntroData>(EMPTY);
+  const [data, setData]     = useState<IntroData>(EMPTY);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved,  setSaved]  = useState(false);
+  const [step,   setStep]   = useState(0);
+  const [flipped, setFlipped] = useState(false);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    return () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); };
-  }, []);
+  useEffect(() => () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); }, []);
 
   useEffect(() => {
     api.getModeNotes().then(notes => {
       const note = notes.find(n => n.modeId === modeId);
       if (note) {
-        setData({ triggers: note.triggers, feelings: note.feelings, thoughts: note.thoughts, needs: note.needs, behavior: note.behavior });
+        setData({ triggers: note.triggers, feelings: note.feelings, thoughts: note.thoughts,
+          needs: note.needs, behavior: note.behavior });
       } else {
         const stored = localStorage.getItem(STORAGE_KEY(modeId));
         if (stored) { try { setData(JSON.parse(stored)); } catch {} }
@@ -119,17 +82,24 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
     });
   }, [modeId]);
 
-  const set = (key: keyof IntroData, value: string) => {
-    const newData = { ...data, [key]: value };
-    setData(newData);
-    localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(newData));
+  if (!mode) return null;
+
+  const color  = mode.groupColor ?? 'var(--accent)';
+  const hasAny = Object.values(data).some(v => v.trim().length > 0);
+  const q      = QUESTIONS[step];
+  const answer = q ? data[q.key] : '';
+
+  function set(key: keyof IntroData, value: string) {
+    const next = { ...data, [key]: value };
+    setData(next);
+    localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(next));
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(() => {
-      api.saveModeNote({ modeId, ...newData }).catch(() => {});
+      api.saveModeNote({ modeId, ...next }).catch(() => {});
     }, 1500);
-  };
+  }
 
-  const handleSave = async () => {
+  async function handleSave() {
     if (autoSaveTimer.current) { clearTimeout(autoSaveTimer.current); autoSaveTimer.current = null; }
     setSaving(true);
     localStorage.setItem(STORAGE_KEY(modeId), JSON.stringify(data));
@@ -138,89 +108,151 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
     setSaved(true);
     onComplete?.();
     setTimeout(() => setSaved(false), 1800);
-  };
-
-  const hasAny = Object.values(data).some(v => v.trim().length > 0);
-
-  if (!mode) return null;
+  }
 
   return (
     <BottomSheet onClose={onClose}>
       <div style={{ paddingTop: 4 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+
+        {/* ── Header ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <div style={{
             width: 48, height: 48, borderRadius: 14, flexShrink: 0,
-            background: `${mode.groupColor}18`,
-            border: `1px solid ${mode.groupColor}30`,
+            background: `${color}18`, border: `1px solid ${color}28`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
           }}>
             {mode.emoji}
           </div>
-          <div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)' }}>{mode.name}</div>
-            <div style={{ fontSize: 12, color: mode.groupColor, fontWeight: 500, marginTop: 2 }}>
-              Познакомиться с режимом
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.3px' }}>
+              {mode.name}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 500, color, marginTop: 2 }}>
+              {mode.groupName}
             </div>
           </div>
         </div>
 
-        {MODE_DESC[modeId] && (
+        {/* ── Mode description ── */}
+        {mode.short && (
           <div style={{
-            background: `${mode.groupColor}12`,
-            border: `1px solid ${mode.groupColor}25`,
-            borderRadius: 12, padding: '10px 14px', marginBottom: 14,
+            background: `${color}0e`, border: `1px solid ${color}22`,
+            borderRadius: 16, padding: '12px 14px', marginBottom: 16,
           }}>
-            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>
-              {MODE_DESC[modeId]}
+            <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6 }}>
+              {mode.short}
             </div>
           </div>
         )}
 
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 20 }}>
-          Ответь на вопросы — не торопись, это для себя. Чем честнее, тем точнее будет картина.
+        {/* ── Progress dots ── */}
+        <div style={{ display: 'flex', gap: 4, marginBottom: 20 }}>
+          {QUESTIONS.map((_, i) => {
+            const filled = data[QUESTIONS[i].key].trim().length > 0;
+            const active = i === step;
+            return (
+              <div
+                key={i} onClick={() => { setStep(i); setFlipped(false); }}
+                style={{
+                  flex: 1, height: 4, borderRadius: 2, cursor: 'pointer',
+                  background: filled ? color : active ? `${color}55` : 'var(--surface-2)',
+                  transition: 'background 0.2s',
+                }}
+              />
+            );
+          })}
         </div>
 
-        {QUESTIONS.map(q => (
-          <div key={q.key} style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>{q.label}</div>
-            <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 8 }}>{q.hint}</div>
-            <textarea
-              value={data[q.key]}
-              onChange={e => set(q.key, e.target.value)}
-              placeholder={q.placeholder}
-              rows={2}
-              style={{
-                width: '100%', background: 'rgba(var(--fg-rgb),0.05)',
-                border: `1px solid ${data[q.key].trim() ? `${mode.groupColor}40` : 'rgba(var(--fg-rgb),0.1)'}`,
-                borderRadius: 12, padding: '10px 12px',
-                color: 'var(--text)', fontSize: 14, lineHeight: 1.5, outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
-            />
-          </div>
-        ))}
-
-        <div style={{ marginBottom: 16 }}>
-          <TherapyNote compact />
-        </div>
-
-        <button
-          onClick={handleSave}
-          disabled={!hasAny}
+        {/* ── Flashcard ── */}
+        <div
+          onClick={() => setFlipped(f => !f)}
           style={{
-            width: '100%', padding: '14px', borderRadius: 14, border: 'none',
-            background: hasAny
-              ? `linear-gradient(135deg, ${mode.groupColor}, ${mode.groupColor}bb)`
-              : 'rgba(var(--fg-rgb),0.08)',
-            color: hasAny ? '#fff' : 'rgba(var(--fg-rgb),0.3)',
-            fontSize: 16, fontWeight: 700,
-            cursor: hasAny ? 'pointer' : 'default',
-            transition: 'all 0.2s',
+            background: 'var(--surface)',
+            border: `1px solid ${flipped ? `${color}33` : 'var(--border-color)'}`,
+            borderRadius: 20, padding: '20px 18px', marginBottom: 16,
+            minHeight: 120, cursor: 'pointer', position: 'relative',
+            transition: 'border-color 0.2s',
           }}
         >
-          {saving ? 'Сохраняем…' : saved ? '✓ Сохранено' : 'Сохранить'}
-        </button>
+          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+            color, marginBottom: 8 }}>
+            {step + 1} / {QUESTIONS.length}
+          </div>
+
+          {!flipped ? (
+            <>
+              <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.35, marginBottom: 8 }}>
+                {q.label}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-faint)', lineHeight: 1.5 }}>
+                {q.hint}
+              </div>
+              <div style={{ position: 'absolute', bottom: 14, right: 16,
+                fontSize: 11, color: 'var(--text-faint)', fontWeight: 500 }}>
+                нажми чтобы ответить →
+              </div>
+            </>
+          ) : (
+            <textarea
+              autoFocus
+              value={answer}
+              onChange={e => set(q.key, e.target.value)}
+              onClick={e => e.stopPropagation()}
+              placeholder={q.placeholder}
+              rows={4}
+              style={{
+                width: '100%', background: 'transparent', border: 'none',
+                color: 'var(--text)', fontSize: 14, lineHeight: 1.6,
+                resize: 'none', outline: 'none', fontFamily: 'inherit',
+                boxSizing: 'border-box',
+              }}
+            />
+          )}
+        </div>
+
+        {/* ── Navigation ── */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={() => { setStep(s => Math.max(0, s - 1)); setFlipped(false); }}
+            disabled={step === 0}
+            style={{
+              width: 44, height: 44, borderRadius: 12, border: 'none', fontFamily: 'inherit',
+              background: step === 0 ? 'var(--surface)' : 'var(--surface-2)',
+              color: step === 0 ? 'var(--text-faint)' : 'var(--text-sub)',
+              fontSize: 18, cursor: step === 0 ? 'default' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >←</button>
+
+          {step < QUESTIONS.length - 1 ? (
+            <button
+              onClick={() => { setStep(s => s + 1); setFlipped(false); }}
+              style={{
+                flex: 1, padding: '13px', borderRadius: 12, border: 'none', fontFamily: 'inherit',
+                background: `${color}20`, color,
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Следующий →
+            </button>
+          ) : (
+            <button
+              onClick={handleSave}
+              disabled={!hasAny || saving}
+              style={{
+                flex: 1, padding: '13px', borderRadius: 12, border: 'none', fontFamily: 'inherit',
+                background: hasAny ? color : 'var(--surface-2)',
+                color: hasAny ? '#fff' : 'var(--text-faint)',
+                fontSize: 14, fontWeight: 600,
+                cursor: hasAny ? 'pointer' : 'default', transition: 'all 0.2s',
+              }}
+            >
+              {saving ? 'Сохраняем…' : saved ? '✓ Сохранено' : 'Сохранить карточку'}
+            </button>
+          )}
+        </div>
+
+        <TherapyNote compact />
       </div>
     </BottomSheet>
   );

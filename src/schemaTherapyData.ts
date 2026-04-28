@@ -130,18 +130,18 @@ export const MODE_GROUPS = [
     color: 'var(--accent-blue)',
     items: [
       // Уязвимые
-      { id: 'vulnerable_child',  name: 'Уязвимый Ребёнок',   emoji: '🥺' },
-      { id: 'lonely_child',      name: 'Одинокий Ребёнок',   emoji: '😞' },
-      { id: 'abandoned_child',   name: 'Покинутый Ребёнок',  emoji: '💔' },
-      { id: 'humiliated_child',  name: 'Униженный Ребёнок',  emoji: '😶‍🌫️' },
-      { id: 'dependent_child',   name: 'Зависимый Ребёнок',  emoji: '🫂' },
+      { id: 'vulnerable_child',  name: 'Уязвимый Ребёнок',   emoji: '🥺', short: 'Ощущение беспомощности, грусти, страха — нуждается в защите и утешении' },
+      { id: 'lonely_child',      name: 'Одинокий Ребёнок',   emoji: '😞', short: 'Одиночество и непонятость даже среди людей' },
+      { id: 'abandoned_child',   name: 'Покинутый Ребёнок',  emoji: '💔', short: 'Страх быть брошенным, тревога при угрозе близким отношениям' },
+      { id: 'humiliated_child',  name: 'Униженный Ребёнок',  emoji: '😶‍🌫️', short: 'Стыд и ощущение дефективности, страх осуждения' },
+      { id: 'dependent_child',   name: 'Зависимый Ребёнок',  emoji: '🫂', short: 'Нужна постоянная поддержка, страх самостоятельных решений' },
       // Агрессивные
-      { id: 'angry_child',       name: 'Сердитый Ребёнок',   emoji: '😤' },
-      { id: 'stubborn_child',    name: 'Упрямый Ребёнок',    emoji: '🙅' },
-      { id: 'enraged_child',     name: 'Разъярённый Ребёнок', emoji: '🔴' },
+      { id: 'angry_child',       name: 'Сердитый Ребёнок',   emoji: '😤', short: 'Злость из-за неудовлетворённых потребностей' },
+      { id: 'stubborn_child',    name: 'Упрямый Ребёнок',    emoji: '🙅', short: 'Упрямое сопротивление требованиям и контролю' },
+      { id: 'enraged_child',     name: 'Разъярённый Ребёнок', emoji: '🔴', short: 'Неконтролируемая ярость при угрозе или несправедливости' },
       // Импульсивные
-      { id: 'impulsive_child',      name: 'Импульсивный Ребёнок',      emoji: '⚡' },
-      { id: 'undisciplined_child',  name: 'Недисциплинированный Ребёнок', emoji: '🌀' },
+      { id: 'impulsive_child',      name: 'Импульсивный Ребёнок',         emoji: '⚡',  short: 'Действует не думая, следует желаниям без учёта последствий' },
+      { id: 'undisciplined_child',  name: 'Недисциплинированный Ребёнок', emoji: '🌀', short: 'Избегает скучного, быстро теряет интерес и бросает' },
     ],
   },
   {
@@ -149,8 +149,8 @@ export const MODE_GROUPS = [
     group: 'Копинг: Капитуляция',
     color: '#94a3b8',
     items: [
-      { id: 'compliant_surrenderer', name: 'Послушный Капитулянт',    emoji: '😶' },
-      { id: 'helpless_surrenderer',  name: 'Беспомощный Капитулянт', emoji: '🫠' },
+      { id: 'compliant_surrenderer', name: 'Послушный Капитулянт',   emoji: '😶', short: 'Соглашается со всем, чтобы избежать конфликта' },
+      { id: 'helpless_surrenderer',  name: 'Беспомощный Капитулянт', emoji: '🫠', short: 'Ощущает себя беспомощным, ждёт что другие всё решат' },
     ],
   },
   {
@@ -158,10 +158,10 @@ export const MODE_GROUPS = [
     group: 'Копинг: Избегание',
     color: 'var(--accent)',
     items: [
-      { id: 'detached_protector',      name: 'Отстранённый Защитник',      emoji: '🌫️' },
-      { id: 'detached_self_soother',   name: 'Отстранённый Самоутешитель', emoji: '🛋️' },
-      { id: 'avoidant_protector',      name: 'Избегающий Защитник',        emoji: '🚪' },
-      { id: 'angry_protector',         name: 'Гневный Защитник',           emoji: '😡' },
+      { id: 'detached_protector',      name: 'Отстранённый Защитник',      emoji: '🌫️', short: 'Отключается эмоционально, уходит в себя чтобы не чувствовать' },
+      { id: 'detached_self_soother',   name: 'Отстранённый Самоутешитель', emoji: '🛋️', short: 'Успокаивает себя через еду, экраны, привычки' },
+      { id: 'avoidant_protector',      name: 'Избегающий Защитник',        emoji: '🚪', short: 'Избегает ситуаций и людей, которые могут причинить боль' },
+      { id: 'angry_protector',         name: 'Гневный Защитник',           emoji: '😡', short: 'Отталкивает других злостью, защищаясь от уязвимости' },
     ],
   },
   {
@@ -169,19 +169,19 @@ export const MODE_GROUPS = [
     group: 'Копинг: Гиперкомпенсация',
     color: 'var(--accent-orange)',
     items: [
-      { id: 'self_aggrandiser',          name: 'Самовозвеличиватель',              emoji: '🔥' },
-      { id: 'overcontroller',            name: 'Гиперконтролёр',                   emoji: '🎛️' },
-      { id: 'perfectionistic_oc',        name: 'Перфекционист-Гиперконтролёр',    emoji: '✅' },
-      { id: 'suspicious_oc',             name: 'Подозрительный Гиперконтролёр',   emoji: '🔍' },
-      { id: 'invincible_oc',             name: 'Неуязвимый Гиперконтролёр',       emoji: '🛡️' },
-      { id: 'flagellating_oc',           name: 'Самобичующий Гиперконтролёр',     emoji: '😩' },
-      { id: 'compulsive_oc',             name: 'Компульсивный Гиперконтролёр',    emoji: '🔁' },
-      { id: 'worrying_oc',               name: 'Беспокоящийся Гиперконтролёр',   emoji: '😟' },
-      { id: 'bully_attack',              name: 'Агрессор',                         emoji: '👊' },
-      { id: 'manipulative',              name: 'Манипулятор',                      emoji: '🎭' },
-      { id: 'predator',                  name: 'Хищник',                           emoji: '🦊' },
-      { id: 'attention_seeker',          name: 'Ищущий Внимания и Одобрения',     emoji: '🌟' },
-      { id: 'pollyanna',                 name: 'Полианна',                          emoji: '🌈' },
+      { id: 'self_aggrandiser',   name: 'Самовозвеличиватель',              emoji: '🔥', short: 'Ощущение особости и превосходства над другими' },
+      { id: 'overcontroller',     name: 'Гиперконтролёр',                   emoji: '🎛️', short: 'Стремится всё контролировать, тревожится от неопределённости' },
+      { id: 'perfectionistic_oc', name: 'Перфекционист-Гиперконтролёр',    emoji: '✅', short: 'Недостижимые стандарты, страх малейшей ошибки' },
+      { id: 'suspicious_oc',      name: 'Подозрительный Гиперконтролёр',   emoji: '🔍', short: 'Постоянная настороженность, ищет скрытые угрозы' },
+      { id: 'invincible_oc',      name: 'Неуязвимый Гиперконтролёр',       emoji: '🛡️', short: 'Отрицает слабость — должен быть сильным всегда' },
+      { id: 'flagellating_oc',    name: 'Самобичующий Гиперконтролёр',     emoji: '😩', short: 'Наказывает себя за ошибки строже чем нужно' },
+      { id: 'compulsive_oc',      name: 'Компульсивный Гиперконтролёр',    emoji: '🔁', short: 'Навязчивые ритуалы и действия для снижения тревоги' },
+      { id: 'worrying_oc',        name: 'Беспокоящийся Гиперконтролёр',   emoji: '😟', short: 'Хроническое беспокойство о будущих катастрофах' },
+      { id: 'bully_attack',       name: 'Агрессор',                         emoji: '👊', short: 'Добивается своего через запугивание и агрессию' },
+      { id: 'manipulative',       name: 'Манипулятор',                      emoji: '🎭', short: 'Влияет на людей косвенно, скрывая истинные намерения' },
+      { id: 'predator',           name: 'Хищник',                           emoji: '🦊', short: 'Использует других в своих интересах без сочувствия' },
+      { id: 'attention_seeker',   name: 'Ищущий Внимания и Одобрения',     emoji: '🌟', short: 'Постоянно ищет признания и похвалы от окружающих' },
+      { id: 'pollyanna',          name: 'Полианна',                          emoji: '🌈', short: 'Отрицает проблемы, видит всё в розовом цвете' },
     ],
   },
   {
@@ -189,9 +189,9 @@ export const MODE_GROUPS = [
     group: 'Критикующие режимы',
     color: 'var(--accent-red)',
     items: [
-      { id: 'demanding_critic',  name: 'Требовательный Критик',    emoji: '😬' },
-      { id: 'punitive_critic',   name: 'Карающий Критик',          emoji: '😠' },
-      { id: 'guilt_critic',      name: 'Внушающий Вину Критик',    emoji: '😔' },
+      { id: 'demanding_critic',  name: 'Требовательный Критик',   emoji: '😬', short: 'Внутренний голос завышенных требований и критики' },
+      { id: 'punitive_critic',   name: 'Карающий Критик',         emoji: '😠', short: 'Жёсткое внутреннее осуждение и приговоры себе' },
+      { id: 'guilt_critic',      name: 'Внушающий Вину Критик',   emoji: '😔', short: 'Постоянное чувство вины и самообвинения' },
     ],
   },
   {
@@ -199,15 +199,15 @@ export const MODE_GROUPS = [
     group: 'Здоровые режимы',
     color: 'var(--accent-green)',
     items: [
-      { id: 'happy_child',    name: 'Счастливый Ребёнок', emoji: '😄' },
-      { id: 'healthy_adult',  name: 'Здоровый Взрослый',  emoji: '🌿' },
-      { id: 'good_parent',    name: 'Хороший Родитель',   emoji: '💚' },
+      { id: 'happy_child',   name: 'Счастливый Ребёнок', emoji: '😄', short: 'Спонтанность, радость и игривость без тревоги' },
+      { id: 'healthy_adult', name: 'Здоровый Взрослый',  emoji: '🌿', short: 'Взвешенные решения, забота о себе и других' },
+      { id: 'good_parent',   name: 'Хороший Родитель',   emoji: '💚', short: 'Внутренний поддерживающий голос, ободряет и успокаивает' },
     ],
   },
 ];
 
 export const ALL_MODES = MODE_GROUPS.flatMap(g =>
-  g.items.map(m => ({ ...m, groupColor: g.color, groupId: g.id }))
+  g.items.map(m => ({ ...m, groupColor: g.color, groupId: g.id, groupName: g.group }))
 );
 
 export function getModeById(id: string) {
