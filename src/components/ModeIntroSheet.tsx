@@ -165,18 +165,30 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
 
         {/* ── Flashcard ── */}
         <div
-          onClick={() => setFlipped(f => !f)}
+          onClick={() => !flipped && setFlipped(true)}
           style={{
-            background: 'var(--surface)',
-            border: `1px solid ${flipped ? `${color}33` : 'var(--border-color)'}`,
-            borderRadius: 20, padding: '20px 18px', marginBottom: 16,
-            minHeight: 120, cursor: 'pointer', position: 'relative',
-            transition: 'border-color 0.2s',
+            background: flipped ? `${color}06` : 'var(--surface)',
+            border: `1px solid ${flipped ? `${color}40` : 'var(--border-color)'}`,
+            borderRadius: 20, padding: '18px 18px 14px', marginBottom: 16,
+            minHeight: 120, cursor: flipped ? 'default' : 'pointer', position: 'relative',
+            transition: 'all 0.2s',
           }}
         >
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
-            color, marginBottom: 8 }}>
-            {step + 1} / {QUESTIONS.length}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color }}>
+              {step + 1} / {QUESTIONS.length}
+            </div>
+            {flipped && (
+              <button
+                onClick={e => { e.stopPropagation(); setFlipped(false); }}
+                style={{
+                  background: 'none', border: 'none', padding: 0, fontFamily: 'inherit',
+                  fontSize: 11, color: 'var(--text-faint)', cursor: 'pointer',
+                }}
+              >
+                ← к вопросу
+              </button>
+            )}
           </div>
 
           {!flipped ? (
@@ -184,29 +196,52 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
               <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.35, marginBottom: 8 }}>
                 {q.label}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-faint)', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-faint)', lineHeight: 1.5, marginBottom: 14 }}>
                 {q.hint}
               </div>
-              <div style={{ position: 'absolute', bottom: 14, right: 16,
-                fontSize: 11, color: 'var(--text-faint)', fontWeight: 500 }}>
-                нажми чтобы ответить →
-              </div>
+              {answer.trim() ? (
+                <div style={{
+                  background: 'var(--surface-2)', borderRadius: 12, padding: '10px 12px',
+                  fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5,
+                  display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as any,
+                  overflow: 'hidden',
+                }}>
+                  {answer}
+                </div>
+              ) : (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '11px 14px', borderRadius: 12,
+                  background: `${color}10`, border: `1px dashed ${color}55`,
+                  fontSize: 13, color, fontWeight: 500,
+                }}>
+                  <span style={{ fontSize: 16 }}>✏️</span>
+                  <span>Нажми чтобы ответить</span>
+                </div>
+              )}
             </>
           ) : (
-            <textarea
-              autoFocus
-              value={answer}
-              onChange={e => set(q.key, e.target.value)}
-              onClick={e => e.stopPropagation()}
-              placeholder={q.placeholder}
-              rows={4}
-              style={{
-                width: '100%', background: 'transparent', border: 'none',
-                color: 'var(--text)', fontSize: 14, lineHeight: 1.6,
-                resize: 'none', outline: 'none', fontFamily: 'inherit',
-                boxSizing: 'border-box',
-              }}
-            />
+            <>
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.4, marginBottom: 10 }}>
+                {q.label}
+              </div>
+              <textarea
+                autoFocus
+                value={answer}
+                onChange={e => set(q.key, e.target.value)}
+                placeholder={q.placeholder}
+                rows={4}
+                style={{
+                  width: '100%',
+                  background: 'var(--surface)',
+                  border: `1.5px solid ${answer.trim() ? `${color}66` : 'var(--border-color)'}`,
+                  borderRadius: 12, padding: '11px 13px',
+                  color: 'var(--text)', fontSize: 14, lineHeight: 1.55,
+                  resize: 'none', outline: 'none', fontFamily: 'inherit',
+                  boxSizing: 'border-box', transition: 'border-color 0.2s',
+                }}
+              />
+            </>
           )}
         </div>
 

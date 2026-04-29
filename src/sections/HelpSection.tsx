@@ -92,22 +92,30 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
     <div
       onClick={task.doneToday ? undefined : onOpen}
       style={{
-        padding: '12px 16px',
-        borderTop: '1px solid rgba(var(--fg-rgb),0.04)',
+        padding: '14px',
+        background: task.doneToday ? 'var(--surface)' : 'var(--surface)',
+        border: `1px solid ${isAssigned && !task.doneToday ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'var(--border-color)'}`,
+        borderRadius: 16,
+        marginBottom: 8,
         display: 'flex', alignItems: 'center', gap: 12,
         cursor: task.doneToday ? 'default' : 'pointer',
         opacity: task.doneToday ? 0.55 : 1,
+        transition: 'all 0.15s',
       }}
     >
-      {/* Icon */}
-      <span style={{ fontSize: 20, flexShrink: 0, width: 24, textAlign: 'center' }}>
+      {/* Icon bubble */}
+      <div style={{
+        width: 38, height: 38, borderRadius: 12, flexShrink: 0,
+        background: task.doneToday ? 'rgba(52,211,153,0.1)' : 'var(--surface-2)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19,
+      }}>
         {emoji}
-      </span>
+      </div>
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {isAssigned && !task.doneToday && (
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 2 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--accent)', textTransform: 'uppercase', marginBottom: 3 }}>
             от терапевта
           </div>
         )}
@@ -115,10 +123,10 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
           {resolveTaskDisplayText(task)}
         </div>
         {task.doneToday && isStreakTask && (
-          <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 2 }}>Сделано сегодня — завтра снова</div>
+          <div style={{ fontSize: 11, color: 'var(--accent-green)', marginTop: 3 }}>Сделано сегодня — завтра снова</div>
         )}
         <TaskProgressBar task={task} />
-        {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>до {fmtDate(task.dueDate)}</div>}
+        {task.dueDate && <div style={{ fontSize: 11, color: 'var(--text-faint)', marginTop: 3 }}>до {fmtDate(task.dueDate)}</div>}
       </div>
 
       {/* Action */}
@@ -126,12 +134,12 @@ function TaskRow({ task, onOpen, onComplete }: { task: UserTask; onOpen: () => v
         <button
           disabled={completing}
           onClick={e => { e.stopPropagation(); setCompleting(true); onComplete(); }}
-          style={{ background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', border: 'none', borderRadius: 10, padding: '6px 12px', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1 }}
+          style={{ background: 'rgba(52,211,153,0.12)', outline: '1px solid rgba(52,211,153,0.22)', border: 'none', borderRadius: 10, padding: '7px 12px', color: 'var(--accent-green)', fontSize: 12, fontWeight: 600, cursor: completing ? 'default' : 'pointer', flexShrink: 0, opacity: completing ? 0.5 : 1, fontFamily: 'inherit' }}
         >
           {completing ? '...' : 'Готово'}
         </button>
       ) : !task.doneToday && task.type !== 'custom' ? (
-        <span style={{ color: 'var(--accent)', fontSize: 16, flexShrink: 0, opacity: 0.5 }}>›</span>
+        <span style={{ color: 'var(--text-faint)', fontSize: 18, flexShrink: 0 }}>›</span>
       ) : null}
     </div>
   );
@@ -287,43 +295,94 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
       )}
       {showAllTasks && (
         <BottomSheet onClose={() => setShowAllTasks(false)} zIndex={200}>
-          <SectionLabel purple mb={16}>Мои цели</SectionLabel>
-          {tasks.length === 0 ? (
-            <div style={{ color: 'var(--text-sub)', fontSize: 14, textAlign: 'center', padding: '20px 0' }}>
-              Нет активных целей
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 18, paddingTop: 4 }}>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+                Мои цели
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-faint)', marginTop: 4 }}>
+                {tasks.length === 0
+                  ? 'Поставь себе цель и иди к ней маленькими шагами'
+                  : `${tasks.length} ${plural(tasks.length, 'активная', 'активные', 'активных')}${taskHistory.length > 0 ? ` · ${taskHistory.length} выполнено` : ''}`}
+              </div>
             </div>
-          ) : tasks.map(task => (
-            <TaskRow
-              key={task.id}
-              task={task}
-              onOpen={() => openTask(task)}
-              onComplete={task.done === null && task.type === 'custom'
-                ? () => api.completeTask(task.id, true)
-                    .then(() => Promise.all([api.getTasks(), api.getTaskHistory()]))
-                    .then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })
-                    .catch(() => {})
-                : undefined}
-            />
-          ))}
+            <div style={{
+              width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+              background: 'rgba(251,146,60,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
+            }}>🎯</div>
+          </div>
+
+          {/* Active tasks */}
+          {tasks.length === 0 ? (
+            <div style={{
+              padding: '36px 20px', textAlign: 'center',
+              background: 'var(--surface)', borderRadius: 16,
+              border: '1px dashed var(--border-color)', marginBottom: 16,
+            }}>
+              <div style={{ fontSize: 36, marginBottom: 10 }}>✨</div>
+              <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.55, maxWidth: 240, margin: '0 auto' }}>
+                Пока нет активных целей. Поставь первую — большие изменения начинаются с малого.
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginBottom: 8 }}>
+              {tasks.map(task => (
+                <TaskRow
+                  key={task.id}
+                  task={task}
+                  onOpen={() => openTask(task)}
+                  onComplete={task.done === null && task.type === 'custom'
+                    ? () => api.completeTask(task.id, true)
+                        .then(() => Promise.all([api.getTasks(), api.getTaskHistory()]))
+                        .then(([t, h]) => { setTasks(t); setTaskHistory(h); onTasksChanged?.(); })
+                        .catch(() => {})
+                    : undefined}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Completed history */}
           {taskHistory.length > 0 && (
             <>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.07em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>Выполнено</div>
-              {taskHistory.map(task => (
-                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid rgba(var(--fg-rgb),0.04)', opacity: 0.5 }}>
-                  <span style={{ fontSize: 16, flexShrink: 0, width: 22, textAlign: 'center' }}>{task.done === true ? '✅' : '❌'}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 12, color: 'var(--text)', lineHeight: 1.35 }}>{resolveTaskDisplayText(task)}</div>
-                    {task.completedAt && <div style={{ fontSize: 10, color: 'var(--text-sub)', marginTop: 1 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', color: 'var(--text-faint)', textTransform: 'uppercase', marginTop: 20, marginBottom: 10 }}>
+                Выполнено
+              </div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border-color)', borderRadius: 16, overflow: 'hidden' }}>
+                {taskHistory.map((task, i) => (
+                  <div key={task.id} style={{
+                    display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px',
+                    borderTop: i > 0 ? '1px solid var(--border-color)' : 'none',
+                    opacity: 0.6,
+                  }}>
+                    <span style={{ fontSize: 15, flexShrink: 0, width: 20, textAlign: 'center' }}>
+                      {task.done === true ? '✅' : '❌'}
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.35 }}>{resolveTaskDisplayText(task)}</div>
+                      {task.completedAt && <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 2 }}>{fmtDate(new Date(task.completedAt).toISOString().slice(0, 10))}</div>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </>
           )}
+
+          {/* Add button */}
           <button
             onClick={() => { setShowAllTasks(false); setShowTaskCreate(true); }}
-            style={{ width: '100%', padding: '12px 0', borderRadius: 14, border: 'none', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer', marginTop: 16 }}
+            style={{
+              width: '100%', padding: '14px', borderRadius: 14, border: 'none',
+              background: 'linear-gradient(135deg, rgba(167,139,250,0.18), rgba(167,139,250,0.10))',
+              outline: '1px solid rgba(167,139,250,0.28)',
+              color: 'var(--accent)', fontSize: 15, fontWeight: 600,
+              cursor: 'pointer', marginTop: 18, fontFamily: 'inherit',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
           >
-            + Поставить цель
+            <span style={{ fontSize: 17 }}>+</span> Поставить цель
           </button>
         </BottomSheet>
       )}
