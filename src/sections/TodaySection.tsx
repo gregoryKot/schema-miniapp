@@ -427,8 +427,7 @@ export function TodaySection({
                 </button>
               </div>
             );
-          })()
-          ) : (
+          })() : (
             <div
               onClick={e => { e.stopPropagation(); onOpenTracker(); }}
               style={{
