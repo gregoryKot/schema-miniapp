@@ -685,7 +685,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: 'center', marginBottom: 18 }}>
           {STEPS.map(s => <span key={s.id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontWeight: 600 }}>{s.emoji} +{s.xp} XP</span>)}
         </div>
-        <button onClick={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+        <button onClick={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
           Начать работу →
         </button>
       </div>
@@ -790,7 +790,7 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
             ✓ Выполнено · +{current.xp} XP
           </div>
         ) : (
-          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: `linear-gradient(135deg, ${current.color}, color-mix(in srgb, ${current.color} 65%, var(--accent-blue)))`, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: current.color, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             {current.actionLabel} → +{current.xp} XP
           </button>
         )}
