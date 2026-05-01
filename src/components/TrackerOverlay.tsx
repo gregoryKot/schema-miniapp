@@ -15,6 +15,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Need, COLORS, YESTERDAY } from '../types';
+import { NEED_DATA } from '../needData';
 import { NeedDial } from './NeedDial';
 import { NeedTodaySheet } from './NeedTodaySheet';
 import { useSafeTop } from '../utils/safezone';
@@ -274,6 +275,12 @@ export function TrackerOverlay({
             </span>
           )}
         </div>
+        {NEED_DATA[need.id]?.desc && (
+          <div style={{ fontSize:13, color:'var(--text-sub)', lineHeight:1.5,
+            maxWidth:280, margin:'8px auto 0', padding:'0 20px' }}>
+            {NEED_DATA[need.id].desc}
+          </div>
+        )}
       </div>
 
       {/* Dial */}
