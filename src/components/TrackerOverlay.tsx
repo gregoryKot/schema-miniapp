@@ -275,11 +275,6 @@ export function TrackerOverlay({
             </span>
           )}
         </div>
-        {NEED_DATA[need.id]?.hint && (
-          <div style={{ fontSize:12, color:'var(--text-faint)', marginTop:6, letterSpacing:'0.01em' }}>
-            {NEED_DATA[need.id].hint}
-          </div>
-        )}
       </div>
 
       {/* Dial */}
