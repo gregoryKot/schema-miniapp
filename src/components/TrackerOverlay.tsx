@@ -198,16 +198,34 @@ export function TrackerOverlay({
             {isBackfill ? date : 'свайп · тап по шкале · +/−'}
           </div>
         </div>
-        {/* История кнопка */}
-        {!isBackfill && onOpenHistory ? (
-          <button onClick={() => { onClose(); onOpenHistory(); }} style={{
-            display:'flex', flexDirection:'column', alignItems:'center', gap:2,
-            border:'none', background:'var(--surface-2)', borderRadius:10,
-            padding:'6px 10px', cursor:'pointer', color:'var(--text-faint)',
-          }}>
-            <span style={{ fontSize:14 }}>📊</span>
-            <span style={{ fontSize:9, fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>История</span>
-          </button>
+        {/* Карандаш + история */}
+        {!isBackfill ? (
+          <div style={{ display:'flex', gap:8 }}>
+            {onOpenNote && (
+              <button onClick={onOpenNote} style={{
+                width:34, height:34, borderRadius:10, border:'none', cursor:'pointer',
+                background:'var(--surface-2)', display:'flex', alignItems:'center', justifyContent:'center',
+                color:'var(--text-sub)',
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                </svg>
+              </button>
+            )}
+            {onOpenHistory && (
+              <button onClick={() => { onClose(); onOpenHistory(); }} style={{
+                width:34, height:34, borderRadius:10, border:'none', cursor:'pointer',
+                background:'var(--surface-2)', display:'flex', alignItems:'center', justifyContent:'center',
+                color:'var(--text-sub)',
+              }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+              </button>
+            )}
+          </div>
         ) : (
           <div style={{ width:34 }} />
         )}
@@ -329,24 +347,6 @@ export function TrackerOverlay({
           }}>
             Готово — сохранить всё ✓
           </button>
-        )}
-
-        {/* Note + goal — not applicable in backfill mode */}
-        {!isBackfill && (
-          <div style={{ display:'flex', gap:8 }}>
-            <button onClick={onOpenNote} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
-              background:'var(--surface)', border:'1px solid var(--border-color)',
-              color:'var(--text-sub)', fontSize:12, cursor:'pointer',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
-              ✏️ Заметка
-            </button>
-            <button onClick={onOpenGoal} style={{ flex:1, padding:'10px 0', borderRadius:12, fontFamily:'inherit',
-              background:'var(--surface)', border:'1px solid var(--border-color)',
-              color:'var(--accent)', fontSize:12, cursor:'pointer',
-              display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
-              🎯 Цель
-            </button>
-          </div>
         )}
 
         {/* Nav */}
