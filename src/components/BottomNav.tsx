@@ -106,28 +106,28 @@ export function BottomNav({ section, onSelect, userRole }: Props) {
                 position: 'relative',
               }}
             >
-              {/* Top indicator */}
-              {active && (
-                <div style={{
-                  position: 'absolute',
-                  top: 0, left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: 22, height: 2,
-                  background: tab.color,
-                  borderRadius: 2,
-                  boxShadow: `0 0 8px ${tab.color}99`,
-                }}/>
-              )}
-              <TabIcon id={tab.id} active={active} color={tab.color} isTherapist={userRole === 'THERAPIST'}/>
-              <span style={{
-                fontSize: 10,
-                fontWeight: active ? 700 : 400,
-                letterSpacing: '0.03em',
-                color: active ? tab.color : 'var(--text-faint)',
-                transition: 'color 0.2s',
-              }}>
-                {tab.label}
-              </span>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                {active && (
+                  <div style={{
+                    position: 'absolute', inset: '-6px -10px', borderRadius: 12,
+                    background: tab.color + '18',
+                    border: `1px solid ${tab.color}30`,
+                  }}/>
+                )}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <TabIcon id={tab.id} active={active} color={tab.color} isTherapist={userRole === 'THERAPIST'}/>
+                </div>
+                <span style={{
+                  position: 'relative', zIndex: 1,
+                  fontSize: 10,
+                  fontWeight: active ? 700 : 400,
+                  letterSpacing: '0.03em',
+                  color: active ? tab.color : 'var(--text-faint)',
+                  transition: 'color 0.2s',
+                }}>
+                  {tab.label}
+                </span>
+              </div>
             </button>
           );
         })}

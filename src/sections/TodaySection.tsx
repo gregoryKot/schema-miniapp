@@ -155,16 +155,17 @@ function NeedMini({ need, value, yesterday, onTap }: {
 
 function DiaryTypeBadge({ type }: { type: string }) {
   const MAP: Record<string, { label: string; color: string }> = {
-    schema:    { label: 'Схема',         color: '#818cf8' },
-    mode:      { label: 'Режим',         color: '#f472b6' },
-    gratitude: { label: 'Благодарность', color: '#4ade80' },
+    schema:    { label: 'Сх', color: '#818cf8' },
+    mode:      { label: 'Рж', color: '#f472b6' },
+    gratitude: { label: 'Бл', color: '#4ade80' },
   };
-  const { label, color } = MAP[type] ?? { label: type, color: '#aaa' };
+  const { label, color } = MAP[type] ?? { label: type.slice(0, 2), color: '#aaa' };
   return (
     <span style={{
-      fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
-      textTransform: 'uppercase', color,
-      background: color + '18', borderRadius: 6, padding: '2px 7px',
+      width: 22, height: 22, flexShrink: 0,
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 10, fontWeight: 700, color,
+      background: color + '18', borderRadius: '50%',
     }}>
       {label}
     </span>
@@ -297,9 +298,12 @@ export function TodaySection({
         <div style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 500, marginBottom: 5, letterSpacing: '0.03em' }}>
           {formatGreetingDate()}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ fontSize: 13, color: 'var(--text-faint)', fontWeight: 500, marginBottom: 2 }}>
+          {firstName ? 'Привет,' : ''}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ fontSize: 26, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.5px', lineHeight: 1.2 }}>
-            {firstName ? `Привет, ${firstName}` : 'Добро пожаловать'}
+            {firstName ?? 'Добро пожаловать'}
           </div>
           {/* Streak */}
           {profile !== null && (
@@ -309,7 +313,13 @@ export function TodaySection({
               border: `1px solid ${streak > 0 ? 'rgba(251,146,60,0.22)' : 'var(--border-color)'}`,
               borderRadius: 20, padding: '5px 10px',
             }}>
-              <span style={{ fontSize: 13 }}>{streak > 7 ? '🔥' : streak > 0 ? '✨' : '💤'}</span>
+              {streak > 7 ? (
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#fb923c" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C12 2 9 7 9 10.5C9 12.43 10.57 14 12.5 14C14.43 14 16 12.43 16 10.5C16 9.5 15.5 8.5 15 7.5C15 7.5 17 9 17 12C17 15.31 14.31 18 11 18C7.69 18 5 15.31 5 12C5 7 12 2 12 2Z"/>
+                </svg>
+              ) : (
+                <span style={{ fontSize: 13 }}>{streak > 0 ? '✨' : '💤'}</span>
+              )}
               <span style={{ fontSize: 14, fontWeight: 700, color: streak > 0 ? '#fb923c' : 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
                 {streak}
               </span>
@@ -361,7 +371,7 @@ export function TodaySection({
           style={{ padding: '18px 18px 14px', cursor: onOpenTrackerHistory ? 'pointer' : undefined, WebkitTapHighlightColor: 'transparent' }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
               Потребности
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -386,21 +396,37 @@ export function TodaySection({
           </div>
 
           {/* Primary CTA */}
-          {allRated && avgScore ? (
-            <div style={{
-              background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            }}>
-              <div>
-                <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
-                  Средний индекс
+          {allRated && avgScore ? (() => {
+            const sc = parseFloat(avgScore);
+            const scoreColor = sc >= 7 ? 'var(--accent-green)' : sc >= 4 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+            const scoreLabel = sc >= 7 ? 'Хороший день' : sc >= 4 ? 'Средний день' : 'Сложный день';
+            return (
+              <div style={{
+                background: 'var(--surface-2)', borderRadius: 14, padding: '12px 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div>
+                  <div style={{ fontSize: 10, color: 'var(--text-faint)', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 2 }}>
+                    Средний индекс
+                  </div>
+                  <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1.5px', color: scoreColor, fontVariantNumeric: 'tabular-nums' }}>
+                    {avgScore}
+                  </div>
+                  <div style={{ fontSize: 11, color: scoreColor, fontWeight: 600, marginTop: 2 }}>{scoreLabel}</div>
                 </div>
-                <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-1.5px', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
-                  {avgScore}
-                </div>
+                <button onClick={e => { e.stopPropagation(); onOpenTrackerHistory?.(); }} style={{
+                  background: 'color-mix(in srgb, var(--accent) 10%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
+                  borderRadius: 10, padding: '8px 12px', fontSize: 11, fontWeight: 600,
+                  color: 'var(--accent)', cursor: 'pointer', fontFamily: 'inherit',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+                }}>
+                  <span>📊</span>
+                  <span>История</span>
+                </button>
               </div>
-              <div style={{ fontSize: 11, color: 'var(--accent-green)', fontWeight: 600 }}>Все оценено ✓</div>
-            </div>
+            );
+          })()
           ) : (
             <div
               onClick={e => { e.stopPropagation(); onOpenTracker(); }}
@@ -427,7 +453,7 @@ export function TodaySection({
           padding: '18px 18px 14px', cursor: 'pointer',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'var(--text-faint)' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--text-sub)' }}>
               Дневник
             </div>
             <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>Все →</span>
@@ -443,13 +469,13 @@ export function TodaySection({
                   display: 'flex', alignItems: 'center', gap: 10, padding: '7px 0',
                   borderTop: i > 0 ? '1px solid var(--border-color)' : undefined,
                 }}>
-                  <div style={{ width: 3, height: 30, borderRadius: 2, flexShrink: 0, background: typeColor }}/>
+                  <div style={{ width: 4, height: 36, borderRadius: 4, flexShrink: 0, background: typeColor }}/>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {entry.label}
                     </div>
-                    <div style={{ fontSize: 10, color: 'var(--text-faint)', marginTop: 1 }}>
+                    <div style={{ fontSize: 11, color: 'var(--text-sub)', marginTop: 2 }}>
                       {entry.dateStr}{entry.time ? ` · ${entry.time}` : ''}
                     </div>
                   </div>
