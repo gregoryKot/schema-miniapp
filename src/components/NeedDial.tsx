@@ -6,6 +6,7 @@
 
 import React, { useCallback, useRef } from 'react';
 import { Need } from '../types';
+import { NEED_DATA } from '../needData';
 
 interface Props {
   need: Need;
@@ -160,10 +161,11 @@ export function NeedDial({ need, color, value, onChange, size = DEFAULT_SIZE }: 
         pointerEvents: 'none',
       }}>
         <div style={{
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.08em',
-          textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 6,
+          fontSize: 11, fontWeight: 500, letterSpacing: '0.02em',
+          color: 'var(--text-faint)', marginBottom: 6,
+          textAlign: 'center', maxWidth: 120, lineHeight: 1.3,
         }}>
-          {need.chartLabel}
+          {NEED_DATA[need.id]?.subtitle ?? need.chartLabel}
         </div>
         <div style={{
           fontSize: 76, fontWeight: 800, letterSpacing: '-5px', lineHeight: 1,
@@ -178,6 +180,15 @@ export function NeedDial({ need, color, value, onChange, size = DEFAULT_SIZE }: 
         }}>
           {levelLabel}
         </div>
+        {NEED_DATA[need.id]?.desc && (
+          <div style={{
+            fontSize: 10, fontWeight: 400, color: 'var(--text-faint)',
+            marginTop: 10, textAlign: 'center', maxWidth: 140,
+            lineHeight: 1.4, opacity: 0.75,
+          }}>
+            {NEED_DATA[need.id].desc}
+          </div>
+        )}
       </div>
     </div>
   );
