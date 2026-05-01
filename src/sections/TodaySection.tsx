@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
+import { NEED_DATA } from '../needData';
 import { api, StreakData, UserTask } from '../api';
 import { Section } from '../components/BottomNav';
 import { useSafeTop } from '../utils/safezone';
@@ -145,7 +146,7 @@ function NeedMini({ need, value, yesterday, onTap }: {
         textAlign: 'center', letterSpacing: '0.02em', lineHeight: 1.2,
         maxWidth: 52, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
-        {need.chartLabel}
+        {NEED_DATA[need.id]?.short ?? need.chartLabel}
       </span>
     </div>
   );
