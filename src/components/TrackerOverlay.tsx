@@ -293,6 +293,15 @@ export function TrackerOverlay({
             </span>
           )}
         </div>
+        {NEED_DATA[need.id]?.desc && (
+          <div style={{
+            marginTop: 10, fontSize: 13, color: 'var(--text-sub)',
+            lineHeight: 1.55, textAlign: 'center', maxWidth: 280,
+            padding: '0 24px',
+          }}>
+            {NEED_DATA[need.id].desc}
+          </div>
+        )}
       </div>
 
       {/* Dial */}

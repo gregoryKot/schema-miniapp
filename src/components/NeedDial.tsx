@@ -180,15 +180,6 @@ export function NeedDial({ need, color, value, onChange, size = DEFAULT_SIZE }: 
         }}>
           {levelLabel}
         </div>
-        {NEED_DATA[need.id]?.hint && (
-          <div style={{
-            fontSize: 10, fontWeight: 500, color: 'var(--text-faint)',
-            marginTop: 8, textAlign: 'center', maxWidth: 130,
-            letterSpacing: '0.02em', opacity: 0.7,
-          }}>
-            {NEED_DATA[need.id].hint}
-          </div>
-        )}
       </div>
     </div>
   );
