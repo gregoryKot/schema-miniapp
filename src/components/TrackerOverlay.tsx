@@ -295,8 +295,10 @@ export function TrackerOverlay({
         </div>
       </div>
 
-      {/* Desc — own flex section, truly centered between pill and dial */}
-      <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
+      {/* Dial + desc — one centered column */}
+      <div style={{ flex:1, display:'flex', flexDirection:'column',
+        alignItems:'center', justifyContent:'space-evenly', overflow:'hidden' }}>
+
         {NEED_DATA[need.id]?.desc && (
           <div style={{
             fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55,
@@ -305,16 +307,13 @@ export function TrackerOverlay({
             {NEED_DATA[need.id].desc}
           </div>
         )}
-      </div>
 
-      {/* Dial */}
-      <div style={{ flexShrink:0, display:'flex', flexDirection:'column',
-        alignItems:'center', gap:4 }}>
         <NeedDial
           need={need} color={COLORS[need.id]??'#888'} value={value}
           onChange={v => { dismissOnb(); handleChange(need.id, v); }}
         />
-        <div style={{ display:'flex', alignItems:'center', gap:16, marginTop:4 }}>
+
+        <div style={{ display:'flex', alignItems:'center', gap:16 }}>
           <button onClick={() => handleChange(need.id, Math.max(0, value-1))} style={{
             width:46, height:46, borderRadius:23, border:'none', fontFamily:'inherit',
             background:'var(--surface-2)', color:'var(--text-sub)',
@@ -335,7 +334,7 @@ export function TrackerOverlay({
       </div>
 
       {/* Bottom */}
-      <div style={{ padding:'0 20px 36px', display:'flex', flexDirection:'column', gap:10, flexShrink:0 }}>
+      <div style={{ padding:'0 20px', paddingBottom:'max(20px, env(safe-area-inset-bottom, 20px))', display:'flex', flexDirection:'column', gap:8, flexShrink:0 }}>
         {/* Summary when all done */}
         {allRated && (
           <div style={{ background:'var(--surface)', border:'1px solid var(--border-color)',
