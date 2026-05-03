@@ -295,19 +295,21 @@ export function TrackerOverlay({
         </div>
       </div>
 
-      {/* Dial */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column',
-        alignItems:'center', justifyContent:'center', gap:4 }}>
-
-        {/* Desc — between pill and dial */}
+      {/* Desc — own flex section, truly centered between pill and dial */}
+      <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
         {NEED_DATA[need.id]?.desc && (
           <div style={{
             fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55,
-            textAlign: 'center', padding: '0 32px', marginBottom: 4,
+            textAlign: 'center', padding: '0 32px',
           }}>
             {NEED_DATA[need.id].desc}
           </div>
         )}
+      </div>
+
+      {/* Dial */}
+      <div style={{ flexShrink:0, display:'flex', flexDirection:'column',
+        alignItems:'center', gap:4 }}>
         <NeedDial
           need={need} color={COLORS[need.id]??'#888'} value={value}
           onChange={v => { dismissOnb(); handleChange(need.id, v); }}
