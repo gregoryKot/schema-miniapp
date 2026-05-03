@@ -271,42 +271,43 @@ export function TrackerOverlay({
         </div>
       )}
 
+      {/* Need name pill — top */}
+      <div style={{ flexShrink:0, paddingTop:showOnb?4:8, textAlign:'center' }}>
+        <div onClick={() => setDetailNeed(need)} style={{
+          display:'inline-flex', alignItems:'center', gap:8, cursor:'pointer',
+          padding:'6px 16px', borderRadius:20,
+          background:'var(--surface)', border:'1px solid var(--border-color)',
+        }}>
+          <span style={{ fontSize:16, fontWeight:700, color:'var(--text)', letterSpacing:'-0.3px' }}>
+            {need.chartLabel}
+          </span>
+          <span style={{ fontSize:11, color:'var(--text-faint)' }}>ⓘ</span>
+          {delta !== null && delta !== 0 && (
+            <span style={{
+              fontSize:11, fontWeight:600,
+              color:delta>0?'var(--accent-green)':'var(--accent-red)',
+              background:delta>0?'color-mix(in srgb, var(--accent-green) 12%, transparent)':'color-mix(in srgb, var(--accent-red) 12%, transparent)',
+              borderRadius:10, padding:'1px 7px',
+            }}>
+              {delta>0?'+':''}{delta}
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* Dial */}
       <div style={{ flex:1, display:'flex', flexDirection:'column',
         alignItems:'center', justifyContent:'center', gap:4 }}>
 
-        {/* Need name pill */}
-        <div style={{ paddingTop:showOnb?4:8, textAlign:'center' }}>
-          <div onClick={() => setDetailNeed(need)} style={{
-            display:'inline-flex', alignItems:'center', gap:8, cursor:'pointer',
-            padding:'6px 16px', borderRadius:20,
-            background:'var(--surface)', border:'1px solid var(--border-color)',
+        {/* Desc — between pill and dial */}
+        {NEED_DATA[need.id]?.desc && (
+          <div style={{
+            fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55,
+            textAlign: 'center', padding: '0 32px', marginBottom: 4,
           }}>
-            <span style={{ fontSize:16, fontWeight:700, color:'var(--text)', letterSpacing:'-0.3px' }}>
-              {need.chartLabel}
-            </span>
-            <span style={{ fontSize:11, color:'var(--text-faint)' }}>ⓘ</span>
-            {delta !== null && delta !== 0 && (
-              <span style={{
-                fontSize:11, fontWeight:600,
-                color:delta>0?'var(--accent-green)':'var(--accent-red)',
-                background:delta>0?'color-mix(in srgb, var(--accent-green) 12%, transparent)':'color-mix(in srgb, var(--accent-red) 12%, transparent)',
-                borderRadius:10, padding:'1px 7px',
-              }}>
-                {delta>0?'+':''}{delta}
-              </span>
-            )}
+            {NEED_DATA[need.id].desc}
           </div>
-          {NEED_DATA[need.id]?.desc && (
-            <div style={{
-              marginTop: 8, fontSize: 13, color: 'var(--text-sub)',
-              lineHeight: 1.55, textAlign: 'center',
-              padding: '0 32px',
-            }}>
-              {NEED_DATA[need.id].desc}
-            </div>
-          )}
-        </div>
+        )}
         <NeedDial
           need={need} color={COLORS[need.id]??'#888'} value={value}
           onChange={v => { dismissOnb(); handleChange(need.id, v); }}
