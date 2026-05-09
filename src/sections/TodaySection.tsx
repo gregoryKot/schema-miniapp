@@ -329,6 +329,39 @@ export function TodaySection({
         </div>
       </div>
 
+      {/* ── Visual needs bar strip ── */}
+      <div style={{ padding: '18px 20px 0' }}
+        onClick={() => onOpenTrackerAt ? undefined : onOpenTracker()}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
+          {needs.map(n => {
+            const color = COLORS[n.id] ?? '#888';
+            const v = ratings[n.id];
+            const pct = v !== undefined ? Math.max(v / 10, 0.04) : 0;
+            const isRated = v !== undefined;
+            return (
+              <div key={n.id}
+                onClick={e => { e.stopPropagation(); onOpenTrackerAt ? onOpenTrackerAt(n.id) : onOpenTracker(); }}
+                style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5, cursor: 'pointer' }}>
+                <div style={{
+                  width: '100%', height: 56, borderRadius: 10, overflow: 'hidden',
+                  background: 'rgba(var(--fg-rgb),0.06)',
+                  display: 'flex', alignItems: 'flex-end',
+                }}>
+                  <div style={{
+                    width: '100%', height: `${pct * 100}%`,
+                    background: isRated ? color : 'transparent',
+                    opacity: isRated ? 0.7 : 0,
+                    borderRadius: 10,
+                    transition: 'height 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
+                  }} />
+                </div>
+                <span style={{ fontSize: 15, lineHeight: 1 }}>{n.emoji}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <div style={{ padding: '16px 20px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* ── Therapist cabinet banner ── */}
@@ -763,22 +796,21 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
       </div>
 
       {/* Current step — animated */}
-      <div key={slideKey} style={{ animation: 'obSlide 0.22s ease-out' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-          <div style={{ width: 50, height: 50, borderRadius: 15, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, background: `color-mix(in srgb, ${current.color} 14%, transparent)`, border: `1.5px solid color-mix(in srgb, ${current.color} 28%, transparent)` }}>
-            {isCurrentDone ? '✅' : current.emoji}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 2 }}>
-              {current.title}
-            </div>
-            <div style={{ fontSize: 11, color: current.color, fontWeight: 600 }}>
-              +{current.xp} XP · {current.detail}
-            </div>
-          </div>
+      <div key={slideKey} style={{ animation: 'obSlide 0.22s ease-out', textAlign: 'center' }}>
+        <div style={{
+          width: 84, height: 84, borderRadius: 24, margin: '0 auto 14px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 42,
+          background: `color-mix(in srgb, ${current.color} 13%, transparent)`,
+          border: `1.5px solid color-mix(in srgb, ${current.color} 26%, transparent)`,
+        }}>
+          {isCurrentDone ? '✅' : current.emoji}
         </div>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 14 }}>
-          {current.description}
+        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 5 }}>
+          {current.title}
+        </div>
+        <div style={{ fontSize: 11, color: current.color, fontWeight: 600 }}>
+          +{current.xp} XP · {current.detail}
         </div>
       </div>
 

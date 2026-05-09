@@ -174,8 +174,18 @@ export function TrackerOverlay({
 
   return (
     <div style={{ position:'fixed', inset:0, zIndex:80, background:'var(--bg)',
-      display:'flex', flexDirection:'column' }}
+      display:'flex', flexDirection:'column', overflow:'hidden' }}
       onTouchStart={onTS} onTouchEnd={onTE}>
+
+      {/* Large faded need emoji — visual anchor */}
+      <div style={{
+        position:'absolute', fontSize:260, lineHeight:1,
+        opacity:0.035, userSelect:'none', pointerEvents:'none',
+        top:'50%', left:'50%', transform:'translate(-50%,-58%)',
+        zIndex:0, transition:'opacity 0.3s',
+      }}>
+        {NEED_DATA[need.id]?.emoji ?? need.emoji}
+      </div>
 
       {/* Header */}
       <div style={{ padding:`${safeTop+16}px 20px 12px`,
@@ -297,14 +307,18 @@ export function TrackerOverlay({
 
       {/* Dial + desc — one centered column */}
       <div style={{ flex:1, display:'flex', flexDirection:'column',
-        alignItems:'center', justifyContent:'space-evenly', overflow:'hidden' }}>
+        alignItems:'center', justifyContent:'space-evenly', overflow:'hidden', position:'relative', zIndex:1 }}>
 
-        {NEED_DATA[need.id]?.desc && (
-          <div style={{
-            fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55,
-            textAlign: 'center', padding: '0 32px',
-          }}>
-            {NEED_DATA[need.id].desc}
+        {NEED_DATA[need.id]?.hint && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', padding: '0 24px' }}>
+            {NEED_DATA[need.id].hint.split(' · ').map((tag, i) => (
+              <span key={i} style={{
+                fontSize: 11, color: 'var(--text-faint)', padding: '3px 10px',
+                borderRadius: 20, background: 'rgba(var(--fg-rgb),0.06)',
+              }}>
+                {tag}
+              </span>
+            ))}
           </div>
         )}
 
