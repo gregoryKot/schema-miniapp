@@ -516,7 +516,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                 {[
                   { value: clients.length, label: 'КЛИЕНТОВ' },
                   { value: clients.filter(c => c.lastActiveDate === today).length, label: 'АКТИВНЫХ' },
-                  { value: '—', label: 'ЗАДАНИЙ' },
+                  { value: clients.filter(c => c.todayIndex !== null).length, label: 'ОЦЕНИЛИ' },
                 ].map(({ value, label }) => (
                   <div key={label} className="card" style={{ borderRadius: 16, padding: '14px 12px', textAlign: 'center' }}>
                     <div style={{ fontSize: 28, fontWeight: 800, color: 'var(--text)', lineHeight: 1, letterSpacing: '-0.5px' }}>{value}</div>

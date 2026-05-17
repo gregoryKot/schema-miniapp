@@ -259,6 +259,17 @@ export function HelpSection({ onOpenChildhoodWheel, onOpenPractices, onOpenPlans
 
       <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
+        {/* Therapist tasks — shown prominently when assigned */}
+        {therapistTasks.filter(t => !t.doneToday).length > 0 && (
+          <div style={{ background: 'color-mix(in srgb, var(--accent) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 18, padding: '14px 16px' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 10 }}>
+              От терапевта
+            </div>
+            {therapistTasks.filter(t => !t.doneToday).map(task => (
+              <TaskRow key={task.id} task={task} onOpen={() => openTask(task)} />
+            ))}
+          </div>
+        )}
 
         {/* 2-column tool grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>

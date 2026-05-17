@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
+import { fmtDate } from '../utils/format';
 import { SCHEMA_DOMAINS, MODE_GROUPS, ALL_MODES } from '../schemaTherapyData';
 import { NEED_DATA } from '../needData';
 import { useSafeTop } from '../utils/safezone';
@@ -75,6 +76,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
   const [detailNeedId, setDetailNeedId]   = useState<string | null>(null);
   const [expandedDomains, setExpandedDomains] = useState<Set<string>>(new Set());
   const [expandedModeGroups, setExpandedModeGroups] = useState<Set<string>>(new Set());
+  const [ysqCompletedAt, setYsqCompletedAt] = useState<string | null>(null);
   const safeTop = useSafeTop();
 
   useEffect(() => {
@@ -86,6 +88,7 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
       setMyModeIds(serverModes);
       if (serverModes.length > 0) localStorage.setItem(MY_MODE_IDS_KEY, JSON.stringify(serverModes));
       setYsqSchemaIds(p.ysq.activeSchemaIds ?? []);
+      setYsqCompletedAt(p.ysq.completedAt);
       setProfileLoading(false);
     }).catch(() => setProfileLoading(false));
   }, []);
@@ -238,15 +241,20 @@ export function SchemasSection({ onOpenSchema, childhoodRatings = {}, onOpenChil
                   YSQ-тест схем
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--text-faint)' }}>
-                  Определи схемы автоматически
+                  {ysqCompletedAt
+                    ? `Пройден ${fmtDate(ysqCompletedAt.slice(0, 10))} · 116 вопросов`
+                    : 'Определи схемы автоматически'}
                 </div>
               </div>
               <button onClick={() => onOpenSchema({ startTest: true })} style={{
                 padding: '9px 20px', borderRadius: 12, border: 'none',
-                background: 'linear-gradient(135deg, var(--accent), var(--accent-blue))', color: '#fff',
+                background: ysqCompletedAt
+                  ? 'rgba(var(--fg-rgb),0.08)'
+                  : 'linear-gradient(135deg, var(--accent), var(--accent-blue))',
+                color: ysqCompletedAt ? 'var(--text-sub)' : '#fff',
                 fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
               }}>
-                Начать
+                {ysqCompletedAt ? 'Снова' : 'Начать'}
               </button>
             </div>
 

@@ -9,7 +9,7 @@
 //  – Onboarding step card with dot progress
 //  – All colors via CSS tokens (light/dark theme ready)
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Need, UserProfile, COLORS } from '../types';
 import { NEED_DATA } from '../needData';
 import { api, StreakData, UserTask } from '../api';
@@ -21,7 +21,7 @@ import { SchemaIntroSheet } from '../components/SchemaIntroSheet';
 import { ModeIntroSheet } from '../components/ModeIntroSheet';
 import { BottomSheet } from '../components/BottomSheet';
 import { ALL_SCHEMAS, ALL_MODES } from '../schemaTherapyData';
-import { fmtDate } from '../utils/format';
+import { fmtDate, todayStr } from '../utils/format';
 
 const TASK_EMOJI: Record<string, string> = {
   diary_streak: '📔', tracker_streak: '📊', belief_check: '🔍',
@@ -234,12 +234,14 @@ export function TodaySection({
     Promise.all([api.getSchemaDiary(), api.getModeDiary(), api.getGratitudeDiary()])
       .then(([schema, mode, gratitude]) => {
         if (ignore) return;
+        const today = todayStr();
+        const dateLabel = (iso: string) => iso.slice(0, 10) === today ? 'Сегодня' : fmtDate(iso.slice(0, 10));
         const all = [
-          ...schema.slice(0, 2).map(e => ({ type: 'schema', label: e.trigger.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: 'Сегодня' })),
-          ...mode.slice(0, 2).map(e => ({ type: 'mode', label: e.situation.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: 'Сегодня' })),
-          ...gratitude.slice(0, 2).map(e => ({ type: 'gratitude', label: e.items[0]?.slice(0, 46) ?? 'Благодарность', time: '', dateStr: e.date })),
+          ...schema.slice(0, 2).map(e => ({ type: 'schema', label: e.trigger.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: dateLabel(e.createdAt), sortKey: e.createdAt })),
+          ...mode.slice(0, 2).map(e => ({ type: 'mode', label: e.situation.slice(0, 46), time: e.createdAt.slice(11, 16), dateStr: dateLabel(e.createdAt), sortKey: e.createdAt })),
+          ...gratitude.slice(0, 2).map(e => ({ type: 'gratitude', label: e.items[0]?.slice(0, 46) ?? 'Благодарность', time: '', dateStr: e.date === today ? 'Сегодня' : fmtDate(e.date), sortKey: e.date })),
         ];
-        all.sort((a, b) => b.time.localeCompare(a.time));
+        all.sort((a, b) => b.sortKey.localeCompare(a.sortKey));
         setRecentDiaries(all.slice(0, 3));
       })
       .catch(() => {})
@@ -588,51 +590,41 @@ interface StepDef {
   description: string;
   detail: string;
   actionLabel: string;
-  xp: number;
   isDone: (profile: UserProfile | null, ctx?: { hasSchemas: boolean }) => boolean;
 }
 
 const STEPS: StepDef[] = [
-  { id: 'ysq', emoji: '🧪', color: 'var(--accent)', xp: 100,
+  { id: 'ysq', emoji: '🧪', color: 'var(--accent)',
     title: 'Пройди тест на схемы',
     description: 'YSQ-R — 116 вопросов, 10 минут. Узнаешь какие ранние паттерны управляют твоими реакциями.',
     detail: '20 схем · история прохождений · советы',
     actionLabel: 'Начать тест',
     isDone: (p, ctx) => !!(p?.ysq.completedAt) || !!(ctx?.hasSchemas) },
-  { id: 'tracker', emoji: '📊', color: 'var(--accent-blue)', xp: 50,
+  { id: 'tracker', emoji: '📊', color: 'var(--accent-blue)',
     title: 'Оцени потребности сегодня',
     description: 'Пять оценок — и ты видишь индекс дня. Через неделю паттерн начнёт проявляться в графике.',
     detail: 'Привязанность · Автономия · Выражение · Радость · Границы',
     actionLabel: 'Перейти в трекер',
     isDone: p => !!(p?.lastActivity.needsTracker) },
-  { id: 'diary', emoji: '📔', color: 'var(--accent-indigo)', xp: 60,
+  { id: 'diary', emoji: '📔', color: 'var(--accent-indigo)',
     title: 'Сделай первую запись',
     description: 'Зафикси момент когда схема сработала — это главная практика схема-терапии.',
     detail: 'Дневник схем · режимов · благодарности',
     actionLabel: 'Открыть дневник',
     isDone: p => !!(p?.lastActivity.schemaDiary || p?.lastActivity.modeDiary || p?.lastActivity.gratitudeDiary) },
-  { id: 'notify', emoji: '🔔', color: 'var(--accent-orange)', xp: 30,
+  { id: 'notify', emoji: '🔔', color: 'var(--accent-orange)',
     title: 'Включи ежедневное напоминание',
     description: 'Без регулярности ничего не выйдет. Одно уведомление в нужное время — всё что нужно.',
     detail: 'Время · часовой пояс · серии дней',
     actionLabel: 'Настроить',
     isDone: p => !!(p?.notifications.enabled) },
-  { id: 'childhood', emoji: '🌀', color: 'var(--accent-green)', xp: 50,
+  { id: 'childhood', emoji: '🌀', color: 'var(--accent-green)',
     title: 'Исследуй колесо детства',
     description: 'Оцени как удовлетворялись потребности в детстве — откуда пришли твои паттерны.',
     detail: '5 областей · связь с активными схемами',
     actionLabel: 'Открыть',
     isDone: () => !!localStorage.getItem('childhood_wheel_done') },
 ];
-
-const TOTAL_XP = STEPS.reduce((s, st) => s + st.xp, 0);
-
-function getLevel(xp: number): { label: string; emoji: string; next: number } {
-  if (xp >= TOTAL_XP) return { label: 'Мастер',        emoji: '🏆', next: TOTAL_XP };
-  if (xp >= 200)       return { label: 'Исследователь', emoji: '⭐', next: TOTAL_XP };
-  if (xp >= 100)       return { label: 'Практик',       emoji: '🔥', next: 200 };
-  return                      { label: 'Новичок',        emoji: '🌱', next: 100 };
-}
 
 function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, onOpenTracker, onOpenDiaries, onOpenChildhoodWheel }: {
   profile: UserProfile | null;
@@ -649,62 +641,50 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   const [done, setDone] = useState(() => !!localStorage.getItem(ONBOARDING_DONE_KEY));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [slideKey, setSlideKey] = useState(0);
-  const [xpGain, setXpGain] = useState<number | null>(null);
-  const prevXpRef = useRef<number | null>(null);
 
   if (done || profile === null) return null;
 
   const ctx = { hasSchemas };
-  const earnedXp = STEPS.filter(s => s.isDone(profile, ctx)).reduce((sum, s) => sum + s.xp, 0);
-
-  // Detect XP gain
-  if (prevXpRef.current !== null && earnedXp > prevXpRef.current) {
-    const gain = earnedXp - prevXpRef.current;
-    if (xpGain === null) {
-      setXpGain(gain);
-      setTimeout(() => setXpGain(null), 1800);
-    }
-  }
-  prevXpRef.current = earnedXp;
-
-  const level = getLevel(earnedXp);
-  const allDone = STEPS.every(s => s.isDone(profile, ctx));
+  const doneCount = STEPS.filter(s => s.isDone(profile, ctx)).length;
+  const allDone = doneCount === STEPS.length;
   const autoStep = STEPS.find(s => !s.isDone(profile, ctx) && !skipped.includes(s.id));
 
-  // All steps done → celebration
+  // All steps done → clean completion state
   if (allDone) {
     return (
-      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, transparent), color-mix(in srgb, var(--accent-green) 8%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 18%, transparent)', borderRadius: 20, padding: '24px 20px', textAlign: 'center' }}>
-        <style>{`@keyframes obPop { 0%{transform:scale(0.6);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }`}</style>
-        <div style={{ fontSize: 48, marginBottom: 10, animation: 'obPop 0.5s ease-out' }}>🏆</div>
-        <div style={{ fontSize: 19, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: 6 }}>Уровень: Мастер</div>
+      <div style={{ background: 'color-mix(in srgb, var(--accent-green) 6%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 18%, transparent)', borderRadius: 20, padding: '20px', textAlign: 'center' }}>
+        <style>{`@keyframes obPop { 0%{transform:scale(0.6);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }`}</style>
+        <div style={{ fontSize: 36, marginBottom: 8, animation: 'obPop 0.4s ease-out' }}>✓</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Все шаги пройдены</div>
         <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.6, marginBottom: 16 }}>
-          {TOTAL_XP} XP заработано. Все инструменты изучены — теперь начинается настоящая работа.
+          Все инструменты изучены — теперь начинается настоящая работа.
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, justifyContent: 'center', marginBottom: 18 }}>
-          {STEPS.map(s => <span key={s.id} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 20, background: 'color-mix(in srgb, var(--accent-green) 14%, transparent)', color: 'var(--accent-green)', fontWeight: 600 }}>{s.emoji} +{s.xp} XP</span>)}
-        </div>
-        <button onClick={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }} style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-          Начать работу →
+        <button
+          onClick={() => { localStorage.setItem(ONBOARDING_DONE_KEY, '1'); setDone(true); }}
+          style={{ width: '100%', padding: '13px 0', borderRadius: 14, border: 'none', fontFamily: 'inherit', background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
+        >
+          Скрыть
         </button>
       </div>
     );
   }
 
-  // All non-done steps postponed → collapsed "resume" state
+  // All non-done steps postponed → collapsed resume state
   if (!autoStep) {
     const postponedCount = STEPS.filter(s => !s.isDone(profile, ctx)).length;
-    const remainingXp = TOTAL_XP - earnedXp;
     return (
       <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ fontSize: 24 }}>📋</div>
+        <div style={{ fontSize: 22 }}>📋</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 2 }}>
             {postponedCount} {postponedCount === 1 ? 'шаг отложен' : 'шага отложено'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>ещё +{remainingXp} XP можно заработать</div>
+          <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>{doneCount} из {STEPS.length} выполнено</div>
         </div>
-        <button onClick={() => { setSkipped([]); localStorage.removeItem(ONBOARDING_SKIPPED_KEY); setSlideKey(k => k+1); }} style={{ padding: '8px 14px', borderRadius: 10, border: 'none', fontFamily: 'inherit', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+        <button
+          onClick={() => { setSkipped([]); localStorage.removeItem(ONBOARDING_SKIPPED_KEY); setSlideKey(k => k + 1); }}
+          style={{ padding: '8px 14px', borderRadius: 10, border: 'none', fontFamily: 'inherit', background: 'color-mix(in srgb, var(--accent) 15%, transparent)', color: 'var(--accent)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+        >
           Продолжить
         </button>
       </div>
@@ -714,7 +694,6 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   const current = (selectedId ? STEPS.find(s => s.id === selectedId) : null) ?? autoStep;
   const isCurrentDone    = current.isDone(profile, ctx);
   const isCurrentSkipped = skipped.includes(current.id) && !isCurrentDone;
-  const xpBarPct = Math.round((earnedXp / (level.next || TOTAL_XP)) * 100);
 
   function handleAction() {
     switch (current.id) {
@@ -736,44 +715,31 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
   }
 
   return (
-    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 20, padding: '16px 18px', overflow: 'hidden', position: 'relative' }}>
-      <style>{`
-        @keyframes obSlide { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes obXp    { 0%{opacity:0;transform:translateY(0) scale(0.8)} 20%{opacity:1;transform:translateY(-8px) scale(1.1)} 80%{opacity:1;transform:translateY(-12px)} 100%{opacity:0;transform:translateY(-18px)} }
-      `}</style>
+    <div style={{ background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 20, padding: '16px 18px', overflow: 'hidden' }}>
+      <style>{`@keyframes obSlide { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }`}</style>
 
-      {/* XP gain toast */}
-      {xpGain !== null && (
-        <div style={{ position: 'absolute', top: 12, right: 16, fontSize: 15, fontWeight: 800, color: 'var(--accent-green)', animation: 'obXp 1.8s ease-out forwards', pointerEvents: 'none' }}>
-          +{xpGain} XP ✨
-        </div>
-      )}
-
-      {/* Level + XP bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-sub)' }}>
-          {level.emoji} {level.label}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--text-faint)', fontVariantNumeric: 'tabular-nums' }}>
-          {earnedXp} / {level.next === TOTAL_XP ? TOTAL_XP : level.next} XP
-        </div>
-      </div>
-      <div style={{ height: 5, background: 'rgba(var(--fg-rgb),0.08)', borderRadius: 3, marginBottom: 16, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${xpBarPct}%`, background: 'linear-gradient(90deg, var(--accent), var(--accent-blue))', borderRadius: 3, transition: 'width 0.6s cubic-bezier(0.34,1.56,0.64,1)' }} />
+      {/* Progress counter */}
+      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)', marginBottom: 14, letterSpacing: '0.05em' }}>
+        {doneCount} из {STEPS.length} шагов выполнено
       </div>
 
-      {/* Current step — animated */}
-      <div key={slideKey} style={{ animation: 'obSlide 0.22s ease-out' }}>
+      {/* Current step */}
+      <div key={slideKey} style={{ animation: 'obSlide 0.2s ease-out' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-          <div style={{ width: 50, height: 50, borderRadius: 15, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, background: `color-mix(in srgb, ${current.color} 14%, transparent)`, border: `1.5px solid color-mix(in srgb, ${current.color} 28%, transparent)` }}>
-            {isCurrentDone ? '✅' : current.emoji}
+          <div style={{
+            width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24,
+            background: `color-mix(in srgb, ${current.color} 12%, transparent)`,
+            border: `1.5px solid color-mix(in srgb, ${current.color} 24%, transparent)`,
+          }}>
+            {isCurrentDone ? '✓' : current.emoji}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 2 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3, marginBottom: 3 }}>
               {current.title}
             </div>
-            <div style={{ fontSize: 11, color: current.color, fontWeight: 600 }}>
-              +{current.xp} XP · {current.detail}
+            <div style={{ fontSize: 11, color: 'var(--text-faint)', fontWeight: 500 }}>
+              {current.detail}
             </div>
           </div>
         </div>
@@ -785,16 +751,27 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
       {/* Buttons */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
         {isCurrentDone ? (
-          <div style={{ flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center', background: 'color-mix(in srgb, var(--accent-green) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--accent-green) 25%, transparent)', fontSize: 13, fontWeight: 600, color: 'var(--accent-green)' }}>
-            ✓ Выполнено · +{current.xp} XP
+          <div style={{
+            flex: 1, padding: '11px 0', borderRadius: 12, textAlign: 'center',
+            background: 'color-mix(in srgb, var(--accent-green) 10%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--accent-green) 22%, transparent)',
+            fontSize: 13, fontWeight: 600, color: 'var(--accent-green)',
+          }}>
+            ✓ Выполнено
           </div>
         ) : (
-          <button onClick={handleAction} style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: current.color, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-            {current.actionLabel} → +{current.xp} XP
+          <button
+            onClick={handleAction}
+            style={{ flex: 1, padding: '11px 0', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: current.color, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          >
+            {current.actionLabel}
           </button>
         )}
         {!isCurrentDone && (
-          <button onClick={handleSkip} style={{ padding: '11px 14px', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: 'rgba(var(--fg-rgb),0.06)', color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-faint)', fontSize: 13, cursor: 'pointer' }}>
+          <button
+            onClick={handleSkip}
+            style={{ padding: '11px 14px', borderRadius: 12, border: 'none', fontFamily: 'inherit', background: 'rgba(var(--fg-rgb),0.06)', color: isCurrentSkipped ? 'var(--accent)' : 'var(--text-faint)', fontSize: 13, cursor: 'pointer' }}
+          >
             {isCurrentSkipped ? 'Вернуть' : 'Позже'}
           </button>
         )}
@@ -807,8 +784,17 @@ function OnboardingWidget({ profile, hasSchemas, onOpenSchema, onOpenAdvanced, o
           const sk = skipped.includes(s.id) && !d;
           const cur = s.id === current.id;
           return (
-            <div key={s.id} onClick={() => { setSelectedId(s.id === current.id ? null : s.id); setSlideKey(k=>k+1); }} style={{ cursor: 'pointer' }}>
-              <div style={{ width: cur ? 22 : 8, height: 8, borderRadius: 4, transition: 'all 0.3s ease', background: d ? 'color-mix(in srgb, var(--accent-green) 70%, transparent)' : sk ? 'color-mix(in srgb, var(--accent-yellow) 40%, transparent)' : cur ? `color-mix(in srgb, ${current.color} 90%, transparent)` : 'rgba(var(--fg-rgb),0.12)' }} />
+            <div key={s.id} onClick={() => { setSelectedId(s.id === current.id ? null : s.id); setSlideKey(k => k + 1); }} style={{ cursor: 'pointer' }}>
+              <div style={{
+                width: cur ? 20 : 8, height: 8, borderRadius: 4, transition: 'all 0.25s ease',
+                background: d
+                  ? 'color-mix(in srgb, var(--accent-green) 65%, transparent)'
+                  : sk
+                  ? 'rgba(var(--fg-rgb),0.15)'
+                  : cur
+                  ? `color-mix(in srgb, ${current.color} 85%, transparent)`
+                  : 'rgba(var(--fg-rgb),0.12)',
+              }} />
             </div>
           );
         })}
