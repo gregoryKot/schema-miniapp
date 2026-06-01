@@ -90,166 +90,200 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
   const [step, setStep] = useState(0);
   const [c1, setC1] = useState(false);
   const [c2, setC2] = useState(false);
+  const dirRef = useRef<'fwd' | 'back' | 'init'>('init');
   const canAddToHome = !!(window as any).Telegram?.WebApp?.addToHomeScreen;
   const TOTAL = canAddToHome ? 5 : 4;
   const ready = c1 && c2;
 
+  const goForward = () => { dirRef.current = 'fwd'; setStep(s => s + 1); };
+  const goBack    = () => { dirRef.current = 'back'; setStep(s => s - 1); };
+
   const Checkbox = ({ checked, onToggle, label }: { checked: boolean; onToggle: () => void; label: string }) => (
-    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 12 }}>
-      <div
-        onClick={onToggle}
-        style={{
-          width: 20, height: 20, borderRadius: 6, flexShrink: 0, marginTop: 1,
-          border: `2px solid ${checked ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.2)'}`,
-          background: checked ? 'var(--accent)' : 'transparent',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'all 0.15s',
-        }}
-      >
-        {checked && <span style={{ fontSize: 11, color: 'var(--on-accent)', fontWeight: 700 }}>✓</span>}
+    <div
+      onClick={onToggle}
+      style={{
+        display: 'flex', alignItems: 'flex-start', gap: 12, cursor: 'pointer',
+        marginTop: 14, padding: '14px 16px',
+        background: checked ? 'color-mix(in srgb, var(--accent) 8%, transparent)' : 'rgba(var(--fg-rgb),0.04)',
+        border: `1.5px solid ${checked ? 'color-mix(in srgb, var(--accent) 28%, transparent)' : 'rgba(var(--fg-rgb),0.1)'}`,
+        borderRadius: 16, transition: 'background 0.2s, border-color 0.2s',
+      }}
+    >
+      <div style={{
+        width: 24, height: 24, borderRadius: 8, flexShrink: 0,
+        border: `2px solid ${checked ? 'var(--accent)' : 'rgba(var(--fg-rgb),0.25)'}`,
+        background: checked ? 'var(--accent)' : 'transparent',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        transform: checked ? 'scale(1)' : 'scale(0.88)',
+      }}>
+        {checked && <span style={{ fontSize: 13, color: 'var(--on-accent)', fontWeight: 700, lineHeight: 1 }}>✓</span>}
       </div>
-      <span onClick={onToggle} style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.5 }}>{label}</span>
-    </label>
+      <span style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.55 }}>{label}</span>
+    </div>
   );
 
   const steps = [
     // Step 0: Welcome
     <div key={0}>
-      <div style={{ textAlign: 'center', marginBottom: 24, paddingTop: 4 }}>
-        <div style={{ width: 68, height: 68, borderRadius: 22, margin: '0 auto 14px', background: 'linear-gradient(135deg, var(--accent), #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>🧠</div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>СхемаЛаб</div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '3px 12px', fontSize: 10, fontWeight: 700, color: 'var(--accent-yellow)', letterSpacing: '0.1em' }}>
+      <div style={{ textAlign: 'center', paddingTop: 4, marginBottom: 22 }}>
+        <div style={{
+          width: 76, height: 76, borderRadius: 24, margin: '0 auto 16px',
+          background: 'linear-gradient(135deg, var(--accent), #60a5fa)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 34, boxShadow: '0 10px 40px rgba(124,114,248,0.35)',
+        }}>🧠</div>
+        <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.6px', marginBottom: 10 }}>СхемаЛаб</div>
+        <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: 20, padding: '4px 12px', fontSize: 10, fontWeight: 700, color: 'var(--accent-yellow)', letterSpacing: '0.12em' }}>
           БЕТА-ВЕРСИЯ
         </div>
       </div>
-      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 12 }}>
-        <div style={{ fontSize: 14, color: 'var(--text)', lineHeight: 1.7 }}>
-          Хорошо, что ты здесь. Замечать свои потребности — это уже немало.
-        </div>
+      <div style={{ fontSize: 15, color: 'var(--text-sub)', lineHeight: 1.7, textAlign: 'center', marginBottom: 18 }}>
+        Хорошо, что ты здесь.<br />Замечать свои потребности — это уже немало.
       </div>
-      <div className='card' style={{ borderRadius: 16, padding: '16px 18px' }}>
-        <div style={{ fontSize: 13, color: 'var(--text-sub)', lineHeight: 1.7 }}>
-          СхемаЛаб — инструмент самопознания: трекер потребностей, дневники схем и режимов, тесты, практики и пространство для работы с терапевтом.
-          <br /><br />
-          Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
-        </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {[
+          { icon: '📊', text: 'Трекер потребностей и дневники' },
+          { icon: '🧪', text: 'Тесты, практики и упражнения' },
+          { icon: '🤝', text: 'Пространство для работы с терапевтом' },
+        ].map(({ icon, text }) => (
+          <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 14, padding: '12px 14px' }}>
+            <span style={{ fontSize: 19 }}>{icon}</span>
+            <span style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.4 }}>{text}</span>
+          </div>
+        ))}
       </div>
     </div>,
 
     // Step 1: Data & Privacy
     <div key={1}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Данные и конфиденциальность</div>
-      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
-          Все данные хранятся на защищённом сервере, <strong style={{ color: 'var(--text)' }}>зашифрованы</strong> и привязаны к Telegram-аккаунту. Не передаются третьим лицам.
-          <br /><br />
-          Удалить все данные можно прямо в приложении — Настройки → «Удалить все данные».
-        </div>
-        <Checkbox
-          checked={c2}
-          onToggle={() => setC2(p => !p)}
-          label="Я согласен(на) на хранение данных согласно описанным условиям"
-        />
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ width: 68, height: 68, borderRadius: 22, margin: '0 auto 14px', background: 'linear-gradient(135deg, #4ade80, #06b6d4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, boxShadow: '0 8px 28px rgba(74,222,128,0.28)' }}>🔐</div>
+        <div style={{ fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Данные под защитой</div>
+      </div>
+      <div className='card' style={{ borderRadius: 18, padding: '4px 16px' }}>
+        {[
+          { icon: '🔒', text: 'Зашифровано на сервере (AES-256)' },
+          { icon: '🚫', text: 'Не передаётся третьим лицам' },
+          { icon: '🗑️', text: 'Удалить можно в любой момент' },
+        ].map(({ icon, text }, i, arr) => (
+          <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 0', borderBottom: i < arr.length - 1 ? '1px solid rgba(var(--fg-rgb),0.06)' : 'none' }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(var(--fg-rgb),0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17, flexShrink: 0 }}>{icon}</div>
+            <span style={{ fontSize: 14, color: 'var(--text)' }}>{text}</span>
+          </div>
+        ))}
+      </div>
+      <Checkbox
+        checked={c2}
+        onToggle={() => setC2(p => !p)}
+        label="Я согласен(на) на обработку персональных данных согласно Политике конфиденциальности"
+      />
+      <div style={{ marginTop: 10, textAlign: 'center' }}>
+        <a href="https://schemalab.ru/privacy" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: 'var(--accent)', textDecoration: 'none' }}>
+          Политика конфиденциальности →
+        </a>
       </div>
     </div>,
 
     // Step 2: Not therapy
     <div key={2}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Важно знать</div>
-      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
-        <div style={{ fontSize: 13, color: 'rgba(var(--fg-rgb),0.7)', lineHeight: 1.7, marginBottom: 16 }}>
-          СхемаЛаб — инструмент самоисследования. Оценки, тесты и упражнения внутри <strong style={{ color: 'var(--text)' }}>не являются клинической диагностикой</strong> и не заменяют работу с психологом.
-        </div>
-        <Checkbox
-          checked={c1}
-          onToggle={() => setC1(p => !p)}
-          label="Я понимаю, что это инструмент самоисследования, а не клиническая диагностика"
-        />
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ width: 68, height: 68, borderRadius: 22, margin: '0 auto 14px', background: 'linear-gradient(135deg, #fb923c, #fbbf24)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, boxShadow: '0 8px 28px rgba(251,146,60,0.28)' }}>💡</div>
+        <div style={{ fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Важно знать</div>
       </div>
+      <div className='card' style={{ borderRadius: 18, padding: '16px 18px' }}>
+        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.75 }}>
+          СхемаЛаб — инструмент самоисследования. Оценки, тесты и упражнения внутри{' '}
+          <strong style={{ color: 'var(--text)' }}>не являются клинической диагностикой</strong>{' '}
+          и не заменяют работу с психологом.
+          <br /><br />
+          Если чувствуешь, что что-то важное требует внимания — терапия это место, где можно разобраться по-настоящему.
+        </div>
+      </div>
+      <Checkbox checked={c1} onToggle={() => setC1(p => !p)} label="Я понимаю, что это инструмент самоисследования, а не клиническая диагностика" />
     </div>,
 
     // Step 3: Author
     <div key={3}>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 16 }}>Об авторе</div>
-      <div className='card' style={{ borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7, marginBottom: 10 }}>
-          Канал о схема-терапии —{' '}
-          <a href="https://t.me/SchemeHappens" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@SchemeHappens</a>
-        </div>
-        <div style={{ fontSize: 14, color: 'rgba(var(--fg-rgb),0.8)', lineHeight: 1.7 }}>
-          Записаться на сессию —{' '}
-          <a href="https://t.me/kotlarewski" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>@kotlarewski</a>
-        </div>
+      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+        <div style={{ width: 68, height: 68, borderRadius: 22, margin: '0 auto 14px', background: 'linear-gradient(135deg, var(--accent), var(--accent-indigo))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30, boxShadow: '0 8px 28px rgba(124,114,248,0.28)' }}>👤</div>
+        <div style={{ fontSize: 21, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px' }}>Об авторе</div>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {[
+          { label: 'Канал о схема-терапии', handle: '@SchemeHappens', url: 'https://t.me/SchemeHappens', emoji: '📢' },
+          { label: 'Записаться на сессию', handle: '@kotlarewski', url: 'https://t.me/kotlarewski', emoji: '💬' },
+        ].map(item => (
+          <a key={item.handle} href={item.url} style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(var(--fg-rgb),0.04)', border: '1px solid rgba(var(--fg-rgb),0.08)', borderRadius: 16, padding: '14px 16px', textDecoration: 'none' }}>
+            <div style={{ width: 42, height: 42, borderRadius: 13, background: 'linear-gradient(135deg, var(--accent), #60a5fa)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 19, flexShrink: 0 }}>{item.emoji}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 2, letterSpacing: '0.02em' }}>{item.label}</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent)' }}>{item.handle}</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ color: 'var(--text-faint)', flexShrink: 0 }}><polyline points="9 18 15 12 9 6" /></svg>
+          </a>
+        ))}
       </div>
       {!ready && (
-        <div style={{ fontSize: 12, color: 'var(--accent-orange)', textAlign: 'center', marginBottom: 12, lineHeight: 1.5 }}>
-          {!c2 && !c1 ? 'Вернись к шагам 2 и 3 и подтверди согласие' : !c2 ? 'Вернись к шагу 2 и подтверди согласие' : 'Вернись к шагу 3 и подтверди согласие'}
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.2)', borderRadius: 12, padding: '10px 14px' }}>
+          <span style={{ fontSize: 15, flexShrink: 0 }}>⚠️</span>
+          <span style={{ fontSize: 12, color: 'var(--accent-orange)', lineHeight: 1.5 }}>
+            {!c2 && !c1 ? 'Нужно подтвердить согласие на шагах 2 и 3' : !c2 ? 'Вернись к шагу 2 и подтверди согласие' : 'Вернись к шагу 3 и подтверди согласие'}
+          </span>
         </div>
       )}
     </div>,
 
     // Step 4: Add to home screen (only shown if canAddToHome)
     <div key={4} style={{ textAlign: 'center', paddingTop: 8 }}>
-      <div style={{ fontSize: 64, marginBottom: 20, lineHeight: 1 }}>📲</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: 'var(--text)', marginBottom: 10 }}>Добавь на главный экран</div>
+      <div style={{ fontSize: 66, marginBottom: 18, lineHeight: 1, animation: 'pop-in 0.4s cubic-bezier(0.34,1.56,0.64,1)' }}>📲</div>
+      <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', letterSpacing: '-0.4px', marginBottom: 10 }}>Добавь на главный экран</div>
       <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.65, marginBottom: 28 }}>
-        Так дневник будет всегда под рукой — как обычное приложение. Займёт две секунды.
+        Так дневник будет всегда под рукой — как обычное приложение.
       </div>
-      <button
-        onClick={() => { (window as any).Telegram?.WebApp?.addToHomeScreen(); }}
-        className="btn-primary"
-        style={{ marginBottom: 10 }}
-      >
+      <button onClick={() => { (window as any).Telegram?.WebApp?.addToHomeScreen(); }} className="btn-primary" style={{ marginBottom: 10 }}>
         Добавить на экран
       </button>
     </div>,
   ];
 
+  const stepAnim = dirRef.current === 'init' ? undefined : dirRef.current === 'fwd' ? 'tab-right 0.22s ease' : 'tab-left 0.22s ease';
+
   return (
     <BottomSheet onClose={() => {}} zIndex={300}>
-      {/* Step dots */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 24 }}>
-        {Array.from({ length: TOTAL }).map((_, i) => (
-          <div
-            key={i}
-            onClick={() => setStep(i)}
-            style={{
-              width: i === step ? 20 : 8, height: 8, borderRadius: 4,
-              background: i === step ? 'var(--accent)' : i < step ? 'rgba(var(--fg-rgb),0.3)' : 'rgba(var(--fg-rgb),0.12)',
-              cursor: 'pointer',
-              transition: 'all 0.25s ease',
-            }}
-          />
-        ))}
+      {/* Progress bar */}
+      <div style={{ marginBottom: 22 }}>
+        <div style={{ height: 3, background: 'rgba(var(--fg-rgb),0.07)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', borderRadius: 2,
+            background: 'linear-gradient(90deg, var(--accent), var(--accent-blue))',
+            width: `${((step + 1) / TOTAL) * 100}%`,
+            transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          }} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-faint)', letterSpacing: '0.04em' }}>{step + 1} / {TOTAL}</span>
+        </div>
       </div>
 
-      {/* Content */}
-      <div style={{ minHeight: 260 }}>
+      {/* Animated step content */}
+      <div key={step} style={{ minHeight: 280, animation: stepAnim }}>
         {steps[step]}
       </div>
 
       {/* Navigation */}
-      <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+      <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
         {step > 0 && (
-          <button
-            onClick={() => setStep(s => s - 1)}
-            style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, cursor: 'pointer' }}
-          >
+          <button onClick={goBack} style={{ flex: 1, padding: '14px 0', borderRadius: 14, border: 'none', background: 'rgba(var(--fg-rgb),0.07)', color: 'var(--text-sub)', fontSize: 15, cursor: 'pointer', fontFamily: 'inherit' }}>
             ← Назад
           </button>
         )}
         {step < TOTAL - 1 ? (
-          <button
-            onClick={() => { if (step === 3 && !ready) return; setStep(s => s + 1); }}
-            className="btn-primary" style={{ flex: 2, opacity: step === 3 && !ready ? 0.35 : 1 }}
-          >
+          <button onClick={() => { if (step === 3 && !ready) return; goForward(); }} className="btn-primary" style={{ flex: 2, opacity: step === 3 && !ready ? 0.35 : 1 }}>
             Далее →
           </button>
         ) : (
-          <button
-            onClick={onAccept}
-            className="btn-primary" style={{ flex: 2 }}
-          >
+          <button onClick={onAccept} className="btn-primary" style={{ flex: 2 }}>
             {canAddToHome ? 'Пропустить и начать' : 'Начать'}
           </button>
         )}
@@ -347,6 +381,20 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Clear YSQ data from localStorage if it belongs to a different Telegram user.
+    // Prevents a shared-device scenario where person B reads person A's clinical data.
+    const currentUserId = String((window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id ?? '');
+    if (currentUserId) {
+      const storedUserId = localStorage.getItem('ysq_owner_id');
+      if (storedUserId && storedUserId !== currentUserId) {
+        localStorage.removeItem(YSQ_RESULT_KEY);
+        localStorage.removeItem(YSQ_PROGRESS_KEY);
+      }
+      localStorage.setItem('ysq_owner_id', currentUserId);
+    }
+  }, []);
+
+  useEffect(() => {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
     window.Telegram?.WebApp?.disableVerticalSwipes?.();
@@ -355,6 +403,16 @@ export default function App() {
       api.init(tzOffset).then(() => sessionStorage.setItem('init_done', '1')).catch(() => {});
     }
     api.recordActivity().catch(() => {});
+    // If disclaimer wasn't accepted in this WebView, check server state.
+    // Covers the case where the user accepted on the website or another device.
+    if (!localStorage.getItem(DISCLAIMER_KEY)) {
+      api.getDisclaimer().then(d => {
+        if (d.accepted) {
+          localStorage.setItem(DISCLAIMER_KEY, '1');
+          setDisclaimerDone(true);
+        }
+      }).catch(() => {});
+    }
     const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
     Promise.all(NEED_IDS.map(id => api.getPractices(id)))
       .then(r => setHelpPracticeCount(r.reduce((s, a) => s + a.length, 0))).catch(() => setHelpPracticeCount(0));
@@ -549,30 +607,40 @@ export default function App() {
   if (error) {
     const isAuthError = error.includes('401') || error.includes('403');
     return (
-      <div style={{ padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', gap: 16, textAlign: 'center' }}>
-        <div style={{ fontSize: 40 }}>{isAuthError ? '🔐' : '😔'}</div>
-        <div style={{ fontSize: 17, fontWeight: 600, color: 'var(--text)' }}>
-          {isAuthError ? 'Сессия истекла' : 'Не удалось загрузить'}
+      <div style={{ minHeight: '100vh', position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 28px', textAlign: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', overflow: 'hidden', zIndex: 0 }}>
+          <div style={{ position: 'absolute', width: 340, height: 340, borderRadius: '50%', top: -120, right: -100, background: isAuthError ? 'rgba(124,114,248,0.18)' : 'rgba(248,113,113,0.14)', filter: 'blur(100px)' }} />
+          <div style={{ position: 'absolute', width: 260, height: 260, borderRadius: '50%', bottom: 80, left: -100, background: isAuthError ? 'rgba(96,165,250,0.12)' : 'rgba(251,146,60,0.11)', filter: 'blur(90px)' }} />
         </div>
-        <div style={{ fontSize: 14, color: 'var(--text-sub)', lineHeight: 1.6 }}>
-          {isAuthError
-            ? 'Закрой приложение полностью и открой заново — Telegram выдаст свежий токен'
-            : 'Проверь подключение и попробуй ещё раз'}
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: 320, animation: 'fade-in 0.4s ease' }}>
+          <div style={{
+            width: 96, height: 96, borderRadius: 32, margin: '0 auto 28px',
+            background: isAuthError ? 'linear-gradient(135deg, var(--accent), var(--accent-indigo))' : 'linear-gradient(135deg, #f87171, #fb923c)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44,
+            boxShadow: isAuthError ? '0 16px 48px rgba(124,114,248,0.28)' : '0 16px 48px rgba(248,113,113,0.28)',
+          }}>
+            {isAuthError ? '🔐' : '📡'}
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--text)', letterSpacing: '-0.6px', marginBottom: 12 }}>
+            {isAuthError ? 'Сессия истекла' : 'Нет соединения'}
+          </div>
+          <div style={{ fontSize: 15, color: 'var(--text-sub)', lineHeight: 1.7, marginBottom: 36 }}>
+            {isAuthError
+              ? 'Закрой приложение полностью и открой заново — Telegram выдаст свежий токен'
+              : 'Проверь подключение к интернету и попробуй снова'}
+          </div>
+          <button
+            onClick={isAuthError ? () => window.Telegram?.WebApp?.close() : () => window.location.reload()}
+            className="btn-primary"
+          >
+            {isAuthError ? 'Закрыть приложение' : 'Повторить'}
+          </button>
+          {!isAuthError && (
+            <div style={{ marginTop: 16, fontSize: 13, color: 'var(--text-faint)', lineHeight: 1.6 }}>
+              Если не помогает — перезапусти приложение
+            </div>
+          )}
         </div>
-        {isAuthError
-          ? <button
-              onClick={() => window.Telegram?.WebApp?.close()}
-              style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Закрыть приложение
-            </button>
-          : <button
-              onClick={() => window.location.reload()}
-              style={{ padding: '13px 28px', border: 'none', borderRadius: 14, background: 'var(--accent)', color: 'var(--text)', fontSize: 15, fontWeight: 600, cursor: 'pointer' }}
-            >
-              Повторить
-            </button>
-        }
       </div>
     );
   }
