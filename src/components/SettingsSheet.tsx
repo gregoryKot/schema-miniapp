@@ -60,10 +60,14 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
   const [therapyJoinCode, setTherapyJoinCode] = useState('');
   const [therapyJoinError, setTherapyJoinError] = useState('');
   const [therapyInviteUrl, setTherapyInviteUrl] = useState('');
-  const [showBecomeTherapist, setShowBecomeTherapist] = useState(false);
-  const [therapistCode, setTherapistCode] = useState('');
-  const [therapistCodeError, setTherapistCodeError] = useState('');
-  const [therapistCodeLoading, setTherapistCodeLoading] = useState(false);
+  const [therapistReq, setTherapistReq] = useState<{ id: number; status: string; rejectReason: string | null } | null | undefined>(undefined);
+  const [showReqForm, setShowReqForm] = useState(false);
+  const [reqFullName, setReqFullName] = useState('');
+  const [reqQual, setReqQual] = useState('');
+  const [reqContacts, setReqContacts] = useState('');
+  const [reqMsg, setReqMsg] = useState('');
+  const [reqBusy, setReqBusy] = useState(false);
+  const [reqError, setReqError] = useState('');
   const tgName = (window.Telegram?.WebApp as any)?.initDataUnsafe?.user?.first_name ?? '';
   const [editName, setEditName] = useState(displayName ?? tgName ?? '');
   const [nameSaving, setNameSaving] = useState(false);
@@ -76,6 +80,7 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
     setPairLoading(true);
     api.getPair().then(setPairData).catch(() => {}).finally(() => setPairLoading(false));
     api.getTherapyRelation().then(setTherapyRelation).catch(() => setTherapyRelation(null));
+    api.getTherapistRequest().then(setTherapistReq).catch(() => setTherapistReq(null));
   }, []);
 
   async function patch(update: Partial<UserSettings>) {
@@ -402,9 +407,19 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
               {/* Стать терапевтом */}
               {userRole !== 'THERAPIST' && (
                 <div style={{ marginBottom: 8 }}>
-                  {!showBecomeTherapist ? (
+                  {therapistReq === undefined ? null : therapistReq?.status === 'pending' ? (
+                    <div className="card" style={{ borderRadius: 16, padding: 16 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-yellow)', marginBottom: 4 }}>Заявка отправлена</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-sub)', lineHeight: 1.5 }}>Рассмотрим в течение нескольких дней и напишем в боте.</div>
+                    </div>
+                  ) : therapistReq?.status === 'approved' ? (
+                    <div className="card" style={{ borderRadius: 16, padding: 16 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent-green)', marginBottom: 4 }}>✓ Заявка одобрена</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-sub)' }}>Обновите страницу, чтобы войти как специалист.</div>
+                    </div>
+                  ) : !showReqForm ? (
                     <button
-                      onClick={() => setShowBecomeTherapist(true)}
+                      onClick={() => setShowReqForm(true)}
                       style={{
                         width: '100%', padding: '11px 16px', borderRadius: 14,
                         border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)',
@@ -413,42 +428,61 @@ export function SettingsSheet({ onClose, userRole, displayName, onNameChanged, o
                         cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                       }}
                     >
-                      <span>👨‍⚕️</span> Я психолог — войти как специалист
+                      <span>👨‍⚕️</span> Я психолог — подать заявку
                     </button>
                   ) : (
                     <div className="card" style={{ borderRadius: 16, padding: 16 }}>
-                      <div style={{ fontSize: 13, color: 'var(--text-sub)', marginBottom: 10 }}>
-                        Введи код специалиста
+                      <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Заявка специалиста</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-sub)', marginBottom: 14, lineHeight: 1.5 }}>
+                        Рассмотрим заявку и напишем в боте
                       </div>
-                      <div style={{ display: 'flex', gap: 8 }}>
-                        <input
-                          value={therapistCode}
-                          onChange={e => setTherapistCode(e.target.value)}
-                          placeholder="Код"
-                          type="password"
-                          style={{ flex: 1, background: 'rgba(var(--fg-rgb),0.06)', border: `1px solid ${therapistCodeError ? 'var(--accent-red)' : 'rgba(var(--fg-rgb),0.12)'}`, borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14 }}
+                      {[
+                        { label: 'Имя и фамилия', val: reqFullName, set: setReqFullName, placeholder: 'Мария Иванова' },
+                        { label: 'Квалификация', val: reqQual, set: setReqQual, placeholder: 'Схема-терапевт, КПТ, 5 лет практики' },
+                        { label: 'Контакты', val: reqContacts, set: setReqContacts, placeholder: '@telegram или email' },
+                      ].map(({ label, val, set, placeholder }) => (
+                        <div key={label} style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 4 }}>{label}</div>
+                          <input
+                            value={val}
+                            onChange={e => set(e.target.value)}
+                            placeholder={placeholder}
+                            style={{ width: '100%', background: 'rgba(var(--fg-rgb),0.06)', border: '1px solid rgba(var(--fg-rgb),0.12)', borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                          />
+                        </div>
+                      ))}
+                      <div style={{ marginBottom: 14 }}>
+                        <div style={{ fontSize: 11, color: 'var(--text-sub)', marginBottom: 4 }}>Сообщение (необязательно)</div>
+                        <textarea
+                          value={reqMsg}
+                          onChange={e => setReqMsg(e.target.value)}
+                          placeholder="Расскажи о себе или своём подходе"
+                          rows={3}
+                          style={{ width: '100%', background: 'rgba(var(--fg-rgb),0.06)', border: '1px solid rgba(var(--fg-rgb),0.12)', borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 13, outline: 'none', resize: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
                         />
-                        <button
-                          disabled={therapistCodeLoading}
-                          onClick={async () => {
-                            if (!therapistCode.trim()) return;
-                            setTherapistCodeError('');
-                            setTherapistCodeLoading(true);
-                            try {
-                              await api.becomeTherapist(therapistCode.trim());
-                              window.location.reload();
-                            } catch {
-                              setTherapistCodeError('Неверный код');
-                            } finally {
-                              setTherapistCodeLoading(false);
-                            }
-                          }}
-                          style={{ background: 'var(--accent)', border: 'none', borderRadius: 10, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                        >
-                          Войти
-                        </button>
                       </div>
-                      {therapistCodeError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginTop: 6 }}>{therapistCodeError}</div>}
+                      {reqError && <div style={{ fontSize: 12, color: 'var(--accent-red)', marginBottom: 10 }}>{reqError}</div>}
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button
+                          onClick={() => { setShowReqForm(false); setReqError(''); }}
+                          style={{ flex: 1, padding: '10px 0', borderRadius: 10, border: '1px solid rgba(var(--fg-rgb),0.1)', background: 'transparent', color: 'var(--text-sub)', fontSize: 13, cursor: 'pointer' }}
+                        >Отмена</button>
+                        <button
+                          disabled={reqBusy || !reqFullName.trim() || !reqQual.trim() || !reqContacts.trim()}
+                          onClick={async () => {
+                            setReqBusy(true); setReqError('');
+                            try {
+                              await api.submitTherapistRequest({ fullName: reqFullName.trim(), qualification: reqQual.trim(), contacts: reqContacts.trim(), message: reqMsg.trim() || undefined });
+                              const req = await api.getTherapistRequest();
+                              setTherapistReq(req);
+                              setShowReqForm(false);
+                            } catch {
+                              setReqError('Ошибка. Попробуй ещё раз.');
+                            } finally { setReqBusy(false); }
+                          }}
+                          style={{ flex: 2, padding: '10px 0', borderRadius: 10, border: 'none', background: 'var(--accent)', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', opacity: (!reqFullName.trim() || !reqQual.trim() || !reqContacts.trim()) ? 0.5 : 1 }}
+                        >{reqBusy ? '...' : 'Отправить'}</button>
+                      </div>
                     </div>
                   )}
                 </div>
