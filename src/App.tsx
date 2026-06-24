@@ -144,11 +144,15 @@ function Disclaimer({ onAccept }: { onAccept: () => void }) {
           Все данные хранятся на защищённом сервере, <strong style={{ color: 'var(--text)' }}>зашифрованы</strong> и привязаны к Telegram-аккаунту. Не передаются третьим лицам.
           <br /><br />
           Удалить все данные можно прямо в приложении — Настройки → «Удалить все данные».
+          <br /><br />
+          <a href="https://schemalab.ru/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>
+            Политика конфиденциальности →
+          </a>
         </div>
         <Checkbox
           checked={c2}
           onToggle={() => setC2(p => !p)}
-          label="Я согласен(на) на хранение данных согласно описанным условиям"
+          label="Я согласен(на) на обработку персональных данных согласно Политике конфиденциальности"
         />
       </div>
     </div>,
@@ -347,6 +351,20 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Clear YSQ data from localStorage if it belongs to a different Telegram user.
+    // Prevents a shared-device scenario where person B reads person A's clinical data.
+    const currentUserId = String((window as any).Telegram?.WebApp?.initDataUnsafe?.user?.id ?? '');
+    if (currentUserId) {
+      const storedUserId = localStorage.getItem('ysq_owner_id');
+      if (storedUserId && storedUserId !== currentUserId) {
+        localStorage.removeItem(YSQ_RESULT_KEY);
+        localStorage.removeItem(YSQ_PROGRESS_KEY);
+      }
+      localStorage.setItem('ysq_owner_id', currentUserId);
+    }
+  }, []);
+
+  useEffect(() => {
     window.Telegram?.WebApp?.ready();
     window.Telegram?.WebApp?.expand();
     window.Telegram?.WebApp?.disableVerticalSwipes?.();
@@ -355,6 +373,16 @@ export default function App() {
       api.init(tzOffset).then(() => sessionStorage.setItem('init_done', '1')).catch(() => {});
     }
     api.recordActivity().catch(() => {});
+    // If disclaimer wasn't accepted in this WebView, check server state.
+    // Covers the case where the user accepted on the website or another device.
+    if (!localStorage.getItem(DISCLAIMER_KEY)) {
+      api.getDisclaimer().then(d => {
+        if (d.accepted) {
+          localStorage.setItem(DISCLAIMER_KEY, '1');
+          setDisclaimerDone(true);
+        }
+      }).catch(() => {});
+    }
     const NEED_IDS = ['attachment', 'autonomy', 'expression', 'play', 'limits'];
     Promise.all(NEED_IDS.map(id => api.getPractices(id)))
       .then(r => setHelpPracticeCount(r.reduce((s, a) => s + a.length, 0))).catch(() => setHelpPracticeCount(0));
