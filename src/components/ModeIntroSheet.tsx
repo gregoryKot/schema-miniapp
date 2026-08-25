@@ -3,51 +3,9 @@ import { BottomSheet } from './BottomSheet';
 import { getModeById } from '../schemaTherapyData';
 import { TherapyNote } from './TherapyNote';
 import { api } from '../api';
+import { MODE_CARD_QUESTIONS as QUESTIONS, EMPTY_MODE_CARD as EMPTY, type ModeCardData as IntroData } from './modeCardQuestions';
 
 const STORAGE_KEY = (modeId: string) => `mode_intro_${modeId}`;
-
-interface IntroData {
-  triggers: string;
-  feelings: string;
-  thoughts: string;
-  needs: string;
-  behavior: string;
-}
-
-const EMPTY: IntroData = { triggers: '', feelings: '', thoughts: '', needs: '', behavior: '' };
-
-const QUESTIONS: { key: keyof IntroData; label: string; hint: string; placeholder: string }[] = [
-  {
-    key: 'triggers',
-    label: 'Когда активируется',
-    hint: 'Ситуации, люди, слова — что запускает этот режим?',
-    placeholder: 'Когда меня критикуют, когда нужно выступить...',
-  },
-  {
-    key: 'feelings',
-    label: 'Что чувствую',
-    hint: 'Эмоции и ощущения в теле',
-    placeholder: 'Тревога, комок в горле, напряжение в плечах...',
-  },
-  {
-    key: 'thoughts',
-    label: 'Что говорит внутри',
-    hint: 'Убеждения, голос, монолог этого режима',
-    placeholder: '«Я недостаточно хорош», «Лучше не рисковать»...',
-  },
-  {
-    key: 'needs',
-    label: 'Чего на самом деле хочет',
-    hint: 'Глубинная потребность за этим режимом',
-    placeholder: 'Безопасности, признания, контакта...',
-  },
-  {
-    key: 'behavior',
-    label: 'Как проявляется в поведении',
-    hint: 'Что делаешь (или перестаёшь делать) в этом режиме',
-    placeholder: 'Замолкаю, избегаю, злюсь, переусердствую...',
-  },
-];
 
 interface Props {
   modeId: string;
@@ -67,18 +25,24 @@ export function ModeIntroSheet({ modeId, onClose, onComplete }: Props) {
   useEffect(() => () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); }, []);
 
   useEffect(() => {
+    const fromStorage = (): Partial<IntroData> => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY(modeId)) ?? '{}'); } catch { return {}; }
+    };
     api.getModeNotes().then(notes => {
       const note = notes.find(n => n.modeId === modeId);
       if (note) {
-        setData({ triggers: note.triggers, feelings: note.feelings, thoughts: note.thoughts,
-          needs: note.needs, behavior: note.behavior });
+        // Поля, которых сервер ещё не знает, добираем из localStorage
+        const local = fromStorage();
+        const merged = { ...EMPTY };
+        for (const key of Object.keys(EMPTY) as (keyof IntroData)[]) {
+          merged[key] = (note as Partial<IntroData>)[key] ?? local[key] ?? '';
+        }
+        setData(merged);
       } else {
-        const stored = localStorage.getItem(STORAGE_KEY(modeId));
-        if (stored) { try { setData(JSON.parse(stored)); } catch {} }
+        setData({ ...EMPTY, ...fromStorage() });
       }
     }).catch(() => {
-      const stored = localStorage.getItem(STORAGE_KEY(modeId));
-      if (stored) { try { setData(JSON.parse(stored)); } catch {} }
+      setData({ ...EMPTY, ...fromStorage() });
     });
   }, [modeId]);
 

@@ -8,7 +8,7 @@ import { ModeIntroSheet } from './ModeIntroSheet';
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type SchemaNote = { schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string };
-type ModeNote   = { modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string };
+type ModeNote   = { modeId: string; modeFunction?: string; triggers: string; feelings: string; thoughts: string; childhood?: string; needs: string; behavior: string; needsMet?: string; healthyAdult?: string };
 type DiaryEntry = { id: number; createdAt: string; type: 'schema' | 'mode' | 'gratitude'; label: string; preview: string };
 type Exercise   = { id: number; createdAt: string; type: 'belief' | 'letter' | 'flashcard'; label: string; preview: string };
 type SafeEntry  = { description: string; updatedAt: string } | null;

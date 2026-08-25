@@ -91,7 +91,7 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
   const [showConceptSheet, setShowConceptSheet] = useState(false);
   const [showClientNotesSheet, setShowClientNotesSheet] = useState(false);
   const [clientSchemaNotesData, setClientSchemaNotesData] = useState<Array<{ schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string }>>([]);
-  const [clientModeNotesData, setClientModeNotesData]     = useState<Array<{ modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string }>>([]);
+  const [clientModeNotesData, setClientModeNotesData]     = useState<Array<{ modeId: string; modeFunction?: string; triggers: string; feelings: string; thoughts: string; childhood?: string; needs: string; behavior: string; needsMet?: string; healthyAdult?: string }>>([]);
   const [clientTasks, setClientTasks] = useState<UserTask[]>([]);
   const [notes, setNotes] = useState<TherapistNote[]>([]);
   const [noteError, setNoteError] = useState('');
@@ -1360,11 +1360,15 @@ export function TherapistClientSheet({ view, onViewChange, onClose, backHandlerR
                         <div key={n.modeId} style={{ background: 'rgba(var(--fg-rgb),0.03)', border: '1px solid rgba(var(--fg-rgb),0.07)', borderRadius: 12, padding: '12px 14px', marginBottom: 8 }}>
                           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 8 }}>{m?.emoji ?? '🔄'} {m?.name ?? n.modeId}</div>
                           {[
+                            { label: 'Функция режима', val: n.modeFunction },
                             { label: 'Триггеры', val: n.triggers },
                             { label: 'Чувства', val: n.feelings },
                             { label: 'Мысли', val: n.thoughts },
-                            { label: 'Потребности', val: n.needs },
+                            { label: 'Детские воспоминания', val: n.childhood },
                             { label: 'Поведение', val: n.behavior },
+                            { label: 'Потребности', val: n.needs },
+                            { label: 'Работает ли стратегия', val: n.needsMet },
+                            { label: 'Здоровый Взрослый', val: n.healthyAdult },
                           ].filter(f => f.val?.trim()).map(f => (
                             <div key={f.label} style={{ marginBottom: 6 }}>
                               <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-faint)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 2 }}>{f.label}</div>

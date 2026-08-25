@@ -336,8 +336,8 @@ export const api = {
   getSchemaNotes: () => get<Array<{ schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string }>>('/api/schema-notes'),
   saveSchemaNote: (body: { schemaId: string; triggers?: string; feelings?: string; thoughts?: string; origins?: string; reality?: string; healthyView?: string; behavior?: string }) =>
     post('/api/schema-notes', body),
-  getModeNotes: () => get<Array<{ modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string }>>('/api/mode-notes'),
-  saveModeNote: (body: { modeId: string; triggers?: string; feelings?: string; thoughts?: string; needs?: string; behavior?: string }) =>
+  getModeNotes: () => get<Array<{ modeId: string; modeFunction?: string; triggers: string; feelings: string; thoughts: string; childhood?: string; needs: string; behavior: string; needsMet?: string; healthyAdult?: string }>>('/api/mode-notes'),
+  saveModeNote: (body: { modeId: string; modeFunction?: string; triggers?: string; feelings?: string; thoughts?: string; childhood?: string; needs?: string; behavior?: string; needsMet?: string; healthyAdult?: string }) =>
     post('/api/mode-notes', body),
 
   // ─── Exercises ───────────────────────────────────────────────────────────────
@@ -358,5 +358,5 @@ export const api = {
 
   // ─── Therapist client notes ──────────────────────────────────────────────────
   getClientSchemaNotes: (clientId: number) => get<Array<{ schemaId: string; triggers: string; feelings: string; thoughts: string; origins: string; reality: string; healthyView: string; behavior: string }>>(`/api/therapy/client/${clientId}/schema-notes`),
-  getClientModeNotes: (clientId: number) => get<Array<{ modeId: string; triggers: string; feelings: string; thoughts: string; needs: string; behavior: string }>>(`/api/therapy/client/${clientId}/mode-notes`),
+  getClientModeNotes: (clientId: number) => get<Array<{ modeId: string; modeFunction?: string; triggers: string; feelings: string; thoughts: string; childhood?: string; needs: string; behavior: string; needsMet?: string; healthyAdult?: string }>>(`/api/therapy/client/${clientId}/mode-notes`),
 };
